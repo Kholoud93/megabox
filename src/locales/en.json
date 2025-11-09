@@ -1,0 +1,23 @@
+{
+  "navbar": {
+    "home": "Home",
+    "about": "About",
+    "login": "Login",
+    "logout": "Logout",
+    "dashboard": "Dashboard",
+    "language": "Language"
+  },
+  "hero": {
+    "title": "1024GB Cloud Storage",
+    "description": "Easy to use, private and secure, reliable.",
+    "getStarted": "Get Started",
+    "download": "Download",
+    "footer": "Your free and secure cloud storage by MegaBox"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  }
+}
+

@@ -1,0 +1,205 @@
+@use "./../../helpers/_functions.scss" as *;
+
+.dropback {
+    @include Breakpoints(mobile) {
+        background-color: #00000070;
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 8;
+        visibility: hidden;
+        opacity: 0;
+        transition: 0.7s linear all;
+        -webkit-transition: 0.7s linear all;
+    }
+
+    &.apper-dropback {
+        visibility: visible;
+        opacity: 1;
+        transition: 0.7s linear all;
+        -webkit-transition: 0.7s linear all;
+    }
+}
+
+.css-wx7wi4 {
+    color: white;
+}
+
+aside .main-side .ps-menu-button:hover {
+    background-color: $Secondcolor !important;
+}
+
+.navbar__logo {
+    padding: 0 13px !important;
+    font-weight: bold;
+    color: #ffffff;
+    background: none;
+    text-decoration: none;
+
+
+    &.Open {
+        font-size: 2rem;
+    }
+
+    &.Close {
+        font-size: 1rem;
+    }
+}
+
+
+
+.css-ewdv3l {
+    width: 100% !important;
+    display: block !important;
+}
+
+.css-1tqrhto>.ps-menu-button {
+    transition: 0.6 linear all;
+
+    &:hover {
+        background-color: $Secondcolor !important;
+    }
+}
+
+.MainItem:hover {
+    background-color: $Secondcolor !important;
+}
+
+.bars {
+    font-size: 30px;
+    padding: 10px;
+    color: white;
+    background-color: $BaseColor;
+    position: fixed;
+    border-radius: 50%;
+    right: 40px;
+    bottom: 30px;
+    opacity: 0;
+    z-index: 10;
+
+    @include Breakpoints(mobile) {
+        opacity: 1;
+    }
+}
+
+.allnav {
+    z-index: 10;
+
+    .Active {
+        background-color: $Secondcolor !important;
+    }
+
+    @include Breakpoints(mobile) {
+        width: 250px;
+        transition: 0.7s linear all;
+        -webkit-transition: 0.7s linear all;
+    }
+
+    &.apper {
+        @include Breakpoints(mobile) {
+            width: 250px;
+            transition: 0.7s linear all;
+            -webkit-transition: 0.7s linear all;
+            transform: translateX(-100%);
+            -webkit-transform: translateX(-100%);
+        }
+    }
+}
+
+aside {
+    position: relative;
+
+    @include Breakpoints(mobile) {
+        position: fixed;
+        left: 0;
+        top: 0;
+    }
+
+    .Remove_hover {
+        &:hover {
+            background-color: transparent !important;
+        }
+    }
+
+    .Logout {
+        position: absolute !important;
+        bottom: 20px;
+        left: 0;
+
+        svg {
+            color: white;
+            font-size: 20px;
+        }
+    }
+
+    .main-side {
+        &::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        /* Track */
+        &::-webkit-scrollbar-track {
+            background: $Secondcolor;
+        }
+
+        /* Handle */
+        &::-webkit-scrollbar-thumb {
+            background: white;
+            border-radius: 20px;
+        }
+
+        background-color: $BaseColor;
+        position: fixed;
+        width: 250px;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 999;
+        transition: 0.3s linear all;
+        -webkit-transition: 0.3s linear all;
+        overflow-y: auto !important;
+        overflow-x: hidden;
+
+        @include Breakpoints(mobile) {
+            height: 100% !important;
+        }
+
+        &.collapsed {
+            width: 78px;
+            transition: 0.3s linear all;
+            -webkit-transition: 0.3s linear all;
+        }
+
+        .ps-menu-button {
+            &:hover {
+                background-color: $BaseColor;
+            }
+        }
+
+        .menu-items {
+            color: white;
+            background-color: $BaseColor;
+        }
+
+        .Logo {
+            width: 100px;
+            transition: 0.3s linear all;
+            -webkit-transition: 0.3s linear all;
+        }
+
+        .Logo-colaps {
+            width: 50px;
+            border-radius: 5px;
+            padding: 2px;
+            transition: 0.3s linear all;
+            -webkit-transition: 0.3s linear all;
+        }
+
+        .icon {
+            color: white;
+            font-size: 22px;
+        }
+    }
+}

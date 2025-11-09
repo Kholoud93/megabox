@@ -1,0 +1,5 @@
+@use "../../helpers/_variables" as vars;
+
+.CardNav {
+    background: linear-gradient(135deg, vars.$BaseColor, vars.$Secondcolor, vars.$HoverColor);
+}

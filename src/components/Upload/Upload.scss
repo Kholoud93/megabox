@@ -1,0 +1,9 @@
+@use '../../helpers/functions' as *;
+
+.UploadFile_backDrob {
+    @include BackDrop();
+
+    .UploadFile {
+        @include InsideBackdrop();
+    }
+}

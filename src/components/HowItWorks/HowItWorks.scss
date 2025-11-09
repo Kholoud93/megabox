@@ -1,0 +1,316 @@
+@use "../../helpers/_functions" as fn;
+@use "../../helpers/_variables" as vars;
+
+.howitworks {
+    width: 100%;
+    background: linear-gradient(350deg, #f8fafc 76%, #003a47 100%, #f8fafc 100%);
+    padding: 6rem 0 8rem 0;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(to right, transparent, rgba(vars.$blue-400, 0.1), transparent);
+    }
+
+    &__container {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    &__title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, vars.$gray-800, vars.$gray-700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 3rem;
+        letter-spacing: 0.01em;
+    }
+
+    &__steps {
+        display: flex;
+        flex-direction: column;
+        gap: 4.5rem;
+    }
+
+    &__row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4rem;
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+        border-radius: 1.2rem;
+        transition:
+            transform 0.3s ease,
+            box-shadow 0.3s ease;
+        position: relative;
+        overflow: visible;
+        background: vars.$white;
+        border: 1px solid vars.$transparent-gray-08;
+        box-shadow:
+            0 4px 20px vars.$shadow-color-medium,
+            0 0 0 1px vars.$transparent-gray-03;
+
+        &::before {
+            content: "";
+            position: absolute;
+            inset: -1px;
+            background: linear-gradient(135deg, vars.$transparent-gray-10, vars.$transparent-gray-05);
+            border-radius: 1.2rem;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        &:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 8px 30px vars.$shadow-color-medium,
+                0 0 0 1px vars.$transparent-gray-05;
+
+            &::before {
+                opacity: 1;
+            }
+        }
+
+        &:nth-child(odd) {
+            .howitworks__image {
+                transform: translateX(25%);
+
+                &:hover {
+                    transform: translateX(25%) scale(1.02);
+                }
+            }
+        }
+    }
+
+    &__text {
+        flex: 1 1 0;
+        text-align: left;
+        padding-right: 2rem;
+        min-width: 220px;
+        position: relative;
+    }
+
+    &__step-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: vars.$gray-800;
+        margin-bottom: 1rem;
+        letter-spacing: 0.01em;
+        position: relative;
+        display: inline-block;
+
+        &::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(to right, vars.$gray-800, vars.$gray-700);
+            border-radius: 2px;
+        }
+    }
+
+    &__step-desc {
+        font-size: 1.1rem;
+        color: vars.$gray-700;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    &__image-wrapper {
+        flex: 1 1 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 220px;
+        max-width: 340px;
+        padding-left: 2rem;
+        position: relative;
+        overflow: visible;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            background: linear-gradient(135deg, vars.$transparent-gray-05, vars.$transparent-gray-05);
+            border-radius: 1.5rem;
+            z-index: -1;
+        }
+    }
+
+    &__image {
+        width: 100%;
+        max-width: 320px;
+        border-radius: 1.2rem;
+        box-shadow: 0 8px 32px vars.$shadow-color-medium;
+        background: vars.$white;
+        object-fit: cover;
+        aspect-ratio: 16/10;
+        transition: transform 0.3s ease;
+        transform: translateX(-25%);
+        position: relative;
+        z-index: 2;
+        border: 1px solid vars.$transparent-gray-06;
+
+        &:hover {
+            transform: translateX(-25%) scale(1.02);
+        }
+    }
+}
+
+@include fn.Breakpoints(mobile) {
+    .howitworks {
+        padding: 3rem 0 4rem 0;
+
+        &__container {
+            padding: 0 1rem;
+        }
+
+        &__steps {
+            gap: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        &__row {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            max-width: 80%;
+            padding: 1.8rem;
+            overflow: visible;
+            text-align: center;
+            background: vars.$white;
+            border-radius: 1.2rem;
+            position: relative;
+            margin: 0 auto !important;
+            width: 90%;
+            border: 1px solid vars.$transparent-gray-08;
+            box-shadow:
+                0 4px 20px vars.$shadow-color-medium,
+                0 0 0 1px vars.$transparent-gray-03;
+
+            &::before {
+                content: "";
+                position: absolute;
+                inset: -1px;
+                background: linear-gradient(135deg, vars.$transparent-gray-10, vars.$transparent-gray-05);
+                border-radius: 1.2rem;
+                z-index: -1;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            &:hover {
+                transform: translateY(-3px);
+                box-shadow:
+                    0 8px 30px vars.$shadow-color-medium,
+                    0 0 0 1px vars.$transparent-gray-05;
+
+                &::before {
+                    opacity: 1;
+                }
+            }
+        }
+
+        &__text {
+            padding: 0;
+            min-width: 0;
+            max-width: 100%;
+            text-align: center;
+            order: 2;
+            position: relative;
+
+            .howitworks__step-title::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+
+        &__image-wrapper {
+            padding: 0;
+            min-width: 0;
+            max-width: 100%;
+            overflow: visible;
+            margin: 0 auto;
+            order: 1;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+
+            &::after {
+                content: "";
+                position: absolute;
+                bottom: -0.8rem;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 40px;
+                height: 3px;
+                background: linear-gradient(to right, vars.$transparent-gray-10, vars.$transparent-gray-05);
+                border-radius: 2px;
+            }
+        }
+
+        &__image {
+            transform: none !important;
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            border-radius: 0.8rem;
+            margin: 0 auto;
+            display: block;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            box-shadow: 0 4px 20px vars.$shadow-color-medium;
+            border: 1px solid vars.$transparent-gray-06;
+
+            &:hover {
+                transform: scale(1.02) !important;
+            }
+        }
+
+        &__title {
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+        }
+
+        &__step-title {
+            font-size: 1.3rem;
+            margin-top: 1rem;
+        }
+
+        &__step-desc {
+            font-size: 1rem;
+            padding: 0 0.5rem;
+            color: vars.$gray-700;
+        }
+    }
+}

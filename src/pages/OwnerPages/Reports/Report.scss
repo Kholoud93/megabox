@@ -1,0 +1,77 @@
+@use '../../../helpers/functions' as *;
+
+.copyright-card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    max-width: 700px;
+    font-family: 'Segoe UI', sans-serif;
+    transition: all 0.3s ease;
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 16px;
+
+        .icon {
+            font-size: 2rem;
+            color: $BaseColor;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        span {
+            font-size: 0.9rem;
+            color: #888;
+        }
+    }
+
+    .card-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        font-size: 0.95rem;
+
+        .info-row {
+            strong {
+                display: inline-block;
+                width: 140px;
+                font-weight: 500;
+                color: #333;
+            }
+        }
+    }
+
+    .card-footer {
+        margin-top: 20px;
+        text-align: right;
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: $BaseColor;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s;
+
+            &:hover {
+                background-color: rgba($BaseColor, 0.9);
+            }
+
+            .icon {
+                font-size: 1rem;
+            }
+        }
+    }
+}

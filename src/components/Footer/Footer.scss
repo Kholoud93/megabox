@@ -1,0 +1,229 @@
+@use "../../helpers/_variables" as vars;
+
+.footer {
+    width: 100%;
+    background: linear-gradient(135deg, vars.$BaseColor, vars.$Secondcolor, vars.$HoverColor);
+    padding: 3rem 0 1.5rem 0;
+    color: vars.$white;
+    font-size: 1rem;
+    border-top: 1px solid rgba(vars.$white, 0.1);
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(vars.$Secondcolor, 0.2), transparent);
+        pointer-events: none;
+    }
+
+    &__container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    &__brand {
+        font-size: 1.8rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        color: vars.$white;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(vars.$black, 0.2);
+        background: linear-gradient(135deg, vars.$white, rgba(vars.$white, 0.8));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    &__nav {
+        display: flex;
+        gap: 2.2rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-bottom: 0.2rem;
+    }
+
+    &__link {
+        color: rgba(vars.$white, 0.8);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        position: relative;
+        opacity: 0.9;
+
+        &:hover {
+            color: vars.$white;
+            transform: translateY(-1px);
+        }
+
+        &::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: linear-gradient(90deg, vars.$white, rgba(vars.$white, 0.5));
+            transition: width 0.3s ease;
+        }
+
+        &:hover::after {
+            width: 100%;
+        }
+    }
+
+    &__copyright {
+        color: rgba(vars.$white, 0.7);
+        font-size: 0.98rem;
+        margin-top: 0.2rem;
+        text-align: center;
+    }
+
+    // Enhanced hover effects for social icons
+    .social-icon {
+        transition: all 0.3s ease;
+        
+        &:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(vars.$white, 0.2);
+        }
+    }
+
+    // Responsive design improvements
+    @media (max-width: 1024px) {
+        &__container {
+            padding: 0 1.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        padding: 2.5rem 0 1.5rem 0;
+
+        &__container {
+            padding: 0 1rem;
+        }
+
+        &__brand {
+            font-size: 1.5rem;
+        }
+
+        .grid {
+            gap: 2rem;
+        }
+    }
+
+    @media (max-width: 640px) {
+        padding: 2rem 0 1rem 0;
+
+        &__container {
+            padding: 0 1rem;
+        }
+
+        &__brand {
+            font-size: 1.3rem;
+        }
+
+        .grid {
+            gap: 1.5rem;
+        }
+
+        .flex {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+    }
+
+    // Animation enhancements
+    .motion-div {
+        will-change: transform, opacity;
+    }
+
+    // Gradient text effect for brand
+    .gradient-text {
+        background: linear-gradient(135deg, vars.$white, rgba(vars.$white, 0.8));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    // Enhanced border effects
+    .border-gradient {
+        border-image: linear-gradient(90deg, transparent, rgba(vars.$white, 0.3), transparent) 1;
+    }
+
+    // Hover animations for links
+    .hover-lift {
+        transition: transform 0.3s ease, color 0.3s ease;
+        
+        &:hover {
+            transform: translateY(-2px);
+            color: vars.$white;
+        }
+    }
+
+    // Social media icons container
+    .social-container {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    // Contact info styling
+    .contact-info {
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            
+            .icon {
+                flex-shrink: 0;
+                width: 1rem;
+                height: 1rem;
+                color: rgba(vars.$white, 0.7);
+            }
+            
+            .text {
+                font-size: 0.875rem;
+                color: rgba(vars.$white, 0.8);
+                transition: color 0.3s ease;
+                
+                &:hover {
+                    color: vars.$white;
+                }
+            }
+        }
+    }
+
+    // Section headers
+    .section-header {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: vars.$white;
+        margin-bottom: 1rem;
+        position: relative;
+        
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 0;
+            width: 2rem;
+            height: 2px;
+            background: linear-gradient(90deg, vars.$white, transparent);
+        }
+    }
+
+    // Bottom section styling
+    .bottom-section {
+        border-top: 1px solid rgba(vars.$white, 0.1);
+        padding-top: 1.5rem;
+        margin-top: 2rem;
+    }
+}

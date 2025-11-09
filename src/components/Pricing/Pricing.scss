@@ -1,0 +1,528 @@
+@use "../../helpers/_variables" as vars;
+@use "../../helpers/_functions" as fn;
+
+.pricing {
+    width: 100vw;
+    background: linear-gradient(135deg, vars.$gray-50 0%, vars.$white 100%);
+    padding: 8rem 0 10rem 0;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-left: 0;
+    margin-right: 0;
+    overflow: hidden;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent 0%, rgba(vars.$gray-700, 0.1) 50%, transparent 100%);
+    }
+
+    &__container {
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    &__title {
+        font-size: 3.2rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        color: vars.$gray-800;
+        background: linear-gradient(135deg, vars.$gray-800 0%, vars.$gray-700 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        position: relative;
+
+        &::after {
+            content: "";
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, vars.$Secondcolor, vars.$HoverColor);
+            border-radius: 2px;
+        }
+    }
+
+    &__subtitle {
+        font-size: 1.2rem;
+        color: vars.$gray-700;
+        margin-bottom: 3rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    &__cards {
+        display: flex;
+        gap: 2.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        width: 100%;
+        margin-top: 3rem;
+        position: relative;
+    }
+
+    &__card {
+        border-radius: 1.5rem;
+        box-shadow: 0 4px 24px vars.$shadow-color-medium;
+        padding: 3rem 2rem;
+        min-width: 45%;
+        max-width: 49%;
+        flex: 1 1 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        margin: 0 auto;
+        background: vars.$white;
+        border: 1px solid rgba(vars.$gray-100, 0.5);
+        overflow: hidden;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, vars.$Secondcolor, vars.$HoverColor);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        &--highlighted {
+            background: linear-gradient(135deg, vars.$gray-800, vars.$gray-700);
+            color: vars.$white;
+            border: 2px solid vars.$white;
+            box-shadow: 0 8px 32px rgba(vars.$gray-700, 0.18);
+            z-index: 2;
+            transform: scale(1.05);
+
+            &::before {
+                opacity: 1;
+            }
+
+            .pricing__plan-name {
+                color: vars.$white;
+            }
+
+            .pricing__amount {
+                background: linear-gradient(135deg, vars.$white 0%, rgba(vars.$white, 0.9) 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            .pricing__features {
+                li {
+                    color: vars.$white;
+                }
+
+                li::before {
+                    color: vars.$Secondcolor;
+                }
+            }
+
+            .pricing__button {
+                background: linear-gradient(90deg, vars.$Secondcolor 0%, vars.$HoverColor 100%);
+
+                &:hover {
+                    background: linear-gradient(90deg, vars.$HoverColor 0%, vars.$Secondcolor 100%);
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 20px rgba(vars.$Secondcolor, 0.3);
+                }
+            }
+        }
+
+        &:hover {
+            box-shadow: 0 12px 36px vars.$transparent-gray-10;
+            transform: translateY(-6px);
+
+            &::before {
+                opacity: 1;
+            }
+        }
+    }
+
+    &__plan-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: vars.$gray-800;
+        position: relative;
+        padding-bottom: 1rem;
+
+        &::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 2px;
+            background: vars.$gray-100;
+            border-radius: 1px;
+        }
+    }
+
+    &__price {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 0.2rem;
+        flex-wrap: wrap;
+    }
+
+    &__amount {
+        font-size: 3.5rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        line-height: 1;
+        background: linear-gradient(135deg, vars.$gray-800 0%, vars.$gray-700 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+
+        &--yearly {
+            color: vars.$Secondcolor;
+            position: relative;
+
+            &::after {
+                content: "Save 20%";
+                position: absolute;
+                top: -1.2rem;
+                right: -1rem;
+                background: vars.$Secondcolor;
+                color: vars.$white;
+                font-size: 0.8rem;
+                padding: 0.2rem 0.5rem;
+                border-radius: 1rem;
+                font-weight: 600;
+                box-shadow: 0 2px 8px rgba(vars.$Secondcolor, 0.3);
+            }
+        }
+    }
+
+    &__period {
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 0.2rem;
+        opacity: 0.8;
+    }
+
+    &__toggle {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 2rem auto;
+        justify-content: center;
+        background: vars.$gray-100;
+        padding: 0.5rem;
+        border-radius: 2rem;
+        width: fit-content;
+        box-shadow: 0 2px 8px vars.$shadow-color-light;
+
+        &-label {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: vars.$gray-700;
+            padding: 0.5rem 1rem;
+            border-radius: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+
+            &--active {
+                color: vars.$gray-800;
+                font-weight: 600;
+                background: vars.$white;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        &-switch {
+            position: relative;
+            width: 3.2rem;
+            height: 1.8rem;
+            background: vars.$gray-200;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            &::after {
+                content: "";
+                position: absolute;
+                left: 0.2rem;
+                top: 0.2rem;
+                width: 1.4rem;
+                height: 1.4rem;
+                background: vars.$white;
+                border-radius: 50%;
+                transition: transform 0.3s ease;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            &--yearly::after {
+                transform: translateX(1.4rem);
+            }
+
+            &--active {
+                background: vars.$Secondcolor;
+            }
+        }
+    }
+
+    &__features {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 2rem 0;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        text-align: left;
+        width: 90%;
+
+        li {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            position: relative;
+            color: vars.$gray-700;
+            transition: transform 0.2s ease;
+
+            &:hover {
+                transform: translateX(4px);
+            }
+        }
+
+        li::before {
+            content: "✓";
+            color: vars.$Secondcolor;
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+    }
+
+    &__button {
+        background: linear-gradient(90deg, vars.$gray-800 0%, vars.$gray-700 100%);
+        color: vars.$white;
+        border: none;
+        border-radius: 0.8rem;
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-top: auto;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        max-width: 220px;
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        &:hover {
+            background: linear-gradient(90deg, vars.$gray-700 0%, vars.$gray-800 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+            &::before {
+                left: 100%;
+            }
+        }
+    }
+
+    @include fn.Breakpoints(medium) {
+        &__container {
+            max-width: 1000px;
+        }
+
+        &__cards {
+            gap: 2rem;
+        }
+
+        &__card {
+            min-width: 280px;
+            padding: 2.5rem 2rem;
+        }
+    }
+
+    @include fn.Breakpoints(small) {
+        padding: 6rem 0 8rem 0;
+        width: 100% !important;
+        left: 0 !important;
+        transform: none !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        &__title {
+            font-size: 2.5rem;
+        }
+
+        &__subtitle {
+            font-size: 1.1rem;
+            padding: 0 1rem;
+        }
+
+        &__cards {
+            flex-direction: column;
+            gap: 2rem;
+            align-items: center;
+            padding: 0 1rem;
+        }
+
+        &__card {
+            max-width: 350px;
+            width: 100%;
+            padding: 2.5rem 2rem;
+
+            &--highlighted {
+                transform: scale(1);
+                order: -1;
+            }
+        }
+
+        &__toggle {
+            margin: 2rem 1rem;
+        }
+    }
+
+    @include fn.Breakpoints(mobile) {
+        padding: 4rem 0 6rem 0;
+        width: 100% !important;
+        left: 0 !important;
+        transform: none !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+
+        &__title {
+            font-size: 2.2rem;
+            padding: 0 1rem;
+        }
+
+        &__subtitle {
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        &__card {
+            padding: 2rem 1.5rem;
+            min-width: 260px;
+
+            &__plan-name {
+                font-size: 1.3rem;
+            }
+        }
+
+        &__amount {
+            font-size: 3rem;
+        }
+
+        &__features {
+            font-size: 0.95rem;
+
+            li {
+                margin-bottom: 0.8rem;
+            }
+        }
+
+        &__button {
+            padding: 0.9rem 2rem;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        padding: 3rem 0 5rem 0;
+
+        &__title {
+            font-size: 1.8rem;
+        }
+
+        &__subtitle {
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        &__toggle {
+            padding: 0.4rem;
+
+            &-label {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            &-switch {
+                width: 2.8rem;
+                height: 1.6rem;
+
+                &::after {
+                    width: 1.2rem;
+                    height: 1.2rem;
+                }
+
+                &--yearly::after {
+                    transform: translateX(1.2rem);
+                }
+            }
+        }
+
+        &__card {
+            padding: 1.8rem 1.2rem;
+
+            &__plan-name {
+                font-size: 1.2rem;
+                margin-bottom: 1.2rem;
+            }
+        }
+
+        &__amount {
+            font-size: 2.5rem;
+        }
+
+        &__period {
+            font-size: 1rem;
+        }
+
+        &__features {
+            font-size: 0.9rem;
+            max-width: 240px;
+
+            li {
+                margin-bottom: 0.7rem;
+                padding-left: 1.2rem;
+            }
+        }
+
+        &__button {
+            padding: 0.8rem 1.8rem;
+            font-size: 0.95rem;
+            max-width: 200px;
+        }
+    }
+}

@@ -1,0 +1,78 @@
+@use "../../helpers/functions" as *;
+@use "../../helpers/mixins" as *;
+
+.Profile {
+    margin-top: 23px;
+    min-height: calc(100vh - 100px);
+
+    .Info {
+        img {
+            width: 100px;
+            height: 100px;
+            @include transition(transform);
+
+            &:hover {
+                transform: scale(1.05);
+            }
+        }
+    }
+
+    label,
+    p {
+        padding: 0 2px;
+    }
+
+    input {
+        @include transition();
+
+        &:focus {
+            @include shadow('md');
+        }
+    }
+
+    button {
+        @include transition();
+    }
+
+    .bg-primary-500 {
+        background-color: $BaseColor;
+
+        &:hover {
+            background-color: $Secondcolor;
+        }
+    }
+
+    .text-primary-500 {
+        color: $BaseColor;
+    }
+
+    .border-primary-500 {
+        border-color: $BaseColor;
+    }
+
+    .animate-spin {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        .md\:flex {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .md\:flex-shrink-0 {
+            margin-bottom: 2rem;
+        }
+    }
+}

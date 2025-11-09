@@ -1,0 +1,10 @@
+@use '../../helpers/functions' as *;
+
+.ChangeName_Backdrop {
+    @include BackDrop();
+
+    .ChangeName {
+        @include InsideBackdrop();
+        height: 200px;
+    }
+}

@@ -1,0 +1,1 @@
+export const PreventFunction = (e) => e.stopPropagation();

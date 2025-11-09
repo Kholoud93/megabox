@@ -1,0 +1,81 @@
+@use '../../../helpers/functions' as *;
+
+
+$card-bg: #ffffff;
+$header-color: #4CAF50;
+$text-color: #333;
+$label-color: #555;
+$value-color: #222;
+$item-bg: #f9f9f9;
+$item-bg-hover: #f1f1f1;
+$total-bg: #e3f2fd;
+$shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+.earnings-container {
+    width: 100%;
+    padding: 20px;
+
+    .earnings-card {
+        width: 100%;
+        background: $card-bg;
+        border-radius: 12px;
+        box-shadow: $shadow;
+        padding: 24px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: $text-color;
+
+        .main-heading {
+            font-size: 24px;
+            margin: 0 0 12px;
+            color: $BaseColor;
+        }
+
+        .user-id {
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: $label-color;
+
+            span {
+                font-weight: bold;
+                color: $text-color;
+                word-break: break-all;
+            }
+        }
+
+        .earnings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+
+            .earning-item {
+                background: $item-bg;
+                border-radius: 8px;
+                padding: 16px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                transition: background 0.3s;
+
+                &:hover {
+                    background: $item-bg-hover;
+                }
+
+                &.total {
+                    background: $total-bg;
+                    font-weight: bold;
+                }
+
+                .label {
+                    font-size: 14px;
+                    color: $label-color;
+                    margin-bottom: 6px;
+                }
+
+                .value {
+                    font-size: 18px;
+                    color: $value-color;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,93 @@
+@mixin Breakpoints($point) {
+    @if $point ==mobile {
+        @media (max-width: 767px) {
+            @content;
+        }
+    }
+
+    @else if $point ==small {
+        @media (min-width: 768px) and (max-width: 991px) {
+            @content;
+        }
+    }
+
+    @else if $point ==medium {
+        @media (min-width: 992px) and (max-width: 1199px) {
+            @content;
+        }
+    }
+
+    @else if $point ==large {
+        @media (min-width: 1200px) {
+            @content;
+        }
+    }
+}
+
+@mixin Animtation($Time, $Type, $Prop) {
+    transition: $Time $Type $Prop;
+}
+
+// main colors
+$BaseColor: #003e4b;
+$Secondcolor: #01677e;
+$HoverColor: #44546a;
+
+// #183139
+// main sizes
+$rounded: 25px;
+
+@mixin Title() {
+    color: $BaseColor;
+    margin: 0px 20px;
+}
+
+.title {
+    @include Title();
+}
+
+.bg-main {
+    background-color: $BaseColor !important;
+}
+
+.font-color {
+    color: $BaseColor;
+}
+
+@mixin BackDrop() {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #00000054;
+    z-index: 100;
+}
+
+@mixin InsideBackdrop() {
+    width: 800px;
+    border-radius: 10px;
+    background-color: white;
+    position: relative;
+
+    .Close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: red;
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+
+    @include Breakpoints(small) {
+        width: 95%;
+    }
+
+    @include Breakpoints(mobile) {
+        width: 95%;
+    }
+}
