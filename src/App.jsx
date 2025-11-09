@@ -1,7 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route, createBrowserRouter, RouterProvider, useNavigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
-import { LanguageProvider } from './context/LanguageContext'
 import LandingPage from './pages/LandingPage'
 import Login from './pages/Auth/Login'
 import Signup from './pages/Auth/Signup'
@@ -373,11 +372,9 @@ const router = createBrowserRouter(
 
 function App() {
   return (
-    <LanguageProvider>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
-    </LanguageProvider>
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   );
 }
 

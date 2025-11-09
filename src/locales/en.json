@@ -20,6 +20,77 @@
     "feature3": "Upload videos with a single click and share them securely with your team or friends. Organize your content effortlessly with our intuitive interface.",
     "feature4": "Enjoy your videos in stunning HD and 4K quality, with adaptive streaming that adjusts to your connection speed for the best viewing experience."
   },
+  "howItWorks": {
+    "title": "How It Works",
+    "steps": {
+      "step1": {
+        "title": "Sign Up & Upload",
+        "desc": "Create your free account and upload your first video in seconds. Our intuitive interface makes it easy to get started."
+      },
+      "step2": {
+        "title": "Organize & Manage",
+        "desc": "Easily organize your videos into folders and manage your content. Keep everything tidy and accessible."
+      },
+      "step3": {
+        "title": "Stream or Share",
+        "desc": "Stream your videos instantly or share them securely with others. Control who has access to your content."
+      }
+    },
+    "prev": "Previous",
+    "next": "Next"
+  },
+  "pricing": {
+    "title": "Choose Your Plan",
+    "subtitle": "Flexible options for your needs",
+    "plans": {
+      "viewsPlan": {
+        "name": "Views Plan",
+        "features": {
+          "feature1": "Pay per thousand views (CPM)",
+          "feature2": "Competitive rates vary by country",
+          "feature3": "Ability to display in-video ads",
+          "feature4": "Detailed viewer analytics",
+          "feature5": "Withdraw earnings upon reaching minimum threshold",
+          "feature6": "24/7 technical support"
+        }
+      },
+      "watchingPlan": {
+        "name": "Watching Plan",
+        "features": {
+          "feature1": "Pay per direct app install (CPI)",
+          "feature2": "Competitive rates vary by country",
+          "feature3": "Detailed conversion statistics",
+          "feature4": "Unique referral links",
+          "feature5": "Accurate tracking of downloads",
+          "feature6": "24/7 technical support"
+        }
+      }
+    },
+    "getStarted": "Get Started",
+    "choosePlan": "Choose Plan"
+  },
+  "cta": {
+    "title": "Ready to Get Started?",
+    "description": "Join our community today and experience the best service we have to offer.",
+    "signUp": "Sign Up",
+    "login": "Login"
+  },
+  "footer": {
+    "description": "Secure cloud storage and file sharing platform. Store, share, and earn with confidence.",
+    "quickLinks": "Quick Links",
+    "support": "Support",
+    "contact": "Contact",
+    "home": "Home",
+    "about": "About",
+    "partners": "Partners",
+    "privacyPolicy": "Privacy Policy",
+    "removalPolicy": "Removal Policy",
+    "reportIssue": "Report Issue",
+    "contactSupport": "Contact Support",
+    "allRightsReserved": "All rights reserved.",
+    "privacy": "Privacy",
+    "report": "Report"
+  },
   "common": {
     "loading": "Loading...",
     "error": "Error",

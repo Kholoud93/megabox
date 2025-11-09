@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { CookiesProvider } from 'react-cookie'
+import { LanguageProvider } from './context/LanguageContext'
 import './index.css'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
@@ -19,16 +20,18 @@ let query = new QueryClient()
 ReactDOM.createRoot(document.getElementById('root')).render(
   <>
     <CookiesProvider>
-      <QueryClientProvider client={query}>
-        <GoogleOAuthProvider clientId='902607791526-lb6qtfclisk5puajdrbfve5ge45lfon9.apps.googleusercontent.com'>
+      <LanguageProvider>
+        <QueryClientProvider client={query}>
+          <GoogleOAuthProvider clientId='902607791526-lb6qtfclisk5puajdrbfve5ge45lfon9.apps.googleusercontent.com'>
 
-          <App />
-          <ToastContainer position='bottom-right' stacked />
-        </GoogleOAuthProvider>
+            <App />
+            <ToastContainer position='bottom-right' stacked />
+          </GoogleOAuthProvider>
 
-        <ReactQueryDevtools position='bottom-right' />
+          <ReactQueryDevtools position='bottom-right' />
 
-      </QueryClientProvider>
+        </QueryClientProvider>
+      </LanguageProvider>
     </CookiesProvider>
   </>
 )

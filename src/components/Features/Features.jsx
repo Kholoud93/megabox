@@ -2,6 +2,9 @@ import './Features.scss';
 import { motion } from 'framer-motion';
 import { useEffect, useRef } from 'react';
 import uploadingSvgContent from '../../assets/animations/uploading-animate.svg?raw';
+import pressPlaySvgContent from '../../assets/animations/press-play-animate.svg?raw';
+import mobileEncryptionSvgContent from '../../assets/animations/mobile-encryption-animate.svg?raw';
+import webDevicesSvgContent from '../../assets/animations/web-devices-animate.svg?raw';
 import { useLanguage } from '../../context/LanguageContext';
 
 // Import existing SVG images
@@ -81,24 +84,124 @@ const UploadingAnimation = () => {
   );
 };
 
+const PressPlayAnimation = () => {
+  const svgRef = useRef(null);
+
+  // Replace #6F90E1 with indigo color rgb(165, 180, 252)
+  const modifiedSvgContent = pressPlaySvgContent.replace(/#6F90E1/g, 'rgb(165, 180, 252)');
+
+  useEffect(() => {
+    if (svgRef.current) {
+      const svgElement = svgRef.current.querySelector('svg');
+      if (svgElement) {
+        svgElement.classList.add('animated');
+      }
+    }
+  }, []);
+
+  return (
+    <div 
+      className="cloud-computing-animation"
+      ref={svgRef}
+      dangerouslySetInnerHTML={{ __html: modifiedSvgContent }}
+    />
+  );
+};
+
+const MobileEncryptionAnimation = () => {
+  const svgRef = useRef(null);
+
+  // Replace rgb(186, 104, 200) with indigo color rgb(165, 180, 252)
+  // Also replace any other purple/violet colors with indigo
+  let modifiedSvgContent = mobileEncryptionSvgContent.replace(/rgb\(186,\s*104,\s*200\)/g, 'rgb(165, 180, 252)');
+  modifiedSvgContent = modifiedSvgContent.replace(/#BA68C8/g, 'rgb(165, 180, 252)');
+  
+  // Hide/remove mobile/tablet device elements by setting display:none
+  // Look for tablet-related IDs and hide them
+  modifiedSvgContent = modifiedSvgContent.replace(
+    /<g[^>]*id="[^"]*[Tt]ablet[^"]*"[^>]*>/g,
+    (match) => {
+      if (match.includes('style=')) {
+        return match.replace(/style="[^"]*"/, 'style="display:none"');
+      }
+      return match.replace('>', ' style="display:none">');
+    }
+  );
+
+  useEffect(() => {
+    if (svgRef.current) {
+      const svgElement = svgRef.current.querySelector('svg');
+      if (svgElement) {
+        svgElement.classList.add('animated');
+        
+        // Also try to hide tablet elements via DOM manipulation
+        const tabletElements = svgElement.querySelectorAll('[id*="tablet" i], [id*="Tablet"]');
+        tabletElements.forEach((el) => {
+          el.style.display = 'none';
+        });
+      }
+    }
+  }, []);
+
+  return (
+    <div 
+      className="cloud-computing-animation"
+      ref={svgRef}
+      dangerouslySetInnerHTML={{ __html: modifiedSvgContent }}
+    />
+  );
+};
+
+const WebDevicesAnimation = () => {
+  const svgRef = useRef(null);
+
+  // Replace rgb(186, 104, 200) with indigo color rgb(165, 180, 252)
+  // Also replace any other purple/violet colors with indigo
+  let modifiedSvgContent = webDevicesSvgContent.replace(/rgb\(186,\s*104,\s*200\)/g, 'rgb(165, 180, 252)');
+  modifiedSvgContent = modifiedSvgContent.replace(/#BA68C8/g, 'rgb(165, 180, 252)');
+
+  useEffect(() => {
+    if (svgRef.current) {
+      const svgElement = svgRef.current.querySelector('svg');
+      if (svgElement) {
+        svgElement.classList.add('animated');
+      }
+    }
+  }, []);
+
+  return (
+    <div 
+      className="cloud-computing-animation"
+      ref={svgRef}
+      dangerouslySetInnerHTML={{ __html: modifiedSvgContent }}
+    />
+  );
+};
+
 const Features = () => {
   const { t, language } = useLanguage();
 
   const features = [
     {
       useAnimation: true,
+      animationType: 'pressPlay',
       image: cloudSyncImage,
       descKey: 'features.feature1'
     },
     {
+      useAnimation: true,
+      animationType: 'mobileEncryption',
       image: organizingProjectsImage,
       descKey: 'features.feature2'
     },
     {
+      useAnimation: true,
       image: imageUploadImage,
       descKey: 'features.feature3'
     },
     {
+      useAnimation: true,
+      animationType: 'webDevices',
       image: folderFilesImage,
       descKey: 'features.feature4'
     }
@@ -140,7 +243,15 @@ const Features = () => {
               animate={!feature.useAnimation ? "float" : undefined}
             >
               {feature.useAnimation ? (
-                <UploadingAnimation />
+                feature.animationType === 'pressPlay' ? (
+                  <PressPlayAnimation />
+                ) : feature.animationType === 'mobileEncryption' ? (
+                  <MobileEncryptionAnimation />
+                ) : feature.animationType === 'webDevices' ? (
+                  <WebDevicesAnimation />
+                ) : (
+                  <UploadingAnimation />
+                )
               ) : (
                 <motion.img
                   src={feature.image}
