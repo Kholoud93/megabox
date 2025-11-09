@@ -3,25 +3,29 @@ import "./Footer.scss";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FiMail, FiPhone, FiMapPin, FiTwitter, FiFacebook, FiInstagram, FiLinkedin } from "react-icons/fi";
+import { useLanguage } from "../../context/LanguageContext";
 
-const Footer = () => (
+const Footer = () => {
+  const { t } = useLanguage();
+  
+  return (
   <footer className="footer">
     <div className="footer__container">
       {/* Main Footer Content */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-        {/* Brand Section */}
+      <div className="footer__grid grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        {/* Brand Section - Left Column, Row 1 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="lg:col-span-1"
+          className="footer__brand-section lg:col-span-1"
         >
           <div className="footer__brand mb-4">MegaBox</div>
           <p className="text-gray-300 text-sm leading-relaxed mb-6">
-            Secure cloud storage and file sharing platform. Store, share, and earn with confidence.
+            {t("footer.description")}
           </p>
-          <div className="flex space-x-4">
+          <div className="flex ">
             <motion.a
               href="#"
               whileHover={{ y: -2 }}
@@ -53,59 +57,62 @@ const Footer = () => (
           </div>
         </motion.div>
 
-        {/* Quick Links */}
+        {/* Quick Links - Right Column, Row 1 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.1 }}
+          className="footer__quick-links"
         >
-          <h3 className="text-lg font-semibold text-white mb-4">Quick Links</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">{t("footer.quickLinks")}</h3>
           <nav className="space-y-3">
             <Link to={"/"} className="footer__link block hover:text-white transition-colors duration-200">
-              Home
+              {t("footer.home")}
             </Link>
             <Link to={"/About"} className="footer__link block hover:text-white transition-colors duration-200">
-              About
+              {t("footer.about")}
             </Link>
             <Link to={"/Partners"} className="footer__link block hover:text-white transition-colors duration-200">
-              Partners
+              {t("footer.partners")}
             </Link>
             <Link to={"/Privacy"} className="footer__link block hover:text-white transition-colors duration-200">
-              Privacy Policy
+              {t("footer.privacyPolicy")}
             </Link>
           </nav>
         </motion.div>
 
-        {/* Support */}
+        {/* Support - Left Column, Row 2 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
+          className="footer__support"
         >
-          <h3 className="text-lg font-semibold text-white mb-4">Support</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">{t("footer.support")}</h3>
           <nav className="space-y-3">
             <Link to={"/Privacy-Removal"} className="footer__link block hover:text-white transition-colors duration-200">
-              Removal Policy
+              {t("footer.removalPolicy")}
             </Link>
             <Link to={"/copyright-feedback"} className="footer__link block hover:text-white transition-colors duration-200">
-              Report Issue
+              {t("footer.reportIssue")}
             </Link>
             <a href="mailto:support@megabox.com" className="footer__link block hover:text-white transition-colors duration-200">
-              Contact Support
+              {t("footer.contactSupport")}
             </a>
           </nav>
         </motion.div>
 
-        {/* Contact Info */}
+        {/* Contact Info - Right Column, Row 2 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.3 }}
+          className="footer__contact"
         >
-          <h3 className="text-lg font-semibold text-white mb-4">Contact</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">{t("footer.contact")}</h3>
           <div className="space-y-3">
             <div className="flex items-center space-x-3">
               <FiMail className="w-4 h-4 text-primary-300 flex-shrink-0" />
@@ -133,25 +140,26 @@ const Footer = () => (
         transition={{ duration: 0.6, delay: 0.4 }}
         className="border-t border-white border-opacity-20 pt-6"
       >
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
-          <p className="text-sm text-gray-300">
-            &copy; {new Date().getFullYear()} MegaBox. All rights reserved.
+        <div className="footer__bottom flex flex-col space-y-4">
+          <p className="footer__copyright text-sm text-gray-300">
+            &copy; {new Date().getFullYear()} MegaBox. {t("footer.allRightsReserved")}
           </p>
-          <div className="flex flex-wrap gap-4 text-sm">
+          <div className="footer__bottom-links flex flex-wrap gap-4 text-sm">
             <Link to="/Privacy-Removal" className="text-gray-300 hover:text-white transition-colors duration-200">
-              Removal Policy
+              {t("footer.removalPolicy")}
             </Link>
             <Link to="/Privacy" className="text-gray-300 hover:text-white transition-colors duration-200">
-              Privacy
+              {t("footer.privacy")}
             </Link>
             <Link to="/copyright-feedback" className="text-gray-300 hover:text-white transition-colors duration-200">
-              Report
+              {t("footer.report")}
             </Link>
           </div>
         </div>
       </motion.div>
     </div>
   </footer>
-);
+  );
+};
 
 export default Footer;

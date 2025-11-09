@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
 import './CTASection.scss';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '../../context/LanguageContext';
 
 const CTASection = () => {
+  const { t } = useLanguage();
 
   const buttonVariants = {
     hover: {
@@ -49,10 +51,10 @@ const CTASection = () => {
             >
               <div className="cta-text-content">
                 <h2 className="cta-title">
-                  Ready to Get Started?
+                  {t("cta.title")}
                 </h2>
                 <p className="cta-description">
-                  Join our community today and experience the best service we have to offer.
+                  {t("cta.description")}
                 </p>
               </div>
 
@@ -65,7 +67,7 @@ const CTASection = () => {
                       whileTap="tap"
                       className="cta-button cta-button-primary"
                     >
-                      Sign Up
+                      {t("cta.signUp")}
                     </motion.button>
                   </Link>
                   <Link to="/login">
@@ -75,7 +77,7 @@ const CTASection = () => {
                       whileTap="tap"
                       className="cta-button cta-button-secondary"
                     >
-                      Login
+                      {t("cta.login")}
                     </motion.button>
                   </Link>
                 </div>

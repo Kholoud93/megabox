@@ -4,6 +4,11 @@
 .cta-wrapperr-2 {
   width: 100%;
   background-color: vars.$white;
+
+  @include fn.Breakpoints(small) {
+    width: 100%;
+  }
+
   @include fn.Breakpoints(mobile) {
     width: 100%;
     margin: 0 auto;
@@ -12,23 +17,39 @@
 
 .cta-background {
   width: 100%;
-  background-color: vars.$gray-50;
+  background: linear-gradient(135deg, var(--color-indigo-50) 0%, vars.$white 100%);
   padding: 6rem 1rem;
+
+  @include fn.Breakpoints(medium) {
+    padding: 5rem 1rem;
+  }
+
+  @include fn.Breakpoints(small) {
+    padding: 4.5rem 1rem;
+  }
+
   @include fn.Breakpoints(mobile) {
-    width: 90%;
+    width: 100%;
     margin: 0 auto;
+    padding: 4rem 1rem;
   }
 }
 
 .cta-section {
   width: 96%;
-  background-color: vars.$gray-100;
+  background-color: var(--color-indigo-100);
   border-radius: 1rem;
   margin-left: 1rem;
+  position: relative;
+
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: 1rem;
+  }
+
   @include fn.Breakpoints(mobile) {
-    width: 90%;
+    width: 100%;
     margin: 0 auto;
-    // background-color: vars.$white;
   }
 
   .cta-container {
@@ -36,12 +57,26 @@
     margin: 0 auto;
     background-color: vars.$white;
     transform: translatey(-3rem);
-    border-top: 4px solid vars.$gray-100;
+    border-top: 4px solid var(--color-indigo-600);
     border-radius: 1rem;
     box-shadow:
-      0 4px 6px -1px rgba(vars.$gray-700, 0.1),
-      0 2px 4px -2px rgba(vars.$gray-700, 0.1);
+      0 4px 6px -1px rgba(var(--color-indigo-600-rgb), 0.1),
+      0 2px 4px -2px rgba(var(--color-indigo-600-rgb), 0.1);
     padding: 3rem 2rem;
+
+    @include fn.Breakpoints(medium) {
+      padding: 2.5rem 2rem;
+    }
+
+    @include fn.Breakpoints(small) {
+      padding: 2.5rem 1.5rem;
+      transform: translatey(-2.5rem);
+    }
+
+    @include fn.Breakpoints(mobile) {
+      transform: translatey(-2rem);
+      padding: 2rem 1.5rem;
+    }
   }
 
   .cta-content {
@@ -49,6 +84,14 @@
     display: flex;
     flex-direction: column;
     gap: 2.5rem;
+
+    [dir="rtl"] & {
+      text-align: center;
+    }
+
+    @include fn.Breakpoints(mobile) {
+      gap: 2rem;
+    }
   }
 
   .cta-text-content {
@@ -57,40 +100,56 @@
   }
 
   .cta-title {
-    font-size: 2.5rem;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
     font-weight: 700;
-    color: vars.$gray-900;
+    color: var(--color-indigo-800);
     margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--color-indigo-800), var(--color-indigo-700));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 
     @include fn.Breakpoints(mobile) {
-      font-size: 2rem;
+      font-size: 1.8rem;
     }
   }
 
   .cta-description {
-    font-size: 1.25rem;
-    color: vars.$gray-600;
-    line-height: 1.5;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: var(--color-indigo-700);
+    line-height: 1.6;
 
     @include fn.Breakpoints(mobile) {
-      font-size: 1.125rem;
+      font-size: 1rem;
     }
   }
 
   .cta-action-content {
     padding-top: 1rem;
-    border-top: 1px solid vars.$gray-200;
+    border-top: 1px solid var(--color-indigo-200);
   }
 
   .cta-buttons {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 1rem;
+    flex-wrap: wrap;
+
+    [dir="rtl"] & {
+      flex-direction: row-reverse;
+    }
+
+    @include fn.Breakpoints(small) {
+      gap: 0.75rem;
+    }
 
     @include fn.Breakpoints(mobile) {
-      flex-direction: column;
+      flex-direction: row;
       align-items: center;
       justify-content: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
     }
   }
 
@@ -100,25 +159,38 @@
     font-weight: 600;
     cursor: pointer;
     border: none;
-    font-size: 1rem;
+    font-size: clamp(0.9rem, 1.5vw, 1rem);
     transition: all 0.2s ease-in-out;
+    min-width: 140px;
 
     &-primary {
-      background-color: vars.$Secondcolor;
+      background: linear-gradient(90deg, var(--color-indigo-600) 0%, var(--color-indigo-500) 100%);
       color: vars.$white;
 
       &:hover {
-        background-color: vars.$HoverColor;
+        background: linear-gradient(90deg, var(--color-indigo-500) 0%, var(--color-indigo-600) 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(var(--color-indigo-600-rgb), 0.3);
       }
     }
 
     &-secondary {
-      background-color: vars.$gray-100;
-      color: vars.$gray-900;
+      background-color: var(--color-indigo-100);
+      color: var(--color-indigo-800);
+      border: 2px solid var(--color-indigo-300);
 
       &:hover {
-        background-color: vars.$gray-200;
+        background-color: var(--color-indigo-200);
+        border-color: var(--color-indigo-400);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(var(--color-indigo-400-rgb), 0.2);
       }
+    }
+
+    @include fn.Breakpoints(mobile) {
+      padding: 0.7rem 1.5rem;
+      font-size: 0.9rem;
+      min-width: 120px;
     }
   }
 }

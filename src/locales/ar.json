@@ -69,6 +69,28 @@
     "getStarted": "ابدأ الآن",
     "choosePlan": "اختر الخطة"
   },
+  "cta": {
+    "title": "هل أنت مستعد للبدء؟",
+    "description": "انضم إلى مجتمعنا اليوم واستمتع بأفضل خدمة نقدمها.",
+    "signUp": "إنشاء حساب",
+    "login": "تسجيل الدخول"
+  },
+  "footer": {
+    "description": "منصة تخزين سحابي آمنة لمشاركة الملفات. احفظ وشارك واكسب بثقة.",
+    "quickLinks": "روابط سريعة",
+    "support": "الدعم",
+    "contact": "اتصل بنا",
+    "home": "الرئيسية",
+    "about": "من نحن",
+    "partners": "الشركاء",
+    "privacyPolicy": "سياسة الخصوصية",
+    "removalPolicy": "سياسة الإزالة",
+    "reportIssue": "الإبلاغ عن مشكلة",
+    "contactSupport": "اتصل بالدعم",
+    "allRightsReserved": "جميع الحقوق محفوظة.",
+    "privacy": "الخصوصية",
+    "report": "الإبلاغ"
+  },
   "common": {
     "loading": "جارٍ التحميل...",
     "error": "حدث خطأ",
