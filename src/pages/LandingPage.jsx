@@ -13,7 +13,7 @@ const LandingPage = () => {
   }, [])
 
   return (
-    <div className="w-full h-screen bg-light">
+    <div className="w-full bg-light">
       <Hero />
       <Features />
       <HowItWorks />

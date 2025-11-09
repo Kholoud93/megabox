@@ -1,82 +1,177 @@
 import './Features.scss';
 import { motion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import uploadingSvgContent from '../../assets/animations/uploading-animate.svg?raw';
+import { useLanguage } from '../../context/LanguageContext';
 
-const features = [
-  {
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8 5v14l11-7z" fill="currentColor" />
-      </svg>
-    ),
-    title: 'Instant Video Playback',
-    desc: 'Stream your videos instantly from anywhere, on any device, with no buffering.'
-  },
-  {
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z" fill="currentColor" />
-      </svg>
-    ),
-    title: 'Secure Cloud Storage',
-    desc: 'Your files are encrypted and safely stored in the cloud, accessible only by you.'
-  },
-  {
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z" fill="currentColor" />
-      </svg>
-    ),
-    title: 'Easy Upload & Share',
-    desc: 'Upload videos with a single click and share them securely with your team or friends.'
-  },
-  {
-    icon: (
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14zM5 10h9v2H5zm0-3h9v2H5z" fill="currentColor" />
-      </svg>
-    ),
-    title: 'HD & 4K Support',
-    desc: 'Enjoy your videos in stunning HD and 4K quality, with adaptive streaming.'
-  }
-];
+// Import existing SVG images
+import cloudSyncImage from '../../assets/How_it_works/Cloud sync-rafiki.svg';
+import imageUploadImage from '../../assets/How_it_works/Image upload-bro.svg';
+import organizingProjectsImage from '../../assets/How_it_works/Organizing projects-rafiki.svg';
+import folderFilesImage from '../../assets/How_it_works/undraw_folder-files_5www.svg';
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (i) => ({
+const sectionVariants = {
+  hidden: { opacity: 0, y: 60 },
+  visible: {
     opacity: 1,
     y: 0,
     transition: {
-      delay: i * 0.2,
-      duration: 0.7,
-      type: 'spring',
-      stiffness: 60
+      duration: 0.4,
+      ease: [0.25, 0.46, 0.45, 0.94]
     }
-  })
+  }
 };
 
-const Features = () => (
-  <section className="features">
-    <div className="features__container">
-      <h2 className="features__title">Features</h2>
-      <div className="features__grid">
-        {features.map((feature, idx) => (
-          <motion.div
-            className="feature-card"
-            key={idx}
-            custom={idx}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.5 }}
-            variants={cardVariants}
-          >
-            <div className="feature-card__icon">{feature.icon}</div>
-            <h3 className="feature-card__title">{feature.title}</h3>
-            <p className="feature-card__desc">{feature.desc}</p>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-  </section>
-);
+const imageVariants = {
+  hidden: { 
+    opacity: 0, 
+    scale: 0.8,
+    y: 30
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      delay: 0.1,
+      ease: [0.25, 0.46, 0.45, 0.94]
+    }
+  },
+  hover: {
+    scale: 1.05,
+    y: -10,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut"
+    }
+  },
+  float: {
+    y: [0, -15, 0],
+    rotate: [0, 2, -2, 0],
+    transition: {
+      duration: 4,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
 
-export default Features; 
+const UploadingAnimation = () => {
+  const svgRef = useRef(null);
+
+ 
+  const modifiedSvgContent = uploadingSvgContent.replace(/rgb\(74,\s*143,\s*196\)/g, 'rgb(165, 180, 252)');
+
+  useEffect(() => {
+    if (svgRef.current) {
+      const svgElement = svgRef.current.querySelector('svg');
+      if (svgElement) {
+        svgElement.classList.add('animated');
+      }
+    }
+  }, []);
+
+  return (
+    <div 
+      className="cloud-computing-animation"
+      ref={svgRef}
+      dangerouslySetInnerHTML={{ __html: modifiedSvgContent }}
+    />
+  );
+};
+
+const Features = () => {
+  const { t, language } = useLanguage();
+
+  const features = [
+    {
+      useAnimation: true,
+      image: cloudSyncImage,
+      descKey: 'features.feature1'
+    },
+    {
+      image: organizingProjectsImage,
+      descKey: 'features.feature2'
+    },
+    {
+      image: imageUploadImage,
+      descKey: 'features.feature3'
+    },
+    {
+      image: folderFilesImage,
+      descKey: 'features.feature4'
+    }
+  ];
+
+  return (
+    <section className="features" id="features">
+      <div className="features__container">
+        {features.map((feature, idx) => {
+          const isImageLeft = idx % 2 === 0;
+          const isRTL = language === 'ar';
+          // In RTL, reverse the image position logic
+          const shouldImageBeLeft = isRTL ? !isImageLeft : isImageLeft;
+          
+          return (
+            <motion.div
+              key={idx}
+              className={`features__section ${shouldImageBeLeft ? 'features__section--image-left' : 'features__section--image-right'}`}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ 
+                once: false, 
+                amount: 0.2,
+                margin: "-100px"
+              }}
+              variants={sectionVariants}
+            >
+            <motion.div
+              className="features__animation-wrapper"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ 
+                once: false, 
+                amount: 0.2,
+                margin: "-100px"
+              }}
+              variants={imageVariants}
+              whileHover="hover"
+              animate={!feature.useAnimation ? "float" : undefined}
+            >
+              {feature.useAnimation ? (
+                <UploadingAnimation />
+              ) : (
+                <motion.img
+                  src={feature.image}
+                  alt={`Feature ${idx + 1}`}
+                  className="features__image"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: false, amount: 0.2, margin: "-100px" }}
+                  transition={{ duration: 0.4, delay: 0.1 }}
+                />
+              )}
+            </motion.div>
+            <motion.div 
+              className="features__content"
+              initial={{ opacity: 0, x: shouldImageBeLeft ? (isRTL ? -30 : 30) : (isRTL ? 30 : -30) }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ 
+                once: false, 
+                amount: 0.2,
+                margin: "-100px"
+              }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              <p className="features__description">{t(feature.descKey)}</p>
+            </motion.div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </section>
+  );
+};
+
+export default Features;

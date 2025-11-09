@@ -14,6 +14,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const languageMenuRef = useRef(null);
+  const mobileMenuRef = useRef(null);
 
   // Close language menu when clicking outside
   useEffect(() => {
@@ -21,16 +22,23 @@ const Navbar = () => {
       if (languageMenuRef.current && !languageMenuRef.current.contains(event.target)) {
         setShowLanguageMenu(false);
       }
+      if (isOpen && mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        // Check if click is not on the hamburger button
+        const hamburgerButton = event.target.closest('.navbar__mobile-button');
+        if (!hamburgerButton) {
+          setIsOpen(false);
+        }
+      }
     };
 
-    if (showLanguageMenu) {
+    if (showLanguageMenu || isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showLanguageMenu]);
+  }, [showLanguageMenu, isOpen]);
 
   const [MegaBox] = useCookies(["MegaBox"])
 
@@ -124,78 +132,58 @@ const Navbar = () => {
           ))}
         </ul>
 
-        <div className="navbar__language-wrapper" ref={languageMenuRef}>
-          <button 
-            className="navbar__language-button" 
-            aria-label="Language selector"
-            onClick={() => setShowLanguageMenu(!showLanguageMenu)}
-          >
-            <FiGlobe size={24} />
-            <span className="navbar__language-code">{language.toUpperCase()}</span>
-          </button>
-          {showLanguageMenu && (
-            <div className="navbar__language-menu">
-              <button 
-                onClick={() => {
-                  if (language !== 'en') toggleLanguage();
-                }}
-                className={`navbar__language-option ${language === 'en' ? 'active' : ''}`}
-              >
-                English
-              </button>
-              <button 
-                onClick={() => {
-                  if (language !== 'ar') toggleLanguage();
-                }}
-                className={`navbar__language-option ${language === 'ar' ? 'active' : ''}`}
-              >
-                العربية
-              </button>
-            </div>
-          )}
-        </div>
-
-        {!MegaBox.MegaBox ? (
-          <Link to="/login" className="navbar__login-button">
-            {t('navbar.login')}
-          </Link>
-        ) : (
-          <>
-            <button onClick={DashboardTravel} className="navbar__login-button">
-              {t('navbar.dashboard')}
-            </button>
-            <button onClick={handleLogout} className="navbar__login-button navbar__logout-button">
-              {t('navbar.logout')}
-            </button>
-          </>
-        )}
-
-        <button
-          className="navbar__mobile-button"
-          onClick={() => setIsOpen(true)}
-          aria-label="Open menu"
-        >
-          <FiMenu size={28} />
-        </button>
-      </div>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className="navbar__mobile-menu"
-            initial={{ opacity: 0, y: '-100%' }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: '-100%' }}
-            transition={{ duration: 0.3 }}
-          >
-            <button
-              className="navbar__mobile-close"
-              onClick={() => setIsOpen(false)}
-              aria-label="Close menu"
+        <div className="navbar__right-section">
+          <div className="navbar__language-wrapper" ref={languageMenuRef}>
+            <button 
+              className="navbar__language-button" 
+              aria-label="Language selector"
+              onClick={() => setShowLanguageMenu(!showLanguageMenu)}
             >
-              <FiX size={32} />
+              <FiGlobe size={24} />
+              <span className="navbar__language-code">{language.toUpperCase()}</span>
             </button>
-            <ul className="navbar__menu">
+            {showLanguageMenu && (
+              <div className="navbar__language-menu">
+                <button 
+                  onClick={() => {
+                    if (language !== 'en') toggleLanguage();
+                  }}
+                  className={`navbar__language-option ${language === 'en' ? 'active' : ''}`}
+                >
+                  English
+                </button>
+                <button 
+                  onClick={() => {
+                    if (language !== 'ar') toggleLanguage();
+                  }}
+                  className={`navbar__language-option ${language === 'ar' ? 'active' : ''}`}
+                >
+                  العربية
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div style={{ position: 'relative' }}>
+            <button
+              className="navbar__mobile-button"
+              onClick={() => setIsOpen(true)}
+              aria-label="Open menu"
+            >
+              <FiMenu size={28} />
+            </button>
+
+            <AnimatePresence>
+              {isOpen && (
+                <motion.div
+                  ref={mobileMenuRef}
+                  className="navbar__mobile-menu"
+                  initial={{ opacity: 0, x: language === 'ar' ? '-100%' : '100%' }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: language === 'ar' ? '-100%' : '100%' }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ul className="navbar__menu">
               {menuItems.map((item, idx) => (
                 <motion.li
                   key={item.label}
@@ -213,24 +201,6 @@ const Navbar = () => {
                   </Link>
                 </motion.li>
               ))}
-              <motion.li
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ duration: 0.3, delay: menuItems.length * 0.08 }}
-              >
-                <button
-                  className="navbar__item"
-                  onClick={() => {
-                    toggleLanguage();
-                    setIsOpen(false);
-                  }}
-                  style={{ width: '100%', textAlign: 'center' }}
-                >
-                  <FiGlobe size={20} style={{ display: 'inline-block', marginRight: '0.5rem' }} />
-                  {language === 'en' ? 'العربية' : 'English'}
-                </button>
-              </motion.li>
               {!MegaBox.MegaBox ? (
                 <motion.li
                   initial={{ opacity: 0, y: 20 }}
@@ -283,9 +253,27 @@ const Navbar = () => {
                 </>
               )}
             </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {!MegaBox.MegaBox ? (
+            <Link to="/login" className="navbar__login-button">
+              {t('navbar.login')}
+            </Link>
+          ) : (
+            <>
+              <button onClick={DashboardTravel} className="navbar__login-button">
+                {t('navbar.dashboard')}
+              </button>
+              <button onClick={handleLogout} className="navbar__login-button navbar__logout-button">
+                {t('navbar.logout')}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
     </nav>
   )
 }

@@ -5,6 +5,11 @@
 @plugin "flowbite/plugin";
 @source "../node_modules/flowbite";
 
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
 :root {
   --color-indigo-50: oklch(0.962 0.018 272.314);
   --color-indigo-100: oklch(0.93 0.034 272.788);
@@ -36,6 +41,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
 /* Arabic font */

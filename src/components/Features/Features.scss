@@ -2,99 +2,377 @@
 @use "../../helpers/_variables" as vars;
 
 .features {
+  width: 100%;
+  background: transparent;
+  padding: 5rem 0 6rem 0;
+  display: flex;
+  justify-content: center;
+
+  &__container {
     width: 100%;
-    background: whitesmoke;
-    padding: 5rem 0 6rem 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0;
     display: flex;
+    flex-direction: column;
+    gap: 6rem;
+
+    @include fn.Breakpoints(small) {
+      gap: 4rem;
+      padding: 0;
+    }
+
+    @include fn.Breakpoints(mobile) {
+      gap: 2rem;
+      padding: 0;
+    }
+  }
+
+  &__section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+    min-height: 400px;
+    padding: 2rem 1.5rem;
+    border-radius: 1rem;
+    direction: ltr;
+
+    @include fn.Breakpoints(small) {
+      gap: 4rem;
+      min-height: 350px;
+      padding: 1.5rem 1rem;
+    }
+
+    @include fn.Breakpoints(mobile) {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      min-height: auto;
+      padding: 0.75rem 0.5rem;
+    }
+
+    [dir="rtl"] & {
+      direction: rtl;
+    }
+
+    // Different background colors for each section
+    &:nth-child(1) {
+      background: var(--color-indigo-50);
+      
+      .features__description {
+        color: var(--color-indigo-500);
+      }
+    }
+
+    &:nth-child(2) {
+      background: var(--color-indigo-100);
+    }
+
+    &:nth-child(3) {
+      background: var(--color-indigo-200);
+    }
+
+    &:nth-child(4) {
+      background: var(--color-indigo-50);
+    }
+
+    &--image-left {
+      .features__animation-wrapper {
+        order: 1;
+      }
+
+      .features__content {
+        order: 2;
+      }
+
+      @include fn.Breakpoints(mobile) {
+        .features__animation-wrapper {
+          order: 1;
+        }
+
+        .features__content {
+          order: 2;
+        }
+      }
+    }
+
+    &--image-right {
+      .features__animation-wrapper {
+        order: 2;
+      }
+
+      .features__content {
+        order: 1;
+      }
+
+      @include fn.Breakpoints(mobile) {
+        .features__animation-wrapper {
+          order: 1;
+        }
+
+        .features__content {
+          order: 2;
+        }
+      }
+    }
+  }
+
+  &__animation-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1rem;
+    position: relative;
+
+    @include fn.Breakpoints(mobile) {
+      padding: 0 0.25rem;
+      min-height: 220px;
+    }
+  }
+
+  &__image {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    min-height: 300px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.1));
+    display: block;
+    pointer-events: none;
+
+    @include fn.Breakpoints(small) {
+      max-width: 400px;
+      min-height: 250px;
+    }
+
+    @include fn.Breakpoints(mobile) {
+      max-width: 100%;
+      min-height: 180px;
+      max-height: 220px;
+    }
+
+  }
+
+  // Cloud Computing Animation Styles (Framer Motion SVG)
+  .cloud-computing-animation {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
     justify-content: center;
 
-    &__container {
-        width: 100%;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 2rem;
-        text-align: center;
+    @include fn.Breakpoints(small) {
+      max-width: 400px;
+      min-height: 250px;
     }
 
-    &__title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: vars.$gray-800;
-        margin-bottom: 2.5rem;
-        letter-spacing: 0.01em;
+    @include fn.Breakpoints(mobile) {
+      max-width: 100%;
+      min-height: 180px;
+      max-height: 220px;
     }
 
-    &__grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 2.5rem;
-        justify-items: center;
-    }
-}
+    svg {
+      width: 100%;
+      height: auto;
+      max-width: 500px;
+      filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.1));
 
-.feature-card {
-    background: vars.$white;
-    border-radius: 1.5rem;
-    box-shadow: 0 4px 32px 0 vars.$shadow-color-medium;
-    padding: 2.5rem 1.5rem 2rem 1.5rem;
+      @include fn.Breakpoints(small) {
+        max-width: 400px;
+      }
+
+      @include fn.Breakpoints(mobile) {
+        max-width: 85%;
+        max-height: 200px;
+        transform: scale(0.9);
+      }
+
+
+      *[style*="rgb(74, 143, 196)"] {
+        fill: rgb(165, 180, 252) !important;
+      }
+
+      // Also target elements with fill attribute
+      path[style*="rgb(74, 143, 196)"],
+      polygon[style*="rgb(74, 143, 196)"],
+      ellipse[style*="rgb(74, 143, 196)"],
+      circle[style*="rgb(74, 143, 196)"],
+      rect[style*="rgb(74, 143, 196)"] {
+        fill: rgb(165, 180, 252) !important;
+      }
+    }
+  }
+
+  &__fallback {
+    width: 100%;
+    height: 100%;
+    min-height: 300px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    transition:
-        transform 0.2s,
-        box-shadow 0.2s,
-        border-color 0.2s;
-    border: 1.5px solid vars.$gray-100;
-    position: relative;
-    overflow: hidden;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(var(--color-sky-400-rgb), 0.1), rgba(var(--color-sky-500-rgb), 0.1));
+    border-radius: 1rem;
+    padding: 2rem;
 
-    &:hover {
-        transform: translateY(-8px) scale(1.03);
-        box-shadow: 0 8px 40px 0 rgba(vars.$blue-400, 0.1);
-        border-color: vars.$blue-200;
+    @include fn.Breakpoints(mobile) {
+      min-height: 200px;
+      padding: 1rem;
+    }
+  }
+
+  &__fallback-icon {
+    font-size: 6rem;
+    margin-bottom: 1rem;
+    animation: float-fallback 3s ease-in-out infinite;
+
+    @include fn.Breakpoints(mobile) {
+      font-size: 4rem;
+    }
+  }
+
+  &__fallback-text {
+    font-size: 0.875rem;
+    color: vars.$gray-500;
+    text-align: center;
+    margin: 0;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 1rem;
+    text-align: left;
+
+    @include fn.Breakpoints(mobile) {
+      padding: 0 0.25rem;
+      text-align: center;
     }
 
-    &__icon {
-        margin-bottom: 1.2rem;
-        color: vars.$BaseColor;
-        background: vars.$blue-200;
-        border-radius: 50%;
-        width: 64px;
-        height: 64px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 12px 0 rgba(vars.$blue-500, 0.1);
-        font-size: 2.2rem;
-        transition:
-            background 0.2s,
-            color 0.2s;
+    [dir="rtl"] & {
+      text-align: right;
+
+      @include fn.Breakpoints(mobile) {
+        text-align: center;
+      }
+    }
+  }
+
+  &__description {
+    font-size: 1.625rem;
+    line-height: 1.8;
+    color: var(--color-indigo-800);
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    text-shadow: 
+      0 0 10px rgba(var(--color-indigo-600-rgb), 0.3),
+      0 0 20px rgba(var(--color-indigo-500-rgb), 0.2),
+      0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: inherit;
+
+    @include fn.Breakpoints(small) {
+      font-size: 1.5rem;
+      line-height: 1.7;
     }
 
-    &__title {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: vars.$gray-800;
-        margin-bottom: 0.7rem;
-        letter-spacing: 0.01em;
+    @include fn.Breakpoints(mobile) {
+      font-size: 1.1rem;
+      line-height: 1.5;
     }
+  }
+}
 
-    &__desc {
-        font-size: 1rem;
-        color: vars.$gray-700;
-        line-height: 1.6;
-        margin: 0;
-    }
+
+
+@keyframes cloud-float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  50% {
+    transform: translateY(-8px) translateX(4px);
+  }
+}
+
+@keyframes cloud-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes bar-grow {
+  0%, 100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scaleY(1.15);
+    opacity: 0.85;
+  }
+}
+
+@keyframes play-pause-toggle {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(0.9) rotate(90deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.1) rotate(180deg);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(0.9) rotate(270deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    opacity: 1;
+  }
+}
+
+@keyframes play-pause-inner-toggle {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(0.8);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(0.8);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @include fn.Breakpoints(mobile) {
-    .features {
-        padding: 2.5rem 0 3rem 0;
-    }
-    .feature-card {
-        padding: 1.5rem 0.7rem 1.2rem 0.7rem;
-    }
-    .features__title {
-        font-size: 2rem;
-    }
+  .features {
+    padding: 2.5rem 0 3rem 0;
+  }
 }

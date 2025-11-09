@@ -14,6 +14,12 @@
     "download": "Download",
     "footer": "Your free and secure cloud storage by MegaBox"
   },
+  "features": {
+    "feature1": "Stream your videos instantly from anywhere, on any device, with no buffering. Experience seamless playback with our advanced cloud streaming technology.",
+    "feature2": "Your files are encrypted and safely stored in the cloud, accessible only by you. Enterprise-grade security ensures your data remains private and protected.",
+    "feature3": "Upload videos with a single click and share them securely with your team or friends. Organize your content effortlessly with our intuitive interface.",
+    "feature4": "Enjoy your videos in stunning HD and 4K quality, with adaptive streaming that adjusts to your connection speed for the best viewing experience."
+  },
   "common": {
     "loading": "Loading...",
     "error": "Error",
