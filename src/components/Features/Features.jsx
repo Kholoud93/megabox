@@ -15,12 +15,12 @@ import organizingProjectsImage from '../../assets/How_it_works/Organizing projec
 import folderFilesImage from '../../assets/How_it_works/undraw_folder-files_5www.svg';
 
 const sectionVariants = {
-  hidden: { opacity: 0, y: 60 },
+  hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.4,
+      duration: 0.5,
       ease: [0.25, 0.46, 0.45, 0.94]
     }
   }
@@ -29,15 +29,15 @@ const sectionVariants = {
 const imageVariants = {
   hidden: { 
     opacity: 0, 
-    scale: 0.8,
-    y: 30
+    scale: 0.9,
+    y: 20
   },
   visible: {
     opacity: 1,
     scale: 1,
     y: 0,
     transition: {
-      duration: 0.4,
+      duration: 0.5,
       delay: 0.1,
       ease: [0.25, 0.46, 0.45, 0.94]
     }
@@ -212,9 +212,9 @@ const Features = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ 
-                once: false, 
-                amount: 0.2,
-                margin: "-100px"
+                once: true, 
+                amount: 0.3,
+                margin: "0px"
               }}
               variants={sectionVariants}
             >
@@ -223,9 +223,9 @@ const Features = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ 
-                once: false, 
-                amount: 0.2,
-                margin: "-100px"
+                once: true, 
+                amount: 0.3,
+                margin: "0px"
               }}
               variants={imageVariants}
               whileHover="hover"
@@ -248,7 +248,7 @@ const Features = () => {
                   className="features__image"
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
-                  viewport={{ once: false, amount: 0.2, margin: "-100px" }}
+                  viewport={{ once: true, amount: 0.3, margin: "0px" }}
                   transition={{ duration: 0.4, delay: 0.1 }}
                 />
               )}
@@ -258,9 +258,9 @@ const Features = () => {
               initial={{ opacity: 0, x: shouldImageBeLeft ? (isRTL ? -30 : 30) : (isRTL ? 30 : -30) }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ 
-                once: false, 
-                amount: 0.2,
-                margin: "-100px"
+                once: true, 
+                amount: 0.3,
+                margin: "0px"
               }}
               transition={{ duration: 0.4, delay: 0.1 }}
             >
