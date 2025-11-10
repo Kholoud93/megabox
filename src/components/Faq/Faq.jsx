@@ -2,33 +2,31 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoIosArrowUp } from "react-icons/io";
 import { FiHelpCircle, FiChevronDown } from "react-icons/fi";
+import { useLanguage } from "../../context/LanguageContext";
 
 const FAQSection = () => {
+    const { t } = useLanguage();
+    
     const faqs = [
         {
-            question: "Why join the MegaBox referral program?",
-            answer:
-                "MegaBox is an innovative cloud storage app that offers 1024 GB of free lifetime cloud storage. Join the program and let's grow and succeed together.",
+            question: t("faq.items.q1.question"),
+            answer: t("faq.items.q1.answer"),
         },
         {
-            question: "How can I earn commissions?",
-            answer:
-                "You earn a commission every time a new user registers on MegaBox using the link you shared.",
+            question: t("faq.items.q2.question"),
+            answer: t("faq.items.q2.answer"),
         },
         {
-            question: "How can I track my commission?",
-            answer:
-                "You will be able to view detailed reports about your commissions and the number of registrations through your shared link in the Admin Center.",
+            question: t("faq.items.q3.question"),
+            answer: t("faq.items.q3.answer"),
         },
         {
-            question: "When and how do I get paid?",
-            answer:
-                "You can see reward details in the Admin Center and withdraw your rewards. (This feature will be available in July 2025.) We will provide a dashboard where you can access all payout information.",
+            question: t("faq.items.q4.question"),
+            answer: t("faq.items.q4.answer"),
         },
         {
-            question: "What does it cost to join?",
-            answer:
-                "Joining the program is completely free. You don't need to pay anything.",
+            question: t("faq.items.q5.question"),
+            answer: t("faq.items.q5.answer"),
         },
     ];
 
@@ -39,7 +37,7 @@ const FAQSection = () => {
     };
 
     return (
-        <section className="py-16 md:py-24 relative overflow-hidden" style={{
+        <section id="faq-section" className="py-12 sm:py-16 md:py-20 lg:py-24 relative overflow-hidden" style={{
             background: `
                 radial-gradient(circle at 50% 20%, var(--color-indigo-600) 0%, transparent 50%),
                 radial-gradient(circle at 30% 80%, var(--color-indigo-500) 0%, transparent 50%),
@@ -47,28 +45,28 @@ const FAQSection = () => {
                 linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-indigo-600) 50%, var(--color-indigo-500) 100%)
             `
         }}>
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="max-w-4xl mx-auto px-4 sm:px-5 md:px-6 lg:px-8 relative z-10">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
-                    className="text-center mb-12"
+                    className="text-center mb-8 sm:mb-10 md:mb-12"
                 >
-                    <div className="flex justify-center mb-6">
-                        <div className="p-3 bg-indigo-500/30 backdrop-blur-md rounded-full border border-white/20">
-                            <FiHelpCircle className="h-8 w-8 text-indigo-300" />
+                    <div className="flex justify-center mb-4 sm:mb-5 md:mb-6">
+                        <div className="p-2.5 sm:p-3 bg-indigo-500/30 backdrop-blur-md rounded-full border border-white/20">
+                            <FiHelpCircle className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8 text-indigo-300" />
                         </div>
                     </div>
-                    <h2 className="text-4xl font-bold text-white mb-4">
-                        Frequently Asked Questions
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4">
+                        {t("faq.title")}
                     </h2>
-                    <p className="text-lg text-gray-200 max-w-2xl mx-auto">
-                        Find answers to common questions about MegaBox referral program and services
+                    <p className="text-sm sm:text-base md:text-lg text-gray-200 max-w-2xl mx-auto px-2">
+                        {t("faq.subtitle")}
                     </p>
                 </motion.div>
 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                     {faqs.map((faq, index) => (
                         <motion.div
                             key={index}
@@ -76,21 +74,30 @@ const FAQSection = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="bg-white/10 backdrop-blur-md rounded-xl shadow-sm border border-white/20 overflow-hidden hover:bg-white/15 hover:shadow-md transition-all duration-300"
+                            className="bg-white/10 backdrop-blur-md rounded-lg sm:rounded-xl shadow-sm border border-white/20 overflow-hidden hover:bg-white/15 hover:shadow-md transition-all duration-300"
+                            whileHover={{ scale: 1.01 }}
                         >
                             <button
                                 onClick={() => toggleFAQ(index)}
-                                className="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors duration-200"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        toggleFAQ(index);
+                                    }
+                                }}
+                                aria-expanded={openIndex === index}
+                                aria-controls={`faq-answer-${index}`}
+                                className="w-full flex justify-between items-center p-4 sm:p-5 md:p-6 text-left hover:bg-white/5 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-transparent rounded-lg sm:rounded-xl"
                             >
-                                <h3 className="text-lg font-semibold text-white pr-4">
+                                <h3 id={`faq-question-${index}`} className="text-base sm:text-lg font-semibold text-white pr-3 sm:pr-4 flex-1 min-w-0">
                                     {faq.question}
                                 </h3>
-                                <div className="flex-shrink-0">
+                                <div className="flex-shrink-0 ml-2">
                                     <motion.div
                                         animate={{ rotate: openIndex === index ? 180 : 0 }}
                                         transition={{ duration: 0.3 }}
                                     >
-                                        <FiChevronDown className="w-5 h-5 text-indigo-300" />
+                                        <FiChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-300" />
                                     </motion.div>
                                 </div>
                             </button>
@@ -99,15 +106,18 @@ const FAQSection = () => {
                                 {openIndex === index && (
                                     <motion.div
                                         key="content"
+                                        id={`faq-answer-${index}`}
+                                        role="region"
+                                        aria-labelledby={`faq-question-${index}`}
                                         initial={{ opacity: 0, height: 0 }}
                                         animate={{ opacity: 1, height: "auto" }}
                                         exit={{ opacity: 0, height: 0 }}
                                         transition={{ duration: 0.3, ease: "easeInOut" }}
                                         className="overflow-hidden"
                                     >
-                                        <div className="px-6 pb-6">
-                                            <div className="pt-4 border-t border-white/20">
-                                                <p className="text-gray-200 leading-relaxed">
+                                        <div className="px-4 sm:px-5 md:px-6 pb-4 sm:pb-5 md:pb-6">
+                                            <div className="pt-3 sm:pt-4 border-t border-white/20">
+                                                <p className="text-sm sm:text-base text-gray-200 leading-relaxed">
                                                     {faq.answer}
                                                 </p>
                                             </div>

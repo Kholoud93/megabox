@@ -18,12 +18,20 @@ const LandingPage = () => {
     <div className="w-full bg-light">
       <Hero />
       <Features />
-      <AboutUsDescription />
-      <AboutUsDescriptionReversedImage />
-      <HowItWorks />
-      <Pricing />
+      <div id="about">
+        <AboutUsDescription />
+        <AboutUsDescriptionReversedImage />
+      </div>
+      <div id="how-it-works">
+        <HowItWorks />
+      </div>
+      <div id="pricing">
+        <Pricing />
+      </div>
       <CTASection />
-      <FAQSection />
+      <div id="faq">
+        <FAQSection />
+      </div>
       <Footer />
     </div>
   )

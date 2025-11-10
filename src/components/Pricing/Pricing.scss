@@ -130,7 +130,7 @@
 
     &__cards {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: 1fr;
         gap: 2.5rem;
         justify-content: center;
         width: 100%;
@@ -420,12 +420,13 @@
     }
 }
 
-// Large screens (1200px+)
-@include fn.Breakpoints(large) {
+// Large screens (1024px+)
+@media (min-width: 1024px) {
     .pricing {
         padding: 9rem 0 11rem 0;
 
         &__cards {
+            grid-template-columns: repeat(2, 1fr);
             max-width: 1400px;
             gap: 3rem;
         }
@@ -437,7 +438,7 @@
     }
 }
 
-// Medium screens (768px - 1024px)
+// Medium screens (768px - 1023px)
 @include fn.Breakpoints(medium) {
     .pricing {
         padding: 6rem 0 8rem 0;
@@ -448,16 +449,18 @@
         }
 
         &__cards {
+            grid-template-columns: 1fr;
             gap: 2rem;
-            max-width: 900px;
+            max-width: 600px;
         }
 
         &__card {
             padding: 2.5rem 2rem;
-            min-height: 480px;
+            min-height: auto;
 
             &--highlighted {
-                transform: scale(1.03);
+                transform: scale(1);
+                order: -1;
             }
         }
 

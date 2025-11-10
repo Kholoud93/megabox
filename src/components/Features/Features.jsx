@@ -6,6 +6,7 @@ import pressPlaySvgContent from '../../assets/animations/press-play-animate.svg?
 import mobileEncryptionSvgContent from '../../assets/animations/mobile-encryption-animate.svg?raw';
 import webDevicesSvgContent from '../../assets/animations/web-devices-animate.svg?raw';
 import { useLanguage } from '../../context/LanguageContext';
+import { modifySvgToIndigo } from '../../utils/svgColorModifier';
 
 // Import existing SVG images
 import cloudSyncImage from '../../assets/How_it_works/Cloud sync-rafiki.svg';
@@ -62,9 +63,7 @@ const imageVariants = {
 
 const UploadingAnimation = () => {
   const svgRef = useRef(null);
-
- 
-  const modifiedSvgContent = uploadingSvgContent.replace(/rgb\(74,\s*143,\s*196\)/g, 'rgb(165, 180, 252)');
+  const modifiedSvgContent = modifySvgToIndigo(uploadingSvgContent);
 
   useEffect(() => {
     if (svgRef.current) {
@@ -86,9 +85,7 @@ const UploadingAnimation = () => {
 
 const PressPlayAnimation = () => {
   const svgRef = useRef(null);
-
-  // Replace #6F90E1 with indigo color rgb(165, 180, 252)
-  const modifiedSvgContent = pressPlaySvgContent.replace(/#6F90E1/g, 'rgb(165, 180, 252)');
+  const modifiedSvgContent = modifySvgToIndigo(pressPlaySvgContent);
 
   useEffect(() => {
     if (svgRef.current) {
@@ -110,11 +107,7 @@ const PressPlayAnimation = () => {
 
 const MobileEncryptionAnimation = () => {
   const svgRef = useRef(null);
-
-  // Replace rgb(186, 104, 200) with indigo color rgb(165, 180, 252)
-  // Also replace any other purple/violet colors with indigo
-  let modifiedSvgContent = mobileEncryptionSvgContent.replace(/rgb\(186,\s*104,\s*200\)/g, 'rgb(165, 180, 252)');
-  modifiedSvgContent = modifiedSvgContent.replace(/#BA68C8/g, 'rgb(165, 180, 252)');
+  let modifiedSvgContent = modifySvgToIndigo(mobileEncryptionSvgContent);
   
   // Hide/remove mobile/tablet device elements by setting display:none
   // Look for tablet-related IDs and hide them
@@ -154,11 +147,7 @@ const MobileEncryptionAnimation = () => {
 
 const WebDevicesAnimation = () => {
   const svgRef = useRef(null);
-
-  // Replace rgb(186, 104, 200) with indigo color rgb(165, 180, 252)
-  // Also replace any other purple/violet colors with indigo
-  let modifiedSvgContent = webDevicesSvgContent.replace(/rgb\(186,\s*104,\s*200\)/g, 'rgb(165, 180, 252)');
-  modifiedSvgContent = modifiedSvgContent.replace(/#BA68C8/g, 'rgb(165, 180, 252)');
+  const modifiedSvgContent = modifySvgToIndigo(webDevicesSvgContent);
 
   useEffect(() => {
     if (svgRef.current) {
