@@ -26,7 +26,6 @@ import PromotersEarning from './pages/Earning/PromotersEarning'
 
 
 // Main Pages
-const About = lazy(() => import('./pages/About/About'))
 const Feedback = lazy(() => import('./pages/Feedback/Feedback'))
 const PrivacyPolicy = lazy(() => import('./pages/Privacy/Privacy'))
 const RemovalGuidelines = lazy(() => import('./pages/RemovalPolicy/RemovalPolicy'))
@@ -60,9 +59,6 @@ const router = createBrowserRouter(
         {
           path: "Partners", element:
             <Suspense fallback={<Loading />}><Partners /></Suspense>
-        },
-        {
-          path: "About", element: <Suspense fallback={<Loading />}> <About /></Suspense>
         },
         {
           path: "Privacy", element: <Suspense fallback={<Loading />}> <PrivacyPolicy /></Suspense>

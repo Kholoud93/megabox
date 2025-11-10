@@ -5,6 +5,8 @@ import HowItWorks from '../components/HowItWorks/HowItWorks'
 import Pricing from '../components/Pricing/Pricing'
 import Footer from '../components/Footer/Footer'
 import CTASection from '../components/CTASection/CTASection'
+import AboutUsDescription, { AboutUsDescriptionReversedImage } from '../components/AboutIntro/AboutIntro'
+import FAQSection from '../components/Faq/Faq'
 
 const LandingPage = () => {
 
@@ -16,9 +18,12 @@ const LandingPage = () => {
     <div className="w-full bg-light">
       <Hero />
       <Features />
+      <AboutUsDescription />
+      <AboutUsDescriptionReversedImage />
       <HowItWorks />
       <Pricing />
       <CTASection />
+      <FAQSection />
       <Footer />
     </div>
   )

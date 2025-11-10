@@ -43,8 +43,6 @@ const Navbar = () => {
   const [MegaBox] = useCookies(["MegaBox"])
 
   const menuItems = [
-    { label: t('navbar.home'), to: '/' },
-    { label: t('navbar.about'), to: '/about' },
     // { label: 'Feedback', to: '/Feedback' },
   ]
 

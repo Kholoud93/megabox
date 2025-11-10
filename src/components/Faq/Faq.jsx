@@ -39,8 +39,15 @@ const FAQSection = () => {
     };
 
     return (
-        <section className="py-16 md:py-24 bg-gradient-to-br from-gray-50 to-gray-100">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-16 md:py-24 relative overflow-hidden" style={{
+            background: `
+                radial-gradient(circle at 50% 20%, var(--color-indigo-600) 0%, transparent 50%),
+                radial-gradient(circle at 30% 80%, var(--color-indigo-500) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, var(--color-indigo-400) 0%, transparent 60%),
+                linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-indigo-600) 50%, var(--color-indigo-500) 100%)
+            `
+        }}>
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -49,14 +56,14 @@ const FAQSection = () => {
                     className="text-center mb-12"
                 >
                     <div className="flex justify-center mb-6">
-                        <div className="p-3 bg-primary-100 rounded-full">
-                            <FiHelpCircle className="h-8 w-8 text-primary-600" />
+                        <div className="p-3 bg-indigo-500/30 backdrop-blur-md rounded-full border border-white/20">
+                            <FiHelpCircle className="h-8 w-8 text-indigo-300" />
                         </div>
                     </div>
-                    <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                    <h2 className="text-4xl font-bold text-white mb-4">
                         Frequently Asked Questions
                     </h2>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                    <p className="text-lg text-gray-200 max-w-2xl mx-auto">
                         Find answers to common questions about MegaBox referral program and services
                     </p>
                 </motion.div>
@@ -69,13 +76,13 @@ const FAQSection = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: index * 0.1 }}
-                            className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300"
+                            className="bg-white/10 backdrop-blur-md rounded-xl shadow-sm border border-white/20 overflow-hidden hover:bg-white/15 hover:shadow-md transition-all duration-300"
                         >
                             <button
                                 onClick={() => toggleFAQ(index)}
-                                className="w-full flex justify-between items-center p-6 text-left hover:bg-gray-50 transition-colors duration-200"
+                                className="w-full flex justify-between items-center p-6 text-left hover:bg-white/5 transition-colors duration-200"
                             >
-                                <h3 className="text-lg font-semibold text-gray-900 pr-4">
+                                <h3 className="text-lg font-semibold text-white pr-4">
                                     {faq.question}
                                 </h3>
                                 <div className="flex-shrink-0">
@@ -83,7 +90,7 @@ const FAQSection = () => {
                                         animate={{ rotate: openIndex === index ? 180 : 0 }}
                                         transition={{ duration: 0.3 }}
                                     >
-                                        <FiChevronDown className="w-5 h-5 text-primary-600" />
+                                        <FiChevronDown className="w-5 h-5 text-indigo-300" />
                                     </motion.div>
                                 </div>
                             </button>
@@ -99,8 +106,8 @@ const FAQSection = () => {
                                         className="overflow-hidden"
                                     >
                                         <div className="px-6 pb-6">
-                                            <div className="pt-4 border-t border-gray-100">
-                                                <p className="text-gray-600 leading-relaxed">
+                                            <div className="pt-4 border-t border-white/20">
+                                                <p className="text-gray-200 leading-relaxed">
                                                     {faq.answer}
                                                 </p>
                                             </div>
