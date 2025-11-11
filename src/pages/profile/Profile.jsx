@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { API_URL, userService } from '../../services/api';
 import { toast } from 'react-toastify';
-import { FaCamera, FaEdit, FaSave, FaTimes, FaCrown, FaUser } from 'react-icons/fa';
+import { FaCamera, FaEdit, FaSave, FaTimes, FaCrown, FaUser, FaTrash } from 'react-icons/fa';
 import { ToastOptions } from '../../helpers/ToastOptions';
 import './Profile.scss';
 import { useCookies } from 'react-cookie';
@@ -16,6 +16,7 @@ export default function Profile() {
     const [isEditing, setIsEditing] = useState(false);
     const [newUsername, setNewUsername] = useState('');
     const [imageError, setImageError] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const fileInputRef = useRef(null);
     const queryClient = useQueryClient();
     const [Token] = useCookies(['MegaBox']);
@@ -84,6 +85,20 @@ export default function Profile() {
         }
     );
 
+    const deleteProfileImageMutation = useMutation(
+        () => userService.deleteProfileImage(Token.MegaBox),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries('userProfile');
+                setImageError(false);
+                toast.success(t('profile.imageDeleted'), ToastOptions('success'));
+            },
+            onError: (error) => {
+                toast.error(error.message || t('profile.imageDeleteFailed'), ToastOptions('error'));
+            }
+        }
+    );
+
 
     const handleImageChange = (event) => {
         const file = event.target.files[0];
@@ -144,13 +159,13 @@ export default function Profile() {
                                     className="h-32 w-32 sm:h-40 sm:w-40 md:h-48 md:w-48 lg:h-56 lg:w-56 xl:h-64 xl:w-64 object-cover rounded-lg m-3 sm:m-4 md:m-5 lg:m-6 border-4 border-indigo-200 shadow-md"
                                     src={userData.profilePic}
                                     alt="Profile"
+                                    crossOrigin="anonymous"
+                                    referrerPolicy="no-referrer"
                                     onError={(e) => {
-                                        console.error('Image load error:', e);
-                                        console.error('Failed to load image from:', userData.profilePic);
+                                        // Silently handle image load errors and show fallback
                                         setImageError(true);
                                     }}
                                     onLoad={() => {
-                                        console.log('Image loaded successfully from:', userData.profilePic);
                                         setImageError(false);
                                     }}
                                 />
@@ -161,15 +176,34 @@ export default function Profile() {
                                     <FaUser className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 text-indigo-600" />
                                 </div>
                             )}
-                            <motion.button
-                                className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 md:bottom-4 md:right-4 lg:bottom-6 lg:right-6 bg-indigo-600 hover:bg-indigo-700 text-white p-2 sm:p-2.5 md:p-3 rounded-full shadow-lg transition-all z-10"
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.95 }}
-                                onClick={() => fileInputRef.current?.click()}
-                                disabled={updateProfileImageMutation.isLoading}
-                            >
-                                {updateProfileImageMutation.isLoading ? <AiOutlineLoading3Quarters className='LoadingButton h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5' /> : <FaCamera className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />}
-                            </motion.button>
+                            <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 md:bottom-4 md:right-4 lg:bottom-6 lg:right-6 flex gap-2 z-10">
+                                {userData?.profilePic && typeof userData.profilePic === 'string' && userData.profilePic.trim() !== '' && !imageError && (
+                                    <motion.button
+                                        className="bg-red-500 hover:bg-red-600 text-white p-2 sm:p-2.5 md:p-3 rounded-full shadow-lg transition-all"
+                                        whileHover={{ scale: 1.1 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={() => setShowDeleteConfirm(true)}
+                                        disabled={deleteProfileImageMutation.isLoading}
+                                        title={t('profile.deleteImage')}
+                                    >
+                                        {deleteProfileImageMutation.isLoading ? (
+                                            <AiOutlineLoading3Quarters className='LoadingButton h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 animate-spin' />
+                                        ) : (
+                                            <FaTrash className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
+                                        )}
+                                    </motion.button>
+                                )}
+                                <motion.button
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white p-2 sm:p-2.5 md:p-3 rounded-full shadow-lg transition-all"
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => fileInputRef.current?.click()}
+                                    disabled={updateProfileImageMutation.isLoading}
+                                    title={t('profile.changeImage')}
+                                >
+                                    {updateProfileImageMutation.isLoading ? <AiOutlineLoading3Quarters className='LoadingButton h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 animate-spin' /> : <FaCamera className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />}
+                                </motion.button>
+                            </div>
                             <input
                                 type="file"
                                 ref={fileInputRef}
@@ -387,6 +421,72 @@ export default function Profile() {
                     </div>
                 </div>
             </motion.div>
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {showDeleteConfirm && (
+                    <motion.div
+                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setShowDeleteConfirm(false)}
+                    >
+                        <motion.div
+                            className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border-2 border-indigo-100"
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="flex items-center justify-center mb-4">
+                                <div className="bg-red-100 rounded-full p-3">
+                                    <FaTrash className="text-red-600 text-2xl" />
+                                </div>
+                            </div>
+                            <h3 className="text-xl font-semibold text-gray-900 text-center mb-2">
+                                {t('profile.deleteImage')}
+                            </h3>
+                            <p className="text-gray-600 text-center mb-6">
+                                {t('profile.confirmDeleteImage')}
+                            </p>
+                            <div className="flex gap-3">
+                                <motion.button
+                                    className="flex-1 px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors"
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => setShowDeleteConfirm(false)}
+                                    disabled={deleteProfileImageMutation.isLoading}
+                                >
+                                    {t('profile.cancel')}
+                                </motion.button>
+                                <motion.button
+                                    className="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    onClick={() => {
+                                        deleteProfileImageMutation.mutate();
+                                        setShowDeleteConfirm(false);
+                                    }}
+                                    disabled={deleteProfileImageMutation.isLoading}
+                                >
+                                    {deleteProfileImageMutation.isLoading ? (
+                                        <>
+                                            <AiOutlineLoading3Quarters className="animate-spin h-4 w-4" />
+                                            {t('common.deleting') || 'Deleting...'}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FaTrash className="h-4 w-4" />
+                                            {t('profile.delete')}
+                                        </>
+                                    )}
+                                </motion.button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

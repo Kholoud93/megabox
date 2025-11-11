@@ -257,6 +257,12 @@
     "usernameUpdateFailed": "Failed to update username",
     "imageUpdated": "Profile image updated successfully!",
     "imageUpdateFailed": "Failed to update profile image",
+    "imageDeleted": "Profile image deleted successfully!",
+    "imageDeleteFailed": "Failed to delete profile image",
+    "deleteImage": "Delete Image",
+    "changeImage": "Change Image",
+    "confirmDeleteImage": "Are you sure you want to delete your profile image? This action cannot be undone.",
+    "delete": "Delete",
     "errorLoading": "Error loading profile data. Please try again later.",
     "noData": "No profile data available."
   },

@@ -247,6 +247,19 @@ export const userService = {
       throw error.response?.data || error.message;
     }
   },
+
+  deleteProfileImage: async (token) => {
+    try {
+      const response = await api.delete('/user/deleteimage', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error.message;
+    }
+  },
 };
 
 export default api; 
