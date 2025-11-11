@@ -53,7 +53,7 @@ export const Folder = ({ name, data, onRename, onDelete, onShare }) => {
     };
 
     return (
-        <div className="relative bg-gradient-to-br from-white to-indigo-50 rounded-lg border-2 border-indigo-200 shadow-md hover:shadow-xl transition-all duration-300 hover:border-indigo-400 hover:scale-[1.01] sm:hover:scale-[1.02]">
+        <div className="relative bg-gradient-to-br from-white to-indigo-50 rounded-lg border-2 border-indigo-200 shadow-md hover:shadow-xl transition-all duration-300 hover:border-indigo-400 hover:scale-[1.01] sm:hover:scale-[1.02]" style={{ zIndex: 1 }}>
             <Link to={`file/${data?.name}/${data?._id}`} className="block">
                 <div
                     className="flex items-center p-3 sm:p-4 md:p-5 cursor-pointer group"
@@ -87,7 +87,8 @@ export const Folder = ({ name, data, onRename, onDelete, onShare }) => {
             {showMenu && (
                 <div
                     ref={menuRef}
-                    className="absolute top-8 sm:top-10 right-1.5 sm:right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 sm:py-2 z-30 text-xs sm:text-sm min-w-[160px] sm:min-w-[180px]"
+                    className="absolute top-8 sm:top-10 right-1.5 sm:right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 sm:py-2 text-xs sm:text-sm min-w-[160px] sm:min-w-[180px]"
+                    style={{ zIndex: 50 }}
                     onClick={(e) => e.stopPropagation()}
                 >
                     <button 
