@@ -183,21 +183,6 @@ aside {
         right: 0.5rem;
     }
 
-    // Prevent hover effects on ps-menuitem-root containing LanguageToggle
-    .ps-menuitem-root.LanguageToggle,
-    .ps-menuitem-root:has(.LanguageToggle),
-    .ps-menuitem-root.rounded-lg.text-base.text-white.font-medium.LanguageToggle,
-    .ps-menuitem-root[class*="LanguageToggle"] {
-        &:hover {
-            background-color: transparent !important;
-        }
-        
-        .ps-menu-button {
-            &:hover {
-                background-color: transparent !important;
-            }
-        }
-    }
 
     .Logout {
         position: absolute !important;
@@ -206,21 +191,6 @@ aside {
         right: 0.5rem;
     }
 
-    // Prevent hover effects on ps-menuitem-root containing Logout
-    .ps-menuitem-root.Logout,
-    .ps-menuitem-root:has(.Logout),
-    .ps-menuitem-root.rounded-lg.text-base.text-white.font-medium.Logout,
-    .ps-menuitem-root[class*="Logout"] {
-        &:hover {
-            background-color: transparent !important;
-        }
-        
-        .ps-menu-button {
-            &:hover {
-                background-color: transparent !important;
-            }
-        }
-    }
 
     .main-side {
         &::-webkit-scrollbar {
