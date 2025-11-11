@@ -12,10 +12,13 @@ body {
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #003e4b;
+    background: rgb(79, 70, 229);
     border-radius: 20px;
   }
 
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgb(67, 56, 202);
+  }
 }
 
 .App-logo {
@@ -44,14 +47,106 @@ body {
   color: #61dafb;
 }
 
-.Toast {
-  background-color: #003e4b !important;
-  color: white !important;
+/* Toast Icon Styles */
+.toast-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+  flex-shrink: 0;
 }
 
-.ToastError {
-  background-color: #003e4b !important;
+.toast-icon-success {
+  color: rgb(34, 197, 94) !important;
+}
+
+.toast-icon-error {
+  color: rgb(239, 68, 68) !important;
+}
+
+.toast-icon-info {
+  color: rgb(59, 130, 246) !important;
+}
+
+.toast-icon-warning {
+  color: rgb(251, 191, 36) !important;
+}
+
+.toast-icon-share {
+  color: rgb(129, 140, 248) !important;
+}
+
+.toast-icon-default {
+  color: rgb(99, 102, 241) !important;
+}
+
+/* Toast Success - Indigo 600 */
+.ToastSuccess {
+  background: linear-gradient(135deg, rgb(79, 70, 229) 0%, rgb(67, 56, 202) 100%) !important;
   color: white !important;
+  border-left: 4px solid rgb(99, 102, 241) !important;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3) !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Toast Error - Darker Indigo/Red tint */
+.ToastError {
+  background: linear-gradient(135deg, rgb(67, 56, 202) 0%, rgb(55, 48, 163) 100%) !important;
+  color: white !important;
+  border-left: 4px solid rgb(239, 68, 68) !important;
+  box-shadow: 0 4px 12px rgba(67, 56, 202, 0.3) !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Toast Info - Lighter Indigo */
+.ToastInfo {
+  background: linear-gradient(135deg, rgb(99, 102, 241) 0%, rgb(79, 70, 229) 100%) !important;
+  color: white !important;
+  border-left: 4px solid rgb(129, 140, 248) !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Toast Warning - Amber/Indigo mix */
+.ToastWarning {
+  background: linear-gradient(135deg, rgb(129, 140, 248) 0%, rgb(99, 102, 241) 100%) !important;
+  color: white !important;
+  border-left: 4px solid rgb(251, 191, 36) !important;
+  box-shadow: 0 4px 12px rgba(129, 140, 248, 0.3) !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Toast Share - Indigo 500 */
+.ToastShare {
+  background: linear-gradient(135deg, rgb(99, 102, 241) 0%, rgb(79, 70, 229) 100%) !important;
+  color: white !important;
+  border-left: 4px solid rgb(129, 140, 248) !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Toast Default - Indigo 600 */
+.ToastDefault {
+  background: linear-gradient(135deg, rgb(79, 70, 229) 0%, rgb(67, 56, 202) 100%) !important;
+  color: white !important;
+  border-left: 4px solid rgb(99, 102, 241) !important;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3) !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Legacy support */
+.Toast {
+  background: linear-gradient(135deg, rgb(79, 70, 229) 0%, rgb(67, 56, 202) 100%) !important;
+  color: white !important;
+  border-left: 4px solid rgb(99, 102, 241) !important;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3) !important;
+  display: flex !important;
+  align-items: center !important;
 }
 
 @keyframes App-logo-spin {

@@ -25,7 +25,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <GoogleOAuthProvider clientId='902607791526-lb6qtfclisk5puajdrbfve5ge45lfon9.apps.googleusercontent.com'>
 
             <App />
-            <ToastContainer position='bottom-right' stacked />
+            <ToastContainer position='bottom-right' stacked autoClose={2000} />
           </GoogleOAuthProvider>
 
           <ReactQueryDevtools position='bottom-right' />

@@ -17,7 +17,7 @@ import ChangeName from '../../../components/ChangeName/ChangeName';
 export default function fileDetails() {
 
     const Active = "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
-    const InActive = "inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm transition-all duration-200 hover:bg-gray-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
+    const InActive = "inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-700 bg-white border border-indigo-300 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
 
     const { fileId, fileName } = useParams();
     const [FilterKey, setFilterKey] = useState('All');
@@ -101,30 +101,32 @@ export default function fileDetails() {
     ];
 
     return <>
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="min-h-screen bg-indigo-50" style={{ fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" }}>
             {/* Header Section */}
-            <div className="bg-white shadow-sm border-b border-gray-200">
+            <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg border-b border-indigo-400">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="py-6">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div className="flex items-center space-x-4">
+                            <div className="flex items-center gap-4">
                                 <Link
                                     to="/dashboard"
-                                    className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-200"
+                                    className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2"
+                                    style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                 >
                                     <HiArrowLeft className="mr-2 h-4 w-4" />
                                     Back to Files
                                 </Link>
                                 <div>
-                                    <h1 className="text-2xl font-bold text-gray-900">{fileName}</h1>
-                                    <p className="mt-1 text-sm text-gray-600">Folder contents</p>
+                                    <h1 className="text-2xl font-bold text-white drop-shadow-lg" style={{ textShadow: '0 2px 10px rgba(255,255,255,0.3)' }}>{fileName}</h1>
+                                    <p className="mt-1 text-sm text-white/90" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.2)' }}>Folder contents</p>
                                 </div>
                             </div>
 
                             {/* Action Button */}
                             <div className="mt-4 sm:mt-0">
                                 <button
-                                    className="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                    className="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2"
+                                    style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                     onClick={ToggleShowAddFile}
                                 >
                                     <HiOutlinePlus className="mr-2 h-5 w-5" />
@@ -142,20 +144,20 @@ export default function fileDetails() {
                 <div>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                         <div>
-                            <h2 className="text-xl font-semibold text-gray-900">Files in this folder</h2>
-                            <p className="mt-1 text-sm text-gray-600">
+                            <h2 className="text-2xl font-semibold text-indigo-900 drop-shadow-md" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Files in this folder</h2>
+                            <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                 {filesLoading ? 'Loading files...' : `${data?.files?.length || 0} files`}
                             </p>
                         </div>
 
                         {/* View Mode Toggle */}
                         <div className="mt-4 sm:mt-0 flex items-center space-x-2">
-                            <span className="text-sm text-gray-500 mr-2">View:</span>
+                            <span className="text-sm text-indigo-700 mr-2" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>View:</span>
                             <button
                                 onClick={() => setViewMode('grid')}
                                 className={`p-2 rounded-lg transition-all duration-200 ${viewMode === 'grid'
-                                    ? 'bg-indigo-100 text-indigo-600'
-                                    : 'bg-white text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                                    ? 'bg-indigo-600 border-2 border-indigo-700 text-white'
+                                    : 'bg-white border-2 border-indigo-300 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 hover:border-indigo-400'
                                     }`}
                             >
                                 <HiViewGrid className="h-5 w-5" />
@@ -163,8 +165,8 @@ export default function fileDetails() {
                             <button
                                 onClick={() => setViewMode('list')}
                                 className={`p-2 rounded-lg transition-all duration-200 ${viewMode === 'list'
-                                    ? 'bg-indigo-100 text-indigo-600'
-                                    : 'bg-white text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                                    ? 'bg-indigo-600 border-2 border-indigo-700 text-white'
+                                    : 'bg-white border-2 border-indigo-300 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 hover:border-indigo-400'
                                     }`}
                             >
                                 <HiViewList className="h-5 w-5" />
@@ -173,7 +175,7 @@ export default function fileDetails() {
                     </div>
 
                     {/* Filter Tabs */}
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-1 mb-6">
+                    <div className="bg-white rounded-lg shadow-sm border border-indigo-200 p-1 mb-6">
                         <div className="flex flex-wrap gap-1">
                             {filterOptions.map((option) => (
                                 <button
@@ -185,7 +187,7 @@ export default function fileDetails() {
                                     {option.label}
                                     <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${FilterKey === option.key
                                         ? 'bg-white bg-opacity-20 text-white'
-                                        : 'bg-gray-100 text-gray-600'
+                                        : 'bg-indigo-100 text-indigo-600'
                                         }`}>
                                         {option.count}
                                     </span>
@@ -208,14 +210,14 @@ export default function fileDetails() {
                             ))}
                         </div>
                     ) : data?.files?.length === 0 ? (
-                        <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-300">
-                            <div className="mx-auto h-12 w-12 text-gray-400">
+                        <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-indigo-300">
+                            <div className="mx-auto h-12 w-12 text-indigo-400" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}>
                                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                             </div>
-                            <h3 className="mt-2 text-sm font-medium text-gray-900">No files in this folder</h3>
-                            <p className="mt-1 text-sm text-gray-500">
+                            <h3 className="mt-2 text-sm font-medium text-indigo-900 drop-shadow-md" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>No files in this folder</h3>
+                            <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                 {FilterKey === 'All'
                                     ? "This folder is empty. Start by uploading your first file."
                                     : `No ${FilterKey.toLowerCase()} files found in this folder.`
@@ -225,7 +227,8 @@ export default function fileDetails() {
                                 <div className="mt-6">
                                     <button
                                         onClick={ToggleShowAddFile}
-                                        className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                        className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
+                                        style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                     >
                                         <HiOutlinePlus className="mr-2 h-4 w-4" />
                                         Upload File
