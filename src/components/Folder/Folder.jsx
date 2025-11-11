@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom';
 import { FiMoreVertical } from 'react-icons/fi';
 import { HiTrash, HiPencil, HiShare } from "react-icons/hi2";
 import { LuFolder } from "react-icons/lu";
+import { useLanguage } from '../../context/LanguageContext';
 
 export const Folder = ({ name, data, onRename, onDelete, onShare }) => {
     const [open, setOpen] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef(null);
     const buttonRef = useRef(null);
+    const { t } = useLanguage();
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -65,7 +67,7 @@ export const Folder = ({ name, data, onRename, onDelete, onShare }) => {
                         <h4 className="font-bold text-indigo-900 truncate text-lg group-hover:text-indigo-700 transition-colors duration-300" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                             {name}
                         </h4>
-                        <p className="text-xs text-indigo-500 mt-1">Folder</p>
+                        <p className="text-xs text-indigo-500 mt-1">{t("folder.folder")}</p>
                     </div>
                 </div>
             </Link>
@@ -93,14 +95,14 @@ export const Folder = ({ name, data, onRename, onDelete, onShare }) => {
                         className="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                     >
                         <HiPencil className='w-5 h-5 text-green-600' />
-                        <span className="font-medium">Rename</span>
+                        <span className="font-medium">{t("folder.rename")}</span>
                     </button>
                     <button 
                         onClick={(e) => handleAction('share', e)} 
                         className="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                     >
                         <HiShare className='w-5 h-5 text-blue-600' />
-                        <span className="font-medium">Share</span>
+                        <span className="font-medium">{t("folder.share")}</span>
                     </button>
                     <div className="border-t border-gray-200 my-1"></div>
                     <button 
@@ -108,7 +110,7 @@ export const Folder = ({ name, data, onRename, onDelete, onShare }) => {
                         className="flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 w-full text-left transition-colors text-red-600"
                     >
                         <HiTrash className='w-5 h-5 text-red-600' />
-                        <span className="font-medium">Delete</span>
+                        <span className="font-medium">{t("folder.delete")}</span>
                     </button>
                 </div>
             )}

@@ -168,6 +168,66 @@
         "answer": "Joining the program is completely free. You don't need to pay anything."
       }
     }
+  },
+  "sidenav": {
+    "profile": "Profile",
+    "allFiles": "All Files",
+    "yourSharedFiles": "Your shared files",
+    "partners": "Partners",
+    "reports": "Reports",
+    "users": "Users",
+    "promoters": "Promoters",
+    "logout": "Log out"
+  },
+  "folder": {
+    "folder": "Folder",
+    "rename": "Rename",
+    "share": "Share",
+    "delete": "Delete"
+  },
+  "fileDetails": {
+    "backToFiles": "Back to Files",
+    "folderContents": "Folder contents",
+    "uploadFile": "Upload File",
+    "filesInThisFolder": "Files in this folder",
+    "loadingFiles": "Loading files...",
+    "files": "files",
+    "view": "View:",
+    "allFiles": "All Files",
+    "images": "Images",
+    "videos": "Videos",
+    "documents": "Documents",
+    "zipFolders": "Zip Folders",
+    "noFilesInFolder": "No files in this folder",
+    "emptyFolderMessage": "This folder is empty. Start by uploading your first file.",
+    "noFilesFound": "No {type} files found in this folder."
+  },
+  "files": {
+    "headerTitle": "MegaBox",
+    "headerSubtitle": "Manage your files and folders with ease",
+    "uploadFile": "Upload File",
+    "newFolder": "New Folder",
+    "folders": "Folders",
+    "files": "Files",
+    "loadingFolders": "Loading folders...",
+    "loadingFiles": "Loading files...",
+    "foldersCount": "folders",
+    "filesCount": "files",
+    "view": "View:",
+    "allFiles": "All Files",
+    "images": "Images",
+    "videos": "Videos",
+    "documents": "Documents",
+    "zipFolders": "Zip Folders",
+    "archived": "Archived",
+    "noFolders": "No folders",
+    "noFoldersMessage": "Get started by creating a new folder.",
+    "createFolder": "Create Folder",
+    "noFilesFound": "No files found",
+    "noFilesMessage": "Get started by uploading your first file.",
+    "noFilesTypeMessage": "No {type} files found.",
+    "folderDeletedSuccess": "Folder deleted successfully",
+    "folderDeleteFailed": "Failed to delete folder"
   }
 }
 

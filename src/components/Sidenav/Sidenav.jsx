@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import './Sidenave.scss'
 import { 
-    HiChevronLeft, 
+    HiChevronLeft,
+    HiChevronRight, 
     HiBars3,
     HiArrowRightOnRectangle,
     HiUserCircle,
@@ -13,10 +14,12 @@ import {
     HiDocumentText,
     HiHandRaised
 } from "react-icons/hi2";
+import { FiGlobe } from 'react-icons/fi';
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function Sidenav({ role }) {
     const [collapsed, setcollapsed] = useState(false)
@@ -24,6 +27,7 @@ export default function Sidenav({ role }) {
     const { pathname } = useLocation();
     const navigate = useNavigate()
     const { setUserRole } = useAuth();
+    const { t, language, changeLanguage } = useLanguage();
 
     const [, , removeToken] = useCookies(['MegaBox']);
 
@@ -33,6 +37,11 @@ export default function Sidenav({ role }) {
         })
         setUserRole(null)
         navigate('/Login')
+    }
+
+    const toggleLanguage = () => {
+        const newLang = language === 'en' ? 'ar' : 'en';
+        changeLanguage(newLang);
     }
 
 
@@ -57,7 +66,7 @@ export default function Sidenav({ role }) {
                         <MenuItem
                             className="mb-3 rounded-lg text-xl mt-3 text-white cursor-pointer close"
                             onClick={handleICon}
-                            icon={collapsed ? <HiBars3 className="text-lg" /> : <HiChevronLeft className="text-lg" />}
+                            icon={collapsed ? <HiBars3 className="text-lg" /> : (language === 'ar' ? <HiChevronRight className="text-lg" /> : <HiChevronLeft className="text-lg" />)}
                         ></MenuItem>
 
                         <Link to={'/'} className='flex justify-center items-center my-3 mb-4 sidenav-logo-container' style={{ display: "flex", justifyContent: "center", flexDirection: collapsed ? 'column' : 'row', gap: collapsed ? '0.5rem' : '0.75rem' }}>
@@ -96,39 +105,39 @@ export default function Sidenav({ role }) {
                         {role === "User" ? (<div>
                             <div className="flex justify-between flex-col mb-1">
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Profile" : ""}></Link>}
+                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.profile") : ""}></Link>}
                                         icon={<HiUserCircle className={pathname === "/dashboard/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? "Profile" : ""}>
-                                        Profile
+                                        data-tooltip={collapsed ? t("sidenav.profile") : ""}>
+                                        {t("sidenav.profile")}
                                     </MenuItem>
                                 </div>
                             </div>
 
                             <div className="flex justify-between flex-col mb-1">
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "All Files" : ""}></Link>}
+                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.allFiles") : ""}></Link>}
                                         icon={<HiFolder className={pathname === "/dashboard" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? "All Files" : ""}>
-                                        All Files
+                                        data-tooltip={collapsed ? t("sidenav.allFiles") : ""}>
+                                        {t("sidenav.allFiles")}
                                     </MenuItem>
                                 </div>
                             </div>
                             <div className="flex justify-between flex-col mb-1">
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/Earnings" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/Earnings' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Your shared files" : ""}></Link>}
+                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/Earnings" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/Earnings' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.yourSharedFiles") : ""}></Link>}
                                         icon={<HiShare className={pathname === "/dashboard/Earnings" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? "Your shared files" : ""}>
-                                        Your shared files
+                                        data-tooltip={collapsed ? t("sidenav.yourSharedFiles") : ""}>
+                                        {t("sidenav.yourSharedFiles")}
                                     </MenuItem>
                                 </div>
                             </div>
 
                             <div className="flex justify-between flex-col mb-1">
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Partners" : ""}></Link>}
+                                    <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.partners") : ""}></Link>}
                                         icon={<HiHandRaised className={pathname === "/Partners" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? "Partners" : ""}>
-                                        Partners
+                                        data-tooltip={collapsed ? t("sidenav.partners") : ""}>
+                                        {t("sidenav.partners")}
                                     </MenuItem>
                                 </div>
                             </div>
@@ -136,42 +145,42 @@ export default function Sidenav({ role }) {
                         </div>) : role === "Owner" ? (
                             <div className="flex justify-between flex-col mb-1">
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/Owner/Reports" ? 'menu-items  Active' : 'menu-items'} component={<Link to='Reports' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Reports" : ""}></Link>}
+                                    <MenuItem onClick={handleHide} className={pathname === "/Owner/Reports" ? 'menu-items  Active' : 'menu-items'} component={<Link to='Reports' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.reports") : ""}></Link>}
                                         icon={<HiDocumentText className={pathname === "Reports" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? "Reports" : ""}>
-                                        Reports
+                                        data-tooltip={collapsed ? t("sidenav.reports") : ""}>
+                                        {t("sidenav.reports")}
                                     </MenuItem>
                                 </div>
 
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/Owner/Users" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/Users' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Users" : ""}></Link>}
+                                    <MenuItem onClick={handleHide} className={pathname === "/Owner/Users" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/Users' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.users") : ""}></Link>}
                                         icon={<HiUsers className={pathname === "/Owner/Users" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? "Users" : ""}>
-                                        Users
+                                        data-tooltip={collapsed ? t("sidenav.users") : ""}>
+                                        {t("sidenav.users")}
                                     </MenuItem>
                                 </div>
 
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/Owner/AllPromoters" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/AllPromoters' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Promoters" : ""}></Link>}
+                                    <MenuItem onClick={handleHide} className={pathname === "/Owner/AllPromoters" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/AllPromoters' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.promoters") : ""}></Link>}
                                         icon={<HiUserGroup className={pathname === "/Owner/AllPromoters" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? "Promoters" : ""}>
-                                        Promoters
+                                        data-tooltip={collapsed ? t("sidenav.promoters") : ""}>
+                                        {t("sidenav.promoters")}
                                     </MenuItem>
                                 </div>
 
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/Owner/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Profile" : ""}></Link>}
+                                    <MenuItem onClick={handleHide} className={pathname === "/Owner/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.profile") : ""}></Link>}
                                         icon={<HiUserCircle className={pathname === "/Owner/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? "Profile" : ""}>
-                                        Profile
+                                        data-tooltip={collapsed ? t("sidenav.profile") : ""}>
+                                        {t("sidenav.profile")}
                                     </MenuItem>
                                 </div>
 
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Partners" : ""}></Link>}
+                                    <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.partners") : ""}></Link>}
                                         icon={<HiHandRaised className={pathname === "/Partners" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? "Partners" : ""}>
-                                        Partners
+                                        data-tooltip={collapsed ? t("sidenav.partners") : ""}>
+                                        {t("sidenav.partners")}
                                     </MenuItem>
                                 </div>
 
@@ -179,24 +188,24 @@ export default function Sidenav({ role }) {
                         ) : role === "Advertiser" ? (
                             <div className="flex justify-between flex-col mb-1">
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Profile" : ""}></Link>}
+                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.profile") : ""}></Link>}
                                         icon={<HiUserCircle className={pathname === "/dashboard/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? "Profile" : ""}>
-                                        Profile
+                                        data-tooltip={collapsed ? t("sidenav.profile") : ""}>
+                                        {t("sidenav.profile")}
                                     </MenuItem>
                                 </div>
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Profile" : ""}></Link>}
+                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.profile") : ""}></Link>}
                                         icon={<HiUserCircle className={pathname === "/dashboard/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? "Profile" : ""}>
-                                        Profile
+                                        data-tooltip={collapsed ? t("sidenav.profile") : ""}>
+                                        {t("sidenav.profile")}
                                     </MenuItem>
                                 </div>
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Partners" : ""}></Link>}
+                                    <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.partners") : ""}></Link>}
                                         icon={<HiHandRaised className={pathname === "/Partners" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? "Partners" : ""}>
-                                        Partners
+                                        data-tooltip={collapsed ? t("sidenav.partners") : ""}>
+                                        {t("sidenav.partners")}
                                     </MenuItem>
                                 </div>
                             </div>
@@ -209,13 +218,24 @@ export default function Sidenav({ role }) {
 
 
                         <MenuItem 
-                            className="rounded-lg text-base text-white font-medium Logout absolute bottom-2"
+                            className="ps-menuitem-root menu-items css-1t8x7v1 rounded-lg text-base text-white font-medium LanguageToggle absolute"
+                            style={{ bottom: collapsed ? '70px' : '70px' }}
+                            icon={<FiGlobe className="icon" />}
+                            type={"button"}
+                            onClick={toggleLanguage}
+                            data-tooltip={collapsed ? (language === 'en' ? 'العربية' : 'English') : ""}
+                        >
+                            {!collapsed && (language === 'en' ? 'العربية' : 'English')}
+                        </MenuItem>
+
+                        <MenuItem 
+                            className="ps-menuitem-root menu-items css-1t8x7v1 rounded-lg text-base text-white font-medium Logout absolute bottom-2"
                             icon={<HiArrowRightOnRectangle className="icon" />}
                             type={"button"}
                             onClick={Logout}
-                            data-tooltip={collapsed ? "Log out" : ""}
+                            data-tooltip={collapsed ? t("sidenav.logout") : ""}
                         >
-                            {!collapsed && "Log out"}
+                            {!collapsed && t("sidenav.logout")}
                         </MenuItem>
                     </Menu>
 
@@ -224,7 +244,7 @@ export default function Sidenav({ role }) {
         </aside >
 
         <span className='bars' onClick={handleHide}>
-            {Hide ? <HiChevronLeft /> : <HiBars3 />}
+            {Hide ? (language === 'ar' ? <HiChevronRight /> : <HiChevronLeft />) : <HiBars3 />}
         </span>
 
     </>

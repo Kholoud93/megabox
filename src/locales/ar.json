@@ -168,5 +168,65 @@
         "answer": "الانضمام إلى البرنامج مجاني تماماً. لا تحتاج إلى دفع أي شيء."
       }
     }
+  },
+  "sidenav": {
+    "profile": "الملف الشخصي",
+    "allFiles": "جميع الملفات",
+    "yourSharedFiles": "ملفاتك المشتركة",
+    "partners": "الشركاء",
+    "reports": "التقارير",
+    "users": "المستخدمون",
+    "promoters": "المروجون",
+    "logout": "تسجيل الخروج"
+  },
+  "folder": {
+    "folder": "مجلد",
+    "rename": "إعادة تسمية",
+    "share": "مشاركة",
+    "delete": "حذف"
+  },
+  "fileDetails": {
+    "backToFiles": "العودة إلى الملفات",
+    "folderContents": "محتويات المجلد",
+    "uploadFile": "رفع ملف",
+    "filesInThisFolder": "الملفات في هذا المجلد",
+    "loadingFiles": "جارٍ تحميل الملفات...",
+    "files": "ملف",
+    "view": "العرض:",
+    "allFiles": "جميع الملفات",
+    "images": "الصور",
+    "videos": "الفيديوهات",
+    "documents": "المستندات",
+    "zipFolders": "مجلدات مضغوطة",
+    "noFilesInFolder": "لا توجد ملفات في هذا المجلد",
+    "emptyFolderMessage": "هذا المجلد فارغ. ابدأ برفع أول ملف لك.",
+    "noFilesFound": "لم يتم العثور على ملفات {type} في هذا المجلد."
+  },
+  "files": {
+    "headerTitle": "MegaBox",
+    "headerSubtitle": "إدارة ملفاتك ومجلداتك بسهولة",
+    "uploadFile": "رفع ملف",
+    "newFolder": "مجلد جديد",
+    "folders": "المجلدات",
+    "files": "الملفات",
+    "loadingFolders": "جارٍ تحميل المجلدات...",
+    "loadingFiles": "جارٍ تحميل الملفات...",
+    "foldersCount": "مجلد",
+    "filesCount": "ملف",
+    "view": "العرض:",
+    "allFiles": "جميع الملفات",
+    "images": "الصور",
+    "videos": "الفيديوهات",
+    "documents": "المستندات",
+    "zipFolders": "مجلدات مضغوطة",
+    "archived": "المؤرشفة",
+    "noFolders": "لا توجد مجلدات",
+    "noFoldersMessage": "ابدأ بإنشاء مجلد جديد.",
+    "createFolder": "إنشاء مجلد",
+    "noFilesFound": "لم يتم العثور على ملفات",
+    "noFilesMessage": "ابدأ برفع أول ملف لك.",
+    "noFilesTypeMessage": "لم يتم العثور على ملفات {type}.",
+    "folderDeletedSuccess": "تم حذف المجلد بنجاح",
+    "folderDeleteFailed": "فشل حذف المجلد"
   }
 }

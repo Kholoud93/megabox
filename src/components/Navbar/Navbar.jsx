@@ -12,16 +12,11 @@ const Navbar = () => {
   const { pathname } = useLocation();
   const { language, changeLanguage, t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
-  const [showLanguageMenu, setShowLanguageMenu] = useState(false);
-  const languageMenuRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
-  // Close language menu when clicking outside
+  // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (languageMenuRef.current && !languageMenuRef.current.contains(event.target)) {
-        setShowLanguageMenu(false);
-      }
       if (isOpen && mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
         // Check if click is not on the hamburger button
         const hamburgerButton = event.target.closest('.navbar__mobile-button');
@@ -31,14 +26,14 @@ const Navbar = () => {
       }
     };
 
-    if (showLanguageMenu || isOpen) {
+    if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showLanguageMenu, isOpen]);
+  }, [isOpen]);
 
   const [MegaBox] = useCookies(["MegaBox"])
 
@@ -49,7 +44,6 @@ const Navbar = () => {
   const toggleLanguage = () => {
     const newLang = language === 'en' ? 'ar' : 'en';
     changeLanguage(newLang);
-    setShowLanguageMenu(false);
   }
 
   const { UserRole, setUserRole } = useAuth();
@@ -131,35 +125,16 @@ const Navbar = () => {
         </ul>
 
         <div className="navbar__right-section">
-          <div className="navbar__language-wrapper" ref={languageMenuRef}>
+          <div className="navbar__language-wrapper">
             <button 
               className="navbar__language-button" 
-              aria-label="Language selector"
-              onClick={() => setShowLanguageMenu(!showLanguageMenu)}
+              aria-label="Toggle language"
+              onClick={toggleLanguage}
+              title={language === 'en' ? 'Switch to Arabic' : 'Switch to English'}
             >
               <FiGlobe size={24} />
               <span className="navbar__language-code">{language.toUpperCase()}</span>
             </button>
-            {showLanguageMenu && (
-              <div className="navbar__language-menu">
-                <button 
-                  onClick={() => {
-                    if (language !== 'en') toggleLanguage();
-                  }}
-                  className={`navbar__language-option ${language === 'en' ? 'active' : ''}`}
-                >
-                  English
-                </button>
-                <button 
-                  onClick={() => {
-                    if (language !== 'ar') toggleLanguage();
-                  }}
-                  className={`navbar__language-option ${language === 'ar' ? 'active' : ''}`}
-                >
-                  العربية
-                </button>
-              </div>
-            )}
           </div>
 
           <div style={{ position: 'relative' }}>

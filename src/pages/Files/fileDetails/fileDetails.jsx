@@ -9,12 +9,14 @@ import File from '../../../components/File/File';
 import { AnimatePresence } from 'framer-motion';
 import UploadFile from '../../../components/Upload/UploadFile/UploadFile';
 import { HiOutlinePlus } from 'react-icons/hi2';
-import { HiArrowLeft } from 'react-icons/hi2';
+import { HiArrowLeft, HiArrowRight } from 'react-icons/hi2';
 import { HiViewGrid, HiViewList } from "react-icons/hi";
 import Represents from '../../../components/Represents/Represents';
 import ChangeName from '../../../components/ChangeName/ChangeName';
+import { useLanguage } from '../../../context/LanguageContext';
 
 export default function fileDetails() {
+    const { t, language } = useLanguage();
 
     const Active = "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
     const InActive = "inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-700 bg-white border border-indigo-300 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
@@ -93,11 +95,11 @@ export default function fileDetails() {
     }
 
     const filterOptions = [
-        { key: "All", label: "All Files", count: data?.files?.length || 0 },
-        { key: "image", label: "Images", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'image')?.length || 0 },
-        { key: "video", label: "Videos", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'video')?.length || 0 },
-        { key: "document", label: "Documents", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'document')?.length || 0 },
-        { key: "zip", label: "Zip Folders", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'zip')?.length || 0 },
+        { key: "All", label: t("fileDetails.allFiles"), count: data?.files?.length || 0 },
+        { key: "image", label: t("fileDetails.images"), count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'image')?.length || 0 },
+        { key: "video", label: t("fileDetails.videos"), count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'video')?.length || 0 },
+        { key: "document", label: t("fileDetails.documents"), count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'document')?.length || 0 },
+        { key: "zip", label: t("fileDetails.zipFolders"), count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'zip')?.length || 0 },
     ];
 
     return <>
@@ -113,12 +115,21 @@ export default function fileDetails() {
                                     className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2"
                                     style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                 >
-                                    <HiArrowLeft className="mr-2 h-4 w-4" />
-                                    Back to Files
+                                    {language === 'ar' ? (
+                                        <>
+                                            <HiArrowLeft className="mr-2 h-4 w-4" style={{ transform: 'scaleX(-1)' }} />
+                                            {t("fileDetails.backToFiles")}
+                                        </>
+                                    ) : (
+                                        <>
+                                            <HiArrowLeft className="mr-2 h-4 w-4" />
+                                            {t("fileDetails.backToFiles")}
+                                        </>
+                                    )}
                                 </Link>
                                 <div>
                                     <h1 className="text-2xl font-bold text-white drop-shadow-lg" style={{ textShadow: '0 2px 10px rgba(255,255,255,0.3)' }}>{fileName}</h1>
-                                    <p className="mt-1 text-sm text-white/90" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.2)' }}>Folder contents</p>
+                                    <p className="mt-1 text-sm text-white/90" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.2)' }}>{t("fileDetails.folderContents")}</p>
                                 </div>
                             </div>
 
@@ -130,7 +141,7 @@ export default function fileDetails() {
                                     onClick={ToggleShowAddFile}
                                 >
                                     <HiOutlinePlus className="mr-2 h-5 w-5" />
-                                    Upload File
+                                    {t("fileDetails.uploadFile")}
                                 </button>
                             </div>
                         </div>
@@ -144,15 +155,15 @@ export default function fileDetails() {
                 <div>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                         <div>
-                            <h2 className="text-2xl font-semibold text-indigo-900 drop-shadow-md" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Files in this folder</h2>
+                            <h2 className="text-2xl font-semibold text-indigo-900 drop-shadow-md" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>{t("fileDetails.filesInThisFolder")}</h2>
                             <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                                {filesLoading ? 'Loading files...' : `${data?.files?.length || 0} files`}
+                                {filesLoading ? t("fileDetails.loadingFiles") : `${data?.files?.length || 0} ${t("fileDetails.files")}`}
                             </p>
                         </div>
 
                         {/* View Mode Toggle */}
                         <div className="mt-4 sm:mt-0 flex items-center space-x-2">
-                            <span className="text-sm text-indigo-700 mr-2" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>View:</span>
+                            <span className="text-sm text-indigo-700 mr-2" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>{t("fileDetails.view")}</span>
                             <button
                                 onClick={() => setViewMode('grid')}
                                 className={`p-2 rounded-lg transition-all duration-200 ${viewMode === 'grid'
@@ -216,11 +227,11 @@ export default function fileDetails() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                             </div>
-                            <h3 className="mt-2 text-sm font-medium text-indigo-900 drop-shadow-md" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>No files in this folder</h3>
+                            <h3 className="mt-2 text-sm font-medium text-indigo-900 drop-shadow-md" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>{t("fileDetails.noFilesInFolder")}</h3>
                             <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                 {FilterKey === 'All'
-                                    ? "This folder is empty. Start by uploading your first file."
-                                    : `No ${FilterKey.toLowerCase()} files found in this folder.`
+                                    ? t("fileDetails.emptyFolderMessage")
+                                    : t("fileDetails.noFilesFound").replace("{type}", t(`fileDetails.${FilterKey === 'image' ? 'images' : FilterKey === 'video' ? 'videos' : FilterKey === 'document' ? 'documents' : 'zipFolders'}`).toLowerCase())
                                 }
                             </p>
                             {FilterKey === 'All' && (
@@ -231,7 +242,7 @@ export default function fileDetails() {
                                         style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                     >
                                         <HiOutlinePlus className="mr-2 h-4 w-4" />
-                                        Upload File
+                                        {t("fileDetails.uploadFile")}
                                     </button>
                                 </div>
                             )}

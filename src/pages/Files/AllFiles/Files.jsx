@@ -16,8 +16,10 @@ import Represents from '../../../components/Represents/Represents';
 import ChangeName from '../../../components/ChangeName/ChangeName';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
+import { useLanguage } from '../../../context/LanguageContext';
 
 export default function Files() {
+    const { t } = useLanguage();
 
     const Active = "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
     const InActive = "inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-700 bg-white border border-indigo-300 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
@@ -130,11 +132,11 @@ export default function Files() {
                 }
             });
             if (response.status === 200 || response.data?.message?.includes('نجاح')) {
-                toast.success("Folder deleted successfully", ToastOptions("success"));
+                toast.success(t("files.folderDeletedSuccess"), ToastOptions("success"));
                 refFolders();
             }
         } catch (error) {
-            toast.error("Failed to delete folder", ToastOptions("error"));
+            toast.error(t("files.folderDeleteFailed"), ToastOptions("error"));
         }
     }
 
@@ -173,12 +175,12 @@ export default function Files() {
     });
 
     const filterOptions = [
-        { key: "All", label: "All Files", count: data?.files?.length || 0 },
-        { key: "image", label: "Images", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'image')?.length || 0 },
-        { key: "video", label: "Videos", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'video')?.length || 0 },
-        { key: "document", label: "Documents", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'document')?.length || 0 },
-        { key: "zip", label: "Zip Folders", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'zip')?.length || 0 },
-        { key: "archived", label: "Archived", count: archivedData || 0 },
+        { key: "All", label: t("files.allFiles"), count: data?.files?.length || 0 },
+        { key: "image", label: t("files.images"), count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'image')?.length || 0 },
+        { key: "video", label: t("files.videos"), count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'video')?.length || 0 },
+        { key: "document", label: t("files.documents"), count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'document')?.length || 0 },
+        { key: "zip", label: t("files.zipFolders"), count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'zip')?.length || 0 },
+        { key: "archived", label: t("files.archived"), count: archivedData || 0 },
     ];
 
     return <>
@@ -218,8 +220,8 @@ export default function Files() {
                                     <line x1="24" y1="16" x2="24" y2="32" stroke="white" strokeWidth="2" opacity="0.6"/>
                                 </svg>
                                 <div>
-                                    <h1 className="text-3xl font-bold text-white drop-shadow-lg" style={{ textShadow: '0 2px 10px rgba(255,255,255,0.3)' }}>MegaBox</h1>
-                                    <p className="mt-2 text-sm text-white/90" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.2)' }}>Manage your files and folders with ease</p>
+                                    <h1 className="text-3xl font-bold text-white drop-shadow-lg" style={{ textShadow: '0 2px 10px rgba(255,255,255,0.3)' }}>{t("files.headerTitle")}</h1>
+                                    <p className="mt-2 text-sm text-white/90" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.2)' }}>{t("files.headerSubtitle")}</p>
                                 </div>
                             </div>
 
@@ -231,7 +233,7 @@ export default function Files() {
                                     onClick={ToggleShowAddFile}
                                 >
                                     <HiOutlinePlus className="mr-2 h-5 w-5" />
-                                    Upload File
+                                    {t("files.uploadFile")}
                                 </button>
                                 <button
                                     className="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2"
@@ -239,7 +241,7 @@ export default function Files() {
                                     onClick={ToggleFolderAdding}
                                 >
                                     <LuFolderPlus className="mr-2 h-5 w-5" />
-                                    New Folder
+                                    {t("files.newFolder")}
                                 </button>
                             </div>
                         </div>
@@ -253,9 +255,9 @@ export default function Files() {
                 <div className="mb-12">
                     <div className="flex items-center justify-between mb-6">
                         <div>
-                            <h2 className="text-2xl font-semibold text-indigo-900 drop-shadow-md" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Folders</h2>
+                            <h2 className="text-2xl font-semibold text-indigo-900 drop-shadow-md" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>{t("files.folders")}</h2>
                             <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                                {foldersLoading ? 'Loading folders...' : `${folders?.folders?.length || 0} folders`}
+                                {foldersLoading ? t("files.loadingFolders") : `${folders?.folders?.length || 0} ${t("files.foldersCount")}`}
                             </p>
                         </div>
                     </div>
@@ -272,8 +274,8 @@ export default function Files() {
                     ) : folders?.folders?.length === 0 ? (
                         <div className="text-center py-12">
                             <LuFolder className="mx-auto h-12 w-12 text-indigo-400" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }} />
-                            <h3 className="mt-2 text-sm font-medium text-indigo-900 drop-shadow-md" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>No folders</h3>
-                            <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>Get started by creating a new folder.</p>
+                            <h3 className="mt-2 text-sm font-medium text-indigo-900 drop-shadow-md" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>{t("files.noFolders")}</h3>
+                            <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>{t("files.noFoldersMessage")}</p>
                             <div className="mt-6">
                                 <button
                                     onClick={ToggleFolderAdding}
@@ -281,7 +283,7 @@ export default function Files() {
                                     style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                 >
                                     <LuFolderPlus className="mr-2 h-4 w-4" />
-                                    Create Folder
+                                    {t("files.createFolder")}
                                 </button>
                             </div>
                         </div>
@@ -305,15 +307,15 @@ export default function Files() {
                 <div>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                         <div>
-                            <h2 className="text-2xl font-semibold text-indigo-900 drop-shadow-md" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Files</h2>
+                            <h2 className="text-2xl font-semibold text-indigo-900 drop-shadow-md" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>{t("files.files")}</h2>
                             <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                                {filesLoading ? 'Loading files...' : `${data?.files?.length || 0} files`}
+                                {filesLoading ? t("files.loadingFiles") : `${data?.files?.length || 0} ${t("files.filesCount")}`}
                             </p>
                         </div>
 
                         {/* View Mode Toggle */}
                         <div className="mt-4 sm:mt-0 flex items-center space-x-2">
-                            <span className="text-sm text-indigo-700 mr-2" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>View:</span>
+                            <span className="text-sm text-indigo-700 mr-2" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>{t("files.view")}</span>
                             <button
                                 onClick={() => setViewMode('grid')}
                                 className={`p-2 rounded-lg transition-all duration-200 ${viewMode === 'grid'
@@ -377,11 +379,11 @@ export default function Files() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                             </div>
-                            <h3 className="mt-2 text-sm font-medium text-indigo-900 drop-shadow-md" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>No files found</h3>
+                            <h3 className="mt-2 text-sm font-medium text-indigo-900 drop-shadow-md" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>{t("files.noFilesFound")}</h3>
                             <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                 {FilterKey === 'All'
-                                    ? "Get started by uploading your first file."
-                                    : `No ${FilterKey.toLowerCase()} files found.`
+                                    ? t("files.noFilesMessage")
+                                    : t("files.noFilesTypeMessage").replace("{type}", t(`files.${FilterKey === 'image' ? 'images' : FilterKey === 'video' ? 'videos' : FilterKey === 'document' ? 'documents' : FilterKey === 'zip' ? 'zipFolders' : 'archived'}`).toLowerCase())
                                 }
                             </p>
                             {FilterKey === 'All' && (
@@ -392,7 +394,7 @@ export default function Files() {
                                         style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                     >
                                         <HiOutlinePlus className="mr-2 h-4 w-4" />
-                                        Upload File
+                                        {t("files.uploadFile")}
                                     </button>
                                 </div>
                             )}

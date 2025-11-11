@@ -28,9 +28,13 @@
     color: white;
 }
 
-aside .main-side .ps-menu-button:hover:not(.Logout) {
+aside .main-side .ps-menu-button:hover {
     background-color: rgba(255, 255, 255, 0.08) !important;
     transform: translateX(4px);
+}
+
+[dir="rtl"] aside .main-side .ps-menu-button:hover {
+    transform: translateX(-4px);
 }
 
 .navbar__logo {
@@ -57,7 +61,7 @@ aside .main-side .ps-menu-button:hover:not(.Logout) {
     display: block !important;
 }
 
-.css-1tqrhto>.ps-menu-button:not(.Logout) {
+.css-1tqrhto>.ps-menu-button {
     transition: all 0.2s ease-in-out;
     border-radius: 0.75rem;
     margin: 0.25rem 0.5rem;
@@ -65,6 +69,12 @@ aside .main-side .ps-menu-button:hover:not(.Logout) {
     &:hover {
         background-color: rgba(255, 255, 255, 0.08) !important;
         transform: translateX(4px);
+    }
+}
+
+[dir="rtl"] .css-1tqrhto>.ps-menu-button {
+    &:hover {
+        transform: translateX(-4px);
     }
 }
 
@@ -81,12 +91,18 @@ aside .main-side .ps-menu-button:hover:not(.Logout) {
     position: fixed;
     border-radius: 50%;
     right: 40px;
+    left: auto;
     bottom: 30px;
     opacity: 0;
     z-index: 10;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     cursor: pointer;
     transition: all 0.3s ease;
+
+    [dir="rtl"] & {
+        right: auto;
+        left: 40px;
+    }
     
     &:hover {
         transform: scale(1.1);
@@ -106,6 +122,13 @@ aside .main-side .ps-menu-button:hover:not(.Logout) {
         font-weight: 600;
     }
 
+    [dir="rtl"] & {
+        .Active {
+            border-left: none;
+            border-right: 3px solid white;
+        }
+    }
+
     @include Breakpoints(mobile) {
         width: 250px;
         transition: 0.7s linear all;
@@ -120,6 +143,13 @@ aside .main-side .ps-menu-button:hover:not(.Logout) {
             transform: translateX(-100%);
             -webkit-transform: translateX(-100%);
         }
+
+        [dir="rtl"] & {
+            @include Breakpoints(mobile) {
+                transform: translateX(100%);
+                -webkit-transform: translateX(100%);
+            }
+        }
     }
 }
 
@@ -129,12 +159,59 @@ aside {
     @include Breakpoints(mobile) {
         position: fixed;
         left: 0;
+        right: auto;
         top: 0;
+    }
+
+    [dir="rtl"] & {
+        @include Breakpoints(mobile) {
+            left: auto;
+            right: 0;
+        }
     }
 
     .Remove_hover {
         &:hover {
             background-color: transparent !important;
+        }
+    }
+
+    .LanguageToggle {
+        position: absolute !important;
+        bottom: 70px;
+        left: 0.5rem;
+        right: 0.5rem;
+        border-radius: 0.75rem;
+        margin: 0 0.5rem;
+        padding: 0.75rem 1rem !important;
+        transition: all 0.2s ease-in-out;
+        background-color: transparent;
+        display: flex !important;
+        align-items: center !important;
+
+        svg,
+        .icon {
+            color: white;
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+        }
+    }
+
+    // Prevent hover effects on ps-menuitem-root containing LanguageToggle
+    .ps-menuitem-root.LanguageToggle,
+    .ps-menuitem-root:has(.LanguageToggle),
+    .ps-menuitem-root.rounded-lg.text-base.text-white.font-medium.LanguageToggle,
+    .ps-menuitem-root[class*="LanguageToggle"] {
+        &:hover {
+            background-color: transparent !important;
+        }
+        
+        .ps-menu-button {
+            &:hover {
+                background-color: transparent !important;
+            }
         }
     }
 
@@ -150,20 +227,30 @@ aside {
         background-color: transparent;
         display: flex !important;
         align-items: center !important;
-        
-        // Prevent duplicate hover from .ps-menu-button:hover
-        &:hover {
-            background-color: rgba(255, 255, 255, 0.08) !important;
-            transform: translateX(4px) !important;
-        }
 
         svg,
         .icon {
             color: white;
-            font-size: 20px;
-            width: 20px;
-            height: 20px;
-            min-width: 20px;
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+        }
+    }
+
+    // Prevent hover effects on ps-menuitem-root containing Logout
+    .ps-menuitem-root.Logout,
+    .ps-menuitem-root:has(.Logout),
+    .ps-menuitem-root.rounded-lg.text-base.text-white.font-medium.Logout,
+    .ps-menuitem-root[class*="Logout"] {
+        &:hover {
+            background-color: transparent !important;
+        }
+        
+        .ps-menu-button {
+            &:hover {
+                background-color: transparent !important;
+            }
         }
     }
 
@@ -191,19 +278,25 @@ aside {
             radial-gradient(circle at 20% 30%, var(--color-indigo-600) 0%, transparent 50%),
             radial-gradient(circle at 80% 70%, var(--color-indigo-500) 0%, transparent 50%),
             radial-gradient(circle at 50% 50%, var(--color-indigo-400) 0%, transparent 70%),
-            linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-indigo-600) 100%),
-            var(--color-indigo-800);
+            linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-indigo-600) 100%);
         position: fixed;
         width: 250px;
         height: 100%;
         top: 0;
         left: 0;
+        right: auto;
         z-index: 999;
         transition: 0.3s linear all;
         -webkit-transition: 0.3s linear all;
         overflow-y: auto !important;
         overflow-x: hidden;
         box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
+
+        [dir="rtl"] & {
+            left: auto;
+            right: 0;
+            box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
+        }
 
         @include Breakpoints(mobile) {
             height: 100% !important;
@@ -214,6 +307,11 @@ aside {
             transition: 0.3s linear all;
             -webkit-transition: 0.3s linear all;
             overflow: visible !important;
+
+            [dir="rtl"] & {
+                left: auto;
+                right: 0;
+            }
             
             .ps-menu-button {
                 padding: 0.5rem !important;
@@ -250,6 +348,7 @@ aside {
                         content: attr(title) attr(data-tooltip);
                         position: absolute;
                         left: 45px;
+                        right: auto;
                         top: 50%;
                         transform: translateY(-50%);
                         background-color: rgba(0, 0, 0, 0.95);
@@ -266,6 +365,13 @@ aside {
                         max-width: 150px;
                         overflow: hidden;
                         text-overflow: ellipsis;
+                    }
+
+                    [dir="rtl"] & {
+                        &::after {
+                            left: auto;
+                            right: 45px;
+                        }
                     }
                     
                     &:hover::after {
@@ -312,17 +418,22 @@ aside {
                 }
             }
             
-            // Logout button styling when collapsed
-            .Logout {
+            // Language toggle button styling when collapsed
+            .LanguageToggle {
                 padding: 0.5rem !important;
                 justify-content: center !important;
+                bottom: 70px !important;
                 
                 svg,
                 .icon {
                     margin: 0 auto !important;
+                    font-size: 24px;
+                    width: 24px;
+                    height: 24px;
+                    min-width: 24px;
                 }
                 
-                // Tooltip for logout when collapsed - appears inside the sidebar
+                // Tooltip for language toggle when collapsed - appears inside the sidebar
                 &[data-tooltip]:not([data-tooltip=""]) {
                     overflow: visible !important;
                     
@@ -330,6 +441,7 @@ aside {
                         content: attr(data-tooltip);
                         position: absolute;
                         left: 45px;
+                        right: auto;
                         top: 50%;
                         transform: translateY(-50%);
                         background-color: rgba(0, 0, 0, 0.95);
@@ -346,6 +458,68 @@ aside {
                         max-width: 150px;
                         overflow: hidden;
                         text-overflow: ellipsis;
+                    }
+
+                    [dir="rtl"] & {
+                        &::after {
+                            left: auto;
+                            right: 45px;
+                        }
+                    }
+                    
+                    &:hover::after {
+                        opacity: 1;
+                        pointer-events: auto;
+                    }
+                }
+            }
+
+            // Logout button styling when collapsed
+            .Logout {
+                padding: 0.5rem !important;
+                justify-content: center !important;
+                
+                svg,
+                .icon {
+                    margin: 0 auto !important;
+                    font-size: 24px;
+                    width: 24px;
+                    height: 24px;
+                    min-width: 24px;
+                }
+                
+                // Tooltip for logout when collapsed - appears inside the sidebar
+                &[data-tooltip]:not([data-tooltip=""]) {
+                    overflow: visible !important;
+                    
+                    &::after {
+                        content: attr(data-tooltip);
+                        position: absolute;
+                        left: 45px;
+                        right: auto;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        background-color: rgba(0, 0, 0, 0.95);
+                        color: white;
+                        padding: 0.4rem 0.6rem;
+                        border-radius: 0.5rem;
+                        font-size: 0.8rem;
+                        white-space: nowrap;
+                        opacity: 0;
+                        pointer-events: none;
+                        transition: opacity 0.2s ease-in-out;
+                        z-index: 10000;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+                        max-width: 150px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+
+                    [dir="rtl"] & {
+                        &::after {
+                            left: auto;
+                            right: 45px;
+                        }
                     }
                     
                     &:hover::after {
