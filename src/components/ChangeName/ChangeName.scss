@@ -8,5 +8,97 @@
         min-height: auto;
         max-width: 600px;
         width: 90%;
+        padding: 1.5rem;
+        max-height: 90vh;
+        overflow-y: auto;
+
+        // Tablet styles
+        @include Breakpoints(small) {
+            max-width: 550px;
+            width: 95%;
+            padding: 1.25rem;
+        }
+
+        // Mobile styles
+        @include Breakpoints(mobile) {
+            max-width: 100%;
+            width: 95%;
+            padding: 1rem;
+            max-height: 85vh;
+            margin: 1rem;
+        }
+
+        // Small mobile devices
+        @media (max-width: 480px) {
+            padding: 0.875rem;
+            width: 98%;
+            margin: 0.5rem;
+        }
+
+        // Content sections responsive
+        > div {
+            @include Breakpoints(mobile) {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+            }
+
+            @media (max-width: 480px) {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+        }
+
+        // Title responsive
+        h2 {
+            @include Breakpoints(mobile) {
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            @media (max-width: 480px) {
+                font-size: 1.25rem;
+            }
+        }
+
+        // Input fields responsive
+        input {
+            @include Breakpoints(mobile) {
+                padding: 0.75rem;
+                font-size: 0.875rem;
+            }
+
+            @media (max-width: 480px) {
+                padding: 0.625rem;
+                font-size: 0.8125rem;
+            }
+        }
+
+        // Button responsive
+        button[type="submit"] {
+            @include Breakpoints(mobile) {
+                height: 42px;
+                font-size: 0.875rem;
+            }
+
+            @media (max-width: 480px) {
+                height: 40px;
+                font-size: 0.8125rem;
+            }
+        }
+
+        // Close button responsive
+        .Close {
+            @include Breakpoints(mobile) {
+                top: 8px;
+                right: 8px;
+                font-size: 18px;
+            }
+
+            @media (max-width: 480px) {
+                top: 6px;
+                right: 6px;
+                font-size: 16px;
+            }
+        }
     }
 }

@@ -187,12 +187,12 @@ export default function Files() {
         <div className="min-h-screen bg-indigo-50" style={{ fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" }}>
             {/* Header Section */}
             <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg border-b border-indigo-400">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="py-8">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div className="flex items-center gap-4">
+                <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+                    <div className="py-4 sm:py-6 md:py-8">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                            <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
                                 <svg 
-                                    className="w-12 h-12 flex-shrink-0" 
+                                    className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0" 
                                     viewBox="0 0 48 48" 
                                     fill="none" 
                                     xmlns="http://www.w3.org/2000/svg"
@@ -219,28 +219,28 @@ export default function Files() {
                                     <line x1="16" y1="24" x2="32" y2="24" stroke="white" strokeWidth="2" opacity="0.6"/>
                                     <line x1="24" y1="16" x2="24" y2="32" stroke="white" strokeWidth="2" opacity="0.6"/>
                                 </svg>
-                                <div>
-                                    <h1 className="text-3xl font-bold text-white drop-shadow-lg" style={{ textShadow: '0 2px 10px rgba(255,255,255,0.3)' }}>{t("files.headerTitle")}</h1>
-                                    <p className="mt-2 text-sm text-white/90" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.2)' }}>{t("files.headerSubtitle")}</p>
+                                <div className="flex-1 min-w-0">
+                                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white drop-shadow-lg truncate" style={{ textShadow: '0 2px 10px rgba(255,255,255,0.3)' }}>{t("files.headerTitle")}</h1>
+                                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-white/90" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.2)' }}>{t("files.headerSubtitle")}</p>
                                 </div>
                             </div>
 
                             {/* Action Buttons */}
-                            <div className="mt-4 sm:mt-0 flex flex-col sm:flex-row gap-3">
+                            <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2 sm:gap-3">
                                 <button
-                                    className="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2"
+                                    className="w-full sm:w-auto inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2"
                                     style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                     onClick={ToggleShowAddFile}
                                 >
-                                    <HiOutlinePlus className="mr-2 h-5 w-5" />
+                                    <HiOutlinePlus className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                                     {t("files.uploadFile")}
                                 </button>
                                 <button
-                                    className="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2"
+                                    className="w-full sm:w-auto inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2"
                                     style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                     onClick={ToggleFolderAdding}
                                 >
-                                    <LuFolderPlus className="mr-2 h-5 w-5" />
+                                    <LuFolderPlus className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                                     {t("files.newFolder")}
                                 </button>
                             </div>
@@ -250,45 +250,45 @@ export default function Files() {
             </div>
 
             {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
                 {/* Folders Section */}
-                <div className="mb-12">
-                    <div className="flex items-center justify-between mb-6">
+                <div className="mb-8 sm:mb-10 md:mb-12">
+                    <div className="flex items-center justify-between mb-4 sm:mb-5 md:mb-6">
                         <div>
-                            <h2 className="text-2xl font-semibold text-indigo-900 drop-shadow-md" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>{t("files.folders")}</h2>
-                            <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                            <h2 className="text-xl sm:text-2xl font-semibold text-indigo-900 drop-shadow-md" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>{t("files.folders")}</h2>
+                            <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                 {foldersLoading ? t("files.loadingFolders") : `${folders?.folders?.length || 0} ${t("files.foldersCount")}`}
                             </p>
                         </div>
                     </div>
 
                     {foldersLoading ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 md:gap-6">
                             {[...Array(4)].map((_, i) => (
                                 <div key={i} className="animate-pulse">
-                                    <div className="bg-gray-200 rounded-lg h-32"></div>
-                                    <div className="mt-3 bg-gray-200 rounded h-4 w-3/4"></div>
+                                    <div className="bg-gray-200 rounded-lg h-24 sm:h-28 md:h-32"></div>
+                                    <div className="mt-2 sm:mt-3 bg-gray-200 rounded h-3 sm:h-4 w-3/4"></div>
                                 </div>
                             ))}
                         </div>
                     ) : folders?.folders?.length === 0 ? (
-                        <div className="text-center py-12">
-                            <LuFolder className="mx-auto h-12 w-12 text-indigo-400" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }} />
+                        <div className="text-center py-8 sm:py-10 md:py-12 px-4">
+                            <LuFolder className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-indigo-400" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }} />
                             <h3 className="mt-2 text-sm font-medium text-indigo-900 drop-shadow-md" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>{t("files.noFolders")}</h3>
-                            <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>{t("files.noFoldersMessage")}</p>
-                            <div className="mt-6">
+                            <p className="mt-1 text-xs sm:text-sm text-indigo-700 px-2" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>{t("files.noFoldersMessage")}</p>
+                            <div className="mt-4 sm:mt-6">
                                 <button
                                     onClick={ToggleFolderAdding}
-                                    className="inline-flex items-center px-4 py-2 border-2 border-indigo-600 shadow-lg text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 hover:border-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
+                                    className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 border-2 border-indigo-600 shadow-lg text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 hover:border-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
                                     style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                 >
-                                    <LuFolderPlus className="mr-2 h-4 w-4" />
+                                    <LuFolderPlus className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                     {t("files.createFolder")}
                                 </button>
                             </div>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 md:gap-6">
                             {folders?.folders?.map((ele, index) => (
                                 <Folder 
                                     key={index} 
@@ -305,50 +305,51 @@ export default function Files() {
 
                 {/* Files Section */}
                 <div>
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-                        <div>
-                            <h2 className="text-2xl font-semibold text-indigo-900 drop-shadow-md" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>{t("files.files")}</h2>
-                            <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-5 md:mb-6 gap-3 sm:gap-4">
+                        <div className="flex-1 min-w-0">
+                            <h2 className="text-xl sm:text-2xl font-semibold text-indigo-900 drop-shadow-md" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>{t("files.files")}</h2>
+                            <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                 {filesLoading ? t("files.loadingFiles") : `${data?.files?.length || 0} ${t("files.filesCount")}`}
                             </p>
                         </div>
 
                         {/* View Mode Toggle */}
-                        <div className="mt-4 sm:mt-0 flex items-center space-x-2">
-                            <span className="text-sm text-indigo-700 mr-2" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>{t("files.view")}</span>
+                        <div className="flex items-center space-x-2 flex-shrink-0">
+                            <span className="text-xs sm:text-sm text-indigo-700 mr-1 sm:mr-2 hidden xs:inline" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>{t("files.view")}</span>
                             <button
                                 onClick={() => setViewMode('grid')}
-                                className={`p-2 rounded-lg transition-all duration-200 ${viewMode === 'grid'
+                                className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 ${viewMode === 'grid'
                                         ? 'bg-indigo-600 border-2 border-indigo-700 text-white'
                                         : 'bg-white border-2 border-indigo-300 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 hover:border-indigo-400'
                                     }`}
                             >
-                                <HiViewGrid className="h-5 w-5" />
+                                <HiViewGrid className="h-4 w-4 sm:h-5 sm:w-5" />
                             </button>
                             <button
                                 onClick={() => setViewMode('list')}
-                                className={`p-2 rounded-lg transition-all duration-200 ${viewMode === 'list'
+                                className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 ${viewMode === 'list'
                                         ? 'bg-indigo-600 border-2 border-indigo-700 text-white'
                                         : 'bg-white border-2 border-indigo-300 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 hover:border-indigo-400'
                                     }`}
                             >
-                                <HiViewList className="h-5 w-5" />
+                                <HiViewList className="h-4 w-4 sm:h-5 sm:w-5" />
                             </button>
                         </div>
                     </div>
 
                     {/* Filter Tabs */}
-                    <div className="bg-white rounded-lg shadow-sm border border-indigo-200 p-1 mb-6">
-                        <div className="flex flex-wrap gap-1">
+                    <div className="bg-white rounded-lg shadow-sm border border-indigo-200 p-0.5 sm:p-1 mb-4 sm:mb-5 md:mb-6 overflow-x-auto">
+                        <div className="flex flex-wrap gap-0.5 sm:gap-1 min-w-max sm:min-w-0">
                             {filterOptions.map((option) => (
                                 <button
                                     key={option.key}
                                     onClick={() => SelectFilter(option.key)}
-                                    className={`flex items-center px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${FilterKey === option.key ? Active : InActive
+                                    className={`flex items-center px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md transition-all duration-200 whitespace-nowrap ${FilterKey === option.key ? Active : InActive
                                         }`}
                                 >
-                                    {option.label}
-                                    <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${FilterKey === option.key
+                                    <span className="hidden sm:inline">{option.label}</span>
+                                    <span className="sm:hidden">{option.label.split(' ')[0]}</span>
+                                    <span className={`ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 text-xs rounded-full ${FilterKey === option.key
                                             ? 'bg-white bg-opacity-20 text-white'
                                             : 'bg-indigo-100 text-indigo-600'
                                         }`}>
@@ -361,46 +362,46 @@ export default function Files() {
 
                     {/* Files Grid/List */}
                     {filesLoading ? (
-                        <div className={`grid gap-6 ${viewMode === 'grid'
+                        <div className={`grid gap-4 sm:gap-5 md:gap-6 ${viewMode === 'grid'
                                 ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
                                 : 'grid-cols-1'
                             }`}>
                             {[...Array(6)].map((_, i) => (
                                 <div key={i} className="animate-pulse">
-                                    <div className="bg-gray-200 rounded-lg h-32"></div>
-                                    <div className="mt-3 bg-gray-200 rounded h-4 w-3/4"></div>
+                                    <div className="bg-gray-200 rounded-lg h-24 sm:h-28 md:h-32"></div>
+                                    <div className="mt-2 sm:mt-3 bg-gray-200 rounded h-3 sm:h-4 w-3/4"></div>
                                 </div>
                             ))}
                         </div>
                     ) : data?.files?.length === 0 ? (
-                        <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-indigo-300">
-                            <div className="mx-auto h-12 w-12 text-indigo-400" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}>
+                        <div className="text-center py-8 sm:py-10 md:py-12 bg-white rounded-lg border-2 border-dashed border-indigo-300 px-4">
+                            <div className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-indigo-400" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}>
                                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                             </div>
                             <h3 className="mt-2 text-sm font-medium text-indigo-900 drop-shadow-md" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>{t("files.noFilesFound")}</h3>
-                            <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+                            <p className="mt-1 text-xs sm:text-sm text-indigo-700 px-2" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                 {FilterKey === 'All'
                                     ? t("files.noFilesMessage")
                                     : t("files.noFilesTypeMessage").replace("{type}", t(`files.${FilterKey === 'image' ? 'images' : FilterKey === 'video' ? 'videos' : FilterKey === 'document' ? 'documents' : FilterKey === 'zip' ? 'zipFolders' : 'archived'}`).toLowerCase())
                                 }
                             </p>
                             {FilterKey === 'All' && (
-                                <div className="mt-6">
+                                <div className="mt-4 sm:mt-6">
                                     <button
                                         onClick={ToggleShowAddFile}
-                                        className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
+                                        className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 border border-transparent shadow-sm text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
                                         style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                     >
-                                        <HiOutlinePlus className="mr-2 h-4 w-4" />
+                                        <HiOutlinePlus className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                         {t("files.uploadFile")}
                                     </button>
                                 </div>
                             )}
                         </div>
                     ) : (
-                        <div className={`grid gap-6 ${viewMode === 'grid'
+                        <div className={`grid gap-4 sm:gap-5 md:gap-6 ${viewMode === 'grid'
                                 ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
                                 : 'grid-cols-1'
                             }`}>
