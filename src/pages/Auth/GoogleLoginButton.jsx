@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useCookies } from 'react-cookie';
 import { ToastOptions } from '../../helpers/ToastOptions';
@@ -10,6 +10,10 @@ import { useGoogleLogin } from '@react-oauth/google';
 const GoogleLoginButton = ({ SignUp }) => {
     const navigate = useNavigate();
     const [, setCookie] = useCookies(['MegaBox']);
+    const [searchParams] = useSearchParams();
+
+    // Detect if device is mobile
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
     const handleCredentialResponse = async (accessToken) => {
         try {
@@ -41,8 +45,31 @@ const GoogleLoginButton = ({ SignUp }) => {
         }
     };
 
+    // Handle OAuth callback from redirect flow (for mobile)
+    useEffect(() => {
+        const accessToken = searchParams.get('access_token');
+        const error = searchParams.get('error');
+        
+        if (accessToken) {
+            handleCredentialResponse(accessToken);
+            // Clean up URL
+            navigate(window.location.pathname, { replace: true });
+        } else if (error) {
+            console.error('OAuth Error:', error);
+            if (error === 'redirect_uri_mismatch') {
+                toast.error("OAuth configuration error. Please ensure redirect URIs are configured in Google Cloud Console.", ToastOptions("error"));
+            } else {
+                toast.error("Google Login Failed", ToastOptions("error"));
+            }
+            // Clean up URL
+            navigate(window.location.pathname, { replace: true });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams]);
+
     const googleGetIn = useGoogleLogin({
-        ux_mode: 'popup',
+        // Use redirect for mobile, popup for desktop
+        ux_mode: isMobile ? 'redirect' : 'popup',
         flow: 'implicit',
         onSuccess: async (tokenResponse) => {
             if (tokenResponse?.access_token) {
@@ -51,8 +78,13 @@ const GoogleLoginButton = ({ SignUp }) => {
                 toast.error("Failed to retrieve Google access token", ToastOptions("error"));
             }
         },
-        onError: () => {
-            toast.error("Google Login Failed", ToastOptions("error"));
+        onError: (error) => {
+            console.error('Google Login Error:', error);
+            if (error?.error === 'redirect_uri_mismatch') {
+                toast.error("OAuth configuration error. Please ensure redirect URIs are configured in Google Cloud Console.", ToastOptions("error"));
+            } else {
+                toast.error("Google Login Failed", ToastOptions("error"));
+            }
         }
     });
 
