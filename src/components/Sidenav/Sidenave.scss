@@ -28,7 +28,7 @@
     color: white;
 }
 
-aside .main-side .ps-menu-button:hover {
+aside .main-side .ps-menu-button:hover:not(.Logout) {
     background-color: rgba(255, 255, 255, 0.08) !important;
     transform: translateX(4px);
 }
@@ -57,7 +57,7 @@ aside .main-side .ps-menu-button:hover {
     display: block !important;
 }
 
-.css-1tqrhto>.ps-menu-button {
+.css-1tqrhto>.ps-menu-button:not(.Logout) {
     transition: all 0.2s ease-in-out;
     border-radius: 0.75rem;
     margin: 0.25rem 0.5rem;
@@ -148,15 +148,22 @@ aside {
         padding: 0.75rem 1rem !important;
         transition: all 0.2s ease-in-out;
         background-color: transparent;
+        display: flex !important;
+        align-items: center !important;
         
+        // Prevent duplicate hover from .ps-menu-button:hover
         &:hover {
-            background-color: rgba(255, 255, 255, 0.15) !important;
-            transform: translateY(-2px);
+            background-color: rgba(255, 255, 255, 0.08) !important;
+            transform: translateX(4px) !important;
         }
 
-        svg {
+        svg,
+        .icon {
             color: white;
             font-size: 20px;
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
         }
     }
 
@@ -206,6 +213,147 @@ aside {
             width: 78px;
             transition: 0.3s linear all;
             -webkit-transition: 0.3s linear all;
+            overflow: visible !important;
+            
+            .ps-menu-button {
+                padding: 0.5rem !important;
+                margin: 0.125rem 0.25rem !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                min-width: auto !important;
+                
+                // Hide text label when collapsed
+                .ps-menu-label {
+                    display: none !important;
+                    width: 0 !important;
+                    overflow: hidden !important;
+                }
+                
+                // Ensure icon wrapper is visible and centered
+                > *:first-child {
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
+                    margin: 0 auto !important;
+                }
+                
+                // Show tooltip on hover when collapsed - appears inside the sidebar
+                &[title]:not([title=""]),
+                &[data-tooltip]:not([data-tooltip=""]) {
+                    position: relative;
+                    overflow: visible !important;
+                    
+                    &::after {
+                        content: attr(title) attr(data-tooltip);
+                        position: absolute;
+                        left: 45px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        background-color: rgba(0, 0, 0, 0.95);
+                        color: white;
+                        padding: 0.4rem 0.6rem;
+                        border-radius: 0.5rem;
+                        font-size: 0.8rem;
+                        white-space: nowrap;
+                        opacity: 0;
+                        pointer-events: none;
+                        transition: opacity 0.2s ease-in-out;
+                        z-index: 10000;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+                        max-width: 150px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                    
+                    &:hover::after {
+                        opacity: 1;
+                        pointer-events: auto;
+                    }
+                }
+            }
+            
+            .menu-items {
+                padding: 0.5rem !important;
+                justify-content: center !important;
+                gap: 0;
+                text-align: center;
+                
+                // Ensure icons are visible and centered
+                .icon,
+                svg,
+                [class*="icon"] {
+                    display: block !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
+                    width: 20px !important;
+                    height: 20px !important;
+                    min-width: 20px !important;
+                    margin: 0 auto !important;
+                    flex-shrink: 0 !important;
+                }
+            }
+            
+            .close {
+                margin: 0.5rem auto !important;
+                padding: 0.5rem !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                width: auto !important;
+                
+                > *:first-child {
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    margin: 0 auto !important;
+                }
+            }
+            
+            // Logout button styling when collapsed
+            .Logout {
+                padding: 0.5rem !important;
+                justify-content: center !important;
+                
+                svg,
+                .icon {
+                    margin: 0 auto !important;
+                }
+                
+                // Tooltip for logout when collapsed - appears inside the sidebar
+                &[data-tooltip]:not([data-tooltip=""]) {
+                    overflow: visible !important;
+                    
+                    &::after {
+                        content: attr(data-tooltip);
+                        position: absolute;
+                        left: 45px;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        background-color: rgba(0, 0, 0, 0.95);
+                        color: white;
+                        padding: 0.4rem 0.6rem;
+                        border-radius: 0.5rem;
+                        font-size: 0.8rem;
+                        white-space: nowrap;
+                        opacity: 0;
+                        pointer-events: none;
+                        transition: opacity 0.2s ease-in-out;
+                        z-index: 10000;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+                        max-width: 150px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                    
+                    &:hover::after {
+                        opacity: 1;
+                        pointer-events: auto;
+                    }
+                }
+            }
         }
 
         .ps-menu-button {
@@ -215,10 +363,13 @@ aside {
             margin: 0.125rem 0.5rem;
             border-radius: 0.75rem;
             transition: all 0.2s ease-in-out;
+            position: relative;
             
             &:hover {
                 background-color: rgba(255, 255, 255, 0.08) !important;
             }
+            
+            // Tooltip styling - only show when collapsed (handled in collapsed section)
         }
 
         .menu-items {

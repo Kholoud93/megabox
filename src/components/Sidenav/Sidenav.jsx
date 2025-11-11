@@ -96,8 +96,9 @@ export default function Sidenav({ role }) {
                         {role === "User" ? (<div>
                             <div className="flex justify-between flex-col mb-1">
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/profile' className='Remove_hover transition ease-linear'></Link>}
-                                        icon={<HiUserCircle className={pathname === "/dashboard/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}>
+                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Profile" : ""}></Link>}
+                                        icon={<HiUserCircle className={pathname === "/dashboard/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? "Profile" : ""}>
                                         Profile
                                     </MenuItem>
                                 </div>
@@ -105,16 +106,18 @@ export default function Sidenav({ role }) {
 
                             <div className="flex justify-between flex-col mb-1">
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard' className='Remove_hover transition ease-linear'></Link>}
-                                        icon={<HiFolder className={pathname === "/dashboard" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}>
+                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "All Files" : ""}></Link>}
+                                        icon={<HiFolder className={pathname === "/dashboard" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? "All Files" : ""}>
                                         All Files
                                     </MenuItem>
                                 </div>
                             </div>
                             <div className="flex justify-between flex-col mb-1">
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/Earnings" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/Earnings' className='Remove_hover transition ease-linear'></Link>}
-                                        icon={<HiShare className={pathname === "/dashboard/Earnings" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}>
+                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/Earnings" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/Earnings' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Your shared files" : ""}></Link>}
+                                        icon={<HiShare className={pathname === "/dashboard/Earnings" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? "Your shared files" : ""}>
                                         Your shared files
                                     </MenuItem>
                                 </div>
@@ -122,8 +125,9 @@ export default function Sidenav({ role }) {
 
                             <div className="flex justify-between flex-col mb-1">
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear'></Link>}
-                                        icon={<HiHandRaised className={pathname === "/Partners" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}>
+                                    <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Partners" : ""}></Link>}
+                                        icon={<HiHandRaised className={pathname === "/Partners" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? "Partners" : ""}>
                                         Partners
                                     </MenuItem>
                                 </div>
@@ -132,36 +136,41 @@ export default function Sidenav({ role }) {
                         </div>) : role === "Owner" ? (
                             <div className="flex justify-between flex-col mb-1">
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/Owner/Reports" ? 'menu-items  Active' : 'menu-items'} component={<Link to='Reports' className='Remove_hover transition ease-linear'></Link>}
-                                        icon={<HiDocumentText className={pathname === "Reports" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}>
+                                    <MenuItem onClick={handleHide} className={pathname === "/Owner/Reports" ? 'menu-items  Active' : 'menu-items'} component={<Link to='Reports' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Reports" : ""}></Link>}
+                                        icon={<HiDocumentText className={pathname === "Reports" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? "Reports" : ""}>
                                         Reports
                                     </MenuItem>
                                 </div>
 
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/Owner/Users" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/Users' className='Remove_hover transition ease-linear'></Link>}
-                                        icon={<HiUsers className={pathname === "/Owner/Users" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}>
+                                    <MenuItem onClick={handleHide} className={pathname === "/Owner/Users" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/Users' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Users" : ""}></Link>}
+                                        icon={<HiUsers className={pathname === "/Owner/Users" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? "Users" : ""}>
                                         Users
                                     </MenuItem>
                                 </div>
 
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/Owner/AllPromoters" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/AllPromoters' className='Remove_hover transition ease-linear'></Link>}
-                                        icon={<HiUserGroup className={pathname === "/Owner/AllPromoters" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}>
+                                    <MenuItem onClick={handleHide} className={pathname === "/Owner/AllPromoters" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/AllPromoters' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Promoters" : ""}></Link>}
+                                        icon={<HiUserGroup className={pathname === "/Owner/AllPromoters" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? "Promoters" : ""}>
                                         Promoters
                                     </MenuItem>
                                 </div>
 
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/Owner/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/profile' className='Remove_hover transition ease-linear'></Link>}
-                                        icon={<HiUserCircle className={pathname === "/Owner/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}>
+                                    <MenuItem onClick={handleHide} className={pathname === "/Owner/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Profile" : ""}></Link>}
+                                        icon={<HiUserCircle className={pathname === "/Owner/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? "Profile" : ""}>
                                         Profile
                                     </MenuItem>
                                 </div>
 
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear'></Link>}
-                                        icon={<HiHandRaised className={pathname === "/Partners" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}>
+                                    <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Partners" : ""}></Link>}
+                                        icon={<HiHandRaised className={pathname === "/Partners" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? "Partners" : ""}>
                                         Partners
                                     </MenuItem>
                                 </div>
@@ -170,20 +179,23 @@ export default function Sidenav({ role }) {
                         ) : role === "Advertiser" ? (
                             <div className="flex justify-between flex-col mb-1">
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/profile' className='Remove_hover transition ease-linear'></Link>}
-                                        icon={<HiUserCircle className={pathname === "/dashboard/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}>
+                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Profile" : ""}></Link>}
+                                        icon={<HiUserCircle className={pathname === "/dashboard/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? "Profile" : ""}>
                                         Profile
                                     </MenuItem>
                                 </div>
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/profile' className='Remove_hover transition ease-linear'></Link>}
-                                        icon={<HiUserCircle className={pathname === "/dashboard/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}>
+                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Profile" : ""}></Link>}
+                                        icon={<HiUserCircle className={pathname === "/dashboard/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? "Profile" : ""}>
                                         Profile
                                     </MenuItem>
                                 </div>
                                 <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear'></Link>}
-                                        icon={<HiHandRaised className={pathname === "/Partners" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}>
+                                    <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? "Partners" : ""}></Link>}
+                                        icon={<HiHandRaised className={pathname === "/Partners" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? "Partners" : ""}>
                                         Partners
                                     </MenuItem>
                                 </div>
@@ -198,9 +210,10 @@ export default function Sidenav({ role }) {
 
                         <MenuItem 
                             className="rounded-lg text-base text-white font-medium Logout absolute bottom-2"
-                            icon={<HiArrowRightOnRectangle className="text-lg" />}
+                            icon={<HiArrowRightOnRectangle className="icon" />}
                             type={"button"}
                             onClick={Logout}
+                            data-tooltip={collapsed ? "Log out" : ""}
                         >
                             {!collapsed && "Log out"}
                         </MenuItem>
