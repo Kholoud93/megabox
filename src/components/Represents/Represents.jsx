@@ -4,7 +4,8 @@ import { Worker, Viewer } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.js';
 import Zoom from 'react-medium-image-zoom';
-import { IoClose } from "react-icons/io5";
+import { HiX } from "react-icons/hi";
+import { HiArrowDownTray } from "react-icons/hi2";
 
 import './Represents.scss';
 
@@ -51,10 +52,12 @@ export default function Represents({ type, path, ToggleUploadFile }) {
 
                 {(isImage || isVideo) && (
                     <div className="toolbar flex justify-end gap-2 p-2 absolute top-2 right-2 z-10">
-                        <button onClick={() => downloadCloudinaryFile(path)} className="toolbar-btn">
-                            📥 Download
+                        <button onClick={() => downloadCloudinaryFile(path)} className="toolbar-btn flex items-center gap-2">
+                            <HiArrowDownTray className="h-4 w-4" />
+                            Download
                         </button>
-                        <button onClick={() => ToggleUploadFile()} className="toolbar-btn">
+                        <button onClick={() => ToggleUploadFile()} className="toolbar-btn flex items-center gap-2">
+                            <HiX className="h-4 w-4" />
                             Close
                         </button>
                     </div>

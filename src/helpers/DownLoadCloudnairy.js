@@ -1,4 +1,4 @@
-export function downloadCloudinaryFile(fileUrl, fileName = 'downloaded-file.zip') {
+export function downloadCloudinaryFile(fileUrl, fileName = 'downloaded-file') {
     fetch(fileUrl, { mode: 'cors' })
         .then(response => {
             if (!response.ok) throw new Error('Failed to fetch file');
@@ -8,7 +8,7 @@ export function downloadCloudinaryFile(fileUrl, fileName = 'downloaded-file.zip'
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = fileName.endsWith('.zip') ? fileName : `${fileName}.zip`;
+            a.download = fileName; // Preserve original filename
             document.body.appendChild(a);
             a.click();
             a.remove();

@@ -1,25 +1,26 @@
 import React, { useState } from 'react'
 import { Folder } from '../../../components/Folder/Folder'
 import File from '../../../components/File/File'
-import { IoAdd } from "react-icons/io5";
-import { FaFolder } from "react-icons/fa";
-import { FiFilter, FiGrid, FiList } from "react-icons/fi";
-import { BsGrid3X3Gap, BsListUl } from "react-icons/bs";
+import { HiOutlinePlus } from "react-icons/hi2";
+import { LuFolderPlus, LuFolder } from "react-icons/lu";
+import { HiViewGrid, HiViewList } from "react-icons/hi";
 import UploadFile from '../../../components/Upload/UploadFile/UploadFile';
 import { AnimatePresence } from 'framer-motion';
 import AddFolder from '../../../components/Upload/AddFolder/AddFolder';
 import axios from 'axios';
 import { API_URL } from '../../../services/api';
 import { useCookies } from 'react-cookie';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { getFileCategory } from '../../../helpers/MimeType';
 import Represents from '../../../components/Represents/Represents';
 import ChangeName from '../../../components/ChangeName/ChangeName';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../../helpers/ToastOptions';
 
 export default function Files() {
 
-    const Active = "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-lg shadow-sm transition-all duration-200 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2";
-    const InActive = "inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm transition-all duration-200 hover:bg-gray-50 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2";
+    const Active = "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
+    const InActive = "inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-700 bg-white border border-indigo-300 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
 
     const [AddFileShow, setAddFileShow] = useState(false);
     const [AddFolderAdding, setAddFolderAdding] = useState(false);
@@ -30,6 +31,7 @@ export default function Files() {
 
     const [Token] = useCookies(['MegaBox']);
     const [FilterKey, setFilterKey] = useState('All');
+    const queryClient = useQueryClient();
 
     // get files
     const GetFiles = async ({ queryKey }) => {
@@ -40,12 +42,31 @@ export default function Files() {
             },
         };
 
-        if (filterKey.toLowerCase() !== 'all') {
-            config.params = { type: filterKey };
+        // Always fetch all files first, then filter client-side if needed
+        const { data } = await axios.get(`${API_URL}/auth/getUserFiles`, config);
+        
+        if (!data || !data.files) return data;
+
+        let filteredFiles = data.files;
+
+        // Filter by archived status
+        if (filterKey.toLowerCase() === 'archived') {
+            // Only show archived files
+            filteredFiles = data.files.filter(file => file.archived === true || file.isArchived === true);
+        } else {
+            // Exclude archived files from all other views
+            filteredFiles = data.files.filter(file => !file.archived && !file.isArchived);
+            
+            // If it's a type filter, also filter by type
+            if (filterKey.toLowerCase() !== 'all') {
+                filteredFiles = filteredFiles.filter(file => getFileCategory(file?.fileType) === filterKey.toLowerCase());
+            }
         }
 
-        const { data } = await axios.get(`${API_URL}/auth/getUserFiles`, config);
-        return data;
+        return {
+            ...data,
+            files: filteredFiles
+        };
     };
 
     const { data, refetch, isLoading: filesLoading } = useQuery(["GetUserFiles", FilterKey], GetFiles);
@@ -88,15 +109,33 @@ export default function Files() {
     const [ShowUpdateName, setupdateName] = useState(false);
     const [OldName, setOldName] = useState(null);
     const [FileId, setFileId] = useState(null);
+    const [IsFolder, setIsFolder] = useState(false);
 
-    const ToggleNameChange = (name, close, id) => {
+    const ToggleNameChange = (name, close, id, isFolder = false) => {
         if (close) {
             setupdateName(!ShowUpdateName);
             return;
         }
         setFileId(id)
         setOldName(name)
+        setIsFolder(isFolder)
         setupdateName(!ShowUpdateName);
+    }
+
+    const DeleteFolder = async (folderId) => {
+        try {
+            const response = await axios.delete(`${API_URL}/user/deleteFolder/${folderId}`, {
+                headers: {
+                    Authorization: `Bearer ${Token.MegaBox}`
+                }
+            });
+            if (response.status === 200 || response.data?.message?.includes('نجاح')) {
+                toast.success("Folder deleted successfully", ToastOptions("success"));
+                refFolders();
+            }
+        } catch (error) {
+            toast.error("Failed to delete folder", ToastOptions("error"));
+        }
     }
 
     const ShareFile = async (folderId) => {
@@ -111,40 +150,95 @@ export default function Files() {
         console.log(response);
     }
 
+    // Get archived files count separately
+    const GetArchivedFilesCount = async () => {
+        try {
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${Token.MegaBox}`,
+                }
+            };
+            const { data } = await axios.get(`${API_URL}/auth/getUserFiles`, config);
+            // Count only archived files
+            const archivedCount = data?.files?.filter(file => file.archived === true || file.isArchived === true)?.length || 0;
+            return archivedCount;
+        } catch (error) {
+            return 0;
+        }
+    };
+
+    const { data: archivedData } = useQuery("GetArchivedFilesCount", GetArchivedFilesCount, {
+        refetchInterval: false,
+        staleTime: 30000, // Cache for 30 seconds
+    });
+
     const filterOptions = [
         { key: "All", label: "All Files", count: data?.files?.length || 0 },
         { key: "image", label: "Images", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'image')?.length || 0 },
         { key: "video", label: "Videos", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'video')?.length || 0 },
         { key: "document", label: "Documents", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'document')?.length || 0 },
-        { key: "zip", label: "Archives", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'zip')?.length || 0 },
+        { key: "zip", label: "Zip Folders", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'zip')?.length || 0 },
+        { key: "archived", label: "Archived", count: archivedData || 0 },
     ];
 
     return <>
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="min-h-screen bg-indigo-50" style={{ fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" }}>
             {/* Header Section */}
-            <div className="bg-white shadow-sm border-b border-gray-200">
+            <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg border-b border-indigo-400">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="py-8">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                            <div>
-                                <h1 className="text-3xl font-bold text-gray-900">MegaBox</h1>
-                                <p className="mt-2 text-sm text-gray-600">Manage your files and folders with ease</p>
+                            <div className="flex items-center gap-4">
+                                <svg 
+                                    className="w-12 h-12 flex-shrink-0" 
+                                    viewBox="0 0 48 48" 
+                                    fill="none" 
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    style={{ filter: 'drop-shadow(0 4px 8px rgba(255,255,255,0.3))' }}
+                                >
+                                    <defs>
+                                        <linearGradient id="logoGradient" x1="0" y1="0" x2="48" y2="48">
+                                            <stop offset="0%" stopColor="var(--color-indigo-400)"/>
+                                            <stop offset="50%" stopColor="var(--color-indigo-500)"/>
+                                            <stop offset="100%" stopColor="var(--color-indigo-600)"/>
+                                        </linearGradient>
+                                        <linearGradient id="logoGradient2" x1="0" y1="0" x2="48" y2="48">
+                                            <stop offset="0%" stopColor="rgba(255, 255, 255, 0.95)"/>
+                                            <stop offset="100%" stopColor="rgba(255, 255, 255, 0.85)"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <rect width="48" height="48" rx="12" fill="url(#logoGradient)"/>
+                                    <path d="M24 12C18.5 12 14 16.5 14 22C14 22.5 14 23 14.1 23.5C12.3 24.2 11 25.8 11 27.5C11 29.7 12.8 31.5 15 31.5H33C35.2 31.5 37 29.7 37 27.5C37 25.8 35.7 24.2 33.9 23.5C34 23 34 22.5 34 22C34 16.5 29.5 12 24 12Z" fill="url(#logoGradient2)"/>
+                                    <rect x="16" y="16" width="16" height="16" rx="2.5" fill="var(--color-indigo-600)" opacity="0.95"/>
+                                    <rect x="20" y="20" width="8" height="8" rx="1.5" fill="white" opacity="0.9"/>
+                                    <line x1="16" y1="16" x2="16" y2="32" stroke="white" strokeWidth="2.5" opacity="0.8"/>
+                                    <line x1="32" y1="16" x2="32" y2="32" stroke="white" strokeWidth="2.5" opacity="0.8"/>
+                                    <line x1="16" y1="16" x2="32" y2="16" stroke="white" strokeWidth="2.5" opacity="0.8"/>
+                                    <line x1="16" y1="24" x2="32" y2="24" stroke="white" strokeWidth="2" opacity="0.6"/>
+                                    <line x1="24" y1="16" x2="24" y2="32" stroke="white" strokeWidth="2" opacity="0.6"/>
+                                </svg>
+                                <div>
+                                    <h1 className="text-3xl font-bold text-white drop-shadow-lg" style={{ textShadow: '0 2px 10px rgba(255,255,255,0.3)' }}>MegaBox</h1>
+                                    <p className="mt-2 text-sm text-white/90" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.2)' }}>Manage your files and folders with ease</p>
+                                </div>
                             </div>
 
                             {/* Action Buttons */}
                             <div className="mt-4 sm:mt-0 flex flex-col sm:flex-row gap-3">
                                 <button
-                                    className="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-primary-500 rounded-lg shadow-sm transition-all duration-200 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                                    className="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2"
+                                    style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                     onClick={ToggleShowAddFile}
                                 >
-                                    <IoAdd className="mr-2 h-4 w-4" />
+                                    <HiOutlinePlus className="mr-2 h-5 w-5" />
                                     Upload File
                                 </button>
                                 <button
-                                    className="inline-flex items-center px-4 py-2.5 text-sm font-medium text-primary-600 bg-primary-50 border border-primary-200 rounded-lg shadow-sm transition-all duration-200 hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                                    className="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2"
+                                    style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                     onClick={ToggleFolderAdding}
                                 >
-                                    <FaFolder className="mr-2 h-4 w-4" />
+                                    <LuFolderPlus className="mr-2 h-5 w-5" />
                                     New Folder
                                 </button>
                             </div>
@@ -159,8 +253,8 @@ export default function Files() {
                 <div className="mb-12">
                     <div className="flex items-center justify-between mb-6">
                         <div>
-                            <h2 className="text-2xl font-semibold text-gray-900">Folders</h2>
-                            <p className="mt-1 text-sm text-gray-600">
+                            <h2 className="text-2xl font-semibold text-indigo-900 drop-shadow-md" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Folders</h2>
+                            <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                 {foldersLoading ? 'Loading folders...' : `${folders?.folders?.length || 0} folders`}
                             </p>
                         </div>
@@ -177,15 +271,16 @@ export default function Files() {
                         </div>
                     ) : folders?.folders?.length === 0 ? (
                         <div className="text-center py-12">
-                            <FaFolder className="mx-auto h-12 w-12 text-gray-400" />
-                            <h3 className="mt-2 text-sm font-medium text-gray-900">No folders</h3>
-                            <p className="mt-1 text-sm text-gray-500">Get started by creating a new folder.</p>
+                            <LuFolder className="mx-auto h-12 w-12 text-indigo-400" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }} />
+                            <h3 className="mt-2 text-sm font-medium text-indigo-900 drop-shadow-md" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>No folders</h3>
+                            <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>Get started by creating a new folder.</p>
                             <div className="mt-6">
                                 <button
                                     onClick={ToggleFolderAdding}
-                                    className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                                    className="inline-flex items-center px-4 py-2 border-2 border-indigo-600 shadow-lg text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 hover:border-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
+                                    style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                 >
-                                    <FaFolder className="mr-2 h-4 w-4" />
+                                    <LuFolderPlus className="mr-2 h-4 w-4" />
                                     Create Folder
                                 </button>
                             </div>
@@ -193,7 +288,14 @@ export default function Files() {
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                             {folders?.folders?.map((ele, index) => (
-                                <Folder key={index} name={ele?.name} data={ele} />
+                                <Folder 
+                                    key={index} 
+                                    name={ele?.name} 
+                                    data={ele}
+                                    onRename={(name, close, id) => ToggleNameChange(name, close, id, true)}
+                                    onDelete={DeleteFolder}
+                                    onShare={ShareFile}
+                                />
                             ))}
                         </div>
                     )}
@@ -203,38 +305,38 @@ export default function Files() {
                 <div>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                         <div>
-                            <h2 className="text-2xl font-semibold text-gray-900">Files</h2>
-                            <p className="mt-1 text-sm text-gray-600">
+                            <h2 className="text-2xl font-semibold text-indigo-900 drop-shadow-md" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Files</h2>
+                            <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                 {filesLoading ? 'Loading files...' : `${data?.files?.length || 0} files`}
                             </p>
                         </div>
 
                         {/* View Mode Toggle */}
                         <div className="mt-4 sm:mt-0 flex items-center space-x-2">
-                            <span className="text-sm text-gray-500 mr-2">View:</span>
+                            <span className="text-sm text-indigo-700 mr-2" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>View:</span>
                             <button
                                 onClick={() => setViewMode('grid')}
                                 className={`p-2 rounded-lg transition-all duration-200 ${viewMode === 'grid'
-                                        ? 'bg-primary-100 text-primary-600'
-                                        : 'bg-white text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                                        ? 'bg-indigo-600 border-2 border-indigo-700 text-white'
+                                        : 'bg-white border-2 border-indigo-300 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 hover:border-indigo-400'
                                     }`}
                             >
-                                <BsGrid3X3Gap className="h-4 w-4" />
+                                <HiViewGrid className="h-5 w-5" />
                             </button>
                             <button
                                 onClick={() => setViewMode('list')}
                                 className={`p-2 rounded-lg transition-all duration-200 ${viewMode === 'list'
-                                        ? 'bg-primary-100 text-primary-600'
-                                        : 'bg-white text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                                        ? 'bg-indigo-600 border-2 border-indigo-700 text-white'
+                                        : 'bg-white border-2 border-indigo-300 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 hover:border-indigo-400'
                                     }`}
                             >
-                                <BsListUl className="h-4 w-4" />
+                                <HiViewList className="h-5 w-5" />
                             </button>
                         </div>
                     </div>
 
                     {/* Filter Tabs */}
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-1 mb-6">
+                    <div className="bg-white rounded-lg shadow-sm border border-indigo-200 p-1 mb-6">
                         <div className="flex flex-wrap gap-1">
                             {filterOptions.map((option) => (
                                 <button
@@ -246,7 +348,7 @@ export default function Files() {
                                     {option.label}
                                     <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${FilterKey === option.key
                                             ? 'bg-white bg-opacity-20 text-white'
-                                            : 'bg-gray-100 text-gray-600'
+                                            : 'bg-indigo-100 text-indigo-600'
                                         }`}>
                                         {option.count}
                                     </span>
@@ -269,14 +371,14 @@ export default function Files() {
                             ))}
                         </div>
                     ) : data?.files?.length === 0 ? (
-                        <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-300">
-                            <div className="mx-auto h-12 w-12 text-gray-400">
+                        <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-indigo-300">
+                            <div className="mx-auto h-12 w-12 text-indigo-400" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}>
                                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                             </div>
-                            <h3 className="mt-2 text-sm font-medium text-gray-900">No files found</h3>
-                            <p className="mt-1 text-sm text-gray-500">
+                            <h3 className="mt-2 text-sm font-medium text-indigo-900 drop-shadow-md" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>No files found</h3>
+                            <p className="mt-1 text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                                 {FilterKey === 'All'
                                     ? "Get started by uploading your first file."
                                     : `No ${FilterKey.toLowerCase()} files found.`
@@ -286,9 +388,10 @@ export default function Files() {
                                 <div className="mt-6">
                                     <button
                                         onClick={ToggleShowAddFile}
-                                        className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                                        className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
+                                        style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                     >
-                                        <IoAdd className="mr-2 h-4 w-4" />
+                                        <HiOutlinePlus className="mr-2 h-4 w-4" />
                                         Upload File
                                     </button>
                                 </div>
@@ -305,7 +408,10 @@ export default function Files() {
                                     Type={getFileCategory(ele?.fileType)}
                                     data={ele}
                                     Representation={Representation}
-                                    refetch={refetch}
+                                    refetch={() => {
+                                        refetch();
+                                        queryClient.invalidateQueries("GetArchivedFilesCount");
+                                    }}
                                     onRename={ToggleNameChange}
                                     onShare={ShareFile}
                                     viewMode={viewMode}
@@ -321,7 +427,15 @@ export default function Files() {
             {AddFileShow && <UploadFile ToggleUploadFile={ToggleShowAddFile} refetch={refetch} />}
             {AddFolderAdding && <AddFolder ToggleUploadFile={ToggleFolderAdding} refetch={refFolders} />}
             {ShowRepresent && <Represents path={Path} type={fileType} ToggleUploadFile={() => Representation("", "", true)} />}
-            {ShowUpdateName && <ChangeName oldFileName={OldName} Toggle={ToggleNameChange} refetch={refetch} FileId={FileId} />}
+            {ShowUpdateName && (
+                <ChangeName 
+                    oldFileName={OldName} 
+                    Toggle={ToggleNameChange} 
+                    refetch={IsFolder ? refFolders : refetch} 
+                    FileId={FileId}
+                    isFolder={IsFolder}
+                />
+            )}
         </AnimatePresence>
     </>
 }

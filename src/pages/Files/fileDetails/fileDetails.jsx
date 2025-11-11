@@ -8,15 +8,16 @@ import { getFileCategory } from '../../../helpers/MimeType';
 import File from '../../../components/File/File';
 import { AnimatePresence } from 'framer-motion';
 import UploadFile from '../../../components/Upload/UploadFile/UploadFile';
-import { IoAdd, IoArrowBack } from 'react-icons/io5';
-import { BsGrid3X3Gap, BsListUl } from "react-icons/bs";
+import { HiOutlinePlus } from 'react-icons/hi2';
+import { HiArrowLeft } from 'react-icons/hi2';
+import { HiViewGrid, HiViewList } from "react-icons/hi";
 import Represents from '../../../components/Represents/Represents';
 import ChangeName from '../../../components/ChangeName/ChangeName';
 
 export default function fileDetails() {
 
-    const Active = "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-lg shadow-sm transition-all duration-200 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2";
-    const InActive = "inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm transition-all duration-200 hover:bg-gray-50 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2";
+    const Active = "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
+    const InActive = "inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm transition-all duration-200 hover:bg-gray-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
 
     const { fileId, fileName } = useParams();
     const [FilterKey, setFilterKey] = useState('All');
@@ -96,7 +97,7 @@ export default function fileDetails() {
         { key: "image", label: "Images", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'image')?.length || 0 },
         { key: "video", label: "Videos", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'video')?.length || 0 },
         { key: "document", label: "Documents", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'document')?.length || 0 },
-        { key: "zip", label: "Archives", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'zip')?.length || 0 },
+        { key: "zip", label: "Zip Folders", count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'zip')?.length || 0 },
     ];
 
     return <>
@@ -111,7 +112,7 @@ export default function fileDetails() {
                                     to="/dashboard"
                                     className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-all duration-200"
                                 >
-                                    <IoArrowBack className="mr-2 h-4 w-4" />
+                                    <HiArrowLeft className="mr-2 h-4 w-4" />
                                     Back to Files
                                 </Link>
                                 <div>
@@ -123,10 +124,10 @@ export default function fileDetails() {
                             {/* Action Button */}
                             <div className="mt-4 sm:mt-0">
                                 <button
-                                    className="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-primary-500 rounded-lg shadow-sm transition-all duration-200 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                                    className="inline-flex items-center px-4 py-2.5 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                                     onClick={ToggleShowAddFile}
                                 >
-                                    <IoAdd className="mr-2 h-4 w-4" />
+                                    <HiOutlinePlus className="mr-2 h-5 w-5" />
                                     Upload File
                                 </button>
                             </div>
@@ -153,20 +154,20 @@ export default function fileDetails() {
                             <button
                                 onClick={() => setViewMode('grid')}
                                 className={`p-2 rounded-lg transition-all duration-200 ${viewMode === 'grid'
-                                    ? 'bg-primary-100 text-primary-600'
+                                    ? 'bg-indigo-100 text-indigo-600'
                                     : 'bg-white text-gray-400 hover:text-gray-600 hover:bg-gray-50'
                                     }`}
                             >
-                                <BsGrid3X3Gap className="h-4 w-4" />
+                                <HiViewGrid className="h-5 w-5" />
                             </button>
                             <button
                                 onClick={() => setViewMode('list')}
                                 className={`p-2 rounded-lg transition-all duration-200 ${viewMode === 'list'
-                                    ? 'bg-primary-100 text-primary-600'
+                                    ? 'bg-indigo-100 text-indigo-600'
                                     : 'bg-white text-gray-400 hover:text-gray-600 hover:bg-gray-50'
                                     }`}
                             >
-                                <BsListUl className="h-4 w-4" />
+                                <HiViewList className="h-5 w-5" />
                             </button>
                         </div>
                     </div>
@@ -224,9 +225,9 @@ export default function fileDetails() {
                                 <div className="mt-6">
                                     <button
                                         onClick={ToggleShowAddFile}
-                                        className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                                        className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                     >
-                                        <IoAdd className="mr-2 h-4 w-4" />
+                                        <HiOutlinePlus className="mr-2 h-4 w-4" />
                                         Upload File
                                     </button>
                                 </div>

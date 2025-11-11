@@ -5,6 +5,8 @@
 
     .ChangeName {
         @include InsideBackdrop();
-        height: 200px;
+        min-height: auto;
+        max-width: 600px;
+        width: 90%;
     }
 }

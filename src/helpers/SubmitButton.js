@@ -1,1 +1,1 @@
-export const PopupButton = 'w-[300px] bg-primary-600 text-white h-[40px] rounded-md hover:bg-primary-500 transition'
+export const PopupButton = 'w-[300px] bg-indigo-600 text-white h-[40px] rounded-md hover:bg-indigo-700 transition'
