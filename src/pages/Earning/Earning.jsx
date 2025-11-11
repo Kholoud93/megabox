@@ -8,6 +8,7 @@ import {
     FaLink, FaGlobe, FaTimes, FaChartLine, FaUsers, FaRocket
 } from 'react-icons/fa';
 import { API_URL } from '../../services/api';
+import { useLanguage } from '../../context/LanguageContext';
 
 const EARNINGS_URL = `${API_URL}/auth/getUserEarnings`;
 const ANALYTICS_URL = `${API_URL}/auth/getUserAnalytics`;
@@ -197,7 +198,7 @@ function StatCard({ label, value, icon, color, index }) {
     );
 }
 
-function CountryModal({ file, isOpen, onClose }) {
+function CountryModal({ file, isOpen, onClose, t }) {
     if (!isOpen) return null;
 
     return (
@@ -241,7 +242,7 @@ function CountryModal({ file, isOpen, onClose }) {
                         >
                             <FaGlobe />
                         </motion.div>
-                        Country Analytics
+                        {t('earning.countryAnalytics')}
                     </h3>
                     <motion.button
                         className="close-btn"
@@ -278,7 +279,7 @@ function CountryModal({ file, isOpen, onClose }) {
                     >
                         <h4>{file.fileName}</h4>
                         <div className="total-views">
-                            <FaChartLine /> {file.views} total views
+                            <FaChartLine /> {file.views} {t('earning.totalViews')}
                         </div>
                     </motion.div>
                     {file.viewsByCountry && file.viewsByCountry.length > 0 ? (
@@ -333,7 +334,7 @@ function CountryModal({ file, isOpen, onClose }) {
                                 ease: [0.25, 0.46, 0.45, 0.94]
                             }}
                         >
-                            <FaChartLine /> No country data available yet
+                            <FaChartLine /> {t('earning.noCountryData')}
                         </motion.p>
                     )}
                 </motion.div>
@@ -363,7 +364,7 @@ function FileCard({ file, onShowCountries, index }) {
             whileHover={{
                 y: -6,
                 scale: 1.02,
-                boxShadow: "0 20px 40px rgba(0,62,75,0.12)",
+                boxShadow: "0 20px 40px rgba(99, 102, 241, 0.15)",
                 transition: {
                     type: "spring",
                     stiffness: 300,
@@ -430,7 +431,7 @@ function FileCard({ file, onShowCountries, index }) {
                             }}
                             whileTap={{ scale: 0.95 }}
                         >
-                            <FaRocket /> Launch
+                            <FaRocket /> {t('earning.launch')}
                         </motion.a>
                         <motion.button
                             className="countries-btn"
@@ -442,7 +443,7 @@ function FileCard({ file, onShowCountries, index }) {
                             }}
                             whileTap={{ scale: 0.95 }}
                         >
-                            <FaGlobe /> Analytics
+                            <FaGlobe /> {t('earning.analytics')}
                         </motion.button>
                     </motion.div>
                 </div>
@@ -471,9 +472,9 @@ function FileCard({ file, onShowCountries, index }) {
                 >
                     <motion.div
                         className="stat-icon"
-                        animate={{
-                            color: isHovered ? "#01677e" : "#64748b"
-                        }}
+                    animate={{
+                        color: isHovered ? "#6366f1" : "#64748b"
+                    }}
                         transition={{
                             duration: 0.3,
                             ease: [0.25, 0.46, 0.45, 0.94]
@@ -482,7 +483,7 @@ function FileCard({ file, onShowCountries, index }) {
                         <FaEye />
                     </motion.div>
                     <span className="stat-value">{file.views}</span>
-                    <span className="stat-label">Views</span>
+                    <span className="stat-label">{t('earning.views')}</span>
                 </motion.div>
                 <motion.div
                     className="stat-item"
@@ -498,7 +499,7 @@ function FileCard({ file, onShowCountries, index }) {
                     <motion.div
                         className="stat-icon"
                         animate={{
-                            color: isHovered ? "#44546a" : "#64748b"
+                            color: isHovered ? "#4f46e5" : "#64748b"
                         }}
                         transition={{
                             duration: 0.3,
@@ -508,7 +509,7 @@ function FileCard({ file, onShowCountries, index }) {
                         <FaDownload />
                     </motion.div>
                     <span className="stat-value">{file.downloads}</span>
-                    <span className="stat-label">Downloads</span>
+                    <span className="stat-label">{t('earning.downloads')}</span>
                 </motion.div>
             </motion.div>
 
@@ -522,7 +523,7 @@ function FileCard({ file, onShowCountries, index }) {
                     ease: [0.25, 0.46, 0.45, 0.94]
                 }}
             >
-                Last Activity: {new Date(file.lastUpdated).toLocaleDateString()}
+                {t('earning.lastActivity')}: {new Date(file.lastUpdated).toLocaleDateString()}
             </motion.div>
         </motion.div>
     );
@@ -532,6 +533,7 @@ export default function Earning() {
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
     const [selectedFile, setSelectedFile] = useState(null);
+    const { t } = useLanguage();
 
     // Fetch total earnings
     const { data: earningsData, isLoading: earningsLoading } = useQuery(
@@ -580,7 +582,8 @@ export default function Earning() {
 
     return (
         <motion.div
-            className="earning-container"
+            className="earning-container min-h-screen bg-indigo-50"
+            style={{ fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{
@@ -599,8 +602,8 @@ export default function Earning() {
                     ease: [0.25, 0.46, 0.45, 0.94]
                 }}
             >
-                <h1>Analytics Dashboard</h1>
-                <p>Track your content performance and earnings</p>
+                <h1>{t('earning.analyticsDashboard')}</h1>
+                <p>{t('earning.trackPerformance')}</p>
             </motion.div>
 
             {/* Stats Dashboard */}
@@ -613,10 +616,10 @@ export default function Earning() {
                     initial="hidden"
                     animate="visible"
                 >
-                    <StatCard label="Total Views" value={totalViews} icon={<FaEye />} color="#01677e" index={0} />
-                    <StatCard label="Total Downloads" value={totalDownloads} icon={<FaDownload />} color="#01677e" index={1} />
-                    <StatCard label="Total Links" value={totalLinks} icon={<FaLink />} color="#01677e" index={2} />
-                    <StatCard label="Total Earnings" value={`${totalEarnings} ${currency}`} icon={<FaMoneyBillWave />} color="#003e4b" index={3} />
+                    <StatCard label={t('earning.totalViews')} value={totalViews} icon={<FaEye />} color="#6366f1" index={0} />
+                    <StatCard label={t('earning.totalDownloads')} value={totalDownloads} icon={<FaDownload />} color="#6366f1" index={1} />
+                    <StatCard label={t('earning.totalLinks')} value={totalLinks} icon={<FaLink />} color="#6366f1" index={2} />
+                    <StatCard label={t('earning.totalEarnings')} value={`${totalEarnings} ${currency}`} icon={<FaMoneyBillWave />} color="#4f46e5" index={3} />
                 </motion.div>
             )}
 
@@ -641,7 +644,7 @@ export default function Earning() {
                         ease: [0.25, 0.46, 0.45, 0.94]
                     }}
                 >
-                    Your Content Performance
+                    {t('earning.contentPerformance')}
                 </motion.h2>
 
                 <motion.div
@@ -670,7 +673,7 @@ export default function Earning() {
                             >
                                 <FaRocket />
                             </motion.div>
-                            Loading your analytics...
+                            {t('earning.loadingAnalytics')}
                         </motion.div>
                     ) : files.length === 0 ? (
                         <motion.div
@@ -683,8 +686,8 @@ export default function Earning() {
                             }}
                         >
                             <FaChartLine />
-                            <h3>No content shared yet</h3>
-                            <p>Start sharing your files to see analytics here!</p>
+                            <h3>{t('earning.noContentShared')}</h3>
+                            <p>{t('earning.startSharing')}</p>
                         </motion.div>
                     ) : (
                         files.map((file, index) => (
@@ -706,6 +709,7 @@ export default function Earning() {
                         file={selectedFile}
                         isOpen={!!selectedFile}
                         onClose={() => setSelectedFile(null)}
+                        t={t}
                     />
                 )}
             </AnimatePresence>

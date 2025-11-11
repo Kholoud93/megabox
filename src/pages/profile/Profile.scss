@@ -2,7 +2,7 @@
 @use "../../helpers/mixins" as *;
 
 .Profile {
-    margin-top: 23px;
+    margin-top: 0;
     min-height: calc(100vh - 100px);
 
     .Info {
@@ -35,19 +35,19 @@
     }
 
     .bg-primary-500 {
-        background-color: $BaseColor;
+        background-color: #6366f1;
 
         &:hover {
-            background-color: $Secondcolor;
+            background-color: #4f46e5;
         }
     }
 
     .text-primary-500 {
-        color: $BaseColor;
+        color: #6366f1;
     }
 
     .border-primary-500 {
-        border-color: $BaseColor;
+        border-color: #6366f1;
     }
 
     .animate-spin {
@@ -64,7 +64,8 @@
         }
     }
 
-    @include media-breakpoint-down(md) {
+    // Extra small screens (mobile portrait)
+    @include Breakpoints(mobile) {
         .md\:flex {
             flex-direction: column;
             align-items: center;
@@ -72,7 +73,41 @@
         }
 
         .md\:flex-shrink-0 {
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        // Ensure proper spacing on mobile
+        .container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+    }
+    
+    // Small screens (mobile landscape / small tablets)
+    @include Breakpoints(small) {
+        .md\:flex {
+            flex-direction: row;
+        }
+    }
+    
+    // Medium screens and up (tablets)
+    @media (min-width: 768px) {
+        .md\:flex {
+            flex-direction: row;
+        }
+    }
+    
+    // Large screens (desktop)
+    @media (min-width: 1024px) {
+        .container {
+            max-width: 1280px;
+        }
+    }
+    
+    // Extra large screens
+    @media (min-width: 1280px) {
+        .container {
+            max-width: 1536px;
         }
     }
 }
