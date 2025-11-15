@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { FiMoreVertical } from 'react-icons/fi';
+import { FiMoreVertical, FiArchive } from 'react-icons/fi';
 import { HiTrash, HiPencil, HiShare } from "react-icons/hi2";
 import { LuFolder } from "react-icons/lu";
 import { useLanguage } from '../../context/LanguageContext';
 
-export const Folder = ({ name, data, onRename, onDelete, onShare }) => {
+export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive }) => {
     const [open, setOpen] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef(null);
@@ -36,7 +36,7 @@ export const Folder = ({ name, data, onRename, onDelete, onShare }) => {
         e.preventDefault();
         e.stopPropagation();
         setShowMenu(false);
-        
+
         switch (action) {
             case 'rename':
                 onRename(name, false, data?._id);
@@ -46,6 +46,11 @@ export const Folder = ({ name, data, onRename, onDelete, onShare }) => {
                 break;
             case 'share':
                 onShare(data?._id);
+                break;
+            case 'archive':
+                if (onArchive) {
+                    onArchive(data?._id);
+                }
                 break;
             default:
                 break;
@@ -71,7 +76,7 @@ export const Folder = ({ name, data, onRename, onDelete, onShare }) => {
                     </div>
                 </div>
             </Link>
-            
+
             <div
                 ref={buttonRef}
                 className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 z-10"
@@ -91,23 +96,32 @@ export const Folder = ({ name, data, onRename, onDelete, onShare }) => {
                     style={{ zIndex: 50 }}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <button 
-                        onClick={(e) => handleAction('rename', e)} 
+                    <button
+                        onClick={(e) => handleAction('rename', e)}
                         className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                     >
                         <HiPencil className='w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0' />
                         <span className="font-medium">{t("folder.rename")}</span>
                     </button>
-                    <button 
-                        onClick={(e) => handleAction('share', e)} 
+                    <button
+                        onClick={(e) => handleAction('share', e)}
                         className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                     >
                         <HiShare className='w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0' />
                         <span className="font-medium">{t("folder.share")}</span>
                     </button>
+                    {onArchive && (
+                        <button
+                            onClick={(e) => handleAction('archive', e)}
+                            className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                        >
+                            <FiArchive className='w-4 h-4 sm:w-5 sm:h-5 text-purple-600 flex-shrink-0' />
+                            <span className="font-medium">{t("folder.archive")}</span>
+                        </button>
+                    )}
                     <div className="border-t border-gray-200 my-0.5 sm:my-1"></div>
-                    <button 
-                        onClick={(e) => handleAction('delete', e)} 
+                    <button
+                        onClick={(e) => handleAction('delete', e)}
                         className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-red-50 w-full text-left transition-colors text-red-600"
                     >
                         <HiTrash className='w-4 h-4 sm:w-5 sm:h-5 text-red-600 flex-shrink-0' />

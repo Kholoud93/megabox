@@ -13,7 +13,7 @@ import { useCookies } from 'react-cookie';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
 import axios from 'axios';
-import { API_URL } from '../../services/api';
+import { API_URL, fileService } from '../../services/api';
 
 // Helper function to get document icon based on file extension
 const getDocumentIcon = (fileName) => {
@@ -46,7 +46,7 @@ const typeConfig = {
         }),
         previewComponent: (url) => (
             <div className="w-full h-full relative bg-black flex items-center justify-center">
-                <video 
+                <video
                     src={url}
                     className="w-full h-full object-cover"
                     muted
@@ -82,7 +82,7 @@ const typeConfig = {
         },
         previewComponent: (url, fileName) => {
             const ext = fileName?.split('.').pop()?.toLowerCase();
-            
+
             // For PDFs, show actual PDF preview
             if (ext === 'pdf') {
                 return (
@@ -95,7 +95,7 @@ const typeConfig = {
                     </div>
                 );
             }
-            
+
             // For other documents, show icon with better styling
             return (
                 <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50">
@@ -118,7 +118,7 @@ const typeConfig = {
             <div className="w-full h-full relative bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 flex items-start justify-start p-3">
                 {/* Folder tab */}
                 <div className="absolute top-2 left-3 w-12 h-2 bg-amber-400 rounded-t-sm"></div>
-                
+
                 {/* Folder body with files */}
                 <div className="w-full h-full bg-gradient-to-br from-amber-100 to-amber-200 rounded-lg border-2 border-amber-300/50 shadow-inner mt-3 p-3 flex flex-col gap-2">
                     {/* File representations */}
@@ -202,21 +202,9 @@ export default function File({ Type, data, Representation, onRename, refetch, on
 
     const handleArchive = async () => {
         try {
-            // Archive the file
-            const response = await axios.patch(
-                `${API_URL}/auth/archiveFile/${_id}`,
-                { archived: true },
-                {
-                    headers: {
-                        Authorization: `Bearer ${MegaBox.MegaBox}`
-                    }
-                }
-            );
-            
-            if (response.status === 200 || response.data?.message) {
-                toast.success("File archived successfully", ToastOptions("success"));
-                refetch();
-            }
+            await fileService.archiveFile(_id, MegaBox.MegaBox);
+            toast.success("File archived successfully", ToastOptions("success"));
+            refetch();
         } catch (error) {
             toast.error("Failed to archive file", ToastOptions("error"));
         }
@@ -275,8 +263,8 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                     onClick={(e) => e.stopPropagation()}
                 >
                     {(Type === 'image' || Type === 'zip' || Type === 'video' || Type === 'document') && (
-                        <button 
-                            onClick={() => handleAction('open')} 
+                        <button
+                            onClick={() => handleAction('open')}
                             className="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                         >
                             {Type === 'zip' ? (
@@ -292,30 +280,30 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                             )}
                         </button>
                     )}
-                    <button 
-                        onClick={() => handleAction('rename')} 
+                    <button
+                        onClick={() => handleAction('rename')}
                         className="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                     >
                         <HiPencil className='w-5 h-5 text-green-600' />
                         <span className="font-medium">Rename</span>
                     </button>
-                    <button 
-                        onClick={() => handleAction('share')} 
+                    <button
+                        onClick={() => handleAction('share')}
                         className="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                     >
                         <HiShare className='w-5 h-5 text-blue-600' />
                         <span className="font-medium">Share</span>
                     </button>
-                    <button 
-                        onClick={() => handleAction('archive')} 
+                    <button
+                        onClick={() => handleAction('archive')}
                         className="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                     >
                         <FiArchive className='w-5 h-5 text-purple-600' />
                         <span className="font-medium">Archive</span>
                     </button>
                     <div className="border-t border-gray-200 my-1"></div>
-                    <button 
-                        onClick={() => handleAction('delete')} 
+                    <button
+                        onClick={() => handleAction('delete')}
                         className="flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 w-full text-left transition-colors text-red-600"
                     >
                         <HiTrash className='w-5 h-5 text-red-600' />
