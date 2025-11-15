@@ -1,0 +1,16 @@
+.notifications-container {
+    font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.notifications-header {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.notification-item {
+    transition: all 0.3s ease;
+    cursor: pointer;
+
+    &:hover {
+        transform: translateY(-2px);
+    }
+}
