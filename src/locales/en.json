@@ -360,7 +360,10 @@
     "total": "Total",
     "installRevenue": "Install Revenue",
     "noDataTitle": "No revenue data",
-    "noDataMessage": "No revenue data available yet"
+    "noDataMessage": "No revenue data available yet",
+    "fetchError": "Failed to fetch revenue data. Please try again later.",
+    "errorTitle": "Error loading revenue data",
+    "errorMessage": "Unable to load revenue data. Please try again later."
   },
   "referral": {
     "bannerTitle": "Earn money by referring friends!",
@@ -390,7 +393,10 @@
     "rule2": "Get 10% of referral income permanently",
     "rule3": "The more invitations, the more income",
     "rule4": "Increase your income with more invites",
-    "rule5": "Warning: False invitation behaviors will lead to account ban and withdrawal prohibition"
+    "rule5": "Warning: False invitation behaviors will lead to account ban and withdrawal prohibition",
+    "fetchError": "Failed to fetch referral data. Please try again later.",
+    "errorTitle": "Error loading referral data",
+    "errorMessage": "Unable to load referral data. Please try again later."
   },
   "adminAnalytics": {
     "title": "Admin Analytics",

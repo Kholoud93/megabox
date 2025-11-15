@@ -27,15 +27,26 @@ export default function Referral() {
     );
 
     // Fetch referral data
-    const { data: referralData, isLoading } = useQuery(
+    const { data: referralData, isLoading, error: referralError } = useQuery(
         ['referralData'],
         async () => {
             const res = await fetch(REFERRAL_DATA_URL, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.message || `Failed to fetch referral data: ${res.status}`);
+            }
             return res.json();
         },
-        { enabled: !!token }
+        {
+            enabled: !!token,
+            retry: 2,
+            onError: (error) => {
+                console.error('Error fetching referral data:', error);
+                toast.error(error.message || t('referral.fetchError'), ToastOptions("error"));
+            }
+        }
     );
 
     const referralLink = userData?.referralLink || `https://mega-box.vercel.app/register?ref=${userData?._id}`;
@@ -212,6 +223,12 @@ export default function Referral() {
                                 </div>
                             ))}
                         </div>
+                    ) : referralError ? (
+                        <EmptyState
+                            icon={FaUsers}
+                            title={t('referral.errorTitle')}
+                            message={referralError.message || t('referral.errorMessage')}
+                        />
                     ) : referUsers.length === 0 ? (
                         <EmptyState
                             icon={FaUsers}

@@ -6,6 +6,8 @@ import { API_URL } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import EmptyState from '../../components/EmptyState/EmptyState';
 import { FaChartLine, FaDollarSign, FaDownload, FaUsers } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../helpers/ToastOptions';
 import './RevenueData.scss';
 
 const REVENUE_URL = `${API_URL}/auth/getUserRevenue`;
@@ -17,15 +19,26 @@ export default function RevenueData() {
     const [selectedTab, setSelectedTab] = useState('all'); // all, estimated, settled
 
     // Fetch revenue data
-    const { data: revenueData, isLoading } = useQuery(
+    const { data: revenueData, isLoading, error: revenueError } = useQuery(
         ['userRevenue'],
         async () => {
             const res = await fetch(REVENUE_URL, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.message || `Failed to fetch revenue data: ${res.status}`);
+            }
             return res.json();
         },
-        { enabled: !!token }
+        {
+            enabled: !!token,
+            retry: 2,
+            onError: (error) => {
+                console.error('Error fetching revenue data:', error);
+                toast.error(error.message || t('revenueData.fetchError'), ToastOptions("error"));
+            }
+        }
     );
 
     // Extract data
@@ -128,6 +141,12 @@ export default function RevenueData() {
                             ))}
                         </div>
                     </div>
+                ) : revenueError ? (
+                    <EmptyState
+                        icon={FaChartLine}
+                        title={t('revenueData.errorTitle')}
+                        message={revenueError.message || t('revenueData.errorMessage')}
+                    />
                 ) : filteredData?.length === 0 ? (
                     <EmptyState
                         icon={FaChartLine}
