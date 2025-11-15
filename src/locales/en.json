@@ -173,6 +173,7 @@
     "profile": "Profile",
     "allFiles": "All Files",
     "yourSharedFiles": "Your shared files",
+    "notifications": "Notifications",
     "partners": "Partners",
     "reports": "Reports",
     "users": "Users",
@@ -183,6 +184,7 @@
     "folder": "Folder",
     "rename": "Rename",
     "share": "Share",
+    "archive": "Archive",
     "delete": "Delete"
   },
   "fileDetails": {
@@ -286,4 +288,3 @@
     "noCountryData": "No country data available yet"
   }
 }
-

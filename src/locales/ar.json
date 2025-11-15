@@ -173,6 +173,7 @@
     "profile": "الملف الشخصي",
     "allFiles": "جميع الملفات",
     "yourSharedFiles": "ملفاتك المشتركة",
+    "notifications": "الإشعارات",
     "partners": "الشركاء",
     "reports": "التقارير",
     "users": "المستخدمون",
@@ -183,6 +184,7 @@
     "folder": "مجلد",
     "rename": "إعادة تسمية",
     "share": "مشاركة",
+    "archive": "أرشفة",
     "delete": "حذف"
   },
   "fileDetails": {
