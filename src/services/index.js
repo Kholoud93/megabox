@@ -1,9 +1,7 @@
-// This file is kept for backward compatibility
-// All services have been moved to separate files in the services directory
-// Please use: import { authService, fileService, etc. } from '../services' or '../services/index'
-
-// Re-export everything from separate service files
+// Export API configuration
 export { API_URL, api } from './apiConfig';
+
+// Export all services
 export { authService } from './authService';
 export { fileService } from './fileService';
 export { userService } from './userService';
@@ -12,5 +10,6 @@ export { notificationService } from './notificationService';
 export { adminService } from './adminService';
 
 // Default export for backward compatibility
-import { api as defaultApi } from './apiConfig';
-export default defaultApi;
+import { api } from './apiConfig';
+export default api;
+
