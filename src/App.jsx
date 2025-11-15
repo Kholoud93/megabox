@@ -23,6 +23,7 @@ import VedioPreview from './pages/VedioPreview/VedioPreview'
 import Earning from './pages/Earning/Earning'
 import Promoters from './pages/OwnerPages/Promoters/Promoters'
 import PromotersEarning from './pages/Earning/PromotersEarning'
+import Notifications from './pages/Notifications/Notifications'
 
 
 // Main Pages
@@ -277,6 +278,14 @@ const router = createBrowserRouter(
             <LoginProtector>
               <RoleProtector requiredRole="User">
                 <Earning />
+              </RoleProtector>
+            </LoginProtector>
+        },
+        {
+          path: "notifications", element:
+            <LoginProtector>
+              <RoleProtector requiredRole="User">
+                <Notifications />
               </RoleProtector>
             </LoginProtector>
         }
