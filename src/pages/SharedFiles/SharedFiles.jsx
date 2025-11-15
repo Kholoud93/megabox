@@ -23,10 +23,21 @@ export default function SharedFiles() {
     const Active = "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
     const InActive = "inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-700 bg-white border border-indigo-300 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
 
-    // Get shared files
+    // Get shared files - only files that have been shared (have shareLink)
     const GetSharedFiles = async () => {
         try {
             const data = await fileService.getSharedFilesByUser(Token.MegaBox);
+            // Filter to only show files that have been shared (have shareLink or isShared flag)
+            if (data?.files) {
+                data.files = data.files.filter(file =>
+                    file.shareLink ||
+                    file.shareUrl ||
+                    file.isShared === true ||
+                    file.isShared === "true" ||
+                    file.shared === true ||
+                    file.shared === "true"
+                );
+            }
             return data || { files: [] };
         } catch (error) {
             console.error('Error fetching shared files:', error);

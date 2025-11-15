@@ -28,12 +28,12 @@ export const LanguageProvider = ({ children }) => {
     const keys = key.split('.');
     const translations = language === 'ar' ? arTranslations : enTranslations;
     let value = translations;
-    
+
     for (const k of keys) {
       value = value?.[k];
       if (value === undefined) return key;
     }
-    
+
     return value || key;
   };
 
@@ -44,5 +44,16 @@ export const LanguageProvider = ({ children }) => {
   );
 };
 
-export const useLanguage = () => useContext(LanguageContext);
+export const useLanguage = () => {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    // Return default values if context is not available
+    return {
+      language: 'en',
+      changeLanguage: () => { },
+      t: (key) => key
+    };
+  }
+  return context;
+};
 

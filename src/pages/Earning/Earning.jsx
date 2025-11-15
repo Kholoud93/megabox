@@ -7,7 +7,7 @@ import {
     FaEye, FaDownload, FaMoneyBillWave, FaFileAlt, FaFileImage, FaFileVideo, FaFilePdf, FaFileWord,
     FaLink, FaGlobe, FaTimes, FaChartLine, FaUsers, FaRocket, FaWallet, FaHistory
 } from 'react-icons/fa';
-import { API_URL, withdrawalService } from '../../services/api';
+import { API_URL, withdrawalService, userService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
@@ -594,6 +594,17 @@ export default function Earning() {
     const files = shareLinksData?.analytics || [];
     const totalLinks = files.length;
 
+    // Fetch user data to check if user has a plan
+    const { data: userData } = useQuery(
+        ['userAccount'],
+        () => userService.getUserInfo(token),
+        { enabled: !!token, retry: false }
+    );
+
+    // Check if user has a plan (Downloadsplan or watchingplan)
+    const hasPlan = userData?.Downloadsplan === "true" || userData?.Downloadsplan === true ||
+        userData?.watchingplan === "true" || userData?.watchingplan === true;
+
     // Fetch withdrawal history
     const { data: withdrawalHistory, isLoading: withdrawalHistoryLoading } = useQuery(
         ['withdrawalHistory'],
@@ -683,28 +694,30 @@ export default function Earning() {
                     <StatCard label={t('earning.totalLinks')} value={totalLinks} icon={<FaLink />} color="#6366f1" index={2} />
                     <StatCard label={t('earning.totalEarnings')} value={`${totalEarnings} ${currency}`} icon={<FaMoneyBillWave />} color="#4f46e5" index={3} />
 
-                    {/* Withdrawal Button */}
-                    <motion.div
-                        className="earning-stat-card"
-                        variants={statsVariants}
-                        initial="hidden"
-                        animate="visible"
-                        style={{
-                            background: 'linear-gradient(135deg, #10b98110, #10b98105)',
-                            borderLeft: '4px solid #10b981',
-                            cursor: 'pointer'
-                        }}
-                        whileHover={{ scale: 1.03, y: -8 }}
-                        onClick={() => setShowWithdrawalModal(true)}
-                    >
-                        <motion.div className="icon" style={{ color: '#10b981' }}>
-                            <FaWallet />
+                    {/* Withdrawal Button - Only show if user has a plan */}
+                    {hasPlan && (
+                        <motion.div
+                            className="earning-stat-card"
+                            variants={statsVariants}
+                            initial="hidden"
+                            animate="visible"
+                            style={{
+                                background: 'linear-gradient(135deg, #10b98110, #10b98105)',
+                                borderLeft: '4px solid #10b981',
+                                cursor: 'pointer'
+                            }}
+                            whileHover={{ scale: 1.03, y: -8 }}
+                            onClick={() => setShowWithdrawalModal(true)}
+                        >
+                            <motion.div className="icon" style={{ color: '#10b981' }}>
+                                <FaWallet />
+                            </motion.div>
+                            <div className="info">
+                                <div className="label">Request Withdrawal</div>
+                                <div className="value">Withdraw</div>
+                            </div>
                         </motion.div>
-                        <div className="info">
-                            <div className="label">Request Withdrawal</div>
-                            <div className="value">Withdraw</div>
-                        </div>
-                    </motion.div>
+                    )}
                 </motion.div>
             )}
 
