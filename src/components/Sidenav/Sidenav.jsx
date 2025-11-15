@@ -147,27 +147,40 @@ export default function Sidenav({ role }) {
                                     {t("sidenav.allFiles")}
                                 </MenuItem>
 
-                                {/* Show Earnings and Shared Files only for promoters with plans */}
+                                {/* Shared Files - Only for promoters with plans */}
                                 {(isPromoter && (userData?.Downloadsplan === "true" || userData?.Downloadsplan === true || userData?.watchingplan === "true" || userData?.watchingplan === true)) && (
-                                    <>
-                                        <MenuItem onClick={handleHide} className={pathname === "/dashboard/Earnings" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/Earnings' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.earnings") : ""}></Link>}
-                                            icon={<HiChartBar className={pathname === "/dashboard/Earnings" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                            data-tooltip={collapsed ? t("sidenav.earnings") : ""}>
-                                            {t("sidenav.earnings")}
-                                        </MenuItem>
+                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/shared-files" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/shared-files' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.sharedFiles") : ""}></Link>}
+                                        icon={<HiShare className={pathname === "/dashboard/shared-files" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? t("sidenav.sharedFiles") : ""}>
+                                        {t("sidenav.sharedFiles")}
+                                    </MenuItem>
+                                )}
 
-                                        <MenuItem onClick={handleHide} className={pathname === "/dashboard/shared-files" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/shared-files' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.sharedFiles") : ""}></Link>}
-                                            icon={<HiShare className={pathname === "/dashboard/shared-files" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                            data-tooltip={collapsed ? t("sidenav.sharedFiles") : ""}>
-                                            {t("sidenav.sharedFiles")}
-                                        </MenuItem>
+                                {/* Promoter Dashboard - Only for promoters */}
+                                {isPromoter && (
+                                    <MenuItem onClick={handleHide} className={pathname === "/Promoter" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Promoter' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.promoterDashboard") : ""}></Link>}
+                                        icon={<HiCurrencyDollar className={pathname === "/Promoter" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? t("sidenav.promoterDashboard") : ""}>
+                                        {t("sidenav.promoterDashboard")}
+                                    </MenuItem>
+                                )}
 
-                                        <MenuItem onClick={handleHide} className={pathname === "/dashboard/revenue-data" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/revenue-data' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.revenueData") : ""}></Link>}
-                                            icon={<HiChartBar className={pathname === "/dashboard/revenue-data" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                            data-tooltip={collapsed ? t("sidenav.revenueData") : ""}>
-                                            {t("sidenav.revenueData")}
-                                        </MenuItem>
-                                    </>
+                                {/* Revenue Data - Only for promoters with plans */}
+                                {(isPromoter && (userData?.Downloadsplan === "true" || userData?.Downloadsplan === true || userData?.watchingplan === "true" || userData?.watchingplan === true)) && (
+                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/revenue-data" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/revenue-data' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.revenueData") : ""}></Link>}
+                                        icon={<HiChartBar className={pathname === "/dashboard/revenue-data" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? t("sidenav.revenueData") : ""}>
+                                        {t("sidenav.revenueData")}
+                                    </MenuItem>
+                                )}
+
+                                {/* Earnings - Only for promoters with plans */}
+                                {(isPromoter && (userData?.Downloadsplan === "true" || userData?.Downloadsplan === true || userData?.watchingplan === "true" || userData?.watchingplan === true)) && (
+                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/Earnings" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/Earnings' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.earnings") : ""}></Link>}
+                                        icon={<HiChartBar className={pathname === "/dashboard/Earnings" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? t("sidenav.earnings") : ""}>
+                                        {t("sidenav.earnings")}
+                                    </MenuItem>
                                 )}
 
                                 {/* Referral - Available for all users */}
@@ -176,14 +189,6 @@ export default function Sidenav({ role }) {
                                     data-tooltip={collapsed ? t("sidenav.referral") : ""}>
                                     {t("sidenav.referral")}
                                 </MenuItem>
-
-                                {isPromoter && (
-                                    <MenuItem onClick={handleHide} className={pathname === "/Promoter" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Promoter' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.promoterDashboard") : ""}></Link>}
-                                        icon={<HiCurrencyDollar className={pathname === "/Promoter" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? t("sidenav.promoterDashboard") : ""}>
-                                        {t("sidenav.promoterDashboard")}
-                                    </MenuItem>
-                                )}
 
                                 <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.partners") : ""}></Link>}
                                     icon={<HiHandRaised className={pathname === "/Partners" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
