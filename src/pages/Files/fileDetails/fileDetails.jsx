@@ -14,6 +14,9 @@ import { HiViewGrid, HiViewList } from "react-icons/hi";
 import Represents from '../../../components/Represents/Represents';
 import ChangeName from '../../../components/ChangeName/ChangeName';
 import { useLanguage } from '../../../context/LanguageContext';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../../helpers/ToastOptions';
+import ShareLinkModal from '../../../components/ShareLinkModal/ShareLinkModal';
 
 export default function fileDetails() {
     const { t, language } = useLanguage();
@@ -71,6 +74,9 @@ export default function fileDetails() {
     const [ShowUpdateName, setupdateName] = useState(false);
     const [OldName, setOldName] = useState(null);
     const [FileId, setFileId] = useState(null);
+    const [showShareModal, setShowShareModal] = useState(false);
+    const [shareUrl, setShareUrl] = useState('');
+    const [shareTitle, setShareTitle] = useState('');
 
     const ToggleNameChange = (name, close, id) => {
         if (close) {
@@ -82,16 +88,48 @@ export default function fileDetails() {
         setupdateName(!ShowUpdateName);
     };
 
-    const ShareFile = async (folderId) => {
-        console.log(folderId);
-        const response = await axios.post(`${API_URL}/user/generateFolderShareLink`, {
-            folderId
-        }, {
-            headers: {
-                'Authorization': `Bearer ${Token.MegaBox}`
+    const ShareFile = async (id, isFolder = true) => {
+        try {
+            if (isFolder) {
+                // Share folder
+                const response = await axios.post(`${API_URL}/user/generateFolderShareLink`, {
+                    folderId: id
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${Token.MegaBox}`
+                    }
+                });
+                // Handle both shareUrl and shareLink properties
+                const link = response.data?.shareUrl || response.data?.shareLink;
+                if (link) {
+                    setShareUrl(link);
+                    setShareTitle("Share Folder");
+                    setShowShareModal(true);
+                } else {
+                    toast.error("Failed to generate share link", ToastOptions("error"));
+                }
+            } else {
+                // Share file
+                const response = await axios.post(`${API_URL}/auth/generateShareLink`, {
+                    fileId: id
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${Token.MegaBox}`
+                    }
+                });
+                // Handle both shareUrl and shareLink properties
+                const link = response.data?.shareUrl || response.data?.shareLink || response.data?.data?.shareLink || response.data?.data?.shareUrl;
+                if (link) {
+                    setShareUrl(link);
+                    setShareTitle("Share File");
+                    setShowShareModal(true);
+                } else {
+                    toast.error("Failed to generate share link", ToastOptions("error"));
+                }
             }
-        });
-        console.log(response);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to generate share link", ToastOptions("error"));
+        }
     }
 
     const filterOptions = [
@@ -257,13 +295,13 @@ export default function fileDetails() {
                             }`}>
                             {data?.files?.map((ele, index) => (
                                 <File
-                                    key={index}
+                                    key={ele?._id || ele?.id || `file-${index}`}
                                     Type={getFileCategory(ele?.fileType)}
                                     data={ele}
                                     Representation={Representation}
                                     refetch={refetch}
                                     onRename={ToggleNameChange}
-                                    onShare={ShareFile}
+                                    onShare={(id) => ShareFile(id, false)}
                                     viewMode={viewMode}
                                 />
                             ))}
@@ -274,9 +312,21 @@ export default function fileDetails() {
         </div>
 
         <AnimatePresence>
-            {AddFileShow && <UploadFile ToggleUploadFile={ToggleShowAddFile} refetch={refetch} insideFile={true} id={fileId} />}
-            {ShowRepresent && <Represents path={Path} type={fileType} ToggleUploadFile={() => Representation("", "", true)} />}
-            {ShowUpdateName && <ChangeName oldFileName={OldName} Toggle={ToggleNameChange} refetch={refetch} FileId={FileId} />}
+            {AddFileShow && <UploadFile key="upload-file" ToggleUploadFile={ToggleShowAddFile} refetch={refetch} insideFile={true} id={fileId} />}
+            {ShowRepresent && <Represents key="represents" path={Path} type={fileType} ToggleUploadFile={() => Representation("", "", true)} />}
+            {ShowUpdateName && <ChangeName key="change-name" oldFileName={OldName} Toggle={ToggleNameChange} refetch={refetch} FileId={FileId} />}
+            {showShareModal && (
+                <ShareLinkModal
+                    key="share-link-modal"
+                    isOpen={showShareModal}
+                    onClose={() => {
+                        setShowShareModal(false);
+                        setShareUrl('');
+                    }}
+                    shareUrl={shareUrl}
+                    title={shareTitle}
+                />
+            )}
         </AnimatePresence>
     </>
 }

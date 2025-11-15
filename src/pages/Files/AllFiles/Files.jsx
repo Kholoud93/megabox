@@ -16,7 +16,9 @@ import Represents from '../../../components/Represents/Represents';
 import ChangeName from '../../../components/ChangeName/ChangeName';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
+import { fileService, userService } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
+import ShareLinkModal from '../../../components/ShareLinkModal/ShareLinkModal';
 
 export default function Files() {
     const { t } = useLanguage();
@@ -27,6 +29,9 @@ export default function Files() {
     const [AddFileShow, setAddFileShow] = useState(false);
     const [AddFolderAdding, setAddFolderAdding] = useState(false);
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+    const [showShareModal, setShowShareModal] = useState(false);
+    const [shareUrl, setShareUrl] = useState('');
+    const [shareTitle, setShareTitle] = useState('');
 
     const ToggleShowAddFile = () => setAddFileShow(!AddFileShow);
     const ToggleFolderAdding = () => setAddFolderAdding(!AddFolderAdding);
@@ -35,40 +40,42 @@ export default function Files() {
     const [FilterKey, setFilterKey] = useState('All');
     const queryClient = useQueryClient();
 
-    // get files
+    // get files - using separate APIs for each group
     const GetFiles = async ({ queryKey }) => {
         const [, filterKey] = queryKey;
-        const config = {
-            headers: {
-                Authorization: `Bearer ${Token.MegaBox}`,
-            },
-        };
+        const token = Token.MegaBox;
 
-        // Always fetch all files first, then filter client-side if needed
-        const { data } = await axios.get(`${API_URL}/auth/getUserFiles`, config);
-        
-        if (!data || !data.files) return data;
+        try {
+            let data;
 
-        let filteredFiles = data.files;
-
-        // Filter by archived status
-        if (filterKey.toLowerCase() === 'archived') {
-            // Only show archived files
-            filteredFiles = data.files.filter(file => file.archived === true || file.isArchived === true);
-        } else {
-            // Exclude archived files from all other views
-            filteredFiles = data.files.filter(file => !file.archived && !file.isArchived);
-            
-            // If it's a type filter, also filter by type
-            if (filterKey.toLowerCase() !== 'all') {
-                filteredFiles = filteredFiles.filter(file => getFileCategory(file?.fileType) === filterKey.toLowerCase());
+            // Use the appropriate API function based on filter
+            switch (filterKey.toLowerCase()) {
+                case 'image':
+                    data = await fileService.getImageFiles(token);
+                    break;
+                case 'video':
+                    data = await fileService.getVideoFiles(token);
+                    break;
+                case 'document':
+                    data = await fileService.getDocumentFiles(token);
+                    break;
+                case 'zip':
+                    data = await fileService.getZipFiles(token);
+                    break;
+                case 'archived':
+                    data = await fileService.getArchivedFiles(token);
+                    break;
+                case 'all':
+                default:
+                    data = await fileService.getAllFiles(token);
+                    break;
             }
-        }
 
-        return {
-            ...data,
-            files: filteredFiles
-        };
+            return data || { files: [] };
+        } catch (error) {
+            console.error('Error fetching files:', error);
+            return { files: [] };
+        }
     };
 
     const { data, refetch, isLoading: filesLoading } = useQuery(["GetUserFiles", FilterKey], GetFiles);
@@ -140,30 +147,65 @@ export default function Files() {
         }
     }
 
-    const ShareFile = async (folderId) => {
-        console.log(folderId);
-        const response = await axios.post(`${API_URL}/user/generateFolderShareLink`, {
-            folderId
-        }, {
-            headers: {
-                'Authorization': `Bearer ${Token.MegaBox}`
+    const ArchiveFolder = async (folderId) => {
+        try {
+            await userService.archiveFolder(folderId, Token.MegaBox);
+            toast.success("Folder archived successfully", ToastOptions("success"));
+            refFolders();
+        } catch (error) {
+            toast.error("Failed to archive folder", ToastOptions("error"));
+        }
+    }
+
+    const ShareFile = async (id, isFolder = false) => {
+        try {
+            if (isFolder) {
+                // Share folder
+                const response = await axios.post(`${API_URL}/user/generateFolderShareLink`, {
+                    folderId: id
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${Token.MegaBox}`
+                    }
+                });
+                // Handle both shareUrl and shareLink properties
+                const link = response.data?.shareUrl || response.data?.shareLink;
+                if (link) {
+                    setShareUrl(link);
+                    setShareTitle("Share Folder");
+                    setShowShareModal(true);
+                } else {
+                    toast.error("Failed to generate share link", ToastOptions("error"));
+                }
+            } else {
+                // Share file
+                const response = await axios.post(`${API_URL}/auth/generateShareLink`, {
+                    fileId: id
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${Token.MegaBox}`
+                    }
+                });
+                // Handle both shareUrl and shareLink properties
+                const link = response.data?.shareUrl || response.data?.shareLink || response.data?.data?.shareLink || response.data?.data?.shareUrl;
+                if (link) {
+                    setShareUrl(link);
+                    setShareTitle("Share File");
+                    setShowShareModal(true);
+                } else {
+                    toast.error("Failed to generate share link", ToastOptions("error"));
+                }
             }
-        });
-        console.log(response);
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to generate share link", ToastOptions("error"));
+        }
     }
 
     // Get archived files count separately
     const GetArchivedFilesCount = async () => {
         try {
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${Token.MegaBox}`,
-                }
-            };
-            const { data } = await axios.get(`${API_URL}/auth/getUserFiles`, config);
-            // Count only archived files
-            const archivedCount = data?.files?.filter(file => file.archived === true || file.isArchived === true)?.length || 0;
-            return archivedCount;
+            const data = await fileService.getArchivedFiles(Token.MegaBox);
+            return data?.files?.length || 0;
         } catch (error) {
             return 0;
         }
@@ -191,33 +233,33 @@ export default function Files() {
                     <div className="py-4 sm:py-6 md:py-8">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                             <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
-                                <svg 
-                                    className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0" 
-                                    viewBox="0 0 48 48" 
-                                    fill="none" 
+                                <svg
+                                    className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0"
+                                    viewBox="0 0 48 48"
+                                    fill="none"
                                     xmlns="http://www.w3.org/2000/svg"
                                     style={{ filter: 'drop-shadow(0 4px 8px rgba(255,255,255,0.3))' }}
                                 >
                                     <defs>
                                         <linearGradient id="logoGradient" x1="0" y1="0" x2="48" y2="48">
-                                            <stop offset="0%" stopColor="var(--color-indigo-400)"/>
-                                            <stop offset="50%" stopColor="var(--color-indigo-500)"/>
-                                            <stop offset="100%" stopColor="var(--color-indigo-600)"/>
+                                            <stop offset="0%" stopColor="var(--color-indigo-400)" />
+                                            <stop offset="50%" stopColor="var(--color-indigo-500)" />
+                                            <stop offset="100%" stopColor="var(--color-indigo-600)" />
                                         </linearGradient>
                                         <linearGradient id="logoGradient2" x1="0" y1="0" x2="48" y2="48">
-                                            <stop offset="0%" stopColor="rgba(255, 255, 255, 0.95)"/>
-                                            <stop offset="100%" stopColor="rgba(255, 255, 255, 0.85)"/>
+                                            <stop offset="0%" stopColor="rgba(255, 255, 255, 0.95)" />
+                                            <stop offset="100%" stopColor="rgba(255, 255, 255, 0.85)" />
                                         </linearGradient>
                                     </defs>
-                                    <rect width="48" height="48" rx="12" fill="url(#logoGradient)"/>
-                                    <path d="M24 12C18.5 12 14 16.5 14 22C14 22.5 14 23 14.1 23.5C12.3 24.2 11 25.8 11 27.5C11 29.7 12.8 31.5 15 31.5H33C35.2 31.5 37 29.7 37 27.5C37 25.8 35.7 24.2 33.9 23.5C34 23 34 22.5 34 22C34 16.5 29.5 12 24 12Z" fill="url(#logoGradient2)"/>
-                                    <rect x="16" y="16" width="16" height="16" rx="2.5" fill="var(--color-indigo-600)" opacity="0.95"/>
-                                    <rect x="20" y="20" width="8" height="8" rx="1.5" fill="white" opacity="0.9"/>
-                                    <line x1="16" y1="16" x2="16" y2="32" stroke="white" strokeWidth="2.5" opacity="0.8"/>
-                                    <line x1="32" y1="16" x2="32" y2="32" stroke="white" strokeWidth="2.5" opacity="0.8"/>
-                                    <line x1="16" y1="16" x2="32" y2="16" stroke="white" strokeWidth="2.5" opacity="0.8"/>
-                                    <line x1="16" y1="24" x2="32" y2="24" stroke="white" strokeWidth="2" opacity="0.6"/>
-                                    <line x1="24" y1="16" x2="24" y2="32" stroke="white" strokeWidth="2" opacity="0.6"/>
+                                    <rect width="48" height="48" rx="12" fill="url(#logoGradient)" />
+                                    <path d="M24 12C18.5 12 14 16.5 14 22C14 22.5 14 23 14.1 23.5C12.3 24.2 11 25.8 11 27.5C11 29.7 12.8 31.5 15 31.5H33C35.2 31.5 37 29.7 37 27.5C37 25.8 35.7 24.2 33.9 23.5C34 23 34 22.5 34 22C34 16.5 29.5 12 24 12Z" fill="url(#logoGradient2)" />
+                                    <rect x="16" y="16" width="16" height="16" rx="2.5" fill="var(--color-indigo-600)" opacity="0.95" />
+                                    <rect x="20" y="20" width="8" height="8" rx="1.5" fill="white" opacity="0.9" />
+                                    <line x1="16" y1="16" x2="16" y2="32" stroke="white" strokeWidth="2.5" opacity="0.8" />
+                                    <line x1="32" y1="16" x2="32" y2="32" stroke="white" strokeWidth="2.5" opacity="0.8" />
+                                    <line x1="16" y1="16" x2="32" y2="16" stroke="white" strokeWidth="2.5" opacity="0.8" />
+                                    <line x1="16" y1="24" x2="32" y2="24" stroke="white" strokeWidth="2" opacity="0.6" />
+                                    <line x1="24" y1="16" x2="24" y2="32" stroke="white" strokeWidth="2" opacity="0.6" />
                                 </svg>
                                 <div className="flex-1 min-w-0">
                                     <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white drop-shadow-lg truncate" style={{ textShadow: '0 2px 10px rgba(255,255,255,0.3)' }}>{t("files.headerTitle")}</h1>
@@ -290,13 +332,14 @@ export default function Files() {
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 md:gap-6">
                             {folders?.folders?.map((ele, index) => (
-                                <Folder 
-                                    key={index} 
-                                    name={ele?.name} 
+                                <Folder
+                                    key={ele?._id || ele?.id || `folder-${index}`}
+                                    name={ele?.name}
                                     data={ele}
                                     onRename={(name, close, id) => ToggleNameChange(name, close, id, true)}
                                     onDelete={DeleteFolder}
-                                    onShare={ShareFile}
+                                    onShare={(id) => ShareFile(id, true)}
+                                    onArchive={ArchiveFolder}
                                 />
                             ))}
                         </div>
@@ -319,8 +362,8 @@ export default function Files() {
                             <button
                                 onClick={() => setViewMode('grid')}
                                 className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 ${viewMode === 'grid'
-                                        ? 'bg-indigo-600 border-2 border-indigo-700 text-white'
-                                        : 'bg-white border-2 border-indigo-300 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 hover:border-indigo-400'
+                                    ? 'bg-indigo-600 border-2 border-indigo-700 text-white'
+                                    : 'bg-white border-2 border-indigo-300 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 hover:border-indigo-400'
                                     }`}
                             >
                                 <HiViewGrid className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -328,8 +371,8 @@ export default function Files() {
                             <button
                                 onClick={() => setViewMode('list')}
                                 className={`p-1.5 sm:p-2 rounded-lg transition-all duration-200 ${viewMode === 'list'
-                                        ? 'bg-indigo-600 border-2 border-indigo-700 text-white'
-                                        : 'bg-white border-2 border-indigo-300 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 hover:border-indigo-400'
+                                    ? 'bg-indigo-600 border-2 border-indigo-700 text-white'
+                                    : 'bg-white border-2 border-indigo-300 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 hover:border-indigo-400'
                                     }`}
                             >
                                 <HiViewList className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -350,8 +393,8 @@ export default function Files() {
                                     <span className="hidden sm:inline">{option.label}</span>
                                     <span className="sm:hidden">{option.label.split(' ')[0]}</span>
                                     <span className={`ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 text-xs rounded-full ${FilterKey === option.key
-                                            ? 'bg-white bg-opacity-20 text-white'
-                                            : 'bg-indigo-100 text-indigo-600'
+                                        ? 'bg-white bg-opacity-20 text-white'
+                                        : 'bg-indigo-100 text-indigo-600'
                                         }`}>
                                         {option.count}
                                     </span>
@@ -363,8 +406,8 @@ export default function Files() {
                     {/* Files Grid/List */}
                     {filesLoading ? (
                         <div className={`grid gap-4 sm:gap-5 md:gap-6 ${viewMode === 'grid'
-                                ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
-                                : 'grid-cols-1'
+                            ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
+                            : 'grid-cols-1'
                             }`}>
                             {[...Array(6)].map((_, i) => (
                                 <div key={i} className="animate-pulse">
@@ -402,12 +445,12 @@ export default function Files() {
                         </div>
                     ) : (
                         <div className={`grid gap-4 sm:gap-5 md:gap-6 ${viewMode === 'grid'
-                                ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
-                                : 'grid-cols-1'
+                            ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
+                            : 'grid-cols-1'
                             }`}>
                             {data?.files?.map((ele, index) => (
                                 <File
-                                    key={index}
+                                    key={ele?._id || ele?.id || `file-${index}`}
                                     Type={getFileCategory(ele?.fileType)}
                                     data={ele}
                                     Representation={Representation}
@@ -427,16 +470,29 @@ export default function Files() {
         </div>
 
         <AnimatePresence>
-            {AddFileShow && <UploadFile ToggleUploadFile={ToggleShowAddFile} refetch={refetch} />}
-            {AddFolderAdding && <AddFolder ToggleUploadFile={ToggleFolderAdding} refetch={refFolders} />}
-            {ShowRepresent && <Represents path={Path} type={fileType} ToggleUploadFile={() => Representation("", "", true)} />}
+            {AddFileShow && <UploadFile key="upload-file" ToggleUploadFile={ToggleShowAddFile} refetch={refetch} />}
+            {AddFolderAdding && <AddFolder key="add-folder" ToggleUploadFile={ToggleFolderAdding} refetch={refFolders} />}
+            {ShowRepresent && <Represents key="represents" path={Path} type={fileType} ToggleUploadFile={() => Representation("", "", true)} />}
             {ShowUpdateName && (
-                <ChangeName 
-                    oldFileName={OldName} 
-                    Toggle={ToggleNameChange} 
-                    refetch={IsFolder ? refFolders : refetch} 
+                <ChangeName
+                    key="change-name"
+                    oldFileName={OldName}
+                    Toggle={ToggleNameChange}
+                    refetch={IsFolder ? refFolders : refetch}
                     FileId={FileId}
                     isFolder={IsFolder}
+                />
+            )}
+            {showShareModal && (
+                <ShareLinkModal
+                    key="share-link-modal"
+                    isOpen={showShareModal}
+                    onClose={() => {
+                        setShowShareModal(false);
+                        setShareUrl('');
+                    }}
+                    shareUrl={shareUrl}
+                    title={shareTitle}
                 />
             )}
         </AnimatePresence>
