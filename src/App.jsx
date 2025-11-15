@@ -26,6 +26,8 @@ import PromotersEarning from './pages/Earning/PromotersEarning'
 import Notifications from './pages/Notifications/Notifications'
 import PromoterDashboard from './pages/Promoter/PromoterDashboard'
 import SharedFiles from './pages/SharedFiles/SharedFiles'
+import RevenueData from './pages/RevenueData/RevenueData'
+import Referral from './pages/Referral/Referral'
 import PromoterProtector from './protectors/PromoterProtector'
 import PromoterWithPlanProtector from './protectors/PromoterWithPlanProtector'
 
@@ -302,6 +304,24 @@ const router = createBrowserRouter(
                 <PromoterWithPlanProtector>
                   <SharedFiles />
                 </PromoterWithPlanProtector>
+              </RoleProtector>
+            </LoginProtector>
+        },
+        {
+          path: "revenue-data", element:
+            <LoginProtector>
+              <RoleProtector requiredRole="User">
+                <PromoterWithPlanProtector>
+                  <RevenueData />
+                </PromoterWithPlanProtector>
+              </RoleProtector>
+            </LoginProtector>
+        },
+        {
+          path: "referral", element:
+            <LoginProtector>
+              <RoleProtector requiredRole="User">
+                <Referral />
               </RoleProtector>
             </LoginProtector>
         }

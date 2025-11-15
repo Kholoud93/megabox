@@ -175,8 +175,29 @@ export default function Sidenav({ role }) {
                                             </MenuItem>
                                         </div>
                                     </div>
+
+                                    <div className="flex justify-between flex-col mb-1">
+                                        <div className="Links">
+                                            <MenuItem onClick={handleHide} className={pathname === "/dashboard/revenue-data" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/revenue-data' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.revenueData") : ""}></Link>}
+                                                icon={<HiChartBar className={pathname === "/dashboard/revenue-data" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                                data-tooltip={collapsed ? t("sidenav.revenueData") : ""}>
+                                                {t("sidenav.revenueData")}
+                                            </MenuItem>
+                                        </div>
+                                    </div>
                                 </>
                             )}
+
+                            {/* Referral - Available for all users */}
+                            <div className="flex justify-between flex-col mb-1">
+                                <div className="Links">
+                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/referral" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/referral' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.referral") : ""}></Link>}
+                                        icon={<HiUserGroup className={pathname === "/dashboard/referral" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? t("sidenav.referral") : ""}>
+                                        {t("sidenav.referral")}
+                                    </MenuItem>
+                                </div>
+                            </div>
 
                             {isPromoter && (
                                 <div className="flex justify-between flex-col mb-1">
