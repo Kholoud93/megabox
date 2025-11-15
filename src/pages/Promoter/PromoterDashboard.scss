@@ -1,4 +1,111 @@
+@use "../../helpers/_variables.scss" as vars;
+@use "../../helpers/_mixins.scss" as mixins;
+@use "../../helpers/_functions.scss" as functions;
+
 .promoter-dashboard {
     width: 100%;
     min-height: 100vh;
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+
+        @include functions.Breakpoints(mobile) {
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: vars.$text-4xl;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+
+            @include mixins.media-breakpoint-down(md) {
+                font-size: vars.$text-3xl;
+            }
+
+            @include functions.Breakpoints(mobile) {
+                font-size: vars.$text-2xl;
+            }
+        }
+
+        p {
+            font-size: vars.$text-base;
+            color: #4b5563;
+            font-weight: 500;
+
+            @include mixins.media-breakpoint-down(md) {
+                font-size: vars.$text-sm;
+            }
+
+            @include functions.Breakpoints(mobile) {
+                font-size: vars.$text-xs;
+            }
+        }
+    }
+
+    .loading-skeleton {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+
+        @include mixins.media-breakpoint-down(lg) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @include mixins.media-breakpoint-down(md) {
+            grid-template-columns: 1fr;
+        }
+
+        .skeleton-card {
+            height: 100px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            border-radius: vars.$rounded-md;
+            animation: shimmer 1.5s infinite;
+        }
+    }
+
+    @keyframes shimmer {
+        0% {
+            background-position: -200% 0;
+        }
+
+        100% {
+            background-position: 200% 0;
+        }
+    }
+
+    .earning-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+
+        @include mixins.media-breakpoint-down(lg) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @include mixins.media-breakpoint-down(md) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .withdrawal-section {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        .section-title {
+            font-size: vars.$text-2xl;
+            font-weight: 700;
+            color: var(--color-indigo-900);
+        }
+    }
 }

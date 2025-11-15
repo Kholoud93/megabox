@@ -287,7 +287,43 @@
     "downloads": "Downloads",
     "lastActivity": "Last Activity",
     "countryAnalytics": "Country Analytics",
-    "noCountryData": "No country data available yet"
+    "noCountryData": "No country data available yet",
+    "sharedLinks": "Shared Links",
+    "top10Description": "Only display the top 10 items with the highest number of views. Shared links start counting from May 13, 2024",
+    "noDataTitle": "No data",
+    "noDataMessage": "Make money by sharing videos",
+    "toShare": "To share",
+    "creationTime": "Creation time",
+    "link": "Link",
+    "withdrawalHistory": "Withdrawal History",
+    "loadingHistory": "Loading withdrawal history...",
+    "noWithdrawalHistory": "No withdrawal history",
+    "withdrawable": "Withdrawable",
+    "withdrawableDescription": "This is the total amount you can withdraw. You can request a withdrawal at any time.",
+    "estimatedIncomeDescription": "This is your estimated income based on pending rewards. This amount will be confirmed after verification.",
+    "actualIncomeDescription": "This is your confirmed and settled income. This amount has been verified and is ready for withdrawal.",
+    "totalViewsDescription": "Total number of views across all your shared content. This includes all views from shared links.",
+    "totalDownloadsDescription": "Total number of downloads across all your shared content. This includes all downloads from shared links.",
+    "totalLinksDescription": "Total number of shared links you have created. Each link represents a piece of content you've shared."
+  },
+  "promoterDashboard": {
+    "title": "Promoter Dashboard",
+    "subtitle": "View your promoter earnings and statistics",
+    "pendingEarnings": "Pending Earnings",
+    "confirmedEarnings": "Confirmed Earnings",
+    "totalEarnings": "Total Earnings",
+    "requestWithdrawal": "Request Withdrawal",
+    "withdraw": "Withdraw",
+    "withdrawalHistory": "Withdrawal History",
+    "loadingHistory": "Loading withdrawal history...",
+    "noWithdrawalHistory": "No withdrawal history",
+    "amount": "Amount",
+    "enterAmount": "Enter amount",
+    "paymentMethod": "Payment Method",
+    "enterPaymentMethod": "Enter payment method",
+    "whatsappTelegram": "WhatsApp/Telegram Account",
+    "enterWhatsappTelegram": "Enter WhatsApp/Telegram account",
+    "available": "Available"
   },
   "sharedFiles": {
     "title": "Shared Files",
@@ -296,6 +332,7 @@
     "loadingFiles": "Loading files...",
     "filesCount": "files",
     "noFilesFound": "No shared files found",
-    "noFilesMessage": "You haven't shared any files yet. Share files to see them here."
+    "noFilesMessage": "You haven't shared any files yet. Share files to see them here.",
+    "goToFiles": "Go to Files"
   }
 }

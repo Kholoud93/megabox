@@ -4,13 +4,13 @@ import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    FaEye, FaDownload, FaMoneyBillWave, FaFileAlt, FaFileImage, FaFileVideo, FaFilePdf, FaFileWord,
-    FaLink, FaGlobe, FaTimes, FaChartLine, FaUsers, FaRocket, FaWallet, FaHistory
+    FaGlobe, FaTimes, FaHistory, FaEye, FaDownload, FaLink, FaMoneyBillWave, FaWallet, FaChartLine
 } from 'react-icons/fa';
 import { API_URL, withdrawalService, userService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
+import SharedLinksTable from '../../components/SharedLinksTable/SharedLinksTable';
 
 const EARNINGS_URL = `${API_URL}/auth/getUserEarnings`;
 const ANALYTICS_URL = `${API_URL}/auth/getUserAnalytics`;
@@ -121,7 +121,7 @@ function LoadingSkeleton() {
     );
 }
 
-function StatCard({ label, value, icon, color, index }) {
+function StatCard({ label, value, icon, color, index, onClick }) {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
@@ -147,9 +147,11 @@ function StatCard({ label, value, icon, color, index }) {
             }}
             onHoverStart={() => setIsHovered(true)}
             onHoverEnd={() => setIsHovered(false)}
+            onClick={onClick}
             style={{
                 background: `linear-gradient(135deg, ${color}10, ${color}05)`,
-                borderLeft: `4px solid ${color}`
+                borderLeft: `4px solid ${color}`,
+                cursor: onClick ? 'pointer' : 'default'
             }}
         >
             <motion.div
@@ -531,10 +533,82 @@ function FileCard({ file, onShowCountries, index, t }) {
     );
 }
 
+function StatDetailModal({ statType, isOpen, onClose, data, t }) {
+    if (!isOpen) return null;
+
+    const getModalContent = () => {
+        switch (statType) {
+            case 'totalEarnings':
+                return {
+                    title: t('earning.totalEarnings'),
+                    description: t('earning.withdrawableDescription'),
+                    value: data?.withdrawable || '0.00',
+                    currency: data?.currency || 'USD'
+                };
+            case 'views':
+                return {
+                    title: t('earning.totalViews'),
+                    description: t('earning.totalViewsDescription'),
+                    value: data?.totalViews || 0
+                };
+            case 'downloads':
+                return {
+                    title: t('earning.totalDownloads'),
+                    description: t('earning.totalDownloadsDescription'),
+                    value: data?.totalDownloads || 0
+                };
+            case 'links':
+                return {
+                    title: t('earning.totalLinks'),
+                    description: t('earning.totalLinksDescription'),
+                    value: data?.totalLinks || 0
+                };
+            default:
+                return null;
+        }
+    };
+
+    const content = getModalContent();
+    if (!content) return null;
+
+    return (
+        <motion.div
+            className="stat-modal-backdrop"
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+        >
+            <motion.div
+                className="stat-modal"
+                variants={modalVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="stat-modal-header">
+                    <h3>{content.title}</h3>
+                    <button onClick={onClose} className="close-btn">
+                        <FaTimes />
+                    </button>
+                </div>
+                <div className="stat-modal-content">
+                    <div className="stat-modal-value">
+                        {content.value} {content.currency && content.currency}
+                    </div>
+                    <p className="stat-modal-description">{content.description}</p>
+                </div>
+            </motion.div>
+        </motion.div>
+    );
+}
+
 export default function Earning() {
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
     const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedStat, setSelectedStat] = useState(null);
     const [showWithdrawalModal, setShowWithdrawalModal] = useState(false);
     const [withdrawalForm, setWithdrawalForm] = useState({
         amount: '',
@@ -588,6 +662,9 @@ export default function Earning() {
     const isLoading = earningsLoading || analyticsLoading || shareLinksLoading;
 
     const totalEarnings = earningsData?.totalEarnings || '0.00';
+    const withdrawable = earningsData?.withdrawable || earningsData?.totalEarnings || '0.00';
+    const estimatedIncome = earningsData?.estimatedIncome || earningsData?.pendingRewards || '0.00';
+    const actualIncome = earningsData?.actualIncome || earningsData?.confirmedRewards || earningsData?.totalEarnings || '0.00';
     const currency = earningsData?.currency || 'USD';
     const totalViews = analyticsData?.totalAnalytics?.totalViews || 0;
     const totalDownloads = analyticsData?.totalAnalytics?.totalDownloads || 0;
@@ -679,172 +756,129 @@ export default function Earning() {
                 <p>{t('earning.trackPerformance')}</p>
             </motion.div>
 
-            {/* Stats Dashboard */}
-            {isLoading ? (
-                <LoadingSkeleton />
-            ) : (
-                <motion.div
-                    className="earning-stats"
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="visible"
-                >
-                    <StatCard label={t('earning.totalViews')} value={totalViews} icon={<FaEye />} color="#6366f1" index={0} />
-                    <StatCard label={t('earning.totalDownloads')} value={totalDownloads} icon={<FaDownload />} color="#6366f1" index={1} />
-                    <StatCard label={t('earning.totalLinks')} value={totalLinks} icon={<FaLink />} color="#6366f1" index={2} />
-                    <StatCard label={t('earning.totalEarnings')} value={`${totalEarnings} ${currency}`} icon={<FaMoneyBillWave />} color="#4f46e5" index={3} />
+            <div className="earning-container__wrapper">
+                {/* Stats Dashboard */}
+                {isLoading ? (
+                    <LoadingSkeleton />
+                ) : (
+                    <motion.div
+                        className="earning-stats"
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                    >
+                        <StatCard
+                            label={t('earning.totalViews')}
+                            value={totalViews}
+                            icon={<FaEye />}
+                            color="#6366f1"
+                            index={0}
+                            onClick={() => setSelectedStat('views')}
+                        />
+                        <StatCard
+                            label={t('earning.totalDownloads')}
+                            value={totalDownloads}
+                            icon={<FaDownload />}
+                            color="#6366f1"
+                            index={1}
+                            onClick={() => setSelectedStat('downloads')}
+                        />
+                        <StatCard
+                            label={t('earning.totalLinks')}
+                            value={totalLinks}
+                            icon={<FaLink />}
+                            color="#6366f1"
+                            index={2}
+                            onClick={() => setSelectedStat('links')}
+                        />
+                        <StatCard
+                            label={t('earning.totalEarnings')}
+                            value={`${totalEarnings} ${currency}`}
+                            icon={<FaMoneyBillWave />}
+                            color="#4f46e5"
+                            index={3}
+                            onClick={() => setSelectedStat('totalEarnings')}
+                        />
 
-                    {/* Withdrawal Button - Only show if user has a plan */}
-                    {hasPlan && (
-                        <motion.div
-                            className="earning-stat-card"
-                            variants={statsVariants}
-                            initial="hidden"
-                            animate="visible"
-                            style={{
-                                background: 'linear-gradient(135deg, #10b98110, #10b98105)',
-                                borderLeft: '4px solid #10b981',
-                                cursor: 'pointer'
-                            }}
-                            whileHover={{ scale: 1.03, y: -8 }}
-                            onClick={() => setShowWithdrawalModal(true)}
-                        >
-                            <motion.div className="icon" style={{ color: '#10b981' }}>
-                                <FaWallet />
-                            </motion.div>
-                            <div className="info">
-                                <div className="label">Request Withdrawal</div>
-                                <div className="value">Withdraw</div>
-                            </div>
-                        </motion.div>
-                    )}
-                </motion.div>
-            )}
-
-            {/* Files Cards */}
-            <motion.div
-                className="files-section"
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                    duration: 0.8,
-                    delay: 0.4,
-                    ease: [0.25, 0.46, 0.45, 0.94]
-                }}
-            >
-                <motion.h2
-                    className="section-title"
-                    initial={{ opacity: 0, x: -40 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{
-                        duration: 0.8,
-                        delay: 0.5,
-                        ease: [0.25, 0.46, 0.45, 0.94]
-                    }}
-                >
-                    {t('earning.contentPerformance')}
-                </motion.h2>
-
-                <motion.div
-                    className="earning-files-list"
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate="visible"
-                >
-                    {isLoading ? (
-                        <motion.div
-                            className="loading-message"
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{
-                                duration: 0.6,
-                                ease: [0.25, 0.46, 0.45, 0.94]
-                            }}
-                        >
+                        {/* Withdrawal Button - Only show if user has a plan */}
+                        {hasPlan && (
                             <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{
-                                    duration: 1.5,
-                                    repeat: Infinity,
-                                    ease: "linear"
+                                className="earning-stat-card"
+                                variants={statsVariants}
+                                initial="hidden"
+                                animate="visible"
+                                style={{
+                                    background: 'linear-gradient(135deg, #10b98110, #10b98105)',
+                                    borderLeft: '4px solid #10b981',
+                                    cursor: 'pointer'
                                 }}
+                                whileHover={{ scale: 1.03, y: -8 }}
+                                onClick={() => setShowWithdrawalModal(true)}
                             >
-                                <FaRocket />
-                            </motion.div>
-                            {t('earning.loadingAnalytics')}
-                        </motion.div>
-                    ) : files.length === 0 ? (
-                        <motion.div
-                            className="no-files-message"
-                            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            transition={{
-                                duration: 0.8,
-                                ease: [0.25, 0.46, 0.45, 0.94]
-                            }}
-                        >
-                            <FaChartLine />
-                            <h3>{t('earning.noContentShared')}</h3>
-                            <p>{t('earning.startSharing')}</p>
-                        </motion.div>
-                    ) : (
-                        files.map((file, index) => (
-                            <FileCard
-                                key={file.fileId}
-                                file={file}
-                                onShowCountries={setSelectedFile}
-                                index={index}
-                                t={t}
-                            />
-                        ))
-                    )}
-                </motion.div>
-            </motion.div>
-
-            {/* Withdrawal History Section */}
-            <motion.div
-                className="withdrawal-section"
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-            >
-                <div className="flex items-center justify-between mb-4">
-                    <h2 className="section-title flex items-center gap-2">
-                        <FaHistory /> Withdrawal History
-                    </h2>
-                </div>
-                {withdrawalHistoryLoading ? (
-                    <div className="text-center py-8">Loading withdrawal history...</div>
-                ) : withdrawalHistory?.withdrawals?.length > 0 ? (
-                    <div className="space-y-3">
-                        {withdrawalHistory.withdrawals.map((withdrawal, index) => (
-                            <motion.div
-                                key={index}
-                                className="bg-white rounded-lg p-4 shadow-sm border border-indigo-100"
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                            >
-                                <div className="flex justify-between items-center">
-                                    <div>
-                                        <p className="font-semibold text-indigo-900">{withdrawal.amount} {withdrawal.currency || currency}</p>
-                                        <p className="text-sm text-gray-600">{withdrawal.paymentMethod}</p>
-                                        <p className="text-xs text-gray-500">{new Date(withdrawal.createdAt).toLocaleDateString()}</p>
-                                    </div>
-                                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${withdrawal.status === 'approved' ? 'bg-green-100 text-green-800' :
-                                        withdrawal.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                            'bg-red-100 text-red-800'
-                                        }`}>
-                                        {withdrawal.status || 'pending'}
-                                    </span>
+                                <motion.div className="icon" style={{ color: '#10b981' }}>
+                                    <FaWallet />
+                                </motion.div>
+                                <div className="info">
+                                    <div className="label">Request Withdrawal</div>
+                                    <div className="value">Withdraw</div>
                                 </div>
                             </motion.div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="text-center py-8 text-gray-500">No withdrawal history</div>
+                        )}
+                    </motion.div>
                 )}
-            </motion.div>
+
+                {/* Shared Links Table */}
+                <SharedLinksTable
+                    files={files}
+                    isLoading={isLoading}
+                    t={t}
+                />
+
+                {/* Withdrawal History Section */}
+                <motion.div
+                    className="withdrawal-section"
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.6 }}
+                >
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="section-title flex items-center gap-2">
+                            <FaHistory /> {t('earning.withdrawalHistory')}
+                        </h2>
+                    </div>
+                    {withdrawalHistoryLoading ? (
+                        <div className="text-center py-8">{t('earning.loadingHistory')}</div>
+                    ) : withdrawalHistory?.withdrawals?.length > 0 ? (
+                        <div className="space-y-3">
+                            {withdrawalHistory.withdrawals.map((withdrawal, index) => (
+                                <motion.div
+                                    key={index}
+                                    className="bg-white rounded-lg p-4 shadow-sm border border-indigo-100"
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: index * 0.1 }}
+                                >
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <p className="font-semibold text-indigo-900">{withdrawal.amount} {withdrawal.currency || currency}</p>
+                                            <p className="text-sm text-gray-600">{withdrawal.paymentMethod}</p>
+                                            <p className="text-xs text-gray-500">{new Date(withdrawal.createdAt).toLocaleDateString()}</p>
+                                        </div>
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${withdrawal.status === 'approved' ? 'bg-green-100 text-green-800' :
+                                            withdrawal.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                                'bg-red-100 text-red-800'
+                                            }`}>
+                                            {withdrawal.status || 'pending'}
+                                        </span>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-8 text-gray-500">{t('earning.noWithdrawalHistory')}</div>
+                    )}
+                </motion.div>
+            </div>
 
             {/* Withdrawal Modal */}
             <AnimatePresence>
@@ -960,6 +994,27 @@ export default function Earning() {
                             </form>
                         </motion.div>
                     </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Stat Detail Modal */}
+            <AnimatePresence mode="wait">
+                {selectedStat && (
+                    <StatDetailModal
+                        statType={selectedStat}
+                        isOpen={!!selectedStat}
+                        onClose={() => setSelectedStat(null)}
+                        data={{
+                            withdrawable,
+                            estimatedIncome,
+                            actualIncome,
+                            currency,
+                            totalViews,
+                            totalDownloads,
+                            totalLinks
+                        }}
+                        t={t}
+                    />
                 )}
             </AnimatePresence>
 

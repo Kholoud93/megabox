@@ -287,7 +287,43 @@
     "downloads": "تنزيلات",
     "lastActivity": "النشاط الأخير",
     "countryAnalytics": "تحليلات البلدان",
-    "noCountryData": "لا توجد بيانات البلد متاحة بعد"
+    "noCountryData": "لا توجد بيانات البلد متاحة بعد",
+    "sharedLinks": "الروابط المشتركة",
+    "top10Description": "عرض أفضل 10 عناصر بأعلى عدد مشاهدات. الروابط المشتركة تبدأ العد من 13 مايو 2024",
+    "noDataTitle": "لا توجد بيانات",
+    "noDataMessage": "اكسب المال من خلال مشاركة مقاطع الفيديو",
+    "toShare": "للمشاركة",
+    "creationTime": "وقت الإنشاء",
+    "link": "الرابط",
+    "withdrawalHistory": "سجل السحوبات",
+    "loadingHistory": "جارٍ تحميل سجل السحوبات...",
+    "noWithdrawalHistory": "لا يوجد سجل سحوبات",
+    "withdrawable": "القابل للسحب",
+    "withdrawableDescription": "هذا هو المبلغ الإجمالي الذي يمكنك سحبه. يمكنك طلب سحب في أي وقت.",
+    "estimatedIncomeDescription": "هذا هو دخلك المقدر بناءً على المكافآت المعلقة. سيتم تأكيد هذا المبلغ بعد التحقق.",
+    "actualIncomeDescription": "هذا هو دخلك المؤكد والمستقر. تم التحقق من هذا المبلغ وهو جاهز للسحب.",
+    "totalViewsDescription": "إجمالي عدد المشاهدات عبر جميع المحتويات المشتركة. يتضمن هذا جميع المشاهدات من الروابط المشتركة.",
+    "totalDownloadsDescription": "إجمالي عدد التنزيلات عبر جميع المحتويات المشتركة. يتضمن هذا جميع التنزيلات من الروابط المشتركة.",
+    "totalLinksDescription": "إجمالي عدد الروابط المشتركة التي قمت بإنشائها. يمثل كل رابط جزءًا من المحتوى الذي شاركته."
+  },
+  "promoterDashboard": {
+    "title": "لوحة تحكم المروج",
+    "subtitle": "عرض أرباح وإحصائيات المروج",
+    "pendingEarnings": "الأرباح المعلقة",
+    "confirmedEarnings": "الأرباح المؤكدة",
+    "totalEarnings": "إجمالي الأرباح",
+    "requestWithdrawal": "طلب سحب",
+    "withdraw": "سحب",
+    "withdrawalHistory": "سجل السحوبات",
+    "loadingHistory": "جارٍ تحميل سجل السحوبات...",
+    "noWithdrawalHistory": "لا يوجد سجل سحوبات",
+    "amount": "المبلغ",
+    "enterAmount": "أدخل المبلغ",
+    "paymentMethod": "طريقة الدفع",
+    "enterPaymentMethod": "أدخل طريقة الدفع",
+    "whatsappTelegram": "حساب WhatsApp/Telegram",
+    "enterWhatsappTelegram": "أدخل حساب WhatsApp/Telegram",
+    "available": "متاح"
   },
   "sharedFiles": {
     "title": "الملفات المشتركة",
@@ -296,6 +332,7 @@
     "loadingFiles": "جارٍ تحميل الملفات...",
     "filesCount": "ملفات",
     "noFilesFound": "لم يتم العثور على ملفات مشتركة",
-    "noFilesMessage": "لم تشارك أي ملفات بعد. شارك الملفات لرؤيتها هنا."
+    "noFilesMessage": "لم تشارك أي ملفات بعد. شارك الملفات لرؤيتها هنا.",
+    "goToFiles": "الذهاب إلى الملفات"
   }
 }

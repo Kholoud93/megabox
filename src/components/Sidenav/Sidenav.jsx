@@ -153,25 +153,30 @@ export default function Sidenav({ role }) {
                                     </MenuItem>
                                 </div>
                             </div>
-                            <div className="flex justify-between flex-col mb-1">
-                                <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/Earnings" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/Earnings' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.earnings") : ""}></Link>}
-                                        icon={<HiChartBar className={pathname === "/dashboard/Earnings" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? t("sidenav.earnings") : ""}>
-                                        {t("sidenav.earnings")}
-                                    </MenuItem>
-                                </div>
-                            </div>
+                            {/* Show Earnings and Shared Files only for promoters with plans */}
+                            {(isPromoter && (userData?.Downloadsplan === "true" || userData?.Downloadsplan === true || userData?.watchingplan === "true" || userData?.watchingplan === true)) && (
+                                <>
+                                    <div className="flex justify-between flex-col mb-1">
+                                        <div className="Links">
+                                            <MenuItem onClick={handleHide} className={pathname === "/dashboard/Earnings" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/Earnings' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.earnings") : ""}></Link>}
+                                                icon={<HiChartBar className={pathname === "/dashboard/Earnings" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                                data-tooltip={collapsed ? t("sidenav.earnings") : ""}>
+                                                {t("sidenav.earnings")}
+                                            </MenuItem>
+                                        </div>
+                                    </div>
 
-                            <div className="flex justify-between flex-col mb-1">
-                                <div className="Links">
-                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/shared-files" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/shared-files' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.sharedFiles") : ""}></Link>}
-                                        icon={<HiShare className={pathname === "/dashboard/shared-files" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? t("sidenav.sharedFiles") : ""}>
-                                        {t("sidenav.sharedFiles")}
-                                    </MenuItem>
-                                </div>
-                            </div>
+                                    <div className="flex justify-between flex-col mb-1">
+                                        <div className="Links">
+                                            <MenuItem onClick={handleHide} className={pathname === "/dashboard/shared-files" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/shared-files' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.sharedFiles") : ""}></Link>}
+                                                icon={<HiShare className={pathname === "/dashboard/shared-files" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                                data-tooltip={collapsed ? t("sidenav.sharedFiles") : ""}>
+                                                {t("sidenav.sharedFiles")}
+                                            </MenuItem>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
 
                             {isPromoter && (
                                 <div className="flex justify-between flex-col mb-1">

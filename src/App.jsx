@@ -27,6 +27,7 @@ import Notifications from './pages/Notifications/Notifications'
 import PromoterDashboard from './pages/Promoter/PromoterDashboard'
 import SharedFiles from './pages/SharedFiles/SharedFiles'
 import PromoterProtector from './protectors/PromoterProtector'
+import PromoterWithPlanProtector from './protectors/PromoterWithPlanProtector'
 
 
 // Main Pages
@@ -280,7 +281,9 @@ const router = createBrowserRouter(
           path: "Earnings", element:
             <LoginProtector>
               <RoleProtector requiredRole="User">
-                <Earning />
+                <PromoterWithPlanProtector>
+                  <Earning />
+                </PromoterWithPlanProtector>
               </RoleProtector>
             </LoginProtector>
         },
@@ -296,7 +299,9 @@ const router = createBrowserRouter(
           path: "shared-files", element:
             <LoginProtector>
               <RoleProtector requiredRole="User">
-                <SharedFiles />
+                <PromoterWithPlanProtector>
+                  <SharedFiles />
+                </PromoterWithPlanProtector>
               </RoleProtector>
             </LoginProtector>
         }
