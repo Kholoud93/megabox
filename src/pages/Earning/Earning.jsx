@@ -354,7 +354,7 @@ function getFileIcon(name) {
     return <FaFileAlt />;
 }
 
-function FileCard({ file, onShowCountries, index }) {
+function FileCard({ file, onShowCountries, index, t }) {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
@@ -781,6 +781,7 @@ export default function Earning() {
                                 file={file}
                                 onShowCountries={setSelectedFile}
                                 index={index}
+                                t={t}
                             />
                         ))
                     )}
