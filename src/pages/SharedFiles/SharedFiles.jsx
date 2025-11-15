@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { motion } from 'framer-motion';
-import { fileService } from '../../services/api';
+import { fileService, userService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { getFileCategory } from '../../helpers/MimeType';
 import File from '../../components/File/File';
@@ -45,6 +45,19 @@ export default function SharedFiles() {
     };
 
     const { data, isLoading: filesLoading, refetch } = useQuery("GetSharedFiles", GetSharedFiles);
+
+    // Get shared folders with files
+    const GetSharedFolders = async () => {
+        try {
+            const data = await userService.getSharedFoldersWithFiles(Token.MegaBox);
+            return data || { folders: [] };
+        } catch (error) {
+            console.error('Error fetching shared folders:', error);
+            return { folders: [] };
+        }
+    };
+
+    const { data: sharedFoldersData, isLoading: foldersLoading } = useQuery("GetSharedFolders", GetSharedFolders);
 
     const Representation = (path, type, close) => {
         if (close) {
@@ -143,6 +156,38 @@ export default function SharedFiles() {
                             </button>
                         ))}
                     </div>
+
+                    {/* Shared Folders Section */}
+                    {sharedFoldersData?.folders && sharedFoldersData.folders.length > 0 && (
+                        <motion.div
+                            className="shared-folders-section"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            <h2 className="shared-folders-section__title">
+                                <FaFolder className="shared-folders-section__icon" />
+                                {t("sharedFiles.sharedFolders") || "Shared Folders"}
+                            </h2>
+                            <div className="shared-folders-grid">
+                                {sharedFoldersData.folders.map((folder, index) => (
+                                    <motion.div
+                                        key={folder._id || folder.id || `folder-${index}`}
+                                        className="shared-folder-card"
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: index * 0.05 }}
+                                    >
+                                        <FaFolder className="shared-folder-card__icon" />
+                                        <h3 className="shared-folder-card__name">{folder.name || folder.folderName || "Untitled Folder"}</h3>
+                                        <p className="shared-folder-card__count">
+                                            {folder.files?.length || 0} {t("sharedFiles.files") || "files"}
+                                        </p>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
 
                     {/* Files Grid/List */}
                     {filesLoading ? (

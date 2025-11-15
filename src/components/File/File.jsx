@@ -210,6 +210,15 @@ export default function File({ Type, data, Representation, onRename, refetch, on
         }
     };
 
+    const handleDisableShare = async () => {
+        try {
+            await fileService.disableFileShare(_id, MegaBox.MegaBox);
+            refetch();
+        } catch (error) {
+            // Error is handled in the service
+        }
+    };
+
     const handleAction = async (action) => {
         setShowMenu(false);
         switch (action) {
@@ -228,6 +237,9 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                 break;
             case "share":
                 await onShare(_id)
+                break;
+            case "disableShare":
+                await handleDisableShare();
                 break;
             case "archive":
                 await handleArchive();
@@ -294,6 +306,15 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                         <HiShare className='w-5 h-5 text-blue-600' />
                         <span className="font-medium">Share</span>
                     </button>
+                    {(data?.shareLink || data?.shareUrl || data?.isShared === true || data?.isShared === "true" || data?.shared === true || data?.shared === "true") && (
+                        <button
+                            onClick={() => handleAction('disableShare')}
+                            className="flex items-center gap-3 px-4 py-2.5 hover:bg-orange-50 w-full text-left transition-colors text-orange-600"
+                        >
+                            <HiShare className='w-5 h-5 text-orange-600 rotate-180' />
+                            <span className="font-medium">Disable Share</span>
+                        </button>
+                    )}
                     <button
                         onClick={() => handleAction('archive')}
                         className="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"

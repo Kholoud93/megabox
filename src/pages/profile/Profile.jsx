@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { API_URL, userService } from '../../services/api';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaCamera, FaEdit, FaSave, FaTimes, FaCrown, FaUser, FaTrash } from 'react-icons/fa';
 import { ToastOptions } from '../../helpers/ToastOptions';
@@ -21,6 +22,8 @@ export default function Profile() {
     const queryClient = useQueryClient();
     const [Token] = useCookies(['MegaBox']);
     const { t } = useLanguage();
+    const navigate = useNavigate();
+    const premiumFileInputRef = useRef(null);
 
     const GetUserStorage = async () => {
         const response = await axios.get(`${API_URL}/auth/getUserStorageUsage`, {
@@ -99,6 +102,26 @@ export default function Profile() {
         }
     );
 
+    const subscribeToPremiumMutation = useMutation(
+        (file) => userService.subscribeToPremium(file, Token.MegaBox),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries('userProfile');
+                toast.success(t('profile.premiumSubscribed') || 'Premium subscription successful!', ToastOptions('success'));
+            },
+            onError: (error) => {
+                toast.error(error.message || t('profile.premiumSubscribeFailed') || 'Failed to subscribe to premium', ToastOptions('error'));
+            }
+        }
+    );
+
+    const handlePremiumSubscribe = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            subscribeToPremiumMutation.mutate(file);
+        }
+    };
+
 
     const handleImageChange = (event) => {
         const file = event.target.files[0];
@@ -170,7 +193,7 @@ export default function Profile() {
                                     }}
                                 />
                             ) : (
-                                <div 
+                                <div
                                     className="flex h-32 w-32 sm:h-40 sm:w-40 md:h-48 md:w-48 lg:h-56 lg:w-56 xl:h-64 xl:w-64 items-center justify-center rounded-lg m-3 sm:m-4 md:m-5 lg:m-6 border-4 border-indigo-200 shadow-md bg-gradient-to-br from-indigo-100 to-indigo-200"
                                 >
                                     <FaUser className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 text-indigo-600" />
@@ -329,10 +352,31 @@ export default function Profile() {
                                     </div>
                                     <div className="bg-indigo-50 border-2 border-indigo-100 p-2.5 sm:p-3 md:p-4 rounded-lg">
                                         <p className="text-xs sm:text-sm text-indigo-600 font-medium">{t('profile.accountType')}</p>
-                                        <p className={`text-xs sm:text-sm md:text-base font-semibold mt-1 ${userData.isBrimume ? 'text-yellow-600' : 'text-indigo-700'}`}>
-                                            {userData.isBrimume ? t('profile.premium') : t('profile.standard')}
-                                        </p>
+                                        <div className="flex items-center justify-between mt-1">
+                                            <p className={`text-xs sm:text-sm md:text-base font-semibold ${userData.isBrimume ? 'text-yellow-600' : 'text-indigo-700'}`}>
+                                                {userData.isBrimume ? t('profile.premium') : t('profile.standard')}
+                                            </p>
+                                            {!userData.isBrimume && (
+                                                <motion.button
+                                                    onClick={() => premiumFileInputRef.current?.click()}
+                                                    disabled={subscribeToPremiumMutation.isLoading}
+                                                    className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded-md font-medium transition-colors flex items-center gap-1"
+                                                    whileHover={{ scale: 1.05 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                >
+                                                    <FaCrown className="w-3 h-3" />
+                                                    {subscribeToPremiumMutation.isLoading ? t('common.loading') || 'Loading...' : t('profile.upgradeToPremium') || 'Upgrade'}
+                                                </motion.button>
+                                            )}
+                                        </div>
                                     </div>
+                                    <input
+                                        type="file"
+                                        ref={premiumFileInputRef}
+                                        className="hidden"
+                                        accept="*/*"
+                                        onChange={handlePremiumSubscribe}
+                                    />
                                 </div>
                             </div>
                         </div>
