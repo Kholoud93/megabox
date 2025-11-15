@@ -64,7 +64,7 @@ aside .main-side .ps-menu-button:hover {
 .css-1tqrhto>.ps-menu-button {
     transition: all 0.2s ease-in-out;
     border-radius: 0.75rem;
-    margin: 0.25rem 0.5rem;
+    margin: 0.03125rem 0.5rem;
 
     &:hover {
         background-color: rgba(255, 255, 255, 0.08) !important;
@@ -103,7 +103,7 @@ aside .main-side .ps-menu-button:hover {
         right: auto;
         left: 40px;
     }
-    
+
     &:hover {
         transform: scale(1.1);
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
@@ -113,6 +113,7 @@ aside .main-side .ps-menu-button:hover {
         opacity: 1;
     }
 }
+
 .allnav {
     z-index: 10;
 
@@ -176,19 +177,53 @@ aside {
         }
     }
 
-    .LanguageToggle {
-        position: absolute !important;
-        bottom: 70px;
-        left: 0.5rem;
-        right: 0.5rem;
+    .sidenav-bottom-actions {
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.03125rem;
     }
 
+    .LanguageToggle {
+        margin: 0.03125rem 0.5rem !important;
+        padding: 0.4rem 0.75rem !important;
+    }
 
     .Logout {
-        position: absolute !important;
-        bottom: 20px;
-        left: 0.5rem;
-        right: 0.5rem;
+        margin: 0.03125rem 0.5rem !important;
+        padding: 0.4rem 0.75rem !important;
+    }
+
+    // Styles for collapsed sidebar
+    .main-side.collapsed {
+        .sidenav-bottom-actions {
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            gap: 0.25rem;
+            position: relative;
+            bottom: auto;
+        }
+
+        .LanguageToggle {
+            margin: 0.125rem 0.25rem !important;
+            padding: 0.5rem !important;
+            position: relative !important;
+            bottom: auto !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+
+        .Logout {
+            margin: 0.125rem 0.25rem !important;
+            padding: 0.5rem !important;
+            position: relative !important;
+            bottom: auto !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
     }
 
 
@@ -206,17 +241,16 @@ aside {
         &::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.2);
             border-radius: 10px;
-            
+
             &:hover {
                 background: rgba(255, 255, 255, 0.3);
             }
         }
 
-        background: 
-            radial-gradient(circle at 20% 30%, var(--color-indigo-600) 0%, transparent 50%),
-            radial-gradient(circle at 80% 70%, var(--color-indigo-500) 0%, transparent 50%),
-            radial-gradient(circle at 50% 50%, var(--color-indigo-400) 0%, transparent 70%),
-            linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-indigo-600) 100%);
+        background: radial-gradient(circle at 20% 30%, var(--color-indigo-600) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, var(--color-indigo-500) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, var(--color-indigo-400) 0%, transparent 70%),
+        linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-indigo-600) 100%);
         position: fixed;
         width: 250px;
         height: 100%;
@@ -229,6 +263,7 @@ aside {
         overflow-y: auto !important;
         overflow-x: hidden;
         box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
+        padding-bottom: 100px;
 
         [dir="rtl"] & {
             left: auto;
@@ -250,7 +285,7 @@ aside {
                 left: auto;
                 right: 0;
             }
-            
+
             .ps-menu-button {
                 padding: 0.5rem !important;
                 margin: 0.125rem 0.25rem !important;
@@ -258,16 +293,16 @@ aside {
                 justify-content: center !important;
                 align-items: center !important;
                 min-width: auto !important;
-                
+
                 // Hide text label when collapsed
                 .ps-menu-label {
                     display: none !important;
                     width: 0 !important;
                     overflow: hidden !important;
                 }
-                
+
                 // Ensure icon wrapper is visible and centered
-                > *:first-child {
+                >*:first-child {
                     display: flex !important;
                     align-items: center !important;
                     justify-content: center !important;
@@ -275,13 +310,13 @@ aside {
                     opacity: 1 !important;
                     margin: 0 auto !important;
                 }
-                
+
                 // Show tooltip on hover when collapsed - appears inside the sidebar
                 &[title]:not([title=""]),
                 &[data-tooltip]:not([data-tooltip=""]) {
                     position: relative;
                     overflow: visible !important;
-                    
+
                     &::after {
                         content: attr(title) attr(data-tooltip);
                         position: absolute;
@@ -311,20 +346,20 @@ aside {
                             right: 45px;
                         }
                     }
-                    
+
                     &:hover::after {
                         opacity: 1;
                         pointer-events: auto;
                     }
                 }
             }
-            
+
             .menu-items {
                 padding: 0.5rem !important;
                 justify-content: center !important;
                 gap: 0;
                 text-align: center;
-                
+
                 // Ensure icons are visible and centered
                 .icon,
                 svg,
@@ -339,7 +374,7 @@ aside {
                     flex-shrink: 0 !important;
                 }
             }
-            
+
             .close {
                 margin: 0.5rem auto !important;
                 padding: 0.5rem !important;
@@ -347,122 +382,68 @@ aside {
                 justify-content: center !important;
                 align-items: center !important;
                 width: auto !important;
-                
-                > *:first-child {
+
+                >*:first-child {
                     display: flex !important;
                     align-items: center !important;
                     justify-content: center !important;
                     margin: 0 auto !important;
                 }
             }
-            
-            // Language toggle button styling when collapsed
-            .LanguageToggle {
-                padding: 0.5rem !important;
-                justify-content: center !important;
-                bottom: 70px !important;
-                
-                svg,
-                .icon {
-                    margin: 0 auto !important;
-                    font-size: 20px;
-                    width: 20px;
-                    height: 20px;
-                    min-width: 20px;
-                }
-                
-                // Tooltip for language toggle when collapsed - appears inside the sidebar
-                &[data-tooltip]:not([data-tooltip=""]) {
-                    overflow: visible !important;
-                    
-                    &::after {
-                        content: attr(data-tooltip);
-                        position: absolute;
-                        left: 45px;
-                        right: auto;
-                        top: 50%;
-                        transform: translateY(-50%);
-                        background-color: rgba(0, 0, 0, 0.95);
-                        color: white;
-                        padding: 0.4rem 0.6rem;
-                        border-radius: 0.5rem;
-                        font-size: 0.8rem;
-                        white-space: nowrap;
-                        opacity: 0;
-                        pointer-events: none;
-                        transition: opacity 0.2s ease-in-out;
-                        z-index: 10000;
-                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-                        max-width: 150px;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
+
+            // Language toggle and Logout tooltips when collapsed
+            .sidenav-bottom-actions {
+
+                .LanguageToggle,
+                .Logout {
+
+                    svg,
+                    .icon {
+                        margin: 0 auto !important;
+                        font-size: 20px;
+                        width: 20px;
+                        height: 20px;
+                        min-width: 20px;
                     }
 
-                    [dir="rtl"] & {
+                    // Tooltip when collapsed - appears inside the sidebar
+                    &[data-tooltip]:not([data-tooltip=""]) {
+                        overflow: visible !important;
+
                         &::after {
-                            left: auto;
-                            right: 45px;
+                            content: attr(data-tooltip);
+                            position: absolute;
+                            left: 45px;
+                            right: auto;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            background-color: rgba(0, 0, 0, 0.95);
+                            color: white;
+                            padding: 0.4rem 0.6rem;
+                            border-radius: 0.5rem;
+                            font-size: 0.8rem;
+                            white-space: nowrap;
+                            opacity: 0;
+                            pointer-events: none;
+                            transition: opacity 0.2s ease-in-out;
+                            z-index: 10000;
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+                            max-width: 150px;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
                         }
-                    }
-                    
-                    &:hover::after {
-                        opacity: 1;
-                        pointer-events: auto;
-                    }
-                }
-            }
 
-            // Logout button styling when collapsed
-            .Logout {
-                padding: 0.5rem !important;
-                justify-content: center !important;
-                
-                svg,
-                .icon {
-                    margin: 0 auto !important;
-                    font-size: 20px;
-                    width: 20px;
-                    height: 20px;
-                    min-width: 20px;
-                }
-                
-                // Tooltip for logout when collapsed - appears inside the sidebar
-                &[data-tooltip]:not([data-tooltip=""]) {
-                    overflow: visible !important;
-                    
-                    &::after {
-                        content: attr(data-tooltip);
-                        position: absolute;
-                        left: 45px;
-                        right: auto;
-                        top: 50%;
-                        transform: translateY(-50%);
-                        background-color: rgba(0, 0, 0, 0.95);
-                        color: white;
-                        padding: 0.4rem 0.6rem;
-                        border-radius: 0.5rem;
-                        font-size: 0.8rem;
-                        white-space: nowrap;
-                        opacity: 0;
-                        pointer-events: none;
-                        transition: opacity 0.2s ease-in-out;
-                        z-index: 10000;
-                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-                        max-width: 150px;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                    }
-
-                    [dir="rtl"] & {
-                        &::after {
-                            left: auto;
-                            right: 45px;
+                        [dir="rtl"] & {
+                            &::after {
+                                left: auto;
+                                right: 45px;
+                            }
                         }
-                    }
-                    
-                    &:hover::after {
-                        opacity: 1;
-                        pointer-events: auto;
+
+                        &:hover::after {
+                            opacity: 1;
+                            pointer-events: auto;
+                        }
                     }
                 }
             }
@@ -471,16 +452,16 @@ aside {
         .ps-menu-button {
             font-size: 0.9375rem;
             font-weight: 500;
-            padding: 0.5rem 0.75rem;
-            margin: 0.125rem 0.5rem;
+            padding: 0.4rem 0.75rem;
+            margin: 0.03125rem 0.5rem;
             border-radius: 0.75rem;
             transition: all 0.2s ease-in-out;
             position: relative;
-            
+
             &:hover {
                 background-color: rgba(255, 255, 255, 0.08) !important;
             }
-            
+
             // Tooltip styling - only show when collapsed (handled in collapsed section)
         }
 
@@ -490,11 +471,12 @@ aside {
             font-size: 0.9375rem;
             font-weight: 500;
             letter-spacing: 0.01em;
-            padding: 0.5rem 0.75rem;
+            padding: 0.4rem 0.75rem;
             display: flex;
             align-items: center;
             gap: 0.75rem;
             transition: all 0.2s ease-in-out;
+            margin: 0;
         }
 
         .Logo {
@@ -516,7 +498,7 @@ aside {
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
             flex-shrink: 0;
         }
-        
+
         .sidenav-logo-text {
             color: white;
             font-size: 1.25rem;
@@ -526,6 +508,140 @@ aside {
             transition: all 0.3s ease;
             white-space: nowrap;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .sidenav-logo-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row;
+            gap: 0.75rem;
+            margin: 0.5rem 0 0.75rem 0;
+            padding: 0 0.5rem;
+
+            &.collapsed {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        .sidenav-logo-link {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row;
+            gap: 0.75rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+
+            .main-side.collapsed & {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        .sidenav-notification-bell {
+            position: absolute;
+            top: 0;
+            right: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            z-index: 10;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: scale(1.1);
+                color: white;
+            }
+
+            .notification-icon {
+                font-size: 20px;
+                width: 20px;
+                height: 20px;
+            }
+
+            .notification-badge {
+                position: absolute;
+                top: -4px;
+                right: -4px;
+                background: #ef4444;
+                color: white;
+                font-size: 10px;
+                font-weight: 700;
+                border-radius: 50%;
+                min-width: 18px;
+                height: 18px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0 4px;
+                border: 2px solid var(--color-indigo-700);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+
+            &[data-tooltip]:not([data-tooltip=""]) {
+                position: relative;
+                overflow: visible !important;
+
+                &::after {
+                    content: attr(data-tooltip);
+                    position: absolute;
+                    left: 45px;
+                    right: auto;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    background-color: rgba(0, 0, 0, 0.95);
+                    color: white;
+                    padding: 0.4rem 0.6rem;
+                    border-radius: 0.5rem;
+                    font-size: 0.8rem;
+                    white-space: nowrap;
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: opacity 0.2s ease-in-out;
+                    z-index: 10000;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+                    max-width: 150px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                [dir="rtl"] & {
+                    &::after {
+                        left: auto;
+                        right: 45px;
+                    }
+                }
+
+                &:hover::after {
+                    opacity: 1;
+                    pointer-events: auto;
+                }
+            }
+        }
+
+        .main-side.collapsed {
+            .sidenav-logo-container {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .sidenav-notification-bell {
+                position: static;
+                margin-top: 0.5rem;
+                width: 40px;
+                height: 40px;
+            }
         }
 
         .icon {
@@ -538,7 +654,7 @@ aside {
             flex-shrink: 0;
             display: inline-block;
         }
-        
+
         .icon.Active {
             color: white;
             transform: scale(1.1);
