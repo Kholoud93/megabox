@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import './Earning.scss';
-import { useQuery } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     FaEye, FaDownload, FaMoneyBillWave, FaFileAlt, FaFileImage, FaFileVideo, FaFilePdf, FaFileWord,
-    FaLink, FaGlobe, FaTimes, FaChartLine, FaUsers, FaRocket
+    FaLink, FaGlobe, FaTimes, FaChartLine, FaUsers, FaRocket, FaWallet, FaHistory
 } from 'react-icons/fa';
-import { API_URL } from '../../services/api';
+import { API_URL, withdrawalService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../helpers/ToastOptions';
 
 const EARNINGS_URL = `${API_URL}/auth/getUserEarnings`;
 const ANALYTICS_URL = `${API_URL}/auth/getUserAnalytics`;
@@ -472,9 +474,9 @@ function FileCard({ file, onShowCountries, index }) {
                 >
                     <motion.div
                         className="stat-icon"
-                    animate={{
-                        color: isHovered ? "#6366f1" : "#64748b"
-                    }}
+                        animate={{
+                            color: isHovered ? "#6366f1" : "#64748b"
+                        }}
                         transition={{
                             duration: 0.3,
                             ease: [0.25, 0.46, 0.45, 0.94]
@@ -533,6 +535,18 @@ export default function Earning() {
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
     const [selectedFile, setSelectedFile] = useState(null);
+    const [showWithdrawalModal, setShowWithdrawalModal] = useState(false);
+    const [withdrawalForm, setWithdrawalForm] = useState({
+        amount: '',
+        paymentMethod: 'Vodafone Cash',
+        whatsappNumber: '',
+        details: {
+            accountName: '',
+            username: '',
+            'رقم فودافون': ''
+        }
+    });
+    const queryClient = useQueryClient();
     const { t } = useLanguage();
 
     // Fetch total earnings
@@ -580,6 +594,54 @@ export default function Earning() {
     const files = shareLinksData?.analytics || [];
     const totalLinks = files.length;
 
+    // Fetch withdrawal history
+    const { data: withdrawalHistory, isLoading: withdrawalHistoryLoading } = useQuery(
+        ['withdrawalHistory'],
+        () => withdrawalService.getWithdrawalHistory(token),
+        { enabled: !!token }
+    );
+
+    // Request withdrawal mutation
+    const requestWithdrawalMutation = useMutation(
+        (formData) => withdrawalService.requestWithdrawal(
+            formData.amount,
+            formData.paymentMethod,
+            formData.whatsappNumber,
+            formData.details,
+            token
+        ),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries('withdrawalHistory');
+                queryClient.invalidateQueries('userEarnings');
+                setShowWithdrawalModal(false);
+                setWithdrawalForm({
+                    amount: '',
+                    paymentMethod: 'Vodafone Cash',
+                    whatsappNumber: '',
+                    details: {
+                        accountName: '',
+                        username: '',
+                        'رقم فودافون': ''
+                    }
+                });
+            }
+        }
+    );
+
+    const handleWithdrawalSubmit = (e) => {
+        e.preventDefault();
+        if (!withdrawalForm.amount || parseFloat(withdrawalForm.amount) <= 0) {
+            toast.error("Please enter a valid amount", ToastOptions("error"));
+            return;
+        }
+        if (parseFloat(withdrawalForm.amount) > parseFloat(totalEarnings)) {
+            toast.error("Amount exceeds available earnings", ToastOptions("error"));
+            return;
+        }
+        requestWithdrawalMutation.mutate(withdrawalForm);
+    };
+
     return (
         <motion.div
             className="earning-container min-h-screen bg-indigo-50"
@@ -620,6 +682,29 @@ export default function Earning() {
                     <StatCard label={t('earning.totalDownloads')} value={totalDownloads} icon={<FaDownload />} color="#6366f1" index={1} />
                     <StatCard label={t('earning.totalLinks')} value={totalLinks} icon={<FaLink />} color="#6366f1" index={2} />
                     <StatCard label={t('earning.totalEarnings')} value={`${totalEarnings} ${currency}`} icon={<FaMoneyBillWave />} color="#4f46e5" index={3} />
+
+                    {/* Withdrawal Button */}
+                    <motion.div
+                        className="earning-stat-card"
+                        variants={statsVariants}
+                        initial="hidden"
+                        animate="visible"
+                        style={{
+                            background: 'linear-gradient(135deg, #10b98110, #10b98105)',
+                            borderLeft: '4px solid #10b981',
+                            cursor: 'pointer'
+                        }}
+                        whileHover={{ scale: 1.03, y: -8 }}
+                        onClick={() => setShowWithdrawalModal(true)}
+                    >
+                        <motion.div className="icon" style={{ color: '#10b981' }}>
+                            <FaWallet />
+                        </motion.div>
+                        <div className="info">
+                            <div className="label">Request Withdrawal</div>
+                            <div className="value">Withdraw</div>
+                        </div>
+                    </motion.div>
                 </motion.div>
             )}
 
@@ -701,6 +786,168 @@ export default function Earning() {
                     )}
                 </motion.div>
             </motion.div>
+
+            {/* Withdrawal History Section */}
+            <motion.div
+                className="withdrawal-section"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+            >
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="section-title flex items-center gap-2">
+                        <FaHistory /> Withdrawal History
+                    </h2>
+                </div>
+                {withdrawalHistoryLoading ? (
+                    <div className="text-center py-8">Loading withdrawal history...</div>
+                ) : withdrawalHistory?.withdrawals?.length > 0 ? (
+                    <div className="space-y-3">
+                        {withdrawalHistory.withdrawals.map((withdrawal, index) => (
+                            <motion.div
+                                key={index}
+                                className="bg-white rounded-lg p-4 shadow-sm border border-indigo-100"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                            >
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                        <p className="font-semibold text-indigo-900">{withdrawal.amount} {withdrawal.currency || currency}</p>
+                                        <p className="text-sm text-gray-600">{withdrawal.paymentMethod}</p>
+                                        <p className="text-xs text-gray-500">{new Date(withdrawal.createdAt).toLocaleDateString()}</p>
+                                    </div>
+                                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${withdrawal.status === 'approved' ? 'bg-green-100 text-green-800' :
+                                        withdrawal.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                            'bg-red-100 text-red-800'
+                                        }`}>
+                                        {withdrawal.status || 'pending'}
+                                    </span>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-8 text-gray-500">No withdrawal history</div>
+                )}
+            </motion.div>
+
+            {/* Withdrawal Modal */}
+            <AnimatePresence>
+                {showWithdrawalModal && (
+                    <motion.div
+                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setShowWithdrawalModal(false)}
+                    >
+                        <motion.div
+                            className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6"
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-xl font-bold text-indigo-900">Request Withdrawal</h3>
+                                <button
+                                    onClick={() => setShowWithdrawalModal(false)}
+                                    className="text-gray-400 hover:text-gray-600"
+                                >
+                                    <FaTimes />
+                                </button>
+                            </div>
+                            <form onSubmit={handleWithdrawalSubmit} className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        max={totalEarnings}
+                                        value={withdrawalForm.amount}
+                                        onChange={(e) => setWithdrawalForm({ ...withdrawalForm, amount: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        placeholder="Enter amount"
+                                        required
+                                    />
+                                    <p className="text-xs text-gray-500 mt-1">Available: {totalEarnings} {currency}</p>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method</label>
+                                    <select
+                                        value={withdrawalForm.paymentMethod}
+                                        onChange={(e) => setWithdrawalForm({ ...withdrawalForm, paymentMethod: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        required
+                                    >
+                                        <option value="Vodafone Cash">Vodafone Cash</option>
+                                        <option value="Orange Money">Orange Money</option>
+                                        <option value="Etisalat Cash">Etisalat Cash</option>
+                                        <option value="Bank Transfer">Bank Transfer</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number</label>
+                                    <input
+                                        type="tel"
+                                        value={withdrawalForm.whatsappNumber}
+                                        onChange={(e) => setWithdrawalForm({ ...withdrawalForm, whatsappNumber: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        placeholder="01012345678"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Account Name</label>
+                                    <input
+                                        type="text"
+                                        value={withdrawalForm.details.accountName}
+                                        onChange={(e) => setWithdrawalForm({
+                                            ...withdrawalForm,
+                                            details: { ...withdrawalForm.details, accountName: e.target.value }
+                                        })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        placeholder="Account holder name"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Username/Phone</label>
+                                    <input
+                                        type="text"
+                                        value={withdrawalForm.details.username}
+                                        onChange={(e) => setWithdrawalForm({
+                                            ...withdrawalForm,
+                                            details: { ...withdrawalForm.details, username: e.target.value, 'رقم فودافون': e.target.value }
+                                        })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        placeholder="Phone number or username"
+                                        required
+                                    />
+                                </div>
+                                <div className="flex gap-3 pt-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowWithdrawalModal(false)}
+                                        className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={requestWithdrawalMutation.isLoading}
+                                        className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                                    >
+                                        {requestWithdrawalMutation.isLoading ? 'Submitting...' : 'Submit Request'}
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Country Modal */}
             <AnimatePresence mode="wait">
