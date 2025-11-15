@@ -3,7 +3,6 @@ import 'react-toastify/dist/ReactToastify.css'
 import { ToastContainer } from 'react-toastify'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import { CookiesProvider } from 'react-cookie'
 import { LanguageProvider } from './context/LanguageContext'
 import './index.css'
@@ -22,14 +21,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <CookiesProvider>
       <LanguageProvider>
         <QueryClientProvider client={query}>
-          <GoogleOAuthProvider clientId='902607791526-lb6qtfclisk5puajdrbfve5ge45lfon9.apps.googleusercontent.com'>
-
-            <App />
-            <ToastContainer position='bottom-right' stacked autoClose={2000} />
-          </GoogleOAuthProvider>
-
+          <App />
+          <ToastContainer position='bottom-right' stacked autoClose={2000} />
           <ReactQueryDevtools position='bottom-right' />
-
         </QueryClientProvider>
       </LanguageProvider>
     </CookiesProvider>
