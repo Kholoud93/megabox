@@ -3,10 +3,13 @@ import "./Users.scss"
 import { useQuery } from 'react-query';
 import axios from 'axios';
 import { AnimatePresence, motion, useInView } from 'framer-motion';
-import { API_URL } from '../../../services/api';
+import { API_URL, adminService } from '../../../services/api';
+import { useCookies } from 'react-cookie';
+import { useQueryClient } from 'react-query';
 // icons 
 import { MdNotificationAdd, MdClose } from "react-icons/md";
-import { FaCrown } from "react-icons/fa";
+import { FaCrown, FaBan } from "react-icons/fa";
+import { HiTrash } from "react-icons/hi2";
 // icons 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -19,7 +22,10 @@ export default function Users() {
     const animationInView = useInView(animationRef, { once: true });
     const [selectedUser, setSelectedUser] = useState(null);
     const [addform, setaddform] = useState(false)
+    const [deleteConfirm, setDeleteConfirm] = useState(null);
     const navigate = useNavigate()
+    const [Token] = useCookies(['MegaBox']);
+    const queryClient = useQueryClient();
 
     // get Allusers 
     const Allusers = async () => {
@@ -99,6 +105,27 @@ export default function Users() {
 
     const handleaddmod = () => {
         setaddform(!addform)
+    }
+
+    // Toggle user ban
+    const handleToggleBan = async (userId) => {
+        try {
+            await adminService.toggleUserBanByOwner(userId, Token.MegaBox);
+            queryClient.invalidateQueries("getAllusers");
+        } catch (error) {
+            // Error is handled in the service
+        }
+    }
+
+    // Delete user
+    const handleDeleteUser = async (userId) => {
+        try {
+            await adminService.deleteUserById(userId, Token.MegaBox);
+            queryClient.invalidateQueries("getAllusers");
+            setDeleteConfirm(null);
+        } catch (error) {
+            // Error is handled in the service
+        }
     }
 
     // animation
@@ -255,6 +282,7 @@ export default function Users() {
                                 <th scope="col" className="px-6 py-3">username</th>
                                 <th scope="col" className="px-6 py-3">email</th>
                                 <th scope="col" className="px-6 py-3">Premium status</th>
+                                <th scope="col" className="px-6 py-3">Status</th>
                                 <th scope="col" className="px-6 py-3">actions</th>
                             </tr>
                         </thead>
@@ -272,13 +300,37 @@ export default function Users() {
                                                 <div>Not Premium</div>
                                             )}
                                         </td>
-                                        <td className="px-6 py-4 svg-del">
-                                            <button
-                                                onClick={() => handleNotifyUser(ele)}
-                                                className="text-blue-600 hover:text-blue-800"
-                                            >
-                                                <MdNotificationAdd size={20} />
-                                            </button>
+                                        <td className="px-6 py-4">
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${ele.isBanned ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                                                }`}>
+                                                {ele.isBanned ? 'Banned' : 'Active'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <button
+                                                    onClick={() => handleNotifyUser(ele)}
+                                                    className="text-blue-600 hover:text-blue-800 transition-colors"
+                                                    title="Send Notification"
+                                                >
+                                                    <MdNotificationAdd size={20} />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleToggleBan(ele.id || ele._id)}
+                                                    className={`transition-colors ${ele.isBanned ? 'text-green-600 hover:text-green-800' : 'text-orange-600 hover:text-orange-800'
+                                                        }`}
+                                                    title={ele.isBanned ? "Unban User" : "Ban User"}
+                                                >
+                                                    <FaBan size={20} />
+                                                </button>
+                                                <button
+                                                    onClick={() => setDeleteConfirm(ele)}
+                                                    className="text-red-600 hover:text-red-800 transition-colors"
+                                                    title="Delete User"
+                                                >
+                                                    <HiTrash size={20} />
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 )
@@ -287,6 +339,39 @@ export default function Users() {
                     </table>
                 </div>
             </motion.div>
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {deleteConfirm && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6"
+                        >
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">Delete User</h3>
+                            <p className="text-gray-600 mb-6">
+                                Are you sure you want to delete user <strong>{deleteConfirm.username}</strong>? This action cannot be undone.
+                            </p>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => setDeleteConfirm(null)}
+                                    className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={() => handleDeleteUser(deleteConfirm.id || deleteConfirm._id)}
+                                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </>
     )
 }
