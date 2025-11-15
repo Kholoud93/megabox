@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 import { authService, fileService } from '../services/api';
 import { useCookies } from 'react-cookie';
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -151,8 +151,6 @@ export const AuthProvider = ({ children }) => {
       setError(null)
       const role = await authService.userRole(id);
 
-      console.log(role);
-
       setUserRole(role?.role);
       setUserRefLink(role?.referralLink);
 
@@ -234,4 +232,10 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext); 
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+}; 

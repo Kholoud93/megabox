@@ -9,7 +9,7 @@ import Loading from '../components/Loading/Loading';
 
 export default function DashboardLayout({ role }) {
 
-    const { getUserRole } = useAuth();
+    const auth = useAuth();
     const [Token] = useCookies(['MegaBox']);
 
     const [RoleLoading, setRoleLoading] = useState(true)
@@ -28,15 +28,19 @@ export default function DashboardLayout({ role }) {
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (!auth) {
+            navigate("/login");
+            return;
+        }
 
-        if (idTracker()) {
-            getUserRole(idTracker());
+        if (idTracker() && auth.getUserRole) {
+            auth.getUserRole(idTracker());
             setRoleLoading(false)
         } else {
             navigate("/login")
         }
 
-    }, []);
+    }, [auth, navigate]);
 
 
     if (RoleLoading)
