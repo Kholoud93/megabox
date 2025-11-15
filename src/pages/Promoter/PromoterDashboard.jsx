@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './PromoterDashboard.scss';
-import { useQuery } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -196,6 +196,7 @@ export default function PromoterDashboard() {
         }
     });
     const { t } = useLanguage();
+    const queryClient = useQueryClient();
 
     // Fetch promoter earnings
     const { data: earningsData, isLoading: earningsLoading } = useQuery(
@@ -234,6 +235,51 @@ export default function PromoterDashboard() {
         () => withdrawalService.getWithdrawalHistory(token),
         { enabled: !!token }
     );
+
+    // Request withdrawal mutation
+    const requestWithdrawalMutation = useMutation(
+        (formData) => withdrawalService.requestWithdrawal(
+            formData.amount,
+            formData.paymentMethod,
+            formData.whatsappNumber,
+            formData.details,
+            token
+        ),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries('withdrawalHistory');
+                queryClient.invalidateQueries('promoterEarnings');
+                setShowWithdrawalModal(false);
+                setWithdrawalForm({
+                    amount: '',
+                    paymentMethod: 'Vodafone Cash',
+                    whatsappNumber: '',
+                    details: {
+                        accountName: '',
+                        username: '',
+                        'رقم فودافون': ''
+                    }
+                });
+                toast.success(t('promoterDashboard.withdrawalRequested'), ToastOptions("success"));
+            },
+            onError: (error) => {
+                toast.error(error?.response?.data?.message || t('promoterDashboard.withdrawalError'), ToastOptions("error"));
+            }
+        }
+    );
+
+    const handleWithdrawalSubmit = (e) => {
+        e.preventDefault();
+        if (!withdrawalForm.amount || parseFloat(withdrawalForm.amount) <= 0) {
+            toast.error(t('promoterDashboard.invalidAmount'), ToastOptions("error"));
+            return;
+        }
+        if (parseFloat(withdrawalForm.amount) > parseFloat(withdrawable)) {
+            toast.error(t('promoterDashboard.amountExceeds'), ToastOptions("error"));
+            return;
+        }
+        requestWithdrawalMutation.mutate(withdrawalForm);
+    };
 
     return (
         <motion.div
@@ -371,36 +417,37 @@ export default function PromoterDashboard() {
             <AnimatePresence>
                 {showWithdrawalModal && (
                     <motion.div
-                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                        className="withdrawal-modal-backdrop"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={() => setShowWithdrawalModal(false)}
                     >
                         <motion.div
-                            className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6"
+                            className="withdrawal-modal"
                             variants={modalVariants}
                             initial="hidden"
                             animate="visible"
                             exit="exit"
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-xl font-bold text-indigo-900">{t('promoterDashboard.requestWithdrawal')}</h3>
-                                <button
+                            <div className="withdrawal-modal__header">
+                                <div className="withdrawal-modal__title-wrapper">
+                                    <FaWallet className="withdrawal-modal__icon" />
+                                    <h3 className="withdrawal-modal__title">{t('promoterDashboard.requestWithdrawal')}</h3>
+                                </div>
+                                <motion.button
                                     onClick={() => setShowWithdrawalModal(false)}
-                                    className="text-gray-400 hover:text-gray-600"
+                                    className="withdrawal-modal__close"
+                                    whileHover={{ scale: 1.1, rotate: 90 }}
+                                    whileTap={{ scale: 0.9 }}
                                 >
                                     <FaTimes />
-                                </button>
+                                </motion.button>
                             </div>
-                            <form onSubmit={(e) => {
-                                e.preventDefault();
-                                toast.info("Withdrawal functionality will be implemented", ToastOptions("info"));
-                                setShowWithdrawalModal(false);
-                            }} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('promoterDashboard.amount')}</label>
+                            <form onSubmit={handleWithdrawalSubmit} className="withdrawal-modal__form">
+                                <div className="withdrawal-modal__field">
+                                    <label className="withdrawal-modal__label">{t('promoterDashboard.amount')}</label>
                                     <input
                                         type="number"
                                         step="0.01"
@@ -408,41 +455,87 @@ export default function PromoterDashboard() {
                                         max={withdrawable}
                                         value={withdrawalForm.amount}
                                         onChange={(e) => setWithdrawalForm({ ...withdrawalForm, amount: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        className="withdrawal-modal__input"
                                         placeholder={t('promoterDashboard.enterAmount')}
                                         required
                                     />
-                                    <p className="text-xs text-gray-500 mt-1">{t('promoterDashboard.available')}: {withdrawable} {currency}</p>
+                                    <p className="withdrawal-modal__hint">
+                                        {t('promoterDashboard.available')}: <span className="withdrawal-modal__available">{withdrawable} {currency}</span>
+                                    </p>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('promoterDashboard.paymentMethod')}</label>
-                                    <input
-                                        type="text"
+                                <div className="withdrawal-modal__field">
+                                    <label className="withdrawal-modal__label">{t('promoterDashboard.paymentMethod')}</label>
+                                    <select
                                         value={withdrawalForm.paymentMethod}
                                         onChange={(e) => setWithdrawalForm({ ...withdrawalForm, paymentMethod: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        placeholder={t('promoterDashboard.enterPaymentMethod')}
+                                        className="withdrawal-modal__input"
                                         required
-                                    />
+                                    >
+                                        <option value="Vodafone Cash">Vodafone Cash</option>
+                                        <option value="Orange Money">Orange Money</option>
+                                        <option value="Etisalat Cash">Etisalat Cash</option>
+                                        <option value="Bank Transfer">Bank Transfer</option>
+                                    </select>
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('promoterDashboard.whatsappTelegram')}</label>
+                                <div className="withdrawal-modal__field">
+                                    <label className="withdrawal-modal__label">{t('promoterDashboard.whatsappTelegram')}</label>
                                     <input
-                                        type="text"
-                                        maxLength={50}
+                                        type="tel"
                                         value={withdrawalForm.whatsappNumber}
                                         onChange={(e) => setWithdrawalForm({ ...withdrawalForm, whatsappNumber: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                        placeholder={t('promoterDashboard.enterWhatsappTelegram')}
+                                        className="withdrawal-modal__input"
+                                        placeholder="01012345678"
                                         required
                                     />
                                 </div>
-                                <button
-                                    type="submit"
-                                    className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors"
-                                >
-                                    {t('promoterDashboard.withdraw')}
-                                </button>
+                                <div className="withdrawal-modal__field">
+                                    <label className="withdrawal-modal__label">{t('promoterDashboard.accountName')}</label>
+                                    <input
+                                        type="text"
+                                        value={withdrawalForm.details.accountName}
+                                        onChange={(e) => setWithdrawalForm({
+                                            ...withdrawalForm,
+                                            details: { ...withdrawalForm.details, accountName: e.target.value }
+                                        })}
+                                        className="withdrawal-modal__input"
+                                        placeholder={t('promoterDashboard.enterAccountName')}
+                                        required
+                                    />
+                                </div>
+                                <div className="withdrawal-modal__field">
+                                    <label className="withdrawal-modal__label">{t('promoterDashboard.usernamePhone')}</label>
+                                    <input
+                                        type="text"
+                                        value={withdrawalForm.details.username}
+                                        onChange={(e) => setWithdrawalForm({
+                                            ...withdrawalForm,
+                                            details: { ...withdrawalForm.details, username: e.target.value, 'رقم فودافون': e.target.value }
+                                        })}
+                                        className="withdrawal-modal__input"
+                                        placeholder={t('promoterDashboard.enterUsernamePhone')}
+                                        required
+                                    />
+                                </div>
+                                <div className="withdrawal-modal__actions">
+                                    <motion.button
+                                        type="button"
+                                        onClick={() => setShowWithdrawalModal(false)}
+                                        className="withdrawal-modal__cancel"
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        {t('promoterDashboard.cancel')}
+                                    </motion.button>
+                                    <motion.button
+                                        type="submit"
+                                        disabled={requestWithdrawalMutation.isLoading}
+                                        className="withdrawal-modal__submit"
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        {requestWithdrawalMutation.isLoading ? t('promoterDashboard.submitting') : t('promoterDashboard.submitRequest')}
+                                    </motion.button>
+                                </div>
                             </form>
                         </motion.div>
                     </motion.div>

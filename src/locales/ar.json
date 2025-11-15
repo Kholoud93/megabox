@@ -325,7 +325,18 @@
     "enterPaymentMethod": "أدخل طريقة الدفع",
     "whatsappTelegram": "حساب WhatsApp/Telegram",
     "enterWhatsappTelegram": "أدخل حساب WhatsApp/Telegram",
-    "available": "متاح"
+    "available": "متاح",
+    "accountName": "اسم الحساب",
+    "enterAccountName": "أدخل اسم صاحب الحساب",
+    "usernamePhone": "اسم المستخدم/رقم الهاتف",
+    "enterUsernamePhone": "أدخل رقم الهاتف أو اسم المستخدم",
+    "cancel": "إلغاء",
+    "submitting": "جارٍ الإرسال...",
+    "submitRequest": "إرسال الطلب",
+    "withdrawalRequested": "تم إرسال طلب السحب بنجاح!",
+    "withdrawalError": "فشل إرسال طلب السحب",
+    "invalidAmount": "يرجى إدخال مبلغ صحيح",
+    "amountExceeds": "المبلغ يتجاوز الأرباح المتاحة"
   },
   "sharedFiles": {
     "title": "الملفات المشتركة",

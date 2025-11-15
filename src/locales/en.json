@@ -325,7 +325,18 @@
     "enterPaymentMethod": "Enter payment method",
     "whatsappTelegram": "WhatsApp/Telegram Account",
     "enterWhatsappTelegram": "Enter WhatsApp/Telegram account",
-    "available": "Available"
+    "available": "Available",
+    "accountName": "Account Name",
+    "enterAccountName": "Enter account holder name",
+    "usernamePhone": "Username/Phone",
+    "enterUsernamePhone": "Enter phone number or username",
+    "cancel": "Cancel",
+    "submitting": "Submitting...",
+    "submitRequest": "Submit Request",
+    "withdrawalRequested": "Withdrawal request submitted successfully!",
+    "withdrawalError": "Failed to submit withdrawal request",
+    "invalidAmount": "Please enter a valid amount",
+    "amountExceeds": "Amount exceeds available earnings"
   },
   "sharedFiles": {
     "title": "Shared Files",
