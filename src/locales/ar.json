@@ -173,6 +173,8 @@
     "profile": "الملف الشخصي",
     "allFiles": "جميع الملفات",
     "yourSharedFiles": "ملفاتك المشتركة",
+    "sharedFiles": "الملفات المشتركة",
+    "promoterDashboard": "لوحة تحكم المروج",
     "notifications": "الإشعارات",
     "partners": "الشركاء",
     "reports": "التقارير",
@@ -286,5 +288,14 @@
     "lastActivity": "النشاط الأخير",
     "countryAnalytics": "تحليلات البلدان",
     "noCountryData": "لا توجد بيانات البلد متاحة بعد"
+  },
+  "sharedFiles": {
+    "title": "الملفات المشتركة",
+    "subtitle": "عرض جميع ملفاتك المشتركة",
+    "sharedFiles": "الملفات المشتركة",
+    "loadingFiles": "جارٍ تحميل الملفات...",
+    "filesCount": "ملفات",
+    "noFilesFound": "لم يتم العثور على ملفات مشتركة",
+    "noFilesMessage": "لم تشارك أي ملفات بعد. شارك الملفات لرؤيتها هنا."
   }
 }

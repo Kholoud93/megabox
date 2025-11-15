@@ -24,6 +24,9 @@ import Earning from './pages/Earning/Earning'
 import Promoters from './pages/OwnerPages/Promoters/Promoters'
 import PromotersEarning from './pages/Earning/PromotersEarning'
 import Notifications from './pages/Notifications/Notifications'
+import PromoterDashboard from './pages/Promoter/PromoterDashboard'
+import SharedFiles from './pages/SharedFiles/SharedFiles'
+import PromoterProtector from './protectors/PromoterProtector'
 
 
 // Main Pages
@@ -288,10 +291,33 @@ const router = createBrowserRouter(
                 <Notifications />
               </RoleProtector>
             </LoginProtector>
+        },
+        {
+          path: "shared-files", element:
+            <LoginProtector>
+              <RoleProtector requiredRole="User">
+                <SharedFiles />
+              </RoleProtector>
+            </LoginProtector>
         }
       ]
     },
-    // User dash 
+    // User dash
+
+    // Promoter /////////////////////////////
+    {
+      path: "/Promoter", element: <LoginProtector><DashboardLayout role={"User"} /> </LoginProtector>, children: [
+        {
+          index: true, element:
+            <LoginProtector>
+              <PromoterProtector>
+                <PromoterDashboard />
+              </PromoterProtector>
+            </LoginProtector>
+        }
+      ]
+    },
+    // Promoter 
 
     // Owner ////////////////////////////
     {

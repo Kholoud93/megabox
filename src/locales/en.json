@@ -173,6 +173,8 @@
     "profile": "Profile",
     "allFiles": "All Files",
     "yourSharedFiles": "Your shared files",
+    "sharedFiles": "Shared Files",
+    "promoterDashboard": "Promoter Dashboard",
     "notifications": "Notifications",
     "partners": "Partners",
     "reports": "Reports",
@@ -286,5 +288,14 @@
     "lastActivity": "Last Activity",
     "countryAnalytics": "Country Analytics",
     "noCountryData": "No country data available yet"
+  },
+  "sharedFiles": {
+    "title": "Shared Files",
+    "subtitle": "View all your shared files",
+    "sharedFiles": "Shared Files",
+    "loadingFiles": "Loading files...",
+    "filesCount": "files",
+    "noFilesFound": "No shared files found",
+    "noFilesMessage": "You haven't shared any files yet. Share files to see them here."
   }
 }

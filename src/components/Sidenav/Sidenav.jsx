@@ -13,7 +13,8 @@ import {
     HiUserGroup,
     HiDocumentText,
     HiHandRaised,
-    HiBell
+    HiBell,
+    HiCurrencyDollar
 } from "react-icons/hi2";
 import { FiGlobe } from 'react-icons/fi';
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
@@ -146,6 +147,26 @@ export default function Sidenav({ role }) {
                                         icon={<HiShare className={pathname === "/dashboard/Earnings" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
                                         data-tooltip={collapsed ? t("sidenav.yourSharedFiles") : ""}>
                                         {t("sidenav.yourSharedFiles")}
+                                    </MenuItem>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-between flex-col mb-1">
+                                <div className="Links">
+                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/shared-files" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/shared-files' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.sharedFiles") : ""}></Link>}
+                                        icon={<HiShare className={pathname === "/dashboard/shared-files" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? t("sidenav.sharedFiles") : ""}>
+                                        {t("sidenav.sharedFiles")}
+                                    </MenuItem>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-between flex-col mb-1">
+                                <div className="Links">
+                                    <MenuItem onClick={handleHide} className={pathname === "/Promoter" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Promoter' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.promoterDashboard") : ""}></Link>}
+                                        icon={<HiCurrencyDollar className={pathname === "/Promoter" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                        data-tooltip={collapsed ? t("sidenav.promoterDashboard") : ""}>
+                                        {t("sidenav.promoterDashboard")}
                                     </MenuItem>
                                 </div>
                             </div>
