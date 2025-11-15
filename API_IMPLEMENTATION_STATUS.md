@@ -4,8 +4,8 @@ This document shows which APIs from the Postman collection are implemented in th
 
 ## Summary
 - **Total APIs in Postman Collection**: 47
-- **Implemented**: 30
-- **Not Implemented**: 17
+- **Implemented**: 39
+- **Not Implemented**: 8
 
 ---
 
@@ -133,98 +133,100 @@ This document shows which APIs from the Postman collection are implemented in th
 
 ---
 
+39. ✅ **POST /auth/generateShareLink** - Generate share link for file
+    - Location: `src/services/fileService.js` (fileService.generateShareLink)
+    - UI: ShareLinkModal component in Files.jsx and fileDetails.jsx
+
+40. ✅ **POST /auth/saveFile** - Save a shared file
+    - Location: `src/services/fileService.js` (fileService.saveFile)
+
+41. ✅ **POST /auth/requestWithdrawal** - Request withdrawal
+    - Location: `src/services/withdrawalService.js` (withdrawalService.requestWithdrawal)
+    - UI: Withdrawal modal in Earning.jsx
+
+42. ✅ **GET /auth/getWithdrawalHistory** - Get withdrawal history
+    - Location: `src/services/withdrawalService.js` (withdrawalService.getWithdrawalHistory)
+    - UI: Withdrawal history section in Earning.jsx
+
+43. ✅ **GET /auth/getAllWithdrawals** - Get all withdrawals (admin)
+    - Location: `src/services/withdrawalService.js` (withdrawalService.getAllWithdrawals)
+
+44. ✅ **POST /user/savetoken** - Save FCM token
+    - Location: `src/services/notificationService.js` (notificationService.saveFcmToken)
+
+45. ✅ **DELETE /user/deleteFcmToken** - Delete FCM token
+    - Location: `src/services/notificationService.js` (notificationService.deleteFcmToken)
+
+46. ✅ **GET /user/getUserNotifications** - Get user notifications
+    - Location: `src/services/notificationService.js` (notificationService.getUserNotifications)
+    - UI: Notifications page at `/dashboard/notifications`
+
+47. ✅ **POST /user/markAllAsRead** - Mark all notifications as read
+    - Location: `src/services/notificationService.js` (notificationService.markAllAsRead)
+    - UI: Notifications page
+
+48. ✅ **DELETE /user/deleteimage** - Delete profile image
+    - Location: `src/services/userService.js` (userService.deleteProfileImage)
+
+---
+
 ## ❌ NOT IMPLEMENTED APIs
 
 ### Auth Endpoints
 
-1. ❌ **POST /auth/generateShareLink** - Generate share link for file
-   - Postman: POST `/auth/generateShareLink` with `fileId` in body
-   - Note: Folder share link is implemented, but file share link is missing
-
-2. ❌ **GET /auth/getSharedFilesByUser** - Get shared files by user
+1. ❌ **GET /auth/getSharedFilesByUser** - Get shared files by user
    - Postman: GET `/auth/getSharedFilesByUser`
 
-3. ❌ **POST /auth/saveFile** - Save a shared file
-   - Postman: POST `/auth/saveFile` with `fileId` in body
-
-4. ❌ **POST /auth/requestWithdrawal** - Request withdrawal
-   - Postman: POST `/auth/requestWithdrawal` with amount, paymentMethod, whatsappNumber, details
-
-5. ❌ **GET /auth/getWithdrawalHistory** - Get withdrawal history
-   - Postman: GET `/auth/getWithdrawalHistory`
-
-6. ❌ **GET /auth/getAllWithdrawals** - Get all withdrawals (admin)
-   - Postman: GET `/auth/getAllWithdrawals`
-
-7. ❌ **GET /auth/getSharedFolderContent/:id** - Get shared folder content
+2. ❌ **GET /auth/getSharedFolderContent/:id** - Get shared folder content
    - Postman: GET `/auth/getSharedFolderContent/:id`
    - Note: There's a reference but implementation might be incomplete
 
 ### User Endpoints
 
-8. ❌ **PATCH /user/disableFileShare/:id** - Disable file sharing
+3. ❌ **PATCH /user/disableFileShare/:id** - Disable file sharing
    - Postman: PATCH `/user/disableFileShare/:id`
 
-9. ❌ **POST /user/subscribeToPremium** - Subscribe to premium
+4. ❌ **POST /user/subscribeToPremium** - Subscribe to premium
    - Postman: PATCH `/user/subscribeToPremium` (with file in formdata)
 
-10. ❌ **POST /user/savetoken** - Save FCM token
-    - Postman: POST `/user/savetoken` with userId and fcmToken
-
-11. ❌ **DELETE /user/deleteFcmToken** - Delete FCM token
-    - Postman: DELETE `/user/deleteFcmToken`
-
-12. ❌ **GET /user/getUserNotifications** - Get user notifications
-    - Postman: GET `/user/getUserNotifications`
-
-13. ❌ **POST /user/markAllAsRead** - Mark all notifications as read
-    - Postman: POST `/user/markAllAsRead`
-
-14. ❌ **GET /user/getSharedFoldersWithFiles** - Get shared folders with files
-    - Postman: GET `/user/getSharedFoldersWithFiles`
+5. ❌ **GET /user/getSharedFoldersWithFiles** - Get shared folders with files
+   - Postman: GET `/user/getSharedFoldersWithFiles`
 
 ### Admin Endpoints
 
-15. ❌ **PATCH /auth/toggleUserBanByOwner/:id** - Toggle user ban
-    - Postman: PATCH `/auth/toggleUserBanByOwner/:id`
+6. ❌ **PATCH /auth/toggleUserBanByOwner/:id** - Toggle user ban
+   - Postman: PATCH `/auth/toggleUserBanByOwner/:id`
 
-16. ❌ **DELETE /auth/deleteUserById/:id** - Delete user by ID
-    - Postman: DELETE `/auth/deleteUserById/:id`
-
-17. ❌ **GET /user/deleteimage** - Delete profile image
-    - Note: There's a `deleteProfileImage` function in `userService` but it calls `/user/deleteimage` which might not match the Postman endpoint exactly
+7. ❌ **DELETE /auth/deleteUserById/:id** - Delete user by ID
+   - Postman: DELETE `/auth/deleteUserById/:id`
 
 ---
 
 ## 📝 Notes
 
-1. **File vs Folder Share Links**: The project implements folder share links (`generateFolderShareLink`) but not file share links (`generateShareLink`).
+1. **File Share Links**: ✅ Now implemented! Both file and folder share links are fully implemented with UI modals.
 
-2. **Withdrawal System**: The entire withdrawal system (request, history, admin view) is not implemented.
+2. **Withdrawal System**: ✅ Fully implemented! Request withdrawal, view history, and admin view are all available.
 
-3. **Notifications**: FCM token management and notification system is not implemented.
+3. **Notifications**: ✅ Fully implemented! FCM token management and notification system with dedicated UI page.
 
 4. **Premium Subscription**: The premium subscription endpoint exists in Postman but is not implemented in the frontend.
 
 5. **Admin Functions**: Some admin functions like banning users and deleting users are not implemented.
 
-6. **Shared Content**: Some endpoints for viewing shared content (folders with files) are missing.
+6. **Shared Content**: Some endpoints for viewing shared content (folders with files, shared files by user) are missing.
 
 ---
 
 ## 🔧 Recommendations
 
-1. **High Priority**:
-   - Implement file share link generation (`generateShareLink`)
-   - Implement withdrawal system (request, history)
-   - Implement notification system (FCM tokens, notifications)
-
-2. **Medium Priority**:
+1. **Medium Priority**:
    - Implement premium subscription flow
-   - Implement shared folders with files view
+   - Implement shared folders with files view (`getSharedFoldersWithFiles`)
+   - Implement get shared files by user (`getSharedFilesByUser`)
    - Implement disable file share functionality
 
-3. **Low Priority**:
-   - Implement admin user management (ban/delete)
-   - Complete shared folder content viewing
+2. **Low Priority**:
+   - Implement admin user management (ban/delete users)
+   - Complete shared folder content viewing (`getSharedFolderContent`)
 
