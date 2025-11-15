@@ -106,20 +106,21 @@ export default function Referral() {
                                 exit={{ scale: 0.9, opacity: 0 }}
                                 onClick={(e) => e.stopPropagation()}
                             >
-                                <h3 className="referral-modal__title">{t('referral.referralRules')}</h3>
+                                <h3 className="referral-modal__title">{t('referral.recommendedRules')}</h3>
                                 <div className="referral-modal__content">
                                     <ol className="referral-modal__rules">
                                         <li>{t('referral.rule1')}</li>
                                         <li>{t('referral.rule2')}</li>
                                         <li>{t('referral.rule3')}</li>
                                         <li>{t('referral.rule4')}</li>
+                                        <li>{t('referral.rule5')}</li>
                                     </ol>
                                 </div>
                                 <button
                                     className="referral-modal__close"
                                     onClick={() => setShowRulesModal(false)}
                                 >
-                                    {t('referral.close')}
+                                    {t('referral.ok')}
                                 </button>
                             </motion.div>
                         </motion.div>

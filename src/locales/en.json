@@ -355,6 +355,7 @@
     "bannerTitle": "Earn money by referring friends!",
     "getReferralLink": "Get Referral Link",
     "referralRules": "Referral Rules",
+    "recommendedRules": "Recommended rules",
     "refers": "Refers",
     "todayRefers": "Today Refers",
     "totalRefers": "Total Refers",
@@ -373,10 +374,12 @@
     "noReferUsers": "No refer users",
     "noReferUsersMessage": "No users have been referred yet",
     "close": "Close",
-    "rule1": "Share your referral link with friends and family",
-    "rule2": "Earn money when they sign up using your link",
-    "rule3": "Track your referrals and earnings in real-time",
-    "rule4": "Withdraw your earnings anytime"
+    "ok": "OK",
+    "rule1": "Invite your friends",
+    "rule2": "Get 10% of referral income permanently",
+    "rule3": "The more invitations, the more income",
+    "rule4": "Increase your income with more invites",
+    "rule5": "Warning: False invitation behaviors will lead to account ban and withdrawal prohibition"
   },
   "adminAnalytics": {
     "title": "Admin Analytics",
