@@ -59,6 +59,11 @@ const GoogleLoginButton = ({ SignUp }) => {
     // Handle OAuth callback from redirect flow
     // Check both query params and hash fragments
     useEffect(() => {
+        // Debug: Log current URL to see what we're getting
+        console.log('OAuth callback - Full URL:', window.location.href);
+        console.log('OAuth callback - Hash:', window.location.hash);
+        console.log('OAuth callback - Search:', window.location.search);
+
         // Check query parameters first
         let accessToken = searchParams.get('access_token');
         let error = searchParams.get('error');
@@ -68,9 +73,20 @@ const GoogleLoginButton = ({ SignUp }) => {
             const hashParams = new URLSearchParams(window.location.hash.substring(1));
             accessToken = hashParams.get('access_token');
             error = hashParams.get('error');
+            console.log('OAuth callback - Found in hash:', { accessToken: accessToken ? 'present' : 'missing', error });
+        }
+
+        // Also check window.location directly (for desktop browsers that might not update React Router immediately)
+        if (!accessToken && !error) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlHash = new URLSearchParams(window.location.hash.substring(1));
+            accessToken = urlParams.get('access_token') || urlHash.get('access_token');
+            error = urlParams.get('error') || urlHash.get('error');
+            console.log('OAuth callback - Direct URL check:', { accessToken: accessToken ? 'present' : 'missing', error });
         }
 
         if (accessToken && !isProcessing) {
+            console.log('OAuth callback - Processing token');
             handleCredentialResponse(accessToken);
             // Clean up URL - remove both query params and hash
             const cleanPath = location.pathname;
@@ -87,13 +103,15 @@ const GoogleLoginButton = ({ SignUp }) => {
             window.history.replaceState({}, document.title, cleanPath);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchParams, location.hash]);
+    }, [searchParams, location.hash, location.search]);
 
     // Direct Google OAuth redirect - no library needed
     const handleGoogleLogin = () => {
         const redirectUri = window.location.origin + location.pathname;
         const scope = 'openid email profile';
         const responseType = 'token';
+
+        console.log('Initiating Google OAuth:', { redirectUri, clientId: GOOGLE_CLIENT_ID });
 
         // Build Google OAuth URL
         const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
@@ -102,6 +120,8 @@ const GoogleLoginButton = ({ SignUp }) => {
             `response_type=${responseType}&` +
             `scope=${encodeURIComponent(scope)}&` +
             `include_granted_scopes=true`;
+
+        console.log('Redirecting to Google OAuth URL');
 
         // Redirect to Google
         window.location.href = googleAuthUrl;
