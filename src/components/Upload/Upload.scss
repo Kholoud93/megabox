@@ -5,6 +5,8 @@
 
     .UploadFile {
         @include InsideBackdrop();
+
+        // Base styles
         max-height: 90vh;
         overflow-y: auto;
         padding: 1.5rem;
@@ -78,7 +80,7 @@
         }
 
         // File upload area responsive
-        .md\\:flex > div {
+        .md\\:flex>div {
             @include Breakpoints(mobile) {
                 padding: 0.75rem;
             }
@@ -87,7 +89,7 @@
                 padding: 0.5rem;
             }
 
-            > div {
+            >div {
                 @include Breakpoints(mobile) {
                     height: 180px;
                 }
@@ -110,7 +112,7 @@
         }
 
         // File item responsive
-        .space-y-2 > div {
+        .space-y-2>div {
             @include Breakpoints(mobile) {
                 padding: 0.75rem;
                 font-size: 0.8125rem;

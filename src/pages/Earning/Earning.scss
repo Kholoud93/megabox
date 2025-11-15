@@ -4,12 +4,15 @@
 
 .earning-container {
   @include mixins.container;
-  padding-top: 2rem;
-  padding-bottom: 4rem;
-  max-width: 100%;
-  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
-  min-height: 100vh;
-  
+
+  & {
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+    max-width: 100%;
+    background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+    min-height: 100vh;
+  }
+
   @include functions.Breakpoints(mobile) {
     padding-top: 1rem;
     padding-bottom: 2rem;
@@ -20,11 +23,11 @@
   text-align: center;
   margin-bottom: 2rem;
   padding: 0 1rem;
-  
+
   @include functions.Breakpoints(mobile) {
     margin-bottom: 1.5rem;
   }
-  
+
   h1 {
     font-size: $text-4xl;
     font-weight: 700;
@@ -33,25 +36,25 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin-bottom: 0.5rem;
-    
+
     @include mixins.media-breakpoint-down(md) {
       font-size: $text-3xl;
     }
-    
+
     @include functions.Breakpoints(mobile) {
       font-size: $text-2xl;
     }
   }
-  
+
   p {
     font-size: $text-base;
     color: #4b5563;
     font-weight: 500;
-    
+
     @include mixins.media-breakpoint-down(md) {
       font-size: $text-sm;
     }
-    
+
     @include functions.Breakpoints(mobile) {
       font-size: $text-xs;
     }
@@ -67,6 +70,7 @@
   @include mixins.media-breakpoint-down(lg) {
     grid-template-columns: repeat(2, 1fr);
   }
+
   @include mixins.media-breakpoint-down(md) {
     grid-template-columns: 1fr;
   }
@@ -81,8 +85,13 @@
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .earning-stats {
@@ -95,6 +104,7 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
+
   @include mixins.media-breakpoint-down(md) {
     grid-template-columns: 1fr;
     gap: 1rem;
@@ -133,12 +143,12 @@
   .icon {
     font-size: 2.5rem;
     flex-shrink: 0;
-    
+
     @include functions.Breakpoints(mobile) {
       font-size: 2rem;
     }
   }
-  
+
   .info {
     .label {
       color: #4b5563;
@@ -147,18 +157,19 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      
+
       @include functions.Breakpoints(mobile) {
         font-size: $text-xs;
         margin-bottom: 0.25rem;
       }
     }
+
     .value {
       color: #6366f1;
       font-size: $text-2xl;
       font-weight: 700;
       line-height: 1;
-      
+
       @include functions.Breakpoints(mobile) {
         font-size: $text-xl;
       }
@@ -168,23 +179,23 @@
 
 .files-section {
   padding: 0 1rem;
-  
+
   @include functions.Breakpoints(mobile) {
     padding: 0 0.5rem;
   }
-  
+
   .section-title {
     font-size: $text-2xl;
     font-weight: 600;
     color: #4f46e5;
     margin-bottom: 1.5rem;
     position: relative;
-    
+
     @include functions.Breakpoints(mobile) {
       font-size: $text-xl;
       margin-bottom: 1rem;
     }
-    
+
     &::after {
       content: '';
       position: absolute;
@@ -209,44 +220,45 @@
   }
 }
 
-.loading-message, .no-files-message {
+.loading-message,
+.no-files-message {
   grid-column: 1/-1;
   text-align: center;
   color: #64748b;
   font-size: $text-base;
   padding: 2rem 1rem;
-  
+
   @include functions.Breakpoints(mobile) {
     padding: 1.5rem 0.75rem;
     font-size: $text-sm;
   }
-  
+
   svg {
     font-size: 3rem;
     margin-bottom: 1rem;
     color: #6366f1;
-    
+
     @include functions.Breakpoints(mobile) {
       font-size: 2.5rem;
       margin-bottom: 0.75rem;
     }
   }
-  
+
   h3 {
     font-size: $text-xl;
     font-weight: 600;
     margin-bottom: 0.5rem;
     color: #4f46e5;
-    
+
     @include functions.Breakpoints(mobile) {
       font-size: $text-lg;
     }
   }
-  
+
   p {
     font-size: $text-sm;
     color: #64748b;
-    
+
     @include functions.Breakpoints(mobile) {
       font-size: $text-xs;
     }
@@ -264,7 +276,7 @@
   flex-direction: column;
   gap: 1.25rem;
   position: relative;
-  
+
   @include functions.Breakpoints(mobile) {
     padding: 1rem;
     gap: 1rem;
@@ -286,7 +298,7 @@
       font-size: 1.5rem;
       color: #6366f1;
       flex-shrink: 0;
-      
+
       @include functions.Breakpoints(mobile) {
         width: 2.5rem;
         height: 2.5rem;
@@ -305,7 +317,7 @@
         margin-bottom: 1rem;
         word-break: break-word;
         line-height: 1.4;
-        
+
         @include functions.Breakpoints(mobile) {
           font-size: $text-sm;
           margin-bottom: 0.75rem;
@@ -320,7 +332,8 @@
     }
   }
 
-  .file-link-btn, .countries-btn {
+  .file-link-btn,
+  .countries-btn {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -337,12 +350,12 @@
   .file-link-btn {
     background: linear-gradient(135deg, #6366f1, #4f46e5);
     color: $white;
-    
+
     @include functions.Breakpoints(mobile) {
       padding: 0.4rem 0.75rem;
       font-size: $text-xs;
     }
-    
+
     &:hover {
       transform: translateY(-1px);
       box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
@@ -354,12 +367,12 @@
     background: #eef2ff;
     color: #6366f1;
     border: 2px solid #e0e7ff;
-    
+
     @include functions.Breakpoints(mobile) {
       padding: 0.4rem 0.75rem;
       font-size: $text-xs;
     }
-    
+
     &:hover {
       background: #e0e7ff;
       border-color: #6366f1;
@@ -392,19 +405,19 @@
         font-size: $text-xl;
         font-weight: 700;
         color: #6366f1;
-        
+
         @include functions.Breakpoints(mobile) {
           font-size: $text-lg;
         }
       }
 
-              .stat-label {
-          font-size: $text-sm;
-          color: $gray-500;
-          font-weight: 500;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
+      .stat-label {
+        font-size: $text-sm;
+        color: $gray-500;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
     }
   }
 
@@ -417,7 +430,7 @@
     background: #f8fafc;
     border-radius: $rounded-md;
     border: 1px solid #e2e8f0;
-    
+
     @include functions.Breakpoints(mobile) {
       font-size: $text-xs;
       padding: 0.5rem;
@@ -452,23 +465,23 @@
   display: flex;
   flex-direction: column;
   border: 2px solid #e0e7ff;
-  
+
   @include functions.Breakpoints(mobile) {
     max-width: 95%;
     max-height: 90vh;
   }
 
-    .modal-header {
-      padding: 1.25rem 1.5rem;
-      border-bottom: 2px solid #e0e7ff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: linear-gradient(135deg, #eef2ff, $white);
-      
-      @include functions.Breakpoints(mobile) {
-        padding: 1rem 1.25rem;
-      }
+  .modal-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 2px solid #e0e7ff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #eef2ff, $white);
+
+    @include functions.Breakpoints(mobile) {
+      padding: 1rem 1.25rem;
+    }
 
     h3 {
       margin: 0;
@@ -478,7 +491,7 @@
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      
+
       @include functions.Breakpoints(mobile) {
         font-size: $text-base;
         gap: 0.5rem;
@@ -494,7 +507,7 @@
       padding: 0.5rem;
       border-radius: 50%;
       transition: all 0.3s ease;
-      
+
       @include functions.Breakpoints(mobile) {
         font-size: 1rem;
         padding: 0.4rem;
@@ -511,7 +524,7 @@
   .modal-content {
     padding: 1.5rem 2rem;
     overflow-y: auto;
-    
+
     @include functions.Breakpoints(mobile) {
       padding: 1rem 1.25rem;
     }
@@ -520,24 +533,24 @@
       margin-bottom: 1.5rem;
       padding-bottom: 1rem;
       border-bottom: 2px solid #e0e7ff;
-      
+
       @include functions.Breakpoints(mobile) {
         margin-bottom: 1rem;
         padding-bottom: 0.75rem;
       }
-      
+
       h4 {
         font-size: $text-base;
         font-weight: 600;
         color: #1e293b;
         margin-bottom: 0.75rem;
         word-break: break-word;
-        
+
         @include functions.Breakpoints(mobile) {
           font-size: $text-sm;
         }
       }
-      
+
       .total-views {
         display: flex;
         align-items: center;
@@ -545,7 +558,7 @@
         color: #6366f1;
         font-weight: 500;
         font-size: $text-sm;
-        
+
         @include functions.Breakpoints(mobile) {
           font-size: $text-xs;
         }
@@ -566,7 +579,7 @@
         border-radius: $rounded-md;
         margin-bottom: 0.25rem;
         transition: all 0.3s ease;
-        
+
         @include functions.Breakpoints(mobile) {
           padding: 0.625rem 0.75rem;
           flex-direction: column;
@@ -583,16 +596,16 @@
           display: flex;
           align-items: center;
           gap: 0.75rem;
-          
+
           .country-flag {
             font-size: 1.25rem;
           }
-          
+
           .country-name {
             font-weight: 500;
             color: #1e293b;
             font-size: $text-sm;
-            
+
             @include functions.Breakpoints(mobile) {
               font-size: $text-xs;
             }
@@ -609,7 +622,7 @@
           padding: 0.25rem 0.75rem;
           border-radius: $rounded-md;
           font-size: $text-sm;
-          
+
           @include functions.Breakpoints(mobile) {
             font-size: $text-xs;
             padding: 0.2rem 0.5rem;
@@ -627,11 +640,11 @@
       flex-direction: column;
       align-items: center;
       gap: 0.75rem;
-      
+
       svg {
         font-size: 2.5rem;
         color: #6366f1;
-        
+
         @include functions.Breakpoints(mobile) {
           font-size: 2rem;
         }
@@ -646,22 +659,22 @@
     padding-top: 1rem;
     padding-bottom: 2rem;
   }
-  
+
   .page-header {
     margin-bottom: 2rem;
   }
-  
+
   .earning-stats {
     margin-bottom: 2rem;
   }
-  
+
   .earning-stat-card {
     padding: 1.25rem;
-    
+
     .icon {
       font-size: 2rem;
     }
-    
+
     .info .value {
       font-size: $text-xl;
     }

@@ -12,14 +12,6 @@
 }
 
 .auth-card {
-  .auth-btn-size-fix {
-    width: 100% !important;
-
-    @include fn.Breakpoints(mobile) {
-      width: 90% !important;
-    }
-  }
-
   background: rgba(vars.$white, 0.1);
   backdrop-filter: blur(10px);
   border-radius: vars.$rounded-md;
@@ -34,6 +26,14 @@
   z-index: 10;
   border: 1px solid rgba(vars.$white, 0.1);
   width: 600px;
+
+  .auth-btn-size-fix {
+    width: 100% !important;
+
+    @include fn.Breakpoints(mobile) {
+      width: 90% !important;
+    }
+  }
 
   @include fn.Breakpoints(mobile) {
     padding: 1.5rem 1rem;

@@ -5,6 +5,8 @@
 
     .ChangeName {
         @include InsideBackdrop();
+
+        // Base styles
         min-height: auto;
         max-width: 600px;
         width: 90%;
@@ -36,7 +38,7 @@
         }
 
         // Content sections responsive
-        > div {
+        >div {
             @include Breakpoints(mobile) {
                 padding-left: 0.75rem;
                 padding-right: 0.75rem;
