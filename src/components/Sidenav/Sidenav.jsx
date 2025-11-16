@@ -196,10 +196,11 @@ export default function Sidenav({ role }) {
                                     {t("sidenav.partners")}
                                 </MenuItem>
 
-                                <MenuItem onClick={handleHide} className={pathname === "/dashboard/notifications" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/notifications' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.notifications") : ""}></Link>}
+                                {/* Notifications - User/Promoter */}
+                                <MenuItem onClick={handleHide} className={pathname === "/dashboard/notifications" || pathname === "/Promoter/notifications" ? 'menu-items  Active' : 'menu-items'} component={<Link to={isPromoter ? '/Promoter/notifications' : '/dashboard/notifications'} className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.notifications") : ""}></Link>}
                                     icon={
                                         <div className="relative">
-                                            <HiBell className={pathname === "/dashboard/notifications" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />
+                                            <HiBell className={pathname === "/dashboard/notifications" || pathname === "/Promoter/notifications" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />
                                             {unreadCount > 0 && (
                                                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center" style={{ fontSize: '10px', minWidth: '20px' }}>
                                                     {unreadCount > 9 ? '9+' : unreadCount}
@@ -240,30 +241,53 @@ export default function Sidenav({ role }) {
                             </>
                         ) : role === "Owner" ? (
                             <>
-                                <MenuItem onClick={handleHide} className={pathname === "/Owner/Reports" ? 'menu-items  Active' : 'menu-items'} component={<Link to='Reports' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.reports") : ""}></Link>}
-                                    icon={<HiDocumentText className={pathname === "Reports" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                    data-tooltip={collapsed ? t("sidenav.reports") : ""}>
-                                    {t("sidenav.reports")}
-                                </MenuItem>
-
-                                <MenuItem onClick={handleHide} className={pathname === "/Owner/Users" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/Users' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.users") : ""}></Link>}
-                                    icon={<HiUsers className={pathname === "/Owner/Users" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                    data-tooltip={collapsed ? t("sidenav.users") : ""}>
-                                    {t("sidenav.users")}
-                                </MenuItem>
-
-                                <MenuItem onClick={handleHide} className={pathname === "/Owner/AllPromoters" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/AllPromoters' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.promoters") : ""}></Link>}
-                                    icon={<HiUserGroup className={pathname === "/Owner/AllPromoters" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                    data-tooltip={collapsed ? t("sidenav.promoters") : ""}>
-                                    {t("sidenav.promoters")}
-                                </MenuItem>
-
+                                {/* Profile - First */}
                                 <MenuItem onClick={handleHide} className={pathname === "/Owner/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.profile") : ""}></Link>}
                                     icon={<HiUserCircle className={pathname === "/Owner/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
                                     data-tooltip={collapsed ? t("sidenav.profile") : ""}>
                                     {t("sidenav.profile")}
                                 </MenuItem>
 
+                                {/* Analytics Dashboard */}
+                                <MenuItem onClick={handleHide} className={pathname === "/Owner" || pathname === "/Owner/" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.analytics") : ""}></Link>}
+                                    icon={<HiChartBar className={pathname === "/Owner" || pathname === "/Owner/" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                    data-tooltip={collapsed ? t("sidenav.analytics") : ""}>
+                                    {t("sidenav.analytics")}
+                                </MenuItem>
+
+                                {/* Users Management */}
+                                <MenuItem onClick={handleHide} className={pathname === "/Owner/Users" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/Users' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.users") : ""}></Link>}
+                                    icon={<HiUsers className={pathname === "/Owner/Users" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                    data-tooltip={collapsed ? t("sidenav.users") : ""}>
+                                    {t("sidenav.users")}
+                                </MenuItem>
+
+                                {/* Promoters Management */}
+                                <MenuItem onClick={handleHide} className={pathname === "/Owner/AllPromoters" || pathname.startsWith("/Owner/Promoter/") ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/AllPromoters' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.promoters") : ""}></Link>}
+                                    icon={<HiUserGroup className={pathname === "/Owner/AllPromoters" || pathname.startsWith("/Owner/Promoter/") ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                    data-tooltip={collapsed ? t("sidenav.promoters") : ""}>
+                                    {t("sidenav.promoters")}
+                                </MenuItem>
+
+                                {/* Reports */}
+                                <MenuItem onClick={handleHide} className={pathname === "/Owner/Reports" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/Reports' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.reports") : ""}></Link>}
+                                    icon={<HiDocumentText className={pathname === "/Owner/Reports" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                    data-tooltip={collapsed ? t("sidenav.reports") : ""}>
+                                    {t("sidenav.reports")}
+                                </MenuItem>
+
+                                {/* Notifications - Owner */}
+                                <MenuItem onClick={handleHide} className={pathname === "/Owner/notifications" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/notifications' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.notifications") : ""}></Link>}
+                                    icon={
+                                        <div className="relative">
+                                            <HiBell className={pathname === "/Owner/notifications" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />
+                                        </div>
+                                    }
+                                    data-tooltip={collapsed ? t("sidenav.notifications") : ""}>
+                                    {t("sidenav.notifications")}
+                                </MenuItem>
+
+                                {/* Partners */}
                                 <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.partners") : ""}></Link>}
                                     icon={<HiHandRaised className={pathname === "/Partners" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
                                     data-tooltip={collapsed ? t("sidenav.partners") : ""}>

@@ -173,7 +173,12 @@ export default function Analasys() {
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: index * 0.05 }}
                                         >
-                                            <td>{withdrawal.userId || withdrawal.username || '-'}</td>
+                                            <td>
+                                                {typeof withdrawal.userId === 'object' && withdrawal.userId !== null
+                                                    ? (withdrawal.userId.username || withdrawal.userId.email || withdrawal.userId._id || '-')
+                                                    : (withdrawal.userId || withdrawal.username || '-')
+                                                }
+                                            </td>
                                             <td>{withdrawal.amount} {withdrawal.currency || currency}</td>
                                             <td>{withdrawal.paymentMethod || '-'}</td>
                                             <td>

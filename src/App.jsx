@@ -339,6 +339,14 @@ const router = createBrowserRouter(
                 <PromoterDashboard />
               </PromoterProtector>
             </LoginProtector>
+        },
+        {
+          path: "notifications", element:
+            <LoginProtector>
+              <PromoterProtector>
+                <Notifications />
+              </PromoterProtector>
+            </LoginProtector>
         }
       ]
     },
@@ -386,6 +394,12 @@ const router = createBrowserRouter(
           path: "Reports", element: <LoginProtector>
             <RoleProtector requiredRole="Owner">
               <Reports />
+            </RoleProtector>
+          </LoginProtector>
+        }, {
+          path: "notifications", element: <LoginProtector>
+            <RoleProtector requiredRole="Owner">
+              <Notifications />
             </RoleProtector>
           </LoginProtector>
         }

@@ -62,7 +62,11 @@ export default function CopyrightCard({ data }) {
                     <strong>Signature:</strong> {signature}
                 </div>
                 <div className="info-row">
-                    <strong>Submitted by:</strong> {userId.username} ({userId.email})
+                    <strong>Submitted by:</strong> {
+                        typeof userId === 'object' && userId !== null
+                            ? `${userId.username || userId.email || userId._id || 'Unknown'} (${userId.email || 'No email'})`
+                            : userId || 'Unknown'
+                    }
                 </div>
                 <div className="info-row">
                     <strong>Submitted on:</strong> {formattedDate}
