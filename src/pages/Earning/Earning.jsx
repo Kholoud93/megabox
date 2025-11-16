@@ -611,40 +611,70 @@ export default function Earning() {
     const [selectedStat, setSelectedStat] = useState(null);
     const { t } = useLanguage();
 
-    // Fetch total earnings
-    const { data: earningsData, isLoading: earningsLoading } = useQuery(
+    // Fetch total earnings (for content analytics - only totalEarnings is used here)
+    const { data: earningsData, isLoading: earningsLoading, error: earningsError } = useQuery(
         ['userEarnings'],
         async () => {
             const res = await fetch(EARNINGS_URL, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.message || `Failed to fetch earnings: ${res.status}`);
+            }
             return res.json();
         },
-        { enabled: !!token }
+        {
+            enabled: !!token,
+            retry: 2,
+            onError: (error) => {
+                console.error('Error fetching earnings:', error);
+            }
+        }
     );
 
-    // Fetch total views/downloads
-    const { data: analyticsData, isLoading: analyticsLoading } = useQuery(
+    // Fetch total views/downloads (content analytics)
+    const { data: analyticsData, isLoading: analyticsLoading, error: analyticsError } = useQuery(
         ['userAnalytics'],
         async () => {
             const res = await fetch(ANALYTICS_URL, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.message || `Failed to fetch analytics: ${res.status}`);
+            }
             return res.json();
         },
-        { enabled: !!token }
+        {
+            enabled: !!token,
+            retry: 2,
+            onError: (error) => {
+                console.error('Error fetching analytics:', error);
+            }
+        }
     );
 
-    // Fetch shared files analytics
-    const { data: shareLinksData, isLoading: shareLinksLoading } = useQuery(
+    // Fetch shared files analytics (for links count)
+    const { data: shareLinksData, isLoading: shareLinksLoading, error: shareLinksError } = useQuery(
         ['shareLinkAnalytics'],
         async () => {
             const res = await fetch(SHARE_LINK_ANALYTICS_URL, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.message || `Failed to fetch share link analytics: ${res.status}`);
+            }
             return res.json();
         },
-        { enabled: !!token }
+        {
+            enabled: !!token,
+            retry: 2,
+            onError: (error) => {
+                console.error('Error fetching share link analytics:', error);
+            }
+        }
     );
 
     const isLoading = earningsLoading || analyticsLoading || shareLinksLoading;

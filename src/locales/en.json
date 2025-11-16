@@ -339,7 +339,8 @@
     "withdrawalRequested": "Withdrawal request submitted successfully!",
     "withdrawalError": "Failed to submit withdrawal request",
     "invalidAmount": "Please enter a valid amount",
-    "amountExceeds": "Amount exceeds available earnings"
+    "amountExceeds": "Amount exceeds available earnings",
+    "fetchError": "Failed to fetch promoter earnings. Please try again later."
   },
   "sharedFiles": {
     "title": "Shared Files",

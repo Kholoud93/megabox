@@ -198,16 +198,27 @@ export default function PromoterDashboard() {
     const { t } = useLanguage();
     const queryClient = useQueryClient();
 
-    // Fetch promoter earnings
-    const { data: earningsData, isLoading: earningsLoading } = useQuery(
+    // Fetch promoter earnings (financial data: pending, confirmed, total earnings)
+    const { data: earningsData, isLoading: earningsLoading, error: earningsError } = useQuery(
         ['promoterEarnings'],
         async () => {
             const res = await fetch(EARNINGS_URL, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.message || `Failed to fetch promoter earnings: ${res.status}`);
+            }
             return res.json();
         },
-        { enabled: !!token }
+        {
+            enabled: !!token,
+            retry: 2,
+            onError: (error) => {
+                console.error('Error fetching promoter earnings:', error);
+                toast.error(error.message || t('promoterDashboard.fetchError') || 'Failed to fetch earnings', ToastOptions("error"));
+            }
+        }
     );
 
     const isLoading = earningsLoading;
