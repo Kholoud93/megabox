@@ -12,6 +12,55 @@ import './Referral.scss';
 
 const REFERRAL_DATA_URL = `${API_URL}/auth/getReferralData`;
 
+// Mock data for UI display
+const MOCK_REFERRAL_DATA = {
+    todayRefers: 12,
+    totalRefers: 145,
+    todayReferralRevenue: 45.75,
+    totalReferralRevenue: 1250.50,
+    currency: 'USD',
+    referUsers: [
+        {
+            username: 'john_doe',
+            email: 'john@example.com',
+            todayReferral: 5.25,
+            totalRef: 125.50
+        },
+        {
+            username: 'jane_smith',
+            email: 'jane@example.com',
+            todayReferral: 8.50,
+            totalRef: 210.75
+        },
+        {
+            username: 'mike_wilson',
+            email: 'mike@example.com',
+            todayReferral: 3.20,
+            totalRef: 95.30
+        },
+        {
+            username: 'sarah_jones',
+            email: 'sarah@example.com',
+            todayReferral: 12.40,
+            totalRef: 285.60
+        },
+        {
+            username: 'david_brown',
+            email: 'david@example.com',
+            todayReferral: 6.80,
+            totalRef: 158.90
+        },
+        {
+            username: 'emily_davis',
+            email: 'emily@example.com',
+            todayReferral: 9.60,
+            totalRef: 375.45
+        }
+    ]
+};
+
+const USE_MOCK_DATA = true; // Set to false to use real API data
+
 export default function Referral() {
     const { t } = useLanguage();
     const [cookies] = useCookies(['MegaBox']);
@@ -30,6 +79,11 @@ export default function Referral() {
     const { data: referralData, isLoading, error: referralError } = useQuery(
         ['referralData'],
         async () => {
+            if (USE_MOCK_DATA) {
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 500));
+                return MOCK_REFERRAL_DATA;
+            }
             const res = await fetch(REFERRAL_DATA_URL, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -40,22 +94,24 @@ export default function Referral() {
             return res.json();
         },
         {
-            enabled: !!token,
+            enabled: USE_MOCK_DATA || !!token,
             retry: 2,
             onError: (error) => {
                 console.error('Error fetching referral data:', error);
-                toast.error(error.message || t('referral.fetchError'), ToastOptions("error"));
+                if (!USE_MOCK_DATA) {
+                    toast.error(error.message || t('referral.fetchError'), ToastOptions("error"));
+                }
             }
         }
     );
 
-    const referralLink = userData?.referralLink || `https://mega-box.vercel.app/register?ref=${userData?._id}`;
-    const todayRefers = referralData?.todayRefers || 0;
-    const totalRefers = referralData?.totalRefers || 0;
-    const todayReferralRevenue = referralData?.todayReferralRevenue || 0;
-    const totalReferralRevenue = referralData?.totalReferralRevenue || 0;
-    const referUsers = referralData?.referUsers || [];
-    const currency = referralData?.currency || 'USD';
+    const referralLink = userData?.referralLink || `https://mega-box.vercel.app/register?ref=${userData?._id || 'mock123'}`;
+    const todayRefers = referralData?.todayRefers || MOCK_REFERRAL_DATA.todayRefers;
+    const totalRefers = referralData?.totalRefers || MOCK_REFERRAL_DATA.totalRefers;
+    const todayReferralRevenue = referralData?.todayReferralRevenue || MOCK_REFERRAL_DATA.todayReferralRevenue;
+    const totalReferralRevenue = referralData?.totalReferralRevenue || MOCK_REFERRAL_DATA.totalReferralRevenue;
+    const referUsers = referralData?.referUsers || MOCK_REFERRAL_DATA.referUsers;
+    const currency = referralData?.currency || MOCK_REFERRAL_DATA.currency;
 
     const handleCopyLink = async () => {
         try {

@@ -16,6 +16,84 @@ const EARNINGS_URL = `${API_URL}/auth/getUserEarnings`;
 const ANALYTICS_URL = `${API_URL}/auth/getUserAnalytics`;
 const SHARE_LINK_ANALYTICS_URL = `${API_URL}/auth/getShareLinkAnalytics`;
 
+// Mock data for UI display
+const MOCK_EARNINGS_DATA = {
+    totalEarnings: '2,450.75',
+    withdrawable: '2,100.50',
+    estimatedIncome: '350.25',
+    actualIncome: '2,100.50',
+    pendingRewards: '350.25',
+    confirmedRewards: '2,100.50',
+    currency: 'USD'
+};
+
+const MOCK_ANALYTICS_DATA = {
+    totalAnalytics: {
+        totalViews: 15420,
+        totalDownloads: 8230
+    }
+};
+
+const MOCK_SHARE_LINKS_DATA = {
+    analytics: [
+        {
+            fileName: 'document.pdf',
+            views: 1250,
+            downloads: 680,
+            sharedUrl: 'https://example.com/share/abc123',
+            lastUpdated: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+            viewsByCountry: [
+                { country: 'United States', views: 450 },
+                { country: 'United Kingdom', views: 320 },
+                { country: 'Canada', views: 280 },
+                { country: 'Australia', views: 200 }
+            ]
+        },
+        {
+            fileName: 'presentation.pptx',
+            views: 980,
+            downloads: 520,
+            sharedUrl: 'https://example.com/share/def456',
+            lastUpdated: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+            viewsByCountry: [
+                { country: 'Germany', views: 280 },
+                { country: 'France', views: 250 },
+                { country: 'Spain', views: 200 },
+                { country: 'Italy', views: 150 },
+                { country: 'Netherlands', views: 100 }
+            ]
+        },
+        {
+            fileName: 'video.mp4',
+            views: 2150,
+            downloads: 1450,
+            sharedUrl: 'https://example.com/share/ghi789',
+            lastUpdated: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+            viewsByCountry: [
+                { country: 'India', views: 650 },
+                { country: 'China', views: 520 },
+                { country: 'Japan', views: 380 },
+                { country: 'South Korea', views: 300 },
+                { country: 'Singapore', views: 300 }
+            ]
+        },
+        {
+            fileName: 'image.jpg',
+            views: 750,
+            downloads: 420,
+            sharedUrl: 'https://example.com/share/jkl012',
+            lastUpdated: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+            viewsByCountry: [
+                { country: 'Brazil', views: 250 },
+                { country: 'Mexico', views: 200 },
+                { country: 'Argentina', views: 150 },
+                { country: 'Chile', views: 150 }
+            ]
+        }
+    ]
+};
+
+const USE_MOCK_DATA = true; // Set to false to use real API data
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -615,6 +693,11 @@ export default function Earning() {
     const { data: earningsData, isLoading: earningsLoading, error: earningsError } = useQuery(
         ['userEarnings'],
         async () => {
+            if (USE_MOCK_DATA) {
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 500));
+                return MOCK_EARNINGS_DATA;
+            }
             const res = await fetch(EARNINGS_URL, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -625,7 +708,7 @@ export default function Earning() {
             return res.json();
         },
         {
-            enabled: !!token,
+            enabled: USE_MOCK_DATA || !!token,
             retry: 2,
             onError: (error) => {
                 console.error('Error fetching earnings:', error);
@@ -637,6 +720,11 @@ export default function Earning() {
     const { data: analyticsData, isLoading: analyticsLoading, error: analyticsError } = useQuery(
         ['userAnalytics'],
         async () => {
+            if (USE_MOCK_DATA) {
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 500));
+                return MOCK_ANALYTICS_DATA;
+            }
             const res = await fetch(ANALYTICS_URL, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -647,7 +735,7 @@ export default function Earning() {
             return res.json();
         },
         {
-            enabled: !!token,
+            enabled: USE_MOCK_DATA || !!token,
             retry: 2,
             onError: (error) => {
                 console.error('Error fetching analytics:', error);
@@ -659,6 +747,11 @@ export default function Earning() {
     const { data: shareLinksData, isLoading: shareLinksLoading, error: shareLinksError } = useQuery(
         ['shareLinkAnalytics'],
         async () => {
+            if (USE_MOCK_DATA) {
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 500));
+                return MOCK_SHARE_LINKS_DATA;
+            }
             const res = await fetch(SHARE_LINK_ANALYTICS_URL, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -669,7 +762,7 @@ export default function Earning() {
             return res.json();
         },
         {
-            enabled: !!token,
+            enabled: USE_MOCK_DATA || !!token,
             retry: 2,
             onError: (error) => {
                 console.error('Error fetching share link analytics:', error);
@@ -679,14 +772,14 @@ export default function Earning() {
 
     const isLoading = earningsLoading || analyticsLoading || shareLinksLoading;
 
-    const totalEarnings = earningsData?.totalEarnings || '0.00';
-    const withdrawable = earningsData?.withdrawable || earningsData?.totalEarnings || '0.00';
-    const estimatedIncome = earningsData?.estimatedIncome || earningsData?.pendingRewards || '0.00';
-    const actualIncome = earningsData?.actualIncome || earningsData?.confirmedRewards || earningsData?.totalEarnings || '0.00';
-    const currency = earningsData?.currency || 'USD';
-    const totalViews = analyticsData?.totalAnalytics?.totalViews || 0;
-    const totalDownloads = analyticsData?.totalAnalytics?.totalDownloads || 0;
-    const files = shareLinksData?.analytics || [];
+    const totalEarnings = earningsData?.totalEarnings || MOCK_EARNINGS_DATA.totalEarnings;
+    const withdrawable = earningsData?.withdrawable || earningsData?.totalEarnings || MOCK_EARNINGS_DATA.withdrawable;
+    const estimatedIncome = earningsData?.estimatedIncome || earningsData?.pendingRewards || MOCK_EARNINGS_DATA.estimatedIncome;
+    const actualIncome = earningsData?.actualIncome || earningsData?.confirmedRewards || earningsData?.totalEarnings || MOCK_EARNINGS_DATA.actualIncome;
+    const currency = earningsData?.currency || MOCK_EARNINGS_DATA.currency;
+    const totalViews = analyticsData?.totalAnalytics?.totalViews || MOCK_ANALYTICS_DATA.totalAnalytics.totalViews;
+    const totalDownloads = analyticsData?.totalAnalytics?.totalDownloads || MOCK_ANALYTICS_DATA.totalAnalytics.totalDownloads;
+    const files = shareLinksData?.analytics || MOCK_SHARE_LINKS_DATA.analytics;
     const totalLinks = files.length;
 
     // Fetch user data to check if user has a plan

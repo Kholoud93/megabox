@@ -9,6 +9,84 @@ import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
 import './Notifications.scss';
 
+// Mock data for UI display
+const MOCK_NOTIFICATIONS = [
+    {
+        _id: '1',
+        id: '1',
+        title: 'Withdrawal Approved',
+        message: 'Your withdrawal request of $500.00 has been approved and processed.',
+        content: 'Your withdrawal request of $500.00 has been approved and processed.',
+        read: false,
+        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+    },
+    {
+        _id: '2',
+        id: '2',
+        title: 'New Referral',
+        message: 'john_doe has signed up using your referral link!',
+        content: 'john_doe has signed up using your referral link!',
+        read: false,
+        createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
+    },
+    {
+        _id: '3',
+        id: '3',
+        title: 'Earnings Update',
+        message: 'You have earned $45.75 from your shared content today.',
+        content: 'You have earned $45.75 from your shared content today.',
+        read: true,
+        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+        _id: '4',
+        id: '4',
+        title: 'Payment Received',
+        message: 'Your payment of $250.50 has been successfully transferred to your account.',
+        content: 'Your payment of $250.50 has been successfully transferred to your account.',
+        read: true,
+        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+        _id: '5',
+        id: '5',
+        title: 'Account Verified',
+        message: 'Your account has been successfully verified. You can now access all features.',
+        content: 'Your account has been successfully verified. You can now access all features.',
+        read: true,
+        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+        _id: '6',
+        id: '6',
+        title: 'New Feature Available',
+        message: 'Check out our new analytics dashboard with enhanced insights!',
+        content: 'Check out our new analytics dashboard with enhanced insights!',
+        read: false,
+        createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+        _id: '7',
+        id: '7',
+        title: 'Referral Bonus',
+        message: 'You received a bonus of $12.50 for referring a new user.',
+        content: 'You received a bonus of $12.50 for referring a new user.',
+        read: true,
+        createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+        _id: '8',
+        id: '8',
+        title: 'Weekly Summary',
+        message: 'Your weekly earnings summary: $325.80 total revenue.',
+        content: 'Your weekly earnings summary: $325.80 total revenue.',
+        read: true,
+        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+    }
+];
+
+const USE_MOCK_DATA = true; // Set to false to use real API data
+
 export default function Notifications() {
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
@@ -18,14 +96,21 @@ export default function Notifications() {
     // Fetch notifications
     const { data: notificationsData, isLoading } = useQuery(
         ['userNotifications'],
-        () => notificationService.getUserNotifications(token),
-        { 
-            enabled: !!token,
-            refetchInterval: 30000 // Refetch every 30 seconds
+        async () => {
+            if (USE_MOCK_DATA) {
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 500));
+                return { notifications: MOCK_NOTIFICATIONS, data: MOCK_NOTIFICATIONS };
+            }
+            return notificationService.getUserNotifications(token);
+        },
+        {
+            enabled: USE_MOCK_DATA || !!token,
+            refetchInterval: USE_MOCK_DATA ? false : 30000 // Refetch every 30 seconds
         }
     );
 
-    const notifications = notificationsData?.notifications || notificationsData?.data || [];
+    const notifications = notificationsData?.notifications || notificationsData?.data || MOCK_NOTIFICATIONS;
 
     // Mark all as read mutation
     const markAllAsReadMutation = useMutation(
@@ -115,11 +200,10 @@ export default function Notifications() {
                             {notifications.map((notification, index) => (
                                 <motion.div
                                     key={notification._id || notification.id || index}
-                                    className={`notification-item bg-white rounded-lg shadow-sm p-4 border-l-4 ${
-                                        notification.read 
-                                            ? 'border-gray-300 opacity-75' 
-                                            : 'border-indigo-600 bg-indigo-50'
-                                    }`}
+                                    className={`notification-item bg-white rounded-lg shadow-sm p-4 border-l-4 ${notification.read
+                                        ? 'border-gray-300 opacity-75'
+                                        : 'border-indigo-600 bg-indigo-50'
+                                        }`}
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: 20 }}
@@ -127,9 +211,8 @@ export default function Notifications() {
                                     whileHover={{ scale: 1.02, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                                 >
                                     <div className="flex items-start gap-4">
-                                        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-                                            notification.read ? 'bg-gray-200' : 'bg-indigo-100'
-                                        }`}>
+                                        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${notification.read ? 'bg-gray-200' : 'bg-indigo-100'
+                                            }`}>
                                             {notification.read ? (
                                                 <FaCheck className="text-gray-600" />
                                             ) : (
@@ -139,18 +222,16 @@ export default function Notifications() {
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-start justify-between gap-4">
                                                 <div className="flex-1">
-                                                    <h3 className={`font-semibold mb-1 ${
-                                                        notification.read ? 'text-gray-700' : 'text-indigo-900'
-                                                    }`}>
+                                                    <h3 className={`font-semibold mb-1 ${notification.read ? 'text-gray-700' : 'text-indigo-900'
+                                                        }`}>
                                                         {notification.title || 'Notification'}
                                                     </h3>
-                                                    <p className={`text-sm ${
-                                                        notification.read ? 'text-gray-600' : 'text-gray-800'
-                                                    }`}>
+                                                    <p className={`text-sm ${notification.read ? 'text-gray-600' : 'text-gray-800'
+                                                        }`}>
                                                         {notification.message || notification.content || 'No message'}
                                                     </p>
                                                     <p className="text-xs text-gray-500 mt-2">
-                                                        {notification.createdAt 
+                                                        {notification.createdAt
                                                             ? new Date(notification.createdAt).toLocaleString()
                                                             : 'Recently'
                                                         }

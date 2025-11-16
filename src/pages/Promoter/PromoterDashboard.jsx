@@ -16,6 +16,43 @@ import { ToastOptions } from '../../helpers/ToastOptions';
 
 const EARNINGS_URL = `${API_URL}/auth/getUserEarnings`;
 
+// Mock data for UI display
+const MOCK_EARNINGS_DATA = {
+    totalEarnings: '1,250.50',
+    pendingRewards: '350.25',
+    confirmedRewards: '900.25',
+    withdrawable: '900.25',
+    currency: 'USD'
+};
+
+const MOCK_WITHDRAWAL_HISTORY = {
+    withdrawals: [
+        {
+            amount: '500.00',
+            currency: 'USD',
+            paymentMethod: 'Vodafone Cash',
+            status: 'approved',
+            createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+            amount: '250.50',
+            currency: 'USD',
+            paymentMethod: 'Orange Money',
+            status: 'pending',
+            createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+        },
+        {
+            amount: '150.75',
+            currency: 'USD',
+            paymentMethod: 'Bank Transfer',
+            status: 'approved',
+            createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
+        }
+    ]
+};
+
+const USE_MOCK_DATA = true; // Set to false to use real API data
+
 const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -202,6 +239,11 @@ export default function PromoterDashboard() {
     const { data: earningsData, isLoading: earningsLoading, error: earningsError } = useQuery(
         ['promoterEarnings'],
         async () => {
+            if (USE_MOCK_DATA) {
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 500));
+                return MOCK_EARNINGS_DATA;
+            }
             const res = await fetch(EARNINGS_URL, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -212,22 +254,24 @@ export default function PromoterDashboard() {
             return res.json();
         },
         {
-            enabled: !!token,
+            enabled: USE_MOCK_DATA || !!token,
             retry: 2,
             onError: (error) => {
                 console.error('Error fetching promoter earnings:', error);
-                toast.error(error.message || t('promoterDashboard.fetchError') || 'Failed to fetch earnings', ToastOptions("error"));
+                if (!USE_MOCK_DATA) {
+                    toast.error(error.message || t('promoterDashboard.fetchError') || 'Failed to fetch earnings', ToastOptions("error"));
+                }
             }
         }
     );
 
     const isLoading = earningsLoading;
 
-    const totalEarnings = earningsData?.totalEarnings || '0.00';
-    const pendingEarnings = earningsData?.pendingRewards || '0.00';
-    const confirmedEarnings = earningsData?.confirmedRewards || '0.00';
-    const withdrawable = earningsData?.withdrawable || earningsData?.totalEarnings || '0.00';
-    const currency = earningsData?.currency || 'USD';
+    const totalEarnings = earningsData?.totalEarnings || MOCK_EARNINGS_DATA.totalEarnings;
+    const pendingEarnings = earningsData?.pendingRewards || MOCK_EARNINGS_DATA.pendingRewards;
+    const confirmedEarnings = earningsData?.confirmedRewards || MOCK_EARNINGS_DATA.confirmedRewards;
+    const withdrawable = earningsData?.withdrawable || earningsData?.totalEarnings || MOCK_EARNINGS_DATA.withdrawable;
+    const currency = earningsData?.currency || MOCK_EARNINGS_DATA.currency;
 
     // Fetch user data to check if user has a plan
     const { data: userData } = useQuery(
@@ -243,8 +287,15 @@ export default function PromoterDashboard() {
     // Fetch withdrawal history
     const { data: withdrawalHistory, isLoading: withdrawalHistoryLoading } = useQuery(
         ['withdrawalHistory'],
-        () => withdrawalService.getWithdrawalHistory(token),
-        { enabled: !!token }
+        async () => {
+            if (USE_MOCK_DATA) {
+                // Simulate API delay
+                await new Promise(resolve => setTimeout(resolve, 500));
+                return MOCK_WITHDRAWAL_HISTORY;
+            }
+            return withdrawalService.getWithdrawalHistory(token);
+        },
+        { enabled: USE_MOCK_DATA || !!token }
     );
 
     // Request withdrawal mutation
@@ -392,9 +443,9 @@ export default function PromoterDashboard() {
                     </div>
                     {withdrawalHistoryLoading ? (
                         <div className="text-center py-8">{t('promoterDashboard.loadingHistory')}</div>
-                    ) : withdrawalHistory?.withdrawals?.length > 0 ? (
+                    ) : (withdrawalHistory?.withdrawals || MOCK_WITHDRAWAL_HISTORY.withdrawals)?.length > 0 ? (
                         <div className="space-y-3">
-                            {withdrawalHistory.withdrawals.map((withdrawal, index) => (
+                            {(withdrawalHistory?.withdrawals || MOCK_WITHDRAWAL_HISTORY.withdrawals).map((withdrawal, index) => (
                                 <motion.div
                                     key={index}
                                     className="bg-white rounded-lg p-4 shadow-sm border border-indigo-100"
