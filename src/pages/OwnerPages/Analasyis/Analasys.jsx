@@ -183,7 +183,13 @@ export default function Analasys() {
                                             <td>{withdrawal.paymentMethod || '-'}</td>
                                             <td>
                                                 <span className={`status-badge status-${withdrawal.status || 'pending'}`}>
-                                                    {withdrawal.status || 'pending'}
+                                                    {withdrawal.status === 'approved'
+                                                        ? t('adminAnalytics.approved')
+                                                        : withdrawal.status === 'pending'
+                                                            ? t('adminAnalytics.pending')
+                                                            : withdrawal.status === 'rejected'
+                                                                ? t('adminAnalytics.rejected')
+                                                                : withdrawal.status || t('adminAnalytics.pending')}
                                                 </span>
                                             </td>
                                             <td>

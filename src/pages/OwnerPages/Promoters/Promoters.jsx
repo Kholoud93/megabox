@@ -8,8 +8,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { TbDeviceAnalytics } from "react-icons/tb";
 import { MdDelete } from "react-icons/md";
 import { MdAttachMoney } from "react-icons/md";
+import { useLanguage } from '../../../context/LanguageContext';
 
 export default function Promoters() {
+    const { t } = useLanguage();
 
 
     const animationRef = useRef();
@@ -45,11 +47,11 @@ export default function Promoters() {
                     <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                             <tr>
-                                <th scope="col" className="px-6 py-3">username</th>
-                                <th scope="col" className="px-6 py-3">email</th>
-                                <th scope="col" className="px-6 py-3">Watching Plan</th>
-                                <th scope="col" className="px-6 py-3">Downloads Plan</th>
-                                <th scope="col" className="px-6 py-3">Actions</th>
+                                <th scope="col" className="px-6 py-3">{t("adminPromoters.username")}</th>
+                                <th scope="col" className="px-6 py-3">{t("adminPromoters.email")}</th>
+                                <th scope="col" className="px-6 py-3">{t("adminPromoters.watchingPlan")}</th>
+                                <th scope="col" className="px-6 py-3">{t("adminPromoters.downloadsPlan")}</th>
+                                <th scope="col" className="px-6 py-3">{t("adminPromoters.actions")}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -61,33 +63,32 @@ export default function Promoters() {
 
                                         <td className="px-6 py-4">
                                             {ele?.watchingplan ? (
-                                                <span className='text-green-700'>subscribed </span>
+                                                <span className='text-green-700'>{t("adminPromoters.subscribed")}</span>
                                             ) : (
-                                                <span className='text-red-700'>Unsubscribed</span>
+                                                <span className='text-red-700'>{t("adminPromoters.unsubscribed")}</span>
                                             )}
                                         </td>
 
                                         <td className="px-6 py-4">
                                             {ele?.Downloadsplan ? (
-                                                <span className='text-green-700'>subscribed </span>
+                                                <span className='text-green-700'>{t("adminPromoters.subscribed")}</span>
                                             ) : (
-                                                <span className='text-red-700'>Unsubscribed</span>
+                                                <span className='text-red-700'>{t("adminPromoters.unsubscribed")}</span>
                                             )}
                                         </td>
 
                                         <td className="px-6 py-4 svg-del">
                                             <div className="w-full flex gap-2">
                                                 <Link
-                                                    title='Money'
+                                                    title={t("adminPromoters.viewEarnings")}
                                                     to={`/Owner/Promoter/${ele?._id}`}
-                                                    onClick={() => handleNotifyUser(ele)}
                                                     className="text-blue-600 hover:text-blue-800"
                                                 >
                                                     <MdAttachMoney className='Analysis' size={20} />
                                                 </Link>
                                                 <button
-                                                    title='Delete'
-                                                    onClick={() => handleNotifyUser(ele)}
+                                                    title={t("adminPromoters.delete")}
+                                                    onClick={() => { }}
                                                     className="text-blue-600 hover:text-blue-800"
                                                 >
                                                     <MdDelete className='text-red-600 hover:text-red-800' size={20} />

@@ -12,6 +12,7 @@ import { useParams } from 'react-router-dom';
 import { MdPendingActions } from "react-icons/md";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { MdOutlineAssuredWorkload } from "react-icons/md";
+import { useLanguage } from '../../context/LanguageContext';
 
 
 // Enhanced Animation variants with smoother 
@@ -198,7 +199,7 @@ function StatCard({ label, value, icon, color, index }) {
     );
 }
 
-function CountryModal({ file, isOpen, onClose }) {
+function CountryModal({ file, isOpen, onClose, t }) {
     if (!isOpen) return null;
 
     return (
@@ -242,7 +243,7 @@ function CountryModal({ file, isOpen, onClose }) {
                         >
                             <FaGlobe />
                         </motion.div>
-                        Country Analytics
+                        {t('earning.countryAnalytics')}
                     </h3>
                     <motion.button
                         className="close-btn"
@@ -279,7 +280,7 @@ function CountryModal({ file, isOpen, onClose }) {
                     >
                         <h4>{file.fileName}</h4>
                         <div className="total-views">
-                            <FaChartLine /> {file.views} total views
+                            <FaChartLine /> {file.views} {t('earning.totalViews')}
                         </div>
                     </motion.div>
                     {file.viewsByCountry && file.viewsByCountry.length > 0 ? (
@@ -334,7 +335,7 @@ function CountryModal({ file, isOpen, onClose }) {
                                 ease: [0.25, 0.46, 0.45, 0.94]
                             }}
                         >
-                            <FaChartLine /> No country data available yet
+                            <FaChartLine /> {t('earning.noCountryData')}
                         </motion.p>
                     )}
                 </motion.div>
@@ -352,7 +353,7 @@ function getFileIcon(name) {
     return <FaFileAlt />;
 }
 
-function FileCard({ file, onShowCountries, index }) {
+function FileCard({ file, onShowCountries, index, t }) {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
@@ -431,7 +432,7 @@ function FileCard({ file, onShowCountries, index }) {
                             }}
                             whileTap={{ scale: 0.95 }}
                         >
-                            <FaRocket /> Launch
+                            <FaRocket /> {t('earning.launch')}
                         </motion.a>
                         <motion.button
                             className="countries-btn"
@@ -443,7 +444,7 @@ function FileCard({ file, onShowCountries, index }) {
                             }}
                             whileTap={{ scale: 0.95 }}
                         >
-                            <FaGlobe /> Analytics
+                            <FaGlobe /> {t('earning.analytics')}
                         </motion.button>
                     </motion.div>
                 </div>
@@ -483,7 +484,7 @@ function FileCard({ file, onShowCountries, index }) {
                         <FaEye />
                     </motion.div>
                     <span className="stat-value">{file.views}</span>
-                    <span className="stat-label">Views</span>
+                    <span className="stat-label">{t('earning.views')}</span>
                 </motion.div>
                 <motion.div
                     className="stat-item"
@@ -509,7 +510,7 @@ function FileCard({ file, onShowCountries, index }) {
                         <FaDownload />
                     </motion.div>
                     <span className="stat-value">{file.downloads}</span>
-                    <span className="stat-label">Downloads</span>
+                    <span className="stat-label">{t('earning.downloads')}</span>
                 </motion.div>
             </motion.div>
 
@@ -530,6 +531,7 @@ function FileCard({ file, onShowCountries, index }) {
 }
 
 export default function PromotersEarning() {
+    const { t } = useLanguage();
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
     const [selectedFile, setSelectedFile] = useState(null);
@@ -604,8 +606,8 @@ export default function PromotersEarning() {
                     ease: [0.25, 0.46, 0.45, 0.94]
                 }}
             >
-                <h1>Analytics Dashboard</h1>
-                <p>Track your content performance and earnings</p>
+                <h1>{t('earning.analyticsDashboard')}</h1>
+                <p>{t('earning.trackPerformance')}</p>
             </motion.div>
 
             {/* Stats Dashboard */}
@@ -618,12 +620,12 @@ export default function PromotersEarning() {
                     initial="hidden"
                     animate="visible"
                 >
-                    <StatCard label="Total Views" value={totalViews} icon={<FaEye />} color="#01677e" index={0} />
-                    <StatCard label="Total Downloads" value={totalDownloads} icon={<FaDownload />} color="#01677e" index={1} />
-                    <StatCard label="Total Links" value={totalLinks} icon={<FaLink />} color="#01677e" index={2} />
-                    <StatCard label="Pending Earnings" value={`${PendingEarnings} ${currency}`} icon={<MdPendingActions />} color="#003e4b" index={3} />
-                    <StatCard label="Confirmed Earnings" value={`${ConfirmedEarnings} ${currency}`} icon={<MdOutlineAssuredWorkload />} color="#003e4b" index={3} />
-                    <StatCard label="Total Earnings" value={`${totalEarnings} ${currency}`} icon={<GiTakeMyMoney />} color="#003e4b" index={3} />
+                    <StatCard label={t('earning.totalViews')} value={totalViews} icon={<FaEye />} color="#01677e" index={0} />
+                    <StatCard label={t('earning.totalDownloads')} value={totalDownloads} icon={<FaDownload />} color="#01677e" index={1} />
+                    <StatCard label={t('earning.totalLinks')} value={totalLinks} icon={<FaLink />} color="#01677e" index={2} />
+                    <StatCard label={t('promoterDashboard.pendingEarnings')} value={`${PendingEarnings} ${currency}`} icon={<MdPendingActions />} color="#003e4b" index={3} />
+                    <StatCard label={t('promoterDashboard.confirmedEarnings')} value={`${ConfirmedEarnings} ${currency}`} icon={<MdOutlineAssuredWorkload />} color="#003e4b" index={3} />
+                    <StatCard label={t('promoterDashboard.totalEarnings')} value={`${totalEarnings} ${currency}`} icon={<GiTakeMyMoney />} color="#003e4b" index={3} />
                 </motion.div>
             )}
 
@@ -648,7 +650,7 @@ export default function PromotersEarning() {
                         ease: [0.25, 0.46, 0.45, 0.94]
                     }}
                 >
-                    Your Content Performance
+                    {t('earning.contentPerformance')}
                 </motion.h2>
 
                 <motion.div
@@ -677,7 +679,7 @@ export default function PromotersEarning() {
                             >
                                 <FaRocket />
                             </motion.div>
-                            Loading your analytics...
+                            {t('earning.loadingAnalytics')}
                         </motion.div>
                     ) : files.length === 0 ? (
                         <motion.div
@@ -690,8 +692,8 @@ export default function PromotersEarning() {
                             }}
                         >
                             <FaChartLine />
-                            <h3>No content shared yet</h3>
-                            <p>Start sharing your files to see analytics here!</p>
+                            <h3>{t('earning.noContentShared')}</h3>
+                            <p>{t('earning.startSharing')}</p>
                         </motion.div>
                     ) : (
                         files.map((file, index) => (
@@ -700,6 +702,7 @@ export default function PromotersEarning() {
                                 file={file}
                                 onShowCountries={setSelectedFile}
                                 index={index}
+                                t={t}
                             />
                         ))
                     )}
@@ -713,6 +716,7 @@ export default function PromotersEarning() {
                         file={selectedFile}
                         isOpen={!!selectedFile}
                         onClose={() => setSelectedFile(null)}
+                        t={t}
                     />
                 )}
             </AnimatePresence>
