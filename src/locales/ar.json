@@ -423,7 +423,10 @@
     "date": "التاريخ",
     "pending": "معلق",
     "approved": "معتمد",
-    "rejected": "مرفوض"
+    "rejected": "مرفوض",
+    "searchWithdrawals": "البحث عن طريق المستخدم أو المبلغ أو طريقة الدفع...",
+    "of": "من",
+    "noWithdrawalsFound": "لم يتم العثور على سحوبات تطابق معاييرك"
   },
   "adminUsers": {
     "title": "إدارة المستخدمين",
@@ -456,7 +459,11 @@
     "deleteUserMessage": "هل أنت متأكد من حذف المستخدم",
     "deleteUserWarning": "لا يمكن التراجع عن هذا الإجراء.",
     "cancel": "إلغاء",
-    "delete": "حذف"
+    "delete": "حذف",
+    "searchUsers": "البحث عن طريق اسم المستخدم أو البريد الإلكتروني أو معرف المستخدم...",
+    "of": "من",
+    "users": "مستخدمين",
+    "noUsersFound": "لم يتم العثور على مستخدمين يطابقون معاييرك"
   },
   "adminPromoters": {
     "title": "إدارة المروجين",
@@ -468,7 +475,11 @@
     "subscribed": "مشترك",
     "unsubscribed": "غير مشترك",
     "viewEarnings": "عرض الأرباح",
-    "delete": "حذف"
+    "delete": "حذف",
+    "searchPromoters": "البحث عن طريق اسم المستخدم أو البريد الإلكتروني...",
+    "of": "من",
+    "promoters": "مروجين",
+    "noPromotersFound": "لم يتم العثور على مروجين يطابقون معاييرك"
   },
   "adminReports": {
     "title": "الشكاوى",
@@ -491,5 +502,12 @@
     "deleteComplaint": "حذف الشكوى",
     "deleteComplaintConfirm": "هل أنت متأكد من حذف هذه الشكوى؟",
     "deleteComplaintWarning": "لا يمكن التراجع عن هذا الإجراء."
+  },
+  "searchFilter": {
+    "searchPlaceholder": "بحث...",
+    "clearSearch": "مسح البحث",
+    "toggleFilters": "تبديل المرشحات",
+    "all": "الكل",
+    "clearAll": "مسح جميع المرشحات"
   }
 }

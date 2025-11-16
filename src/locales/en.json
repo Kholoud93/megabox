@@ -423,7 +423,10 @@
     "date": "Date",
     "pending": "Pending",
     "approved": "Approved",
-    "rejected": "Rejected"
+    "rejected": "Rejected",
+    "searchWithdrawals": "Search by user, amount, or payment method...",
+    "of": "of",
+    "noWithdrawalsFound": "No withdrawals found matching your criteria"
   },
   "adminUsers": {
     "title": "Users Management",
@@ -456,7 +459,11 @@
     "deleteUserMessage": "Are you sure you want to delete user",
     "deleteUserWarning": "This action cannot be undone.",
     "cancel": "Cancel",
-    "delete": "Delete"
+    "delete": "Delete",
+    "searchUsers": "Search by username, email, or user ID...",
+    "of": "of",
+    "users": "users",
+    "noUsersFound": "No users found matching your criteria"
   },
   "adminPromoters": {
     "title": "Promoters Management",
@@ -468,7 +475,11 @@
     "subscribed": "Subscribed",
     "unsubscribed": "Unsubscribed",
     "viewEarnings": "View Earnings",
-    "delete": "Delete"
+    "delete": "Delete",
+    "searchPromoters": "Search by username or email...",
+    "of": "of",
+    "promoters": "promoters",
+    "noPromotersFound": "No promoters found matching your criteria"
   },
   "adminReports": {
     "title": "Complaints",
@@ -491,5 +502,12 @@
     "deleteComplaint": "Delete Complaint",
     "deleteComplaintConfirm": "Are you sure you want to delete this complaint?",
     "deleteComplaintWarning": "This action cannot be undone."
+  },
+  "searchFilter": {
+    "searchPlaceholder": "Search...",
+    "clearSearch": "Clear search",
+    "toggleFilters": "Toggle filters",
+    "all": "All",
+    "clearAll": "Clear all filters"
   }
 }

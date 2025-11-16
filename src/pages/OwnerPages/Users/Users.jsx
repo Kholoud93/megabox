@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useMemo } from 'react'
 import "./Users.scss"
 import { useQuery } from 'react-query';
 import axios from 'axios';
@@ -17,6 +17,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ToastOptions } from '../../../helpers/ToastOptions';
 import { toast } from 'react-toastify';
 import { useLanguage } from '../../../context/LanguageContext';
+import SearchFilter from '../../../components/SearchFilter/SearchFilter';
 
 export default function Users() {
     const { t } = useLanguage();
@@ -25,6 +26,8 @@ export default function Users() {
     const [selectedUser, setSelectedUser] = useState(null);
     const [addform, setaddform] = useState(false)
     const [deleteConfirm, setDeleteConfirm] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filters, setFilters] = useState({});
     const navigate = useNavigate()
     const [Token] = useCookies(['MegaBox']);
     const queryClient = useQueryClient();
@@ -129,6 +132,66 @@ export default function Users() {
             // Error is handled in the service
         }
     }
+
+    // Filter users based on search and filters
+    const filteredUsers = useMemo(() => {
+        if (!users) return [];
+
+        return users.filter((user) => {
+            // Search filter
+            if (searchTerm) {
+                const searchLower = searchTerm.toLowerCase();
+                const searchableText = `${user.username || ''} ${user.email || ''} ${user.userId || ''}`.toLowerCase();
+                if (!searchableText.includes(searchLower)) {
+                    return false;
+                }
+            }
+
+            // Premium status filter
+            if (filters.premiumStatus !== undefined) {
+                if (filters.premiumStatus === 'premium' && !user.isBrimume) {
+                    return false;
+                }
+                if (filters.premiumStatus === 'notPremium' && user.isBrimume) {
+                    return false;
+                }
+            }
+
+            // Ban status filter
+            if (filters.banStatus !== undefined) {
+                if (filters.banStatus === 'banned' && !user.isBanned) {
+                    return false;
+                }
+                if (filters.banStatus === 'active' && user.isBanned) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+    }, [users, searchTerm, filters]);
+
+    // Filter configuration
+    const filterConfig = [
+        {
+            key: 'premiumStatus',
+            label: t('adminUsers.premiumStatus'),
+            allLabel: t('searchFilter.all'),
+            options: [
+                { value: 'premium', label: t('adminUsers.premium') },
+                { value: 'notPremium', label: t('adminUsers.notPremium') }
+            ]
+        },
+        {
+            key: 'banStatus',
+            label: t('adminUsers.status'),
+            allLabel: t('searchFilter.all'),
+            options: [
+                { value: 'active', label: t('adminUsers.active') },
+                { value: 'banned', label: t('adminUsers.banned') }
+            ]
+        }
+    ];
 
     // animation
     const animationVariants = {
@@ -276,6 +339,20 @@ export default function Users() {
                 transition={{ duration: 0.5 }}
                 className='main-Orders'
             >
+                <div className="mb-4">
+                    <SearchFilter
+                        searchPlaceholder={t('adminUsers.searchUsers')}
+                        filters={filterConfig}
+                        onSearchChange={setSearchTerm}
+                        onFilterChange={setFilters}
+                    />
+                    {users && (
+                        <p className="text-sm text-gray-600 mt-2">
+                            {filteredUsers.length} {t('adminUsers.of')} {users.length} {t('adminUsers.users')}
+                        </p>
+                    )}
+                </div>
+
                 <div className="overflow-x-auto shadow-md sm:rounded-lg">
                     <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
@@ -289,54 +366,61 @@ export default function Users() {
                             </tr>
                         </thead>
                         <tbody>
-                            {users?.map((ele, index) => {
-                                return (
-                                    <tr key={index} className="bg-white border-b hover:bg-gray-50">
-                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{ele?.userId}</td>
-                                        <td className="px-6 py-4">{ele.username}</td>
-                                        <td className="px-6 py-4">{ele.email}</td>
-                                        <td className="px-6 py-4">
-                                            {ele.isBrimume ? (
-                                                <div className='flex items-center gap-3'>{t("adminUsers.premium")} <FaCrown className='primcrown' /></div>
-                                            ) : (
-                                                <div>{t("adminUsers.notPremium")}</div>
-                                            )}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${ele.isBanned ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-                                                }`}>
-                                                {ele.isBanned ? t("adminUsers.banned") : t("adminUsers.active")}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <button
-                                                    onClick={() => handleNotifyUser(ele)}
-                                                    className="text-blue-600 hover:text-blue-800 transition-colors"
-                                                    title={t("adminUsers.sendNotification")}
-                                                >
-                                                    <MdNotificationAdd size={20} />
-                                                </button>
-                                                <button
-                                                    onClick={() => handleToggleBan(ele.id || ele._id)}
-                                                    className={`transition-colors ${ele.isBanned ? 'text-green-600 hover:text-green-800' : 'text-orange-600 hover:text-orange-800'
-                                                        }`}
-                                                    title={ele.isBanned ? t("adminUsers.unbanUser") : t("adminUsers.banUser")}
-                                                >
-                                                    <FaBan size={20} />
-                                                </button>
-                                                <button
-                                                    onClick={() => setDeleteConfirm(ele)}
-                                                    className="text-red-600 hover:text-red-800 transition-colors"
-                                                    title={t("adminUsers.deleteUser")}
-                                                >
-                                                    <HiTrash size={20} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                )
-                            })}
+                            {filteredUsers.length > 0 ? (
+                                filteredUsers.map((ele, index) => {
+                                    return (
+                                        <tr key={index} className="bg-white border-b hover:bg-gray-50">
+                                            <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{ele?.userId}</td>
+                                            <td className="px-6 py-4">{ele.username}</td>
+                                            <td className="px-6 py-4">{ele.email}</td>
+                                            <td className="px-6 py-4">
+                                                {ele.isBrimume ? (
+                                                    <div className='flex items-center gap-3'>{t("adminUsers.premium")} <FaCrown className='primcrown' /></div>
+                                                ) : (
+                                                    <div>{t("adminUsers.notPremium")}</div>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${ele.isBanned ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                                                    }`}>
+                                                    {ele.isBanned ? t("adminUsers.banned") : t("adminUsers.active")}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-3">
+                                                    <button
+                                                        onClick={() => handleNotifyUser(ele)}
+                                                        className="text-blue-600 hover:text-blue-800 transition-colors"
+                                                        title={t("adminUsers.sendNotification")}
+                                                    >
+                                                        <MdNotificationAdd size={20} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleToggleBan(ele.id || ele._id)}
+                                                        className={`transition-colors ${ele.isBanned ? 'text-green-600 hover:text-green-800' : 'text-orange-600 hover:text-orange-800'
+                                                            }`}
+                                                        title={ele.isBanned ? t("adminUsers.unbanUser") : t("adminUsers.banUser")}
+                                                    >
+                                                        <FaBan size={20} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setDeleteConfirm(ele)}
+                                                        className="text-red-600 hover:text-red-800 transition-colors"
+                                                        title={t("adminUsers.deleteUser")}
+                                                    >
+                                                        <HiTrash size={20} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })) : (
+                                <tr>
+                                    <td colSpan="6" className="text-center py-8 text-gray-500">
+                                        {t('adminUsers.noUsersFound')}
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

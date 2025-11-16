@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { motion } from 'framer-motion';
@@ -6,6 +6,7 @@ import axios from 'axios';
 import { API_URL, adminService, withdrawalService } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 import StatCard from '../../../components/StatCard/StatCard';
+import SearchFilter from '../../../components/SearchFilter/SearchFilter';
 import { FaUsers, FaFileAlt, FaDollarSign, FaChartLine, FaDownload, FaEye, FaLink, FaMoneyBillWave } from 'react-icons/fa';
 import './Analasys.scss';
 
@@ -13,6 +14,8 @@ export default function Analasys() {
     const { t } = useLanguage();
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filters, setFilters] = useState({});
 
     // Fetch all users
     const { data: usersData, isLoading: usersLoading } = useQuery(
@@ -59,6 +62,72 @@ export default function Analasys() {
         p.Downloadsplan === "true" || p.Downloadsplan === true ||
         p.watchingplan === "true" || p.watchingplan === true
     )?.length || 0;
+
+    // Filter withdrawals based on search and filters
+    const filteredWithdrawals = useMemo(() => {
+        if (!withdrawalsData?.withdrawals) return [];
+
+        return withdrawalsData.withdrawals.filter((withdrawal) => {
+            // Search filter
+            if (searchTerm) {
+                const userInfo = typeof withdrawal.userId === 'object' && withdrawal.userId !== null
+                    ? `${withdrawal.userId.username || ''} ${withdrawal.userId.email || ''} ${withdrawal.userId._id || ''}`
+                    : `${withdrawal.userId || ''} ${withdrawal.username || ''}`;
+
+                const searchLower = searchTerm.toLowerCase();
+                if (!userInfo.toLowerCase().includes(searchLower) &&
+                    !withdrawal.amount?.toString().toLowerCase().includes(searchLower) &&
+                    !withdrawal.paymentMethod?.toLowerCase().includes(searchLower)) {
+                    return false;
+                }
+            }
+
+            // Status filter
+            if (filters.status && withdrawal.status !== filters.status) {
+                return false;
+            }
+
+            // Payment method filter
+            if (filters.paymentMethod && withdrawal.paymentMethod !== filters.paymentMethod) {
+                return false;
+            }
+
+            return true;
+        });
+    }, [withdrawalsData?.withdrawals, searchTerm, filters]);
+
+    // Get unique payment methods for filter
+    const paymentMethods = useMemo(() => {
+        if (!withdrawalsData?.withdrawals) return [];
+        const methods = new Set();
+        withdrawalsData.withdrawals.forEach(w => {
+            if (w.paymentMethod) methods.add(w.paymentMethod);
+        });
+        return Array.from(methods).map(method => ({
+            value: method,
+            label: method
+        }));
+    }, [withdrawalsData?.withdrawals]);
+
+    // Filter configuration
+    const filterConfig = [
+        {
+            key: 'status',
+            label: t('adminAnalytics.status'),
+            allLabel: t('searchFilter.all'),
+            options: [
+                { value: 'pending', label: t('adminAnalytics.pending') },
+                { value: 'approved', label: t('adminAnalytics.approved') },
+                { value: 'rejected', label: t('adminAnalytics.rejected') }
+            ]
+        },
+        ...(paymentMethods.length > 0 ? [{
+            key: 'paymentMethod',
+            label: t('adminAnalytics.paymentMethod'),
+            allLabel: t('searchFilter.all'),
+            options: paymentMethods
+        }] : [])
+    ];
 
     return (
         <div className="admin-analytics-page">
@@ -153,7 +222,20 @@ export default function Analasys() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 }}
                     >
-                        <h2 className="admin-analytics-withdrawals__title">{t('adminAnalytics.recentWithdrawals')}</h2>
+                        <div className="admin-analytics-withdrawals__header">
+                            <h2 className="admin-analytics-withdrawals__title">{t('adminAnalytics.recentWithdrawals')}</h2>
+                            <p className="admin-analytics-withdrawals__count">
+                                {filteredWithdrawals.length} {t('adminAnalytics.of')} {withdrawalsData.withdrawals.length}
+                            </p>
+                        </div>
+
+                        <SearchFilter
+                            searchPlaceholder={t('adminAnalytics.searchWithdrawals')}
+                            filters={filterConfig}
+                            onSearchChange={setSearchTerm}
+                            onFilterChange={setFilters}
+                        />
+
                         <div className="admin-analytics-withdrawals__table">
                             <table>
                                 <thead>
@@ -166,39 +248,47 @@ export default function Analasys() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {withdrawalsData.withdrawals.slice(0, 10).map((withdrawal, index) => (
-                                        <motion.tr
-                                            key={index}
-                                            initial={{ opacity: 0, x: -20 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: index * 0.05 }}
-                                        >
-                                            <td>
-                                                {typeof withdrawal.userId === 'object' && withdrawal.userId !== null
-                                                    ? (withdrawal.userId.username || withdrawal.userId.email || withdrawal.userId._id || '-')
-                                                    : (withdrawal.userId || withdrawal.username || '-')
-                                                }
+                                    {filteredWithdrawals.length > 0 ? (
+                                        filteredWithdrawals.slice(0, 10).map((withdrawal, index) => (
+                                            <motion.tr
+                                                key={index}
+                                                initial={{ opacity: 0, x: -20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: index * 0.05 }}
+                                            >
+                                                <td>
+                                                    {typeof withdrawal.userId === 'object' && withdrawal.userId !== null
+                                                        ? (withdrawal.userId.username || withdrawal.userId.email || withdrawal.userId._id || '-')
+                                                        : (withdrawal.userId || withdrawal.username || '-')
+                                                    }
+                                                </td>
+                                                <td>{withdrawal.amount} {withdrawal.currency || currency}</td>
+                                                <td>{withdrawal.paymentMethod || '-'}</td>
+                                                <td>
+                                                    <span className={`status-badge status-${withdrawal.status || 'pending'}`}>
+                                                        {withdrawal.status === 'approved'
+                                                            ? t('adminAnalytics.approved')
+                                                            : withdrawal.status === 'pending'
+                                                                ? t('adminAnalytics.pending')
+                                                                : withdrawal.status === 'rejected'
+                                                                    ? t('adminAnalytics.rejected')
+                                                                    : withdrawal.status || t('adminAnalytics.pending')}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    {withdrawal.createdAt
+                                                        ? new Date(withdrawal.createdAt).toLocaleDateString()
+                                                        : '-'}
+                                                </td>
+                                            </motion.tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="5" className="text-center py-8 text-gray-500">
+                                                {t('adminAnalytics.noWithdrawalsFound')}
                                             </td>
-                                            <td>{withdrawal.amount} {withdrawal.currency || currency}</td>
-                                            <td>{withdrawal.paymentMethod || '-'}</td>
-                                            <td>
-                                                <span className={`status-badge status-${withdrawal.status || 'pending'}`}>
-                                                    {withdrawal.status === 'approved'
-                                                        ? t('adminAnalytics.approved')
-                                                        : withdrawal.status === 'pending'
-                                                            ? t('adminAnalytics.pending')
-                                                            : withdrawal.status === 'rejected'
-                                                                ? t('adminAnalytics.rejected')
-                                                                : withdrawal.status || t('adminAnalytics.pending')}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                {withdrawal.createdAt
-                                                    ? new Date(withdrawal.createdAt).toLocaleDateString()
-                                                    : '-'}
-                                            </td>
-                                        </motion.tr>
-                                    ))}
+                                        </tr>
+                                    )}
                                 </tbody>
                             </table>
                         </div>
