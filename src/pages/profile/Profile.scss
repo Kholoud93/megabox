@@ -129,91 +129,52 @@
         }
     }
     
-    // Small screens (tablets: 768px - 991px)
+    // Small screens (tablets: 768px - 991px) - same as mobile
     @include Breakpoints(small) {
-        // Container adjustments for tablets
+        // Same layout as mobile - column layout, centered
+        .md\:flex,
+        [class*="md:flex"] {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+        }
+
+        [class*="md:flex-row"] {
+            flex-direction: column !important;
+        }
+
+        [class*="md:items-start"] {
+            align-items: center !important;
+        }
+
+        [class*="md:justify-start"] {
+            justify-content: center !important;
+        }
+
+        .md\:flex-shrink-0,
+        [class*="md:flex-shrink-0"] {
+            margin-bottom: 1rem;
+        }
+        
+        // Container adjustments - same as mobile
         .container {
-            padding-left: 1.5rem;
-            padding-right: 1.5rem;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
         }
 
-        // Profile card container
-        .max-w-4xl {
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        // Profile image container - adjust image size for tablets
+        // Profile image container - center like mobile
         [class*="md:flex-shrink-0"],
         [class*="flex-shrink-0"] {
-            img {
-                width: 140px !important;
-                height: 140px !important;
-                min-width: 140px;
-                min-height: 140px;
-            }
-
-            > div {
-                width: 140px !important;
-                height: 140px !important;
-                min-width: 140px;
-                min-height: 140px;
-            }
+            align-items: center !important;
         }
 
-        // Profile info section - adjust padding
-        .flex-1 {
-            padding: 1.5rem !important;
-        }
-
-        // Button sizing for tablets - more touch-friendly (excluding icon buttons)
-        button {
-            padding: 0.625rem 1.25rem;
-            font-size: 0.875rem;
-            min-height: 2.5rem;
-        }
-
-        // Input field sizing
-        input[type="text"]:not([class*="hidden"]) {
-            padding: 0.75rem 1rem;
-            font-size: 0.9375rem;
-        }
-
-        // Profile header text
-        h1 {
-            font-size: 1.5rem !important;
-            line-height: 1.4;
-        }
-
-        // Section headings
-        h2 {
-            font-size: 1.125rem !important;
-        }
-
-        h3 {
-            font-size: 1rem !important;
-        }
-
-        // Account details grid - ensure proper spacing
-        .grid {
-            gap: 1rem;
-        }
-
-        // Storage section cards - adjust padding
-        .bg-indigo-50 {
-            padding: 1.25rem !important;
-        }
-
-        // Icon buttons container under profile image
+        // Icon buttons container - centered like mobile
         .flex.gap-2,
         .flex.gap-3 {
             width: 100%;
             max-width: fit-content;
             margin: 0 auto;
-            
-            @media (min-width: 768px) {
-                margin: 0;
-            }
+            justify-content: center !important;
             
             button {
                 padding: 0.5rem !important;
@@ -228,10 +189,11 @@
             }
         }
 
-        // Personal link section - ensure horizontal layout on tablets
-        .flex-col[class*="sm:flex-row"] {
-            flex-direction: row;
-            align-items: center;
+        // Personal link section - keep column layout like mobile
+        .flex-col[class*="sm:flex-row"],
+        [class*="sm:flex-row"] {
+            flex-direction: column !important;
+            align-items: stretch;
             gap: 0.75rem;
         }
 
@@ -243,76 +205,62 @@
                 padding: 1.5rem;
             }
         }
-
-        // Storage usage section spacing
-        .space-y-2 > * + *,
-        .space-y-3 > * + *,
-        .space-y-4 > * + * {
-            margin-top: 1rem;
-        }
-
-        // Text sizing adjustments
-        p {
-            font-size: 0.9375rem;
-        }
-
-        // Form button groups - ensure equal width
-        .flex.gap-2 button,
-        .flex.gap-3 button {
-            flex: 1;
-            min-width: 0;
-        }
-
-        // Account type section - ensure upgrade button fits on tablets
-        .bg-indigo-50[class*="border"] {
-            .flex[class*="justify-between"] {
-                gap: 0.5rem;
-                flex-wrap: wrap;
-                
-                button {
-                    font-size: 0.625rem !important;
-                    padding: 0.375rem 0.5rem !important;
-                    white-space: normal;
-                    
-                    span {
-                        font-size: 0.625rem;
-                        white-space: normal;
-                        word-break: break-word;
-                    }
-                }
-            }
-        }
     }
     
-    // Medium screens (larger tablets: 992px - 1199px)
+    // Medium screens (larger tablets: 992px - 1199px) - same as mobile
     @include Breakpoints(medium) {
-        .container {
-            max-width: 1200px;
-            padding-left: 2rem;
-            padding-right: 2rem;
+        // Same layout as mobile - column layout, centered
+        .md\:flex,
+        [class*="md:flex"] {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
         }
 
-        // Larger profile image for bigger tablets
+        [class*="md:flex-row"] {
+            flex-direction: column !important;
+        }
+
+        [class*="md:items-start"] {
+            align-items: center !important;
+        }
+
+        [class*="md:justify-start"] {
+            justify-content: center !important;
+        }
+
+        .md\:flex-shrink-0,
+        [class*="md:flex-shrink-0"] {
+            margin-bottom: 1rem;
+        }
+        
+        // Container adjustments - same as mobile
+        .container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        // Profile image container - center like mobile
         [class*="md:flex-shrink-0"],
         [class*="flex-shrink-0"] {
-            img {
-                width: 160px !important;
-                height: 160px !important;
-                min-width: 160px;
-                min-height: 160px;
-            }
-
-            > div {
-                width: 160px !important;
-                height: 160px !important;
-                min-width: 160px;
-                min-height: 160px;
-            }
+            align-items: center !important;
         }
 
-        // More generous padding for larger tablets
-        .flex-1 {
-            padding: 2rem !important;
+        // Icon buttons container - centered like mobile
+        .flex.gap-2,
+        .flex.gap-3 {
+            width: 100%;
+            max-width: fit-content;
+            margin: 0 auto;
+            justify-content: center !important;
+        }
+
+        // Personal link section - keep column layout like mobile
+        .flex-col[class*="sm:flex-row"],
+        [class*="sm:flex-row"] {
+            flex-direction: column !important;
+            align-items: stretch;
+            gap: 0.75rem;
         }
     }
     

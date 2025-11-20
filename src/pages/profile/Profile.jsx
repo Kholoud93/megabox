@@ -396,7 +396,8 @@ export default function Profile() {
                 <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg border-2 border-indigo-100">
                     <div className="p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8">
                         <motion.div
-                            className="uppercase tracking-wide text-xs sm:text-sm text-indigo-600 font-semibold flex items-center gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-6"
+                            className={`uppercase tracking-wide text-xs sm:text-sm text-indigo-600 font-semibold flex items-center gap-2 mt-4 sm:mt-5 md:mt-6 lg:mt-8 mb-3 sm:mb-4 md:mb-5 lg:mb-6 ${language === 'ar' ? 'justify-end' : 'justify-start'}`}
+                            style={{ textAlign: language === 'ar' ? 'right' : 'left' }}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.3 }}
