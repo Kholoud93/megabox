@@ -338,7 +338,7 @@ export default function Sidenav({ role }) {
                                                 }}
                                                 defaultOpen={false}
                                             >
-                                                {files.map((file) => (
+                                                {isExpanded && files.map((file) => (
                                                     <MenuItem
                                                         key={file?._id || file?.id}
                                                         className="sidenav-files-tree-item sidenav-files-tree-item--file"

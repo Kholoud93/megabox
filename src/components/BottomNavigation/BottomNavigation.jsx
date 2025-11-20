@@ -21,6 +21,48 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
 
     const getMenuItems = () => {
         if (role === "User") {
+            // For promoters, show specific tabs in order
+            if (isPromoter && (userData?.Downloadsplan === "true" || userData?.Downloadsplan === true || userData?.watchingplan === "true" || userData?.watchingplan === true)) {
+                return [
+                    // 1. Revenue Data
+                    {
+                        path: '/dashboard/revenue-data',
+                        icon: HiChartBar,
+                        label: t("sidenav.revenueData"),
+                        key: 'revenue'
+                    },
+                    // 2. Link Data (Shared Files)
+                    {
+                        path: '/dashboard/shared-files',
+                        icon: HiShare,
+                        label: t("sidenav.linkData"),
+                        key: 'link-data'
+                    },
+                    // 3. My Files
+                    {
+                        path: '/Promoter/files',
+                        icon: HiFolder,
+                        label: t("sidenav.allFiles"),
+                        key: 'files'
+                    },
+                    // 4. Withdraw (Earnings)
+                    {
+                        path: '/dashboard/Earnings',
+                        icon: HiCurrencyDollar,
+                        label: t("sidenav.withdraw"),
+                        key: 'withdraw'
+                    },
+                    // 5. Referral
+                    {
+                        path: '/dashboard/referral',
+                        icon: HiUserGroup,
+                        label: t("sidenav.referral"),
+                        key: 'referral'
+                    }
+                ];
+            }
+            
+            // For regular users (non-promoters or promoters without plans)
             const items = [
                 {
                     path: isPromoter ? '/Promoter/files' : '/dashboard',
