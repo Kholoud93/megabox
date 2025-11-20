@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import Sidenav from '../components/Sidenav/Sidenav'
+import BottomNavigation from '../components/BottomNavigation/BottomNavigation'
 import { useAuth } from '../context/AuthContext'
 import { useCookies } from 'react-cookie';
 import { jwtDecode } from "jwt-decode";
 import Loading from '../components/Loading/Loading';
+import { useQuery } from 'react-query';
+import { userService } from '../services';
 
 
 export default function DashboardLayout({ role }) {
@@ -13,6 +16,18 @@ export default function DashboardLayout({ role }) {
     const [Token] = useCookies(['MegaBox']);
 
     const [RoleLoading, setRoleLoading] = useState(true)
+
+    // Get user data for BottomNavigation
+    const { data: userData } = useQuery(
+        ['userAccount'],
+        () => userService.getUserInfo(Token.MegaBox),
+        {
+            enabled: !!Token.MegaBox && role === "User",
+            retry: false
+        }
+    );
+
+    const isPromoter = userData?.isPromoter === "true" || userData?.isPromoter === true;
 
     const idTracker = () => {
         let id;
@@ -51,9 +66,26 @@ export default function DashboardLayout({ role }) {
         <div className="sidnav">
             <Sidenav role={role} />
         </div>
-        <div className="min-h-screen w-full overflow-hidden">
+        <div className="min-h-screen w-full overflow-hidden pb-20 md:pb-0">
             <Outlet>
             </Outlet>
         </div>
+        {role === "User" && (
+            <BottomNavigation 
+                role={role} 
+                isPromoter={isPromoter}
+                userData={userData}
+            />
+        )}
+        {role === "Owner" && (
+            <BottomNavigation 
+                role={role}
+            />
+        )}
+        {role === "Advertiser" && (
+            <BottomNavigation 
+                role={role}
+            />
+        )}
     </div>
 }

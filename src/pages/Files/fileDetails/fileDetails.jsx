@@ -8,6 +8,8 @@ import { getFileCategory } from '../../../helpers/MimeType';
 import File from '../../../components/File/File';
 import { AnimatePresence } from 'framer-motion';
 import UploadFile from '../../../components/Upload/UploadFile/UploadFile';
+import UploadOptions from '../../../components/Upload/UploadOptions/UploadOptions';
+import UploadFromMegaBox from '../../../components/Upload/UploadFromMegaBox/UploadFromMegaBox';
 import { HiOutlinePlus } from 'react-icons/hi2';
 import { HiArrowLeft, HiArrowRight } from 'react-icons/hi2';
 import { HiViewGrid, HiViewList } from "react-icons/hi";
@@ -46,7 +48,19 @@ export default function fileDetails() {
     };
 
     const [AddFileShow, setAddFileShow] = useState(false);
+    const [showUploadOptions, setShowUploadOptions] = useState(false);
+    const [showUploadFromMegaBox, setShowUploadFromMegaBox] = useState(false);
     const ToggleShowAddFile = () => setAddFileShow(!AddFileShow);
+    const ToggleUploadOptions = () => setShowUploadOptions(!showUploadOptions);
+    const ToggleUploadFromMegaBox = () => setShowUploadFromMegaBox(!showUploadFromMegaBox);
+
+    const handleSelectDesktop = () => {
+        setAddFileShow(true);
+    };
+
+    const handleSelectMegaBox = () => {
+        setShowUploadFromMegaBox(true);
+    };
 
     const { data, refetch, isLoading: filesLoading } = useQuery([`GetUserFile-${fileId}`, FilterKey], GetFiles);
 
@@ -178,7 +192,7 @@ export default function fileDetails() {
                                 <button
                                     className="w-full sm:w-auto inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2"
                                     style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
-                                    onClick={ToggleShowAddFile}
+                                    onClick={ToggleUploadOptions}
                                 >
                                     <HiOutlinePlus className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                                     {t("fileDetails.uploadFile")}
@@ -278,7 +292,7 @@ export default function fileDetails() {
                             {FilterKey === 'All' && (
                                 <div className="mt-4 sm:mt-6">
                                     <button
-                                        onClick={ToggleShowAddFile}
+                                        onClick={ToggleUploadOptions}
                                         className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 border border-transparent shadow-sm text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
                                         style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                     >
@@ -312,7 +326,24 @@ export default function fileDetails() {
         </div>
 
         <AnimatePresence>
+            {showUploadOptions && (
+                <UploadOptions 
+                    key="upload-options" 
+                    onClose={ToggleUploadOptions}
+                    onSelectDesktop={handleSelectDesktop}
+                    onSelectMegaBox={handleSelectMegaBox}
+                />
+            )}
             {AddFileShow && <UploadFile key="upload-file" ToggleUploadFile={ToggleShowAddFile} refetch={refetch} insideFile={true} id={fileId} />}
+            {showUploadFromMegaBox && (
+                <UploadFromMegaBox 
+                    key="upload-from-megabox" 
+                    ToggleUploadFile={ToggleUploadFromMegaBox} 
+                    refetch={refetch}
+                    insideFile={true}
+                    id={fileId}
+                />
+            )}
             {ShowRepresent && <Represents key="represents" path={Path} type={fileType} ToggleUploadFile={() => Representation("", "", true)} />}
             {ShowUpdateName && <ChangeName key="change-name" oldFileName={OldName} Toggle={ToggleNameChange} refetch={refetch} FileId={FileId} />}
             {showShareModal && (

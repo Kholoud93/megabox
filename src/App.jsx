@@ -38,6 +38,8 @@ const PrivacyPolicy = lazy(() => import('./pages/Privacy/Privacy'))
 const RemovalGuidelines = lazy(() => import('./pages/RemovalPolicy/RemovalPolicy'))
 const Partners = lazy(() => import('./pages/Subscription/Subscription'))
 const Contact = lazy(() => import('./pages/Contact/Contact'))
+const TermsOfService = lazy(() => import('./pages/TermsOfService/TermsOfService'))
+const RewardsEligibility = lazy(() => import('./pages/RewardsEligibility/RewardsEligibility'))
 
 import Loading from './components/Loading/Loading'
 import SignupForMoney from './pages/Auth/SignupForMoney'
@@ -81,6 +83,12 @@ const router = createBrowserRouter(
         },
         {
           path: "contact-support", element: <Suspense fallback={<Loading />}> <Contact /></Suspense>
+        },
+        {
+          path: "terms-of-service", element: <Suspense fallback={<Loading />}> <TermsOfService /></Suspense>
+        },
+        {
+          path: "rewards-eligibility", element: <Suspense fallback={<Loading />}> <RewardsEligibility /></Suspense>
         }
       ]
     }, {

@@ -98,7 +98,8 @@
   "common": {
     "loading": "Loading...",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "back": "Back"
   },
   "about": {
     "storage": {
@@ -184,6 +185,7 @@
     "notifications": "Notifications",
     "partners": "Partners",
     "reports": "Reports",
+    "emptyFolder": "Empty folder",
     "users": "Users",
     "promoters": "Promoters",
     "analytics": "Analytics",
@@ -238,7 +240,9 @@
     "noFilesMessage": "Get started by uploading your first file.",
     "noFilesTypeMessage": "No {type} files found.",
     "folderDeletedSuccess": "Folder deleted successfully",
-    "folderDeleteFailed": "Failed to delete folder"
+    "folderDeleteFailed": "Failed to delete folder",
+    "selectFiles": "Select Files",
+    "fileName": "File Name"
   },
   "profile": {
     "profileInformation": "Profile Information",
@@ -835,5 +839,29 @@
     "privacyDesc": "Read our privacy policy",
     "removalPolicy": "Removal Policy",
     "removalDesc": "Learn about our content removal guidelines"
+  },
+  "uploadOptions": {
+    "title": "Upload Files",
+    "subtitle": "Choose how you want to upload your files",
+    "fromDesktop": "From Desktop",
+    "fromDesktopDesc": "Upload files from your computer or device",
+    "fromMegaBox": "From MegaBox",
+    "fromMegaBoxDesc": "Select files from your existing MegaBox storage"
+  },
+  "uploadFromMegaBox": {
+    "title": "Select Files from MegaBox",
+    "subtitle": "Choose files from your MegaBox storage to upload",
+    "noFiles": "No files available",
+    "noFilesDesc": "You don't have any files in your MegaBox storage yet.",
+    "selectFiles": "Please select at least one file",
+    "selectedFiles": "Selected Files",
+    "upload": "Upload",
+    "uploading": "Uploading...",
+    "clearAll": "Clear All",
+    "file": "file",
+    "files": "files",
+    "uploaded": "uploaded successfully",
+    "failed": "failed",
+    "allFailed": "All file uploads failed"
   }
 }

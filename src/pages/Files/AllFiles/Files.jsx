@@ -5,6 +5,8 @@ import { HiOutlinePlus } from "react-icons/hi2";
 import { LuFolderPlus, LuFolder } from "react-icons/lu";
 import { HiViewGrid, HiViewList } from "react-icons/hi";
 import UploadFile from '../../../components/Upload/UploadFile/UploadFile';
+import UploadOptions from '../../../components/Upload/UploadOptions/UploadOptions';
+import UploadFromMegaBox from '../../../components/Upload/UploadFromMegaBox/UploadFromMegaBox';
 import { AnimatePresence } from 'framer-motion';
 import AddFolder from '../../../components/Upload/AddFolder/AddFolder';
 import axios from 'axios';
@@ -28,6 +30,8 @@ export default function Files() {
     const InActive = "inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-700 bg-white border border-indigo-300 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
 
     const [AddFileShow, setAddFileShow] = useState(false);
+    const [showUploadOptions, setShowUploadOptions] = useState(false);
+    const [showUploadFromMegaBox, setShowUploadFromMegaBox] = useState(false);
     const [AddFolderAdding, setAddFolderAdding] = useState(false);
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
     const [showShareModal, setShowShareModal] = useState(false);
@@ -35,7 +39,17 @@ export default function Files() {
     const [shareTitle, setShareTitle] = useState('');
 
     const ToggleShowAddFile = () => setAddFileShow(!AddFileShow);
+    const ToggleUploadOptions = () => setShowUploadOptions(!showUploadOptions);
+    const ToggleUploadFromMegaBox = () => setShowUploadFromMegaBox(!showUploadFromMegaBox);
     const ToggleFolderAdding = () => setAddFolderAdding(!AddFolderAdding);
+
+    const handleSelectDesktop = () => {
+        setAddFileShow(true);
+    };
+
+    const handleSelectMegaBox = () => {
+        setShowUploadFromMegaBox(true);
+    };
 
     const [Token] = useCookies(['MegaBox']);
     const [FilterKey, setFilterKey] = useState('All');
@@ -270,7 +284,7 @@ export default function Files() {
                         <div className="files-header__actions">
                             <button
                                 className="files-header__button"
-                                onClick={ToggleShowAddFile}
+                                onClick={ToggleUploadOptions}
                             >
                                 <HiOutlinePlus className="files-header__button-icon" />
                                 {t("files.uploadFile")}
@@ -429,7 +443,7 @@ export default function Files() {
                             {FilterKey === 'All' && (
                                 <div className="mt-4 sm:mt-6">
                                     <button
-                                        onClick={ToggleShowAddFile}
+                                        onClick={ToggleUploadOptions}
                                         className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 border border-transparent shadow-sm text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
                                         style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                     >
@@ -466,7 +480,22 @@ export default function Files() {
         </div>
 
         <AnimatePresence>
+            {showUploadOptions && (
+                <UploadOptions 
+                    key="upload-options" 
+                    onClose={ToggleUploadOptions}
+                    onSelectDesktop={handleSelectDesktop}
+                    onSelectMegaBox={handleSelectMegaBox}
+                />
+            )}
             {AddFileShow && <UploadFile key="upload-file" ToggleUploadFile={ToggleShowAddFile} refetch={refetch} />}
+            {showUploadFromMegaBox && (
+                <UploadFromMegaBox 
+                    key="upload-from-megabox" 
+                    ToggleUploadFile={ToggleUploadFromMegaBox} 
+                    refetch={refetch} 
+                />
+            )}
             {AddFolderAdding && <AddFolder key="add-folder" ToggleUploadFile={ToggleFolderAdding} refetch={refFolders} />}
             {ShowRepresent && <Represents key="represents" path={Path} type={fileType} ToggleUploadFile={() => Representation("", "", true)} />}
             {ShowUpdateName && (

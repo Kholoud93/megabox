@@ -14,7 +14,8 @@ import {
     HiDocumentText,
     HiHandRaised,
     HiBell,
-    HiCurrencyDollar
+    HiCurrencyDollar,
+    HiChevronDown
 } from "react-icons/hi2";
 import { FiGlobe } from 'react-icons/fi';
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
@@ -24,10 +25,20 @@ import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { useQuery } from 'react-query';
 import { notificationService, userService } from '../../services';
+import { fileService } from '../../services/api';
+import axios from 'axios';
+import { API_URL } from '../../services/api';
+import { getFileCategory } from '../../helpers/MimeType';
+import Represents from '../Represents/Represents';
 
 export default function Sidenav({ role }) {
     const [collapsed, setcollapsed] = useState(false)
     const [Hide, setHide] = useState(false);
+    const [expandedFolders, setExpandedFolders] = useState({});
+    const [folderFiles, setFolderFiles] = useState({});
+    const [ShowRepresent, setRepresents] = useState(false);
+    const [Path, setPath] = useState();
+    const [fileType, setfileType] = useState();
     const { pathname } = useLocation();
     const navigate = useNavigate()
     const { setUserRole } = useAuth();
@@ -35,6 +46,19 @@ export default function Sidenav({ role }) {
     const [Token] = useCookies(['MegaBox']);
 
     const [, , removeToken] = useCookies(['MegaBox']);
+
+    const Representation = (path, type, close) => {
+        if (close) {
+            setPath(null)
+            setfileType(null);
+            setRepresents(false);
+            return
+        } else {
+            setPath(path);
+            setfileType(type);
+            setRepresents(!ShowRepresent)
+        }
+    };
 
     // Get unread notifications count
     const { data: notificationsData } = useQuery(
@@ -61,6 +85,79 @@ export default function Sidenav({ role }) {
     );
 
     const isPromoter = userData?.isPromoter === "true" || userData?.isPromoter === true;
+
+    // Get folders for User role
+    const GetFolders = async () => {
+        if (!Token.MegaBox || role !== "User") return { folders: [] };
+        try {
+            const { data } = await axios.get(`${API_URL}/user/getUserFolders`, {
+                headers: { Authorization: `Bearer ${Token.MegaBox}` }
+            });
+            return data || { folders: [] };
+        } catch (error) {
+            return { folders: [] };
+        }
+    };
+
+    const { data: foldersData } = useQuery(
+        ['userFolders'],
+        GetFolders,
+        {
+            enabled: !!Token.MegaBox && role === "User",
+            retry: false
+        }
+    );
+
+    // Get files for User role
+    const GetFiles = async () => {
+        if (!Token.MegaBox || role !== "User") return { files: [] };
+        try {
+            const data = await fileService.getAllFiles(Token.MegaBox);
+            return data || { files: [] };
+        } catch (error) {
+            return { files: [] };
+        }
+    };
+
+    const { data: filesData } = useQuery(
+        ['userFiles'],
+        GetFiles,
+        {
+            enabled: !!Token.MegaBox && role === "User",
+            retry: false
+        }
+    );
+
+    const handleFileClick = (file) => {
+        const fileCategory = getFileCategory(file?.fileType);
+        const fileUrl = file?.url || file?.fileUrl;
+        
+        // If it's an image or video, open it directly
+        if (fileCategory === 'image' || fileCategory === 'video') {
+            Representation(fileUrl, file?.fileType, false);
+            handleHide();
+        } else {
+            // For other files, navigate to file page
+            const filePath = isPromoter ? '/Promoter/file' : '/dashboard/file';
+            navigate(`${filePath}/${encodeURIComponent(file?.fileName || file?.name)}/${file?._id || file?.id}`);
+            handleHide();
+        }
+    };
+
+    const handleFolderClick = (folder, e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        const folderId = folder?._id || folder?.id;
+        const folderName = folder?.name;
+        const filePath = isPromoter ? '/Promoter/file' : '/dashboard/file';
+        navigate(`${filePath}/${encodeURIComponent(folderName)}/${folderId}`);
+        handleHide();
+    };
+
+    // Filter files that are not in any folder
+    const filesNotInFolders = filesData?.files?.filter(file => !file.folderId && !file.folder) || [];
 
     const Logout = () => {
         removeToken("MegaBox", {
@@ -145,60 +242,95 @@ export default function Sidenav({ role }) {
                                     {t("sidenav.profile")}
                                 </MenuItem>
 
-                                <MenuItem onClick={handleHide} className={pathname === "/dashboard" || pathname === "/Promoter/files" ? 'menu-items  Active' : 'menu-items'} component={<Link to={isPromoter ? '/Promoter/files' : '/dashboard'} className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.allFiles") : ""}></Link>}
-                                    icon={<HiFolder className={pathname === "/dashboard" || pathname === "/Promoter/files" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                    data-tooltip={collapsed ? t("sidenav.allFiles") : ""}>
-                                    {t("sidenav.allFiles")}
-                                </MenuItem>
-
-                                {/* Shared Files - Only for promoters with plans */}
-                                {(isPromoter && (userData?.Downloadsplan === "true" || userData?.Downloadsplan === true || userData?.watchingplan === "true" || userData?.watchingplan === true)) && (
-                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/shared-files" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/shared-files' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.sharedFiles") : ""}></Link>}
-                                        icon={<HiShare className={pathname === "/dashboard/shared-files" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? t("sidenav.sharedFiles") : ""}>
-                                        {t("sidenav.sharedFiles")}
-                                    </MenuItem>
-                                )}
-
-                                {/* Promoter Dashboard - Only for promoters */}
-                                {isPromoter && (
-                                    <MenuItem onClick={handleHide} className={pathname === "/Promoter" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Promoter' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.promoterDashboard") : ""}></Link>}
-                                        icon={<HiCurrencyDollar className={pathname === "/Promoter" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? t("sidenav.promoterDashboard") : ""}>
-                                        {t("sidenav.promoterDashboard")}
-                                    </MenuItem>
-                                )}
-
-                                {/* Revenue Data - Only for promoters with plans */}
-                                {(isPromoter && (userData?.Downloadsplan === "true" || userData?.Downloadsplan === true || userData?.watchingplan === "true" || userData?.watchingplan === true)) && (
-                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/revenue-data" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/revenue-data' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.revenueData") : ""}></Link>}
-                                        icon={<HiChartBar className={pathname === "/dashboard/revenue-data" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? t("sidenav.revenueData") : ""}>
-                                        {t("sidenav.revenueData")}
-                                    </MenuItem>
-                                )}
-
-                                {/* Earnings - Only for promoters with plans */}
-                                {(isPromoter && (userData?.Downloadsplan === "true" || userData?.Downloadsplan === true || userData?.watchingplan === "true" || userData?.watchingplan === true)) && (
-                                    <MenuItem onClick={handleHide} className={pathname === "/dashboard/Earnings" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/Earnings' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.earnings") : ""}></Link>}
-                                        icon={<HiChartBar className={pathname === "/dashboard/Earnings" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                        data-tooltip={collapsed ? t("sidenav.earnings") : ""}>
-                                        {t("sidenav.earnings")}
-                                    </MenuItem>
-                                )}
-
-                                {/* Referral - Available for all users */}
-                                <MenuItem onClick={handleHide} className={pathname === "/dashboard/referral" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/referral' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.referral") : ""}></Link>}
-                                    icon={<HiUserGroup className={pathname === "/dashboard/referral" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                    data-tooltip={collapsed ? t("sidenav.referral") : ""}>
-                                    {t("sidenav.referral")}
-                                </MenuItem>
-
-                                <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.partners") : ""}></Link>}
-                                    icon={<HiHandRaised className={pathname === "/Partners" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                    data-tooltip={collapsed ? t("sidenav.partners") : ""}>
-                                    {t("sidenav.partners")}
-                                </MenuItem>
+                                {/* Files and Folders Tree */}
+                                <SubMenu
+                                    label={t("sidenav.allFiles")}
+                                    icon={<HiFolder className="icon transition ease-linear" />}
+                                    className="sidenav-files-submenu"
+                                >
+                                    {/* Folders */}
+                                    {foldersData?.folders?.map((folder) => {
+                                        const folderId = folder?._id || folder?.id;
+                                        const isExpanded = expandedFolders[folderId];
+                                        const files = folderFiles[folderId] || [];
+                                        
+                                        return (
+                                            <SubMenu
+                                                key={folderId}
+                                                label={folder?.name}
+                                                icon={
+                                                    <div className="sidenav-folder-wrapper">
+                                                        <svg className="sidenav-files-tree-icon" width="18" height="18" viewBox="0 0 20 20" fill="none">
+                                                            <path d="M3 6C3 4.89543 3.89543 4 5 4H8.58579C8.851 4 9.10536 4.10536 9.29289 4.29289L10.7071 5.70711C10.8946 5.89464 11.149 6 11.4142 6H15C16.1046 6 17 6.89543 17 8V14C17 15.1046 16.1046 16 15 16H5C3.89543 16 3 15.1046 3 14V6Z" fill="#FCD34D" stroke="#F59E0B" strokeWidth="1.5" />
+                                                        </svg>
+                                                    </div>
+                                                }
+                                                className="sidenav-folder-submenu"
+                                                open={isExpanded}
+                                                onOpenChange={async (open) => {
+                                                    setExpandedFolders(prev => ({
+                                                        ...prev,
+                                                        [folderId]: open
+                                                    }));
+                                                    
+                                                    // If opening folder and files not loaded, fetch them
+                                                    if (open && !folderFiles[folderId]) {
+                                                        try {
+                                                            const { data } = await axios.get(`${API_URL}/user/getFolderFiles/${folderId}`, {
+                                                                headers: { Authorization: `Bearer ${Token.MegaBox}` }
+                                                            });
+                                                            setFolderFiles(prev => ({
+                                                                ...prev,
+                                                                [folderId]: data?.files || []
+                                                            }));
+                                                        } catch (error) {
+                                                            setFolderFiles(prev => ({
+                                                                ...prev,
+                                                                [folderId]: []
+                                                            }));
+                                                        }
+                                                    }
+                                                }}
+                                            >
+                                                {files.map((file) => (
+                                                    <MenuItem
+                                                        key={file?._id || file?.id}
+                                                        className="sidenav-files-tree-item sidenav-files-tree-item--file"
+                                                        onClick={() => handleFileClick(file)}
+                                                        icon={
+                                                            <svg className="sidenav-files-tree-icon" width="18" height="18" viewBox="0 0 20 20" fill="none">
+                                                                <path d="M4 4C4 2.89543 4.89543 2 6 2H10.5858C10.851 2 11.1054 2.10536 11.2929 2.29289L15.7071 6.70711C15.8946 6.89464 16 7.149 16 7.41421V16C16 17.1046 15.1046 18 14 18H6C4.89543 18 4 17.1046 4 16V4Z" fill="#93C5FD" stroke="#3B82F6" strokeWidth="1.5"/>
+                                                            </svg>
+                                                        }
+                                                    >
+                                                        {file?.fileName || file?.name}
+                                                    </MenuItem>
+                                                ))}
+                                                {files.length === 0 && isExpanded && (
+                                                    <div className="sidenav-empty-folder">
+                                                        {t("sidenav.emptyFolder") || "Empty folder"}
+                                                    </div>
+                                                )}
+                                            </SubMenu>
+                                        );
+                                    })}
+                                    
+                                    {/* Files not in folders */}
+                                    {filesNotInFolders.slice(0, 50).map((file) => (
+                                        <MenuItem
+                                            key={file?._id || file?.id}
+                                            className="sidenav-files-tree-item sidenav-files-tree-item--file"
+                                            onClick={() => handleFileClick(file)}
+                                            icon={
+                                                <svg className="sidenav-files-tree-icon" width="18" height="18" viewBox="0 0 20 20" fill="none">
+                                                    <path d="M4 4C4 2.89543 4.89543 2 6 2H10.5858C10.851 2 11.1054 2.10536 11.2929 2.29289L15.7071 6.70711C15.8946 6.89464 16 7.149 16 7.41421V16C16 17.1046 15.1046 18 14 18H6C4.89543 18 4 17.1046 4 16V4Z" fill="#93C5FD" stroke="#3B82F6" strokeWidth="1.5"/>
+                                                </svg>
+                                            }
+                                        >
+                                            {file?.fileName || file?.name}
+                                        </MenuItem>
+                                    ))}
+                                </SubMenu>
 
                                 {/* Notifications - User/Promoter */}
                                 <MenuItem onClick={handleHide} className={pathname === "/dashboard/notifications" || pathname === "/Promoter/notifications" ? 'menu-items  Active' : 'menu-items'} component={<Link to={isPromoter ? '/Promoter/notifications' : '/dashboard/notifications'} className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.notifications") : ""}></Link>}
@@ -244,39 +376,10 @@ export default function Sidenav({ role }) {
                             </>
                         ) : role === "Owner" ? (
                             <>
-                                {/* Profile - First */}
                                 <MenuItem onClick={handleHide} className={pathname === "/Owner/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.profile") : ""}></Link>}
                                     icon={<HiUserCircle className={pathname === "/Owner/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
                                     data-tooltip={collapsed ? t("sidenav.profile") : ""}>
                                     {t("sidenav.profile")}
-                                </MenuItem>
-
-                                {/* Analytics Dashboard */}
-                                <MenuItem onClick={handleHide} className={pathname === "/Owner" || pathname === "/Owner/" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.analytics") : ""}></Link>}
-                                    icon={<HiChartBar className={pathname === "/Owner" || pathname === "/Owner/" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                    data-tooltip={collapsed ? t("sidenav.analytics") : ""}>
-                                    {t("sidenav.analytics")}
-                                </MenuItem>
-
-                                {/* Users Management */}
-                                <MenuItem onClick={handleHide} className={pathname === "/Owner/Users" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/Users' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.users") : ""}></Link>}
-                                    icon={<HiUsers className={pathname === "/Owner/Users" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                    data-tooltip={collapsed ? t("sidenav.users") : ""}>
-                                    {t("sidenav.users")}
-                                </MenuItem>
-
-                                {/* Promoters Management */}
-                                <MenuItem onClick={handleHide} className={pathname === "/Owner/AllPromoters" || pathname.startsWith("/Owner/Promoter/") ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/AllPromoters' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.promoters") : ""}></Link>}
-                                    icon={<HiUserGroup className={pathname === "/Owner/AllPromoters" || pathname.startsWith("/Owner/Promoter/") ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                    data-tooltip={collapsed ? t("sidenav.promoters") : ""}>
-                                    {t("sidenav.promoters")}
-                                </MenuItem>
-
-                                {/* Reports */}
-                                <MenuItem onClick={handleHide} className={pathname === "/Owner/Reports" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/Reports' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.reports") : ""}></Link>}
-                                    icon={<HiDocumentText className={pathname === "/Owner/Reports" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                    data-tooltip={collapsed ? t("sidenav.reports") : ""}>
-                                    {t("sidenav.reports")}
                                 </MenuItem>
 
                                 {/* Notifications - Owner */}
@@ -288,13 +391,6 @@ export default function Sidenav({ role }) {
                                     }
                                     data-tooltip={collapsed ? t("sidenav.notifications") : ""}>
                                     {t("sidenav.notifications")}
-                                </MenuItem>
-
-                                {/* Partners */}
-                                <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.partners") : ""}></Link>}
-                                    icon={<HiHandRaised className={pathname === "/Partners" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                    data-tooltip={collapsed ? t("sidenav.partners") : ""}>
-                                    {t("sidenav.partners")}
                                 </MenuItem>
 
                                 <div className="sidenav-bottom-actions">
@@ -324,11 +420,6 @@ export default function Sidenav({ role }) {
                                     icon={<HiUserCircle className={pathname === "/dashboard/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
                                     data-tooltip={collapsed ? t("sidenav.profile") : ""}>
                                     {t("sidenav.profile")}
-                                </MenuItem>
-                                <MenuItem onClick={handleHide} className={pathname === "/Partners" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Partners' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.partners") : ""}></Link>}
-                                    icon={<HiHandRaised className={pathname === "/Partners" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                    data-tooltip={collapsed ? t("sidenav.partners") : ""}>
-                                    {t("sidenav.partners")}
                                 </MenuItem>
 
                                 <div className="sidenav-bottom-actions">
@@ -369,6 +460,15 @@ export default function Sidenav({ role }) {
         <span className='bars' onClick={handleHide}>
             {Hide ? (language === 'ar' ? <HiChevronRight /> : <HiChevronLeft />) : <HiBars3 />}
         </span>
+
+        {/* File Preview Modal */}
+        {ShowRepresent && (
+            <Represents 
+                path={Path} 
+                type={fileType} 
+                ToggleUploadFile={() => Representation("", "", true)} 
+            />
+        )}
 
     </>
 }

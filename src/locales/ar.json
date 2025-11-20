@@ -98,7 +98,8 @@
   "common": {
     "loading": "جارٍ التحميل...",
     "error": "حدث خطأ",
-    "success": "تم بنجاح"
+    "success": "تم بنجاح",
+    "back": "رجوع"
   },
   "about": {
     "storage": {
@@ -184,6 +185,7 @@
     "notifications": "الإشعارات",
     "partners": "الشركاء",
     "reports": "التقارير",
+    "emptyFolder": "مجلد فارغ",
     "users": "المستخدمون",
     "promoters": "المروجون",
     "analytics": "التحليلات",
@@ -238,7 +240,9 @@
     "noFilesMessage": "ابدأ برفع أول ملف لك.",
     "noFilesTypeMessage": "لم يتم العثور على ملفات {type}.",
     "folderDeletedSuccess": "تم حذف المجلد بنجاح",
-    "folderDeleteFailed": "فشل حذف المجلد"
+    "folderDeleteFailed": "فشل حذف المجلد",
+    "selectFiles": "تحديد الملفات",
+    "fileName": "اسم الملف"
   },
   "profile": {
     "profileInformation": "معلومات الملف الشخصي",
@@ -835,5 +839,29 @@
     "privacyDesc": "اقرأ سياسة الخصوصية الخاصة بنا",
     "removalPolicy": "سياسة الإزالة",
     "removalDesc": "تعرف على إرشادات إزالة المحتوى الخاصة بنا"
+  },
+  "uploadOptions": {
+    "title": "رفع الملفات",
+    "subtitle": "اختر طريقة رفع الملفات",
+    "fromDesktop": "من سطح المكتب",
+    "fromDesktopDesc": "رفع الملفات من جهاز الكمبيوتر أو الجهاز الخاص بك",
+    "fromMegaBox": "من MegaBox",
+    "fromMegaBoxDesc": "اختر الملفات من مساحة MegaBox الخاصة بك"
+  },
+  "uploadFromMegaBox": {
+    "title": "اختر الملفات من MegaBox",
+    "subtitle": "اختر الملفات من مساحة MegaBox الخاصة بك للرفع",
+    "noFiles": "لا توجد ملفات متاحة",
+    "noFilesDesc": "ليس لديك أي ملفات في مساحة MegaBox الخاصة بك بعد.",
+    "selectFiles": "يرجى اختيار ملف واحد على الأقل",
+    "selectedFiles": "الملفات المحددة",
+    "upload": "رفع",
+    "uploading": "جاري الرفع...",
+    "clearAll": "مسح الكل",
+    "file": "ملف",
+    "files": "ملفات",
+    "uploaded": "تم الرفع بنجاح",
+    "failed": "فشل",
+    "allFailed": "فشل رفع جميع الملفات"
   }
 }
