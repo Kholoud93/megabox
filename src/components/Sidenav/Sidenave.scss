@@ -44,7 +44,6 @@ aside .main-side .ps-menu-button:hover {
     background: none;
     text-decoration: none;
 
-
     &.Open {
         font-size: 2rem;
     }
@@ -53,8 +52,6 @@ aside .main-side .ps-menu-button:hover {
         font-size: 1rem;
     }
 }
-
-
 
 .css-ewdv3l {
     width: 100% !important;
@@ -111,7 +108,7 @@ aside .main-side .ps-menu-button:hover {
 
     @include Breakpoints(mobile) {
         opacity: 1;
-        bottom: 90px; 
+        bottom: 90px;
     }
 
     @include Breakpoints(small) {
@@ -231,7 +228,6 @@ aside {
         }
     }
 
-
     .main-side {
         &::-webkit-scrollbar {
             width: 5px;
@@ -258,7 +254,7 @@ aside {
         linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-indigo-600) 100%);
         position: fixed;
         width: 250px;
-        height: 100%;
+        height: 100vh;
         top: 0;
         left: 0;
         right: auto;
@@ -285,25 +281,71 @@ aside {
             transition: 0.3s linear all;
             -webkit-transition: 0.3s linear all;
             overflow: hidden !important;
-            position: relative !important;
+            position: fixed !important;
+            top: 0 !important;
+            height: 100vh !important;
+            contain: layout style paint !important;
 
             [dir="rtl"] & {
                 left: auto;
                 right: 0;
             }
 
-            // Hide all submenu content when collapsed
+            // Target react-pro-sidebar menu
+            .ps-menuitem-root {
+                max-width: 78px !important;
+                overflow: hidden !important;
+            }
+
+            // CRITICAL: Hide all submenu content when collapsed
+            .ps-submenu-root {
+                max-width: 78px !important;
+                overflow: hidden !important;
+                width: 100% !important;
+            }
+
             .ps-submenu-content {
                 display: none !important;
                 visibility: hidden !important;
                 opacity: 0 !important;
                 height: 0 !important;
                 max-height: 0 !important;
+                min-height: 0 !important;
+                overflow: hidden !important;
+                overflow-y: hidden !important;
+                overflow-x: hidden !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                border: none !important;
+                position: absolute !important;
+                left: -99999px !important;
+                top: -99999px !important;
+                width: 0 !important;
+                pointer-events: none !important;
+                clip-path: polygon(0 0, 0 0, 0 0, 0 0) !important;
+                transform: scale(0) translateX(-100%) !important;
+            }
+
+            // Hide all items inside submenus when collapsed
+            .sidenav-files-tree-item,
+            .sidenav-empty-folder,
+            .sidenav-folder-submenu,
+            .sidenav-files-submenu {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                height: 0 !important;
+                max-height: 0 !important;
+                min-height: 0 !important;
                 overflow: hidden !important;
                 padding: 0 !important;
                 margin: 0 !important;
+                border: none !important;
+                pointer-events: none !important;
+                clip-path: polygon(0 0, 0 0, 0 0, 0 0) !important;
                 position: absolute !important;
-                left: -9999px !important;
+                left: -99999px !important;
+                width: 0 !important;
             }
 
             .ps-menu-button {
@@ -343,8 +385,7 @@ aside {
                 &[data-tooltip]:not([data-tooltip=""]) {
                     position: relative;
                     overflow: visible !important;
-                    
-                    // Ensure tooltip appears inside sidebar bounds
+
                     &::after {
                         z-index: 10000;
                     }
@@ -493,8 +534,6 @@ aside {
             &:hover {
                 background-color: rgba(255, 255, 255, 0.08) !important;
             }
-
-            // Tooltip styling - only show when collapsed (handled in collapsed section)
         }
 
         .menu-items {
@@ -700,11 +739,11 @@ aside {
                 color: white !important;
                 font-weight: 500 !important;
                 font-size: 0.9375rem !important;
-                
+
                 .ps-menu-label {
-                    color: white !important;
+                    color: rgba(255, 255, 255, 0.95) !important;
                 }
-                
+
                 &:hover {
                     background-color: rgba(255, 255, 255, 0.08) !important;
                 }
@@ -724,7 +763,7 @@ aside {
         .ps-submenu-root {
             .ps-menu-button {
                 color: rgba(255, 255, 255, 0.95) !important;
-                
+
                 .ps-menu-label {
                     color: rgba(255, 255, 255, 0.95) !important;
                 }
@@ -794,52 +833,70 @@ aside {
         }
     }
 
-    // Hide submenu content when sidebar is collapsed
+    // Hide submenu content when sidebar is collapsed - with maximum specificity
     .main-side.collapsed {
+        // Contain submenu overflow - CRITICAL
+        .ps-submenu-root {
+            max-width: 78px !important;
+            overflow: hidden !important;
+            width: 100% !important;
+            position: relative !important;
+        }
+
+        .ps-menuitem-root {
+            max-width: 78px !important;
+            overflow: hidden !important;
+        }
+
+        // Hide all submenu content - multiple selectors for complete coverage
+        .sidenav-files-submenu .ps-submenu-content,
+        .sidenav-folder-submenu .ps-submenu-content,
         .ps-submenu-content {
             display: none !important;
             visibility: hidden !important;
             opacity: 0 !important;
             height: 0 !important;
             max-height: 0 !important;
+            min-height: 0 !important;
+            overflow: hidden !important;
+            overflow-y: hidden !important;
+            overflow-x: hidden !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            position: absolute !important;
+            left: -99999px !important;
+            top: -99999px !important;
+            width: 0 !important;
+            pointer-events: none !important;
+            clip-path: polygon(0 0, 0 0, 0 0, 0 0) !important;
+            transform: scale(0) translateX(-100%) !important;
+        }
+
+        // Hide all items inside submenus
+        .sidenav-files-submenu .sidenav-files-tree-item,
+        .sidenav-folder-submenu .sidenav-files-tree-item,
+        .sidenav-files-submenu .sidenav-empty-folder,
+        .sidenav-folder-submenu .sidenav-empty-folder,
+        .sidenav-files-tree-item,
+        .sidenav-empty-folder,
+        .sidenav-files-submenu,
+        .sidenav-folder-submenu {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            max-height: 0 !important;
+            min-height: 0 !important;
             overflow: hidden !important;
             padding: 0 !important;
             margin: 0 !important;
+            border: none !important;
+            pointer-events: none !important;
+            clip-path: polygon(0 0, 0 0, 0 0, 0 0) !important;
             position: absolute !important;
-            left: -9999px !important;
+            left: -99999px !important;
             width: 0 !important;
-        }
-
-        .sidenav-files-submenu {
-            .ps-submenu-content {
-                display: none !important;
-                visibility: hidden !important;
-                opacity: 0 !important;
-                height: 0 !important;
-                max-height: 0 !important;
-                overflow: hidden !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                position: absolute !important;
-                left: -9999px !important;
-                width: 0 !important;
-            }
-        }
-
-        .sidenav-folder-submenu {
-            .ps-submenu-content {
-                display: none !important;
-                visibility: hidden !important;
-                opacity: 0 !important;
-                height: 0 !important;
-                max-height: 0 !important;
-                overflow: hidden !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                position: absolute !important;
-                left: -9999px !important;
-                width: 0 !important;
-            }
         }
     }
 }

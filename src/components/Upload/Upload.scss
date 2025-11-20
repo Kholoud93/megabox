@@ -6,10 +6,12 @@
     .UploadFile {
         @include InsideBackdrop();
 
-        // Base styles
-        max-height: 90vh;
-        overflow-y: auto;
-        padding: 1.5rem;
+        // Base styles - wrapped to avoid mixed-decls warning
+        & {
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
 
         // Tablet styles
         @include Breakpoints(small) {

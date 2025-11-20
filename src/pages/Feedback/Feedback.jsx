@@ -219,13 +219,13 @@ export default function Feedback() {
                                     <button
                                         type="button"
                                         onClick={handleDownload}
-                                        className="flex items-center justify-center gap-2 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors duration-200 text-sm font-medium"
+                                        className="feedback-download-btn"
                                     >
                                         <FiDownload className="h-4 w-4" />
                                         {t('feedback.downloadTemplate')}
                                     </button>
 
-                                    <label className="flex items-center justify-center gap-2 border border-indigo-600 text-indigo-700 hover:bg-indigo-50 transition-colors duration-200 rounded-lg py-2 px-4 cursor-pointer text-sm font-medium">
+                                    <label className="feedback-upload-btn">
                                         <FiUpload className="h-4 w-4" />
                                         <span>{t('feedback.uploadFile')}</span>
                                         <input
@@ -546,7 +546,7 @@ export default function Feedback() {
                             whileTap={{ scale: 0.98 }}
                             type="submit"
                             disabled={SendDataLoading}
-                            className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white font-semibold py-4 rounded-lg hover:bg-indigo-700 transition-colors duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="feedback-submit-btn"
                         >
                             <FiSend className="h-5 w-5" />
                             {SendDataLoading ? t('feedback.submitting') : t('feedback.submit')}
@@ -563,7 +563,7 @@ export default function Feedback() {
                 >
                     <Link
                         to="/"
-                        className="inline-flex items-center gap-2 bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors duration-200"
+                        className="feedback-back-btn"
                     >
                         {t('feedback.backToHome')}
                     </Link>

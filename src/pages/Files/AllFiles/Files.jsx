@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Folder } from '../../../components/Folder/Folder'
 import File from '../../../components/File/File'
 import { HiOutlinePlus } from "react-icons/hi2";
@@ -21,10 +21,47 @@ import { ToastOptions } from '../../../helpers/ToastOptions';
 import { fileService, userService } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 import ShareLinkModal from '../../../components/ShareLinkModal/ShareLinkModal';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
+import { HiUserCircle, HiArrowRightOnRectangle, HiUserGroup, HiCurrencyDollar } from 'react-icons/hi2';
+import { FiGlobe } from 'react-icons/fi';
+import { FaUser } from 'react-icons/fa';
 import './Files.scss';
 
 export default function Files() {
-    const { t } = useLanguage();
+    const { t, language, changeLanguage } = useLanguage();
+    const navigate = useNavigate();
+    const { pathname } = useLocation();
+    const { setUserRole } = useAuth();
+    const [Token, , removeToken] = useCookies(['MegaBox']);
+    const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+    const [profileImageError, setProfileImageError] = useState(false);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0, left: 0 });
+    const profileMenuRef = useRef(null);
+    const profileButtonRef = useRef(null);
+    
+    // Calculate dropdown position and close when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+                setProfileMenuOpen(false);
+            }
+        };
+        
+        if (profileMenuOpen && profileButtonRef.current) {
+            const rect = profileButtonRef.current.getBoundingClientRect();
+            setDropdownPosition({
+                top: rect.bottom + 8,
+                right: window.innerWidth - rect.right,
+                left: rect.left
+            });
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [profileMenuOpen]);
 
     const Active = "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
     const InActive = "inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-700 bg-white border border-indigo-300 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
@@ -51,9 +88,37 @@ export default function Files() {
         setShowUploadFromMegaBox(true);
     };
 
-    const [Token] = useCookies(['MegaBox']);
     const [FilterKey, setFilterKey] = useState('All');
     const queryClient = useQueryClient();
+    
+    // Get user data for profile
+    const { data: userData } = useQuery(
+        ['userAccount'],
+        () => userService.getUserInfo(Token.MegaBox),
+        {
+            enabled: !!Token.MegaBox,
+            retry: false
+        }
+    );
+    
+    const isPromoter = userData?.isPromoter === "true" || userData?.isPromoter === true;
+    
+    const Logout = () => {
+        removeToken("MegaBox", {
+            path: '/',
+        });
+        setUserRole(null);
+        navigate('/Login');
+    };
+    
+    const toggleLanguage = (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        const newLang = language === 'en' ? 'ar' : 'en';
+        changeLanguage(newLang);
+    };
 
     // get files - using separate APIs for each group
     const GetFiles = async ({ queryKey }) => {
@@ -296,6 +361,95 @@ export default function Files() {
                                 <LuFolderPlus className="files-header__button-icon" />
                                 {t("files.newFolder")}
                             </button>
+                            
+                            {/* Profile Menu */}
+                            <div className="files-header__profile-menu" ref={profileMenuRef}>
+                                <button
+                                    ref={profileButtonRef}
+                                    className="files-header__profile-button"
+                                    onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+                                >
+                                    {userData?.profilePic && typeof userData.profilePic === 'string' && userData.profilePic.trim() !== '' && !profileImageError ? (
+                                        <img
+                                            src={userData.profilePic}
+                                            alt="Profile"
+                                            className="files-header__profile-image"
+                                            onError={() => setProfileImageError(true)}
+                                        />
+                                    ) : (
+                                        <div className="files-header__profile-placeholder">
+                                            <FaUser className="files-header__profile-icon" />
+                                        </div>
+                                    )}
+                                </button>
+                                
+                                {profileMenuOpen && (
+                                    <div 
+                                        className="files-header__profile-dropdown"
+                                        style={{
+                                            position: 'fixed',
+                                            top: `${dropdownPosition.top}px`,
+                                            right: language === 'ar' ? 'auto' : `${dropdownPosition.right}px`,
+                                            left: language === 'ar' ? `${dropdownPosition.left}px` : 'auto',
+                                            zIndex: 10000
+                                        }}
+                                    >
+                                        <Link
+                                            to={isPromoter ? '/Promoter/profile' : '/dashboard/profile'}
+                                            className="files-header__profile-item"
+                                            onClick={() => setProfileMenuOpen(false)}
+                                        >
+                                            <HiUserCircle className="files-header__profile-item-icon" />
+                                            <span>{t("sidenav.profile")}</span>
+                                        </Link>
+                                        
+                                        {!isPromoter && (
+                                            <Link
+                                                to="/Partners"
+                                                className="files-header__profile-item"
+                                                onClick={() => setProfileMenuOpen(false)}
+                                            >
+                                                <HiCurrencyDollar className="files-header__profile-item-icon" />
+                                                <span>{t("sidenav.subscribe") || "Subscribe"}</span>
+                                            </Link>
+                                        )}
+                                        
+                                        {isPromoter && (
+                                            <Link
+                                                to="/Partners"
+                                                className="files-header__profile-item"
+                                                onClick={() => setProfileMenuOpen(false)}
+                                            >
+                                                <HiUserGroup className="files-header__profile-item-icon" />
+                                                <span>{t("sidenav.partners") || "Partners Center"}</span>
+                                            </Link>
+                                        )}
+                                        
+                                        <button
+                                            className="files-header__profile-item"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                toggleLanguage(e);
+                                                setProfileMenuOpen(false);
+                                            }}
+                                        >
+                                            <FiGlobe className="files-header__profile-item-icon" />
+                                            <span>{language === 'en' ? t("navbar.arabic") : t("navbar.english")}</span>
+                                        </button>
+                                        
+                                        <button
+                                            className="files-header__profile-item"
+                                            onClick={() => {
+                                                Logout();
+                                                setProfileMenuOpen(false);
+                                            }}
+                                        >
+                                            <HiArrowRightOnRectangle className="files-header__profile-item-icon" />
+                                            <span>{t("sidenav.logout")}</span>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

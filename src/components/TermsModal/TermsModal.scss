@@ -93,7 +93,7 @@
         flex: 1;
         background: transparent;
         border: none;
-        color: #0f62fe;
+        color: var(--color-indigo-600, #4f46e5);
         font-size: 15px;
         text-align: start;
         cursor: pointer;
@@ -105,7 +105,7 @@
         transition: color 0.2s;
 
         &:hover {
-            color: #0043ce;
+            color: var(--color-indigo-700, #4338ca);
         }
     }
 
@@ -122,7 +122,7 @@
             width: 20px;
             height: 20px;
             cursor: pointer;
-            accent-color: #0f62fe;
+            accent-color: var(--color-indigo-600, #4f46e5);
         }
 
         label {
@@ -136,7 +136,7 @@
     &__button {
         width: 100%;
         padding: 14px 24px;
-        background: #0f62fe;
+        background: var(--color-indigo-600, #4f46e5);
         color: white;
         border: none;
         border-radius: 8px;
@@ -146,9 +146,9 @@
         transition: all 0.2s;
 
         &:hover:not(:disabled) {
-            background: #0043ce;
+            background: var(--color-indigo-700, #4338ca);
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(15, 98, 254, 0.3);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
         }
 
         &:disabled {

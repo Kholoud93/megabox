@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './Sidenave.scss'
 import {
     HiChevronLeft,
@@ -36,6 +36,8 @@ export default function Sidenav({ role }) {
     const [Hide, setHide] = useState(false);
     const [expandedFolders, setExpandedFolders] = useState({});
     const [folderFiles, setFolderFiles] = useState({});
+    const [allFilesOpen, setAllFilesOpen] = useState(false);
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
     const [ShowRepresent, setRepresents] = useState(false);
     const [Path, setPath] = useState();
     const [fileType, setfileType] = useState();
@@ -182,8 +184,17 @@ export default function Sidenav({ role }) {
         setHide(!Hide)
     }
     const handleICon = () => {
-        setcollapsed(!collapsed)
+        setcollapsed(!collapsed);
     }
+
+    // Close All Files and folders when sidebar is collapsed
+    useEffect(() => {
+        if (collapsed) {
+            setAllFilesOpen(false);
+            setExpandedFolders({});
+            setUserMenuOpen(false);
+        }
+    }, [collapsed]);
 
     return <>
         <div className={Hide ? "dropback apper-dropback" : "dropback"} onClick={handleHide}>
@@ -236,17 +247,20 @@ export default function Sidenav({ role }) {
 
                         {role === "User" ? (
                             <>
-                                <MenuItem onClick={handleHide} className={pathname === "/dashboard/profile" || pathname === "/Promoter/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to={isPromoter ? '/Promoter/profile' : '/dashboard/profile'} className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.profile") : ""}></Link>}
-                                    icon={<HiUserCircle className={pathname === "/dashboard/profile" || pathname === "/Promoter/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                    data-tooltip={collapsed ? t("sidenav.profile") : ""}>
-                                    {t("sidenav.profile")}
-                                </MenuItem>
-
                                 {/* Files and Folders Tree */}
                                 <SubMenu
                                     label={t("sidenav.allFiles")}
                                     icon={<HiFolder className="icon transition ease-linear" />}
                                     className="sidenav-files-submenu"
+                                    open={!collapsed && allFilesOpen}
+                                    onOpenChange={(open) => {
+                                        // Prevent opening when collapsed
+                                        if (collapsed) {
+                                            setAllFilesOpen(false);
+                                            return;
+                                        }
+                                        setAllFilesOpen(open);
+                                    }}
                                 >
                                     {/* Folders */}
                                     {foldersData?.folders?.map((folder) => {
@@ -331,48 +345,6 @@ export default function Sidenav({ role }) {
                                         </MenuItem>
                                     ))}
                                 </SubMenu>
-
-                                {/* Notifications - User/Promoter */}
-                                <MenuItem onClick={handleHide} className={pathname === "/dashboard/notifications" || pathname === "/Promoter/notifications" ? 'menu-items  Active' : 'menu-items'} component={<Link to={isPromoter ? '/Promoter/notifications' : '/dashboard/notifications'} className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.notifications") : ""}></Link>}
-                                    icon={
-                                        <div className="relative">
-                                            <HiBell className={pathname === "/dashboard/notifications" || pathname === "/Promoter/notifications" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />
-                                            {unreadCount > 0 && (
-                                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center" style={{ fontSize: '10px', minWidth: '20px' }}>
-                                                    {unreadCount > 9 ? '9+' : unreadCount}
-                                                </span>
-                                            )}
-                                        </div>
-                                    }
-                                    data-tooltip={collapsed ? t("sidenav.notifications") : ""}>
-                                    {t("sidenav.notifications")}
-                                    {!collapsed && unreadCount > 0 && (
-                                        <span className="ml-2 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5">
-                                            {unreadCount > 9 ? '9+' : unreadCount}
-                                        </span>
-                                    )}
-                                </MenuItem>
-
-                                <div className="sidenav-bottom-actions">
-                                    <MenuItem
-                                        className="ps-menuitem-root menu-items css-1t8x7v1 rounded-lg text-base text-white font-medium LanguageToggle"
-                                        icon={<FiGlobe className="icon" />}
-                                        onClick={toggleLanguage}
-                                        data-tooltip={collapsed ? (language === 'en' ? t("navbar.arabic") : t("navbar.english")) : ""}
-                                    >
-                                        {!collapsed && (language === 'en' ? t("navbar.arabic") : t("navbar.english"))}
-                                    </MenuItem>
-
-                                    <MenuItem
-                                        className="ps-menuitem-root menu-items css-1t8x7v1 rounded-lg text-base text-white font-medium Logout"
-                                        icon={<HiArrowRightOnRectangle className="icon" />}
-                                        type={"button"}
-                                        onClick={Logout}
-                                        data-tooltip={collapsed ? t("sidenav.logout") : ""}
-                                    >
-                                        {!collapsed && t("sidenav.logout")}
-                                    </MenuItem>
-                                </div>
                             </>
                         ) : role === "Owner" ? (
                             <>
