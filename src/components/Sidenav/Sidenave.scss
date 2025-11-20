@@ -734,38 +734,88 @@ aside {
 
     // Files and Folders Tree
     .sidenav-files-submenu {
+        transition: all 0.3s ease;
+        
         .ps-submenu-root {
             .ps-menu-button {
                 color: white !important;
-                font-weight: 500 !important;
+                font-weight: 600 !important;
                 font-size: 0.9375rem !important;
+                transition: all 0.2s ease;
 
                 .ps-menu-label {
-                    color: rgba(255, 255, 255, 0.95) !important;
+                    color: white !important;
+                    font-weight: 600 !important;
+                    transition: opacity 0.2s ease;
                 }
 
                 &:hover {
-                    background-color: rgba(255, 255, 255, 0.08) !important;
+                    background-color: rgba(255, 255, 255, 0.15) !important;
+                    color: white !important;
                 }
             }
         }
 
-        .ps-submenu-content {
-            max-height: none !important;
-            overflow: visible !important;
-            padding: 4px 0;
-            background: rgba(0, 0, 0, 0.1);
+        // Show content only when submenu is open
+        .ps-submenu-root[aria-expanded="true"] {
+            .ps-submenu-content {
+                max-height: none !important;
+                overflow: visible !important;
+                padding: 4px 0;
+                background: rgba(255, 255, 255, 0.05);
+                transition: all 0.3s ease;
+                opacity: 1;
+                visibility: visible;
+                display: block;
+            }
+        }
+        
+        // Hide all content when submenu is closed
+        .ps-submenu-root:not([aria-expanded="true"]) {
+            .ps-submenu-content {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                height: 0 !important;
+                max-height: 0 !important;
+                overflow: hidden !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            
+            .sidenav-folder-submenu,
+            .sidenav-files-tree-item,
+            .sidenav-empty-folder {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                height: 0 !important;
+                overflow: hidden !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
         }
     }
 
     // Folder SubMenu
     .sidenav-folder-submenu {
+        transition: all 0.3s ease;
+        
         .ps-submenu-root {
             .ps-menu-button {
-                color: rgba(255, 255, 255, 0.95) !important;
+                color: white !important;
+                font-weight: 500 !important;
+                transition: all 0.2s ease;
 
                 .ps-menu-label {
-                    color: rgba(255, 255, 255, 0.95) !important;
+                    color: white !important;
+                    font-weight: 500 !important;
+                    transition: opacity 0.2s ease;
+                }
+                
+                &:hover {
+                    background-color: rgba(255, 255, 255, 0.12) !important;
+                    color: white !important;
                 }
             }
         }
@@ -774,7 +824,11 @@ aside {
             max-height: none !important;
             overflow: visible !important;
             padding: 4px 0;
-            background: rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            opacity: 1;
+            visibility: visible;
+            display: block;
         }
     }
 
@@ -787,7 +841,7 @@ aside {
         padding: 0.5rem 0.75rem;
         margin: 0.125rem 0.5rem;
         font-size: 0.875rem;
-        color: rgba(255, 255, 255, 0.6);
+        color: rgba(255, 255, 255, 0.75);
         font-style: italic;
         padding-left: 2rem;
     }
@@ -796,14 +850,20 @@ aside {
         padding: 0.5rem 0.75rem !important;
         margin: 0.125rem 0.5rem !important;
         font-size: 0.875rem !important;
-        color: rgba(255, 255, 255, 0.95) !important;
+        color: white !important;
         font-weight: 500 !important;
-        transition: all 0.2s;
+        transition: all 0.2s ease;
         border-radius: 6px !important;
         overflow: hidden !important;
+        opacity: 1;
+        visibility: visible;
+        display: flex !important;
+        align-items: center;
+        max-width: 100%;
+        width: auto;
 
         &:hover {
-            background: rgba(255, 255, 255, 0.15) !important;
+            background: rgba(255, 255, 255, 0.2) !important;
             color: white !important;
             transform: translateX(4px);
 
@@ -814,7 +874,7 @@ aside {
 
         &--file {
             padding-left: 2rem !important;
-            color: rgba(255, 255, 255, 0.9) !important;
+            color: white !important;
         }
 
         .sidenav-files-tree-icon {
@@ -822,7 +882,8 @@ aside {
             height: 18px;
             flex-shrink: 0;
             margin-right: 0.5rem;
-            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+            transition: all 0.2s ease;
         }
 
         .ps-menu-label {
@@ -830,6 +891,9 @@ aside {
             text-overflow: ellipsis;
             white-space: nowrap;
             font-weight: 500;
+            color: white !important;
+            max-width: calc(250px - 4rem);
+            transition: all 0.2s ease;
         }
     }
 
@@ -873,15 +937,13 @@ aside {
             transform: scale(0) translateX(-100%) !important;
         }
 
-        // Hide all items inside submenus
+        // Hide all items inside submenus when collapsed
         .sidenav-files-submenu .sidenav-files-tree-item,
         .sidenav-folder-submenu .sidenav-files-tree-item,
         .sidenav-files-submenu .sidenav-empty-folder,
         .sidenav-folder-submenu .sidenav-empty-folder,
         .sidenav-files-tree-item,
-        .sidenav-empty-folder,
-        .sidenav-files-submenu,
-        .sidenav-folder-submenu {
+        .sidenav-empty-folder {
             display: none !important;
             visibility: hidden !important;
             opacity: 0 !important;
@@ -897,6 +959,17 @@ aside {
             position: absolute !important;
             left: -99999px !important;
             width: 0 !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        // Keep submenu root visible but hide content
+        .sidenav-files-submenu,
+        .sidenav-folder-submenu {
+            .ps-submenu-root {
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
         }
     }
 }

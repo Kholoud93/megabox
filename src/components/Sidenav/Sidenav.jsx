@@ -195,6 +195,13 @@ export default function Sidenav({ role }) {
             setUserMenuOpen(false);
         }
     }, [collapsed]);
+    
+    // Close all folders when All Files is closed
+    useEffect(() => {
+        if (!allFilesOpen) {
+            setExpandedFolders({});
+        }
+    }, [allFilesOpen]);
 
     return <>
         <div className={Hide ? "dropback apper-dropback" : "dropback"} onClick={handleHide}>
@@ -261,6 +268,7 @@ export default function Sidenav({ role }) {
                                         }
                                         setAllFilesOpen(open);
                                     }}
+                                    defaultOpen={false}
                                 >
                                     {/* Folders */}
                                     {foldersData?.folders?.map((folder) => {
@@ -280,8 +288,17 @@ export default function Sidenav({ role }) {
                                                     </div>
                                                 }
                                                 className="sidenav-folder-submenu"
-                                                open={isExpanded}
+                                                open={!collapsed && allFilesOpen && isExpanded}
                                                 onOpenChange={async (open) => {
+                                                    // Prevent opening if All Files is closed or sidebar is collapsed
+                                                    if (collapsed || !allFilesOpen) {
+                                                        setExpandedFolders(prev => ({
+                                                            ...prev,
+                                                            [folderId]: false
+                                                        }));
+                                                        return;
+                                                    }
+                                                    
                                                     setExpandedFolders(prev => ({
                                                         ...prev,
                                                         [folderId]: open
@@ -305,6 +322,7 @@ export default function Sidenav({ role }) {
                                                         }
                                                     }
                                                 }}
+                                                defaultOpen={false}
                                             >
                                                 {files.map((file) => (
                                                     <MenuItem
