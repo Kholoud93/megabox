@@ -541,7 +541,7 @@
       },
       "videoPlayer": {
         "title": "Specialized Video Player",
-        "desc": "The Tera Shield app offers an exceptional and seamless viewing experience for all types of videos."
+        "desc": "The Mega Shield app offers an exceptional and seamless viewing experience for all types of videos."
       },
       "referrals": {
         "title": "Referrals and Downloads",
@@ -557,7 +557,7 @@
       },
       "protection": {
         "title": "Content Protection",
-        "desc": "Tera Shield protects your content and ensures it cannot be played outside the app."
+        "desc": "Mega Shield protects your content and ensures it cannot be played outside the app."
       }
     },
     "earningSteps": {
@@ -572,7 +572,7 @@
       },
       "step3": {
         "title": "Users Watch via the App",
-        "desc": "When users click your link, they will watch the videos through the Tera Shield app."
+        "desc": "When users click your link, they will watch the videos through the Mega Shield app."
       },
       "step4": {
         "title": "Earn Profits",
@@ -601,5 +601,23 @@
         "feature6": "24/7 technical support"
       }
     }
+  },
+  "termsModal": {
+    "title": "Notice",
+    "description": "Before using the Site Manager Center, you must read and agree to the following agreement:",
+    "termsOfServiceLink": "MegaBox's Terms of Service",
+    "rewardsRulesLink": "Rules for rewards of the Site Manager Center on the web: Who is eligible for rewards?",
+    "acceptTerms": "I have read and agree to the Terms of Service and Rewards Rules",
+    "understood": "Understood",
+    "termsOfServiceTitle": "Terms of Service",
+    "lastUpdated": "Last updated",
+    "welcomeText": "Welcome to MegaBox (\"we\", \"us\", \"the Service\"). By accessing or using MegaBox, you agree to be bound by these Terms of Service (\"Terms\"). If you do not agree, do not use the Service.",
+    "termsContent": "<section><h2>1. Eligibility</h2><p>You must be at least 13 years old (or the legal minimum in your country) and not be prohibited from using online services under applicable law. If you use MegaBox on behalf of an organization, you confirm you have authority to bind that organization.</p></section><section><h2>2. Description of the Service</h2><p>MegaBox provides cloud storage for files and media, online streaming for supported video formats, link-based preview pages, a \"Save Before Watch\" feature, and a Promoter Program that lets creators earn from downloads or views. We may add, change, or remove features at any time.</p></section><section><h2>3. Account Registration</h2><p>When creating an account you agree to provide accurate information, secure your password, and accept responsibility for all activity under your account. We may suspend or terminate accounts that violate these Terms.</p></section><section><h2>4. User Content & Responsibility</h2><p>You are solely responsible for all content you upload, save, share, stream, or publish using MegaBox. By uploading content you confirm that you own the rights to it or have permission to use it, and that it does not violate applicable laws or these Terms. MegaBox does not review all content but may remove or restrict content at its discretion.</p></section><section><h2>5. Prohibited Content</h2><p>Do not upload, share, or distribute content that includes:</p><ul><li>Illegal content under U.S. or international law.</li><li>Copyrighted material without permission.</li><li>Sexual content involving minors or non-consensual intimate content.</li><li>Violence, hate speech, threats, malware, scams, or misleading advertising.</li><li>Content that violates privacy rights or attempts to exploit the Promoter Program.</li></ul><p>Violations may result in immediate account termination.</p></section><section><h2>6. Promoter Program</h2><p>Promoters may choose one of two plans: <strong>Pay‑Per‑Download (PPD)</strong> or <strong>Pay‑Per‑View (PPV)</strong>. A promoter may select only one plan at a time. Earnings depend on country-specific rates set by MegaBox. Fraudulent activity (fake views, bots, VPN abuse, multi-accounting) will result in permanent banning and forfeiture of earnings. MegaBox may modify or terminate the Promoter Program at any time.</p></section><section><h2>7. Payments & Withdrawals</h2><p>Payments are sent using methods available in the app or dashboard. We may require identity verification for withdrawals. Minimum payout thresholds apply. MegaBox may hold or refuse payment if fraud is suspected.</p></section><section><h2>8. Intellectual Property</h2><p>MegaBox and its logos, branding, and technology are owned by <strong>MegaBox Media Tech LLC</strong> or licensed to us. You retain ownership of your files but grant MegaBox a limited license to store, display, process (thumbnails, previews), and deliver them via sharing links. We do not claim ownership of your content.</p></section><section><h2>9. Link Sharing & Preview Pages</h2><p>Shared MegaBox links may show a preview page with file name, thumbnail, and \"Save\" or \"Play\" buttons. Users must save the file to their MegaBox account before watching/streaming. Users without the app may be redirected to download it. You are responsible for links you share.</p></section><section><h2>10. Fair Usage Policy</h2><p>To protect stability we may enforce bandwidth limits, storage limits, viewing restrictions, and anti‑abuse measures. Excessive or automated usage may result in restrictions or account limits.</p></section><section><h2>11. Termination</h2><p>We may suspend or terminate your account for violations of these Terms, prohibited content, fraud, or abuse of promotions. You may delete your account at any time from your profile settings.</p></section><section><h2>12. Disclaimer of Warranty</h2><p>The Service is provided \"AS IS\" and \"AS AVAILABLE\". We do not guarantee that files will never be lost, that service will be uninterrupted, or that streaming quality will meet all expectations. Use of the service is at your own risk.</p></section><section><h2>13. Limitation of Liability</h2><p>To the maximum extent permitted by U.S. law, MegaBox is not responsible for lost files, lost earnings, or other damages resulting from use of the service. Any dispute is strictly between you and MegaBox Media Tech LLC.</p></section><section><h2>14. Changes to These Terms</h2><p>We may update these Terms at any time. Continued use after updates indicates acceptance of the revised Terms.</p></section><section><h2>15. Contact Information</h2><p><strong>MegaBox Media Tech LLC</strong><br />Email: <a href=\"mailto:support@megaboxapp.com\">support@megaboxapp.com</a><br />United States of America</p></section>",
+    "rewardsEligibilityTitle": "Who is eligible to receive rewards?",
+    "rewardsEligibilityDesc": "To qualify for a reward, you must meet the following conditions:",
+    "rewardsRule1": "You must comply with MegaBox's Terms of Service.",
+    "rewardsRule2": "Your MegaBox account must not be suspended or terminated.",
+    "rewardsRule3": "Your account must have been activated within the last 90 days (for example, you recently logged in or shared new links).",
+    "rewardsRule4": "Both you and the new user you referred have followed and will continue to follow the MegaBox Admin Center rules."
   }
 }

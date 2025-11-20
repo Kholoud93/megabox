@@ -6,12 +6,15 @@ import { FaCheckCircle } from "react-icons/fa";
 import api from "../../services/api";
 import Loading from "../Loading/Loading";
 import { useLanguage } from "../../context/LanguageContext";
+import TermsModal from "../TermsModal/TermsModal";
 import './PartnerCta.scss'
 
 
 export default function PartnerCTA({ isModal = false, onClose }) {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showTermsModal, setShowTermsModal] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState(null);
     const navigate = useNavigate();
     const [cookies] = useCookies(["MegaBox"]);
     const { t } = useLanguage();
@@ -76,6 +79,22 @@ export default function PartnerCTA({ isModal = false, onClose }) {
 
     const handleSubscribe = async (planKey) => {
         if (!cookies.MegaBox) return navigate("/login");
+        
+        // Check if user has already accepted terms
+        const termsAccepted = localStorage.getItem('termsAccepted');
+        
+        if (!termsAccepted) {
+            // Show terms modal first
+            setSelectedPlan(planKey);
+            setShowTermsModal(true);
+            return;
+        }
+        
+        // If terms already accepted, proceed with subscription
+        await proceedWithSubscription(planKey);
+    };
+
+    const proceedWithSubscription = async (planKey) => {
         try {
             const updateData = {
                 isPromoter: "true",
@@ -95,6 +114,12 @@ export default function PartnerCTA({ isModal = false, onClose }) {
         }
     };
 
+    const handleTermsAccept = () => {
+        if (selectedPlan) {
+            proceedWithSubscription(selectedPlan);
+        }
+    };
+
     if (loading && !isModal) {
         return <Loading />;
     }
@@ -102,8 +127,17 @@ export default function PartnerCTA({ isModal = false, onClose }) {
     const hasNoPlans = !userData || (!userData?.watchingplan && !userData?.Downloadsplan);
 
     return (
-        <section className={`partner-cta ${isModal ? 'partner-cta--modal' : ''}`}>
-            <div className="partner-cta__container">
+        <>
+            <TermsModal
+                isOpen={showTermsModal}
+                onClose={() => {
+                    setShowTermsModal(false);
+                    setSelectedPlan(null);
+                }}
+                onAccept={handleTermsAccept}
+            />
+            <section className={`partner-cta ${isModal ? 'partner-cta--modal' : ''}`}>
+                <div className="partner-cta__container">
                 <motion.h2
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -172,5 +206,6 @@ export default function PartnerCTA({ isModal = false, onClose }) {
                 )}
             </div>
         </section>
+        </>
     );
 }
