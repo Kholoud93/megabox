@@ -1,0 +1,164 @@
+@use "../../helpers/functions" as *;
+@use "../../helpers/mixins" as *;
+
+.Feedback {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f7f8fb 0%, #e8ecf1 100%);
+    padding: 160px 0 60px;
+
+    .feedback-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .feedback-header {
+        text-align: center;
+        margin-bottom: 32px;
+
+        &__icon {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 16px;
+
+            svg {
+                width: 64px;
+                height: 64px;
+                padding: 16px;
+                background: #fee2e2;
+                border-radius: 50%;
+                color: #dc2626;
+            }
+        }
+
+        h1 {
+            font-size: 40px;
+            font-weight: 700;
+            color: #111827;
+            margin: 0 0 12px;
+        }
+
+        p {
+            font-size: 22px;
+            color: #6b7280;
+            margin: 0;
+        }
+    }
+
+    .feedback-form {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+
+        &__header {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            padding: 24px 32px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+
+            svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            h2 {
+                font-size: 28px;
+                font-weight: 600;
+                margin: 0;
+            }
+
+            p {
+                font-size: 18px;
+                opacity: 0.9;
+                margin: 4px 0 0;
+            }
+        }
+
+        form {
+            padding: 32px;
+            font-size: 18px;
+
+            label {
+                font-size: 18px !important;
+            }
+
+            input[type="text"],
+            input[type="email"],
+            input[type="url"],
+            input[type="tel"],
+            select,
+            textarea {
+                font-size: 18px !important;
+                &::placeholder {
+                    color: #9ca3af !important;
+                    opacity: 0.6 !important;
+                }
+
+                &:focus::placeholder {
+                    opacity: 0.4 !important;
+                }
+
+                &::-webkit-input-placeholder {
+                    color: #9ca3af !important;
+                    opacity: 0.6 !important;
+                }
+
+                &::-moz-placeholder {
+                    color: #9ca3af !important;
+                    opacity: 0.6 !important;
+                }
+
+                &:-ms-input-placeholder {
+                    color: #9ca3af !important;
+                    opacity: 0.6 !important;
+                }
+
+                &:-moz-placeholder {
+                    color: #9ca3af !important;
+                    opacity: 0.6 !important;
+                }
+            }
+
+            select {
+                font-size: 18px !important;
+                
+                option[value=""] {
+                    color: #9ca3af;
+                }
+            }
+
+            p {
+                font-size: 17px !important;
+            }
+
+            button {
+                font-size: 18px !important;
+            }
+        }
+    }
+
+    // Responsive
+    @include Breakpoints(mobile) {
+        padding: 140px 0 40px;
+
+        .feedback-header {
+            h1 {
+                font-size: 24px;
+            }
+
+            p {
+                font-size: 16px;
+            }
+        }
+
+        .feedback-form {
+            form {
+                padding: 24px 20px;
+            }
+        }
+    }
+}
+

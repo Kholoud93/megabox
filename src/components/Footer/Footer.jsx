@@ -98,9 +98,9 @@ const Footer = () => {
             <Link to={"/copyright-feedback"} className="footer__link block hover:text-white transition-colors duration-200">
               {t("footer.reportIssue")}
             </Link>
-            <a href="mailto:support@megabox.com" className="footer__link block hover:text-white transition-colors duration-200">
+            <Link to="/contact-support" className="footer__link block hover:text-white transition-colors duration-200">
               {t("footer.contactSupport")}
-            </a>
+            </Link>
           </nav>
         </motion.div>
 

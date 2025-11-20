@@ -37,6 +37,7 @@ const Feedback = lazy(() => import('./pages/Feedback/Feedback'))
 const PrivacyPolicy = lazy(() => import('./pages/Privacy/Privacy'))
 const RemovalGuidelines = lazy(() => import('./pages/RemovalPolicy/RemovalPolicy'))
 const Partners = lazy(() => import('./pages/Subscription/Subscription'))
+const Contact = lazy(() => import('./pages/Contact/Contact'))
 
 import Loading from './components/Loading/Loading'
 import SignupForMoney from './pages/Auth/SignupForMoney'
@@ -77,6 +78,9 @@ const router = createBrowserRouter(
         },
         {
           path: "copyright-feedback", element: <Suspense fallback={<Loading />}> <Feedback /></Suspense>
+        },
+        {
+          path: "contact-support", element: <Suspense fallback={<Loading />}> <Contact /></Suspense>
         }
       ]
     }, {
