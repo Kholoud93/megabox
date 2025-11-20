@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FiMoreVertical, FiArchive } from 'react-icons/fi';
 import { HiTrash, HiPencil, HiShare } from "react-icons/hi2";
 import { LuFolder } from "react-icons/lu";
@@ -11,6 +11,21 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive }) =
     const menuRef = useRef(null);
     const buttonRef = useRef(null);
     const { t } = useLanguage();
+    const { pathname } = useLocation();
+    
+    // Determine base path based on current location
+    const getBasePath = () => {
+        if (pathname.startsWith('/Promoter')) {
+            return '/Promoter/file';
+        } else if (pathname.startsWith('/dashboard')) {
+            return '/dashboard/file';
+        } else if (pathname.startsWith('/Owner')) {
+            return '/Owner/file';
+        }
+        return '/dashboard/file'; // Default fallback
+    };
+    
+    const folderPath = `${getBasePath()}/${encodeURIComponent(data?.name || name)}/${data?._id || data?.id}`;
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -59,7 +74,7 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive }) =
 
     return (
         <div className="relative bg-gradient-to-br from-white to-indigo-50 rounded-lg border-2 border-indigo-200 shadow-md hover:shadow-xl transition-all duration-300 hover:border-indigo-400 hover:scale-[1.01] sm:hover:scale-[1.02]" style={{ zIndex: 1 }}>
-            <Link to={`file/${data?.name}/${data?._id}`} className="block">
+            <Link to={folderPath} className="block">
                 <div
                     className="flex items-center p-3 sm:p-4 md:p-5 cursor-pointer group"
                     onClick={() => setOpen(!open)}

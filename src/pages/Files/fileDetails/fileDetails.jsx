@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react'
 import { useCookies } from 'react-cookie';
 import { useQuery } from 'react-query';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { API_URL } from '../../../services/api';
 import { getFileCategory } from '../../../helpers/MimeType';
 import File from '../../../components/File/File';
@@ -22,11 +22,24 @@ import ShareLinkModal from '../../../components/ShareLinkModal/ShareLinkModal';
 
 export default function fileDetails() {
     const { t, language } = useLanguage();
+    const { pathname } = useLocation();
 
     const Active = "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
     const InActive = "inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-700 bg-white border border-indigo-300 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
 
     const { fileId, fileName } = useParams();
+    
+    // Determine back path based on current location
+    const getBackPath = () => {
+        if (pathname.startsWith('/Promoter')) {
+            return '/Promoter/files';
+        } else if (pathname.startsWith('/dashboard')) {
+            return '/dashboard';
+        } else if (pathname.startsWith('/Owner')) {
+            return '/Owner';
+        }
+        return '/dashboard'; // Default fallback
+    };
     const [FilterKey, setFilterKey] = useState('All');
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
     const [Token] = useCookies(['MegaBox']);
@@ -160,10 +173,10 @@ export default function fileDetails() {
             <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg border-b border-indigo-400">
                 <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
                     <div className="py-4 sm:py-5 md:py-6">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
                             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
                                 <Link
-                                    to="/dashboard"
+                                    to={getBackPath()}
                                     className="inline-flex items-center px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2 flex-shrink-0"
                                     style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                 >
