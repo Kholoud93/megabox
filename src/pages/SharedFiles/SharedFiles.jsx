@@ -9,7 +9,7 @@ import File from '../../components/File/File';
 import Represents from '../../components/Represents/Represents';
 import EmptyState from '../../components/EmptyState/EmptyState';
 import { HiViewGrid, HiViewList } from "react-icons/hi";
-import { FaShare, FaFolder } from 'react-icons/fa';
+import { FaShare, FaFolder, FaLink, FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import './SharedFiles.scss';
 
 export default function SharedFiles() {
@@ -102,128 +102,114 @@ export default function SharedFiles() {
         { key: "zip", label: t("files.zipFolders"), count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'zip')?.length || 0 },
     ];
 
+    // Get shared links data for table
+    const sharedLinksData = data?.files?.map(file => ({
+        id: file._id || file.id,
+        creationTime: file.createdAt || file.uploadDate || new Date().toISOString(),
+        link: file.shareLink || file.shareUrl || '',
+        totalInstall: file.totalInstalls || file.installs || 0
+    })) || [];
+
+    // Sort by total install (descending) and take top 10
+    const topSharedLinks = [...sharedLinksData]
+        .sort((a, b) => b.totalInstall - a.totalInstall)
+        .slice(0, 10);
+
     return (
         <>
             <div className="min-h-screen bg-indigo-50 shared-files-page" style={{ fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" }}>
                 <div className="shared-files-page__wrapper">
-                    {/* Header Card */}
+                    {/* Header Section */}
                     <motion.div
                         className="shared-files-header"
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <div className="shared-files-header__content">
-                            <FaShare className="shared-files-header__icon" />
-                            <div>
-                                <h1 className="shared-files-header__title">{t("sharedFiles.title")}</h1>
-                                <p className="shared-files-header__subtitle">
-                                    {filesLoading ? t("sharedFiles.loadingFiles") : `${filteredFiles.length} ${t("sharedFiles.filesCount")}`}
-                                </p>
-                            </div>
-                        </div>
+                        <h1 className="shared-files-header__title">{t("linkDataSection.title") || "Shared link"}</h1>
+                        <p className="shared-files-header__description">
+                            {t("linkDataSection.top10Description") || "Only display the top 10 items with the highest number of views"}
+                        </p>
+                        <p className="shared-files-header__note">
+                            {t("linkDataSection.startDate") || "Shared links start counting from May 13, 2024."}
+                        </p>
                     </motion.div>
 
-                    {/* View Mode Toggle */}
-                    <div className="shared-files-controls">
-                        <div className="view-mode-toggle">
-                            <span className="view-mode-toggle__label">{t("files.view")}</span>
-                            <button
-                                onClick={() => setViewMode('grid')}
-                                className={`view-mode-toggle__btn ${viewMode === 'grid' ? 'active' : ''}`}
-                            >
-                                <HiViewGrid />
-                            </button>
-                            <button
-                                onClick={() => setViewMode('list')}
-                                className={`view-mode-toggle__btn ${viewMode === 'list' ? 'active' : ''}`}
-                            >
-                                <HiViewList />
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Filter Tabs */}
-                    <div className="shared-files-filters">
-                        {filterOptions.map((option) => (
-                            <button
-                                key={option.key}
-                                onClick={() => SelectFilter(option.key)}
-                                className={`filter-btn ${FilterKey === option.key ? 'active' : ''}`}
-                            >
-                                <span>{option.label}</span>
-                                <span className="filter-btn__count">{option.count}</span>
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Shared Folders Section */}
-                    {sharedFoldersData?.folders && sharedFoldersData.folders.length > 0 && (
-                        <motion.div
-                            className="shared-folders-section"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                        >
-                            <h2 className="shared-folders-section__title">
-                                <FaFolder className="shared-folders-section__icon" />
-                                {t("sharedFiles.sharedFolders") || "Shared Folders"}
-                            </h2>
-                            <div className="shared-folders-grid">
-                                {sharedFoldersData.folders.map((folder, index) => (
-                                    <motion.div
-                                        key={folder._id || folder.id || `folder-${index}`}
-                                        className="shared-folder-card"
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ delay: index * 0.05 }}
-                                    >
-                                        <FaFolder className="shared-folder-card__icon" />
-                                        <h3 className="shared-folder-card__name">{folder.name || folder.folderName || "Untitled Folder"}</h3>
-                                        <p className="shared-folder-card__count">
-                                            {folder.files?.length || 0} {t("sharedFiles.files") || "files"}
-                                        </p>
-                                    </motion.div>
-                                ))}
-                            </div>
-                        </motion.div>
-                    )}
-
-                    {/* Files Grid/List */}
+                    {/* Shared Links Table */}
                     {filesLoading ? (
-                        <div className={`shared-files-grid ${viewMode === 'grid' ? 'grid' : 'list'}`}>
-                            {[...Array(6)].map((_, i) => (
-                                <div key={i} className="animate-pulse">
-                                    <div className="bg-gray-200 rounded-lg h-24 sm:h-28 md:h-32"></div>
-                                    <div className="mt-2 sm:mt-3 bg-gray-200 rounded h-3 sm:h-4 w-3/4"></div>
+                        <div className="shared-links-table-loading">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={i} className="loading-row">
+                                    <div className="loading-cell"></div>
+                                    <div className="loading-cell"></div>
+                                    <div className="loading-cell"></div>
                                 </div>
                             ))}
                         </div>
-                    ) : filteredFiles.length === 0 ? (
+                    ) : topSharedLinks.length === 0 ? (
                         <EmptyState
-                            icon={FaShare}
-                            title={t("sharedFiles.noFilesFound")}
-                            message={t("sharedFiles.noFilesMessage")}
+                            icon={FaLink}
+                            title={t("linkDataSection.noData") || "No shared links"}
+                            message={t("linkDataSection.noDataMessage") || "You haven't shared any links yet"}
                             buttonText={t("sharedFiles.goToFiles")}
                             buttonLink="/dashboard"
                         />
                     ) : (
                         <motion.div
-                            className={`shared-files-grid ${viewMode === 'grid' ? 'grid' : 'list'}`}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.3 }}
+                            className="shared-links-table-container"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
                         >
-                            {filteredFiles.map((ele, index) => (
-                                <File
-                                    key={ele?._id || ele?.id || `file-${index}`}
-                                    Type={getFileCategory(ele?.fileType)}
-                                    data={ele}
-                                    Representation={Representation}
-                                    refetch={refetch}
-                                    viewMode={viewMode}
-                                />
-                            ))}
+                            <table className="shared-links-table">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <div className="table-header-sortable">
+                                                {t("linkDataSection.creationTime") || "Creation time"}
+                                                <div className="sort-icons">
+                                                    <FaArrowUp className="sort-icon" />
+                                                    <FaArrowDown className="sort-icon" />
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th>{t("linkDataSection.link") || "Link"}</th>
+                                        <th>
+                                            <div className="table-header-sortable">
+                                                {t("linkDataSection.totalInstall") || "Total install"}
+                                                <div className="sort-icons">
+                                                    <FaArrowUp className="sort-icon" />
+                                                    <FaArrowDown className="sort-icon" />
+                                                </div>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {topSharedLinks.map((link, index) => (
+                                        <motion.tr
+                                            key={link.id}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ delay: index * 0.05 }}
+                                            className="shared-links-table__row"
+                                        >
+                                            <td>
+                                                {new Date(link.creationTime).toLocaleDateString('en-CA')}
+                                            </td>
+                                            <td>
+                                                <div className="link-cell">
+                                                    <FaLink className="link-icon" />
+                                                    <span className="link-text" title={link.link}>
+                                                        {link.link.length > 30 ? `${link.link.substring(0, 30)}...` : link.link}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td>{link.totalInstall}</td>
+                                        </motion.tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </motion.div>
                     )}
                 </div>

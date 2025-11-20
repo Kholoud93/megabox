@@ -180,6 +180,16 @@
     "earnings": "الأرباح",
     "sharedFiles": "الملفات المشتركة",
     "linkData": "بيانات الروابط",
+    "linkDataSection": {
+      "title": "الرابط المشترك",
+      "top10Description": "عرض أفضل 10 عناصر فقط بأعلى عدد من المشاهدات",
+      "startDate": "بدأت الروابط المشتركة في العد من 13 مايو 2024.",
+      "creationTime": "وقت الإنشاء",
+      "link": "الرابط",
+      "totalInstall": "إجمالي التثبيت",
+      "noData": "لا توجد روابط مشتركة",
+      "noDataMessage": "لم تشارك أي روابط بعد"
+    },
     "revenueData": "بيانات الإيرادات",
     "withdraw": "سحب",
     "referral": "الإحالة",
@@ -382,7 +392,19 @@
     "noDataMessage": "لا توجد بيانات إيرادات متاحة بعد",
     "fetchError": "فشل تحميل بيانات الإيرادات. يرجى المحاولة مرة أخرى لاحقاً.",
     "errorTitle": "خطأ في تحميل بيانات الإيرادات",
-    "errorMessage": "تعذر تحميل بيانات الإيرادات. يرجى المحاولة مرة أخرى لاحقاً."
+    "errorMessage": "تعذر تحميل بيانات الإيرادات. يرجى المحاولة مرة أخرى لاحقاً.",
+    "referralIncomeTitle": "10% من إيرادات الإحالة",
+    "cpi": "cpi / USD",
+    "install": "التثبيت",
+    "referralRevenue": "إيرادات الإحالة",
+    "botInfo": "معلومات البوت",
+    "earning": "الأرباح",
+    "withdrawable": "القابل للسحب",
+    "estimatedIncome": "الدخل المقدر",
+    "actualIncome": "الدخل الفعلي",
+    "withdraw": "سحب",
+    "revenue": "الإيرادات",
+    "congratulationsMessage": "تهانينا للمستخدم S***H لسحبه 23.85 دولار!"
   },
   "referral": {
     "bannerTitle": "اكسب المال من خلال إحالة الأصدقاء!",

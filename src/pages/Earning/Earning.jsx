@@ -4,8 +4,9 @@ import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    FaGlobe, FaTimes, FaEye, FaDownload, FaLink, FaMoneyBillWave, FaChartLine
+    FaGlobe, FaTimes, FaEye, FaDownload, FaLink, FaMoneyBillWave, FaChartLine, FaDollarSign
 } from 'react-icons/fa';
+import { HiArrowRight } from 'react-icons/hi2';
 import { API_URL, userService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { toast } from 'react-toastify';
@@ -772,15 +773,11 @@ export default function Earning() {
 
     const isLoading = earningsLoading || analyticsLoading || shareLinksLoading;
 
-    const totalEarnings = earningsData?.totalEarnings || MOCK_EARNINGS_DATA.totalEarnings;
-    const withdrawable = earningsData?.withdrawable || earningsData?.totalEarnings || MOCK_EARNINGS_DATA.withdrawable;
-    const estimatedIncome = earningsData?.estimatedIncome || earningsData?.pendingRewards || MOCK_EARNINGS_DATA.estimatedIncome;
-    const actualIncome = earningsData?.actualIncome || earningsData?.confirmedRewards || earningsData?.totalEarnings || MOCK_EARNINGS_DATA.actualIncome;
-    const currency = earningsData?.currency || MOCK_EARNINGS_DATA.currency;
-    const totalViews = analyticsData?.totalAnalytics?.totalViews || MOCK_ANALYTICS_DATA.totalAnalytics.totalViews;
-    const totalDownloads = analyticsData?.totalAnalytics?.totalDownloads || MOCK_ANALYTICS_DATA.totalAnalytics.totalDownloads;
-    const files = shareLinksData?.analytics || MOCK_SHARE_LINKS_DATA.analytics;
-    const totalLinks = files.length;
+    // Remove placeholder values - only show labels
+    const currency = earningsData?.currency || MOCK_EARNINGS_DATA.currency || 'USD';
+    const amount = earningsData?.actualIncome || earningsData?.confirmedRewards || ''; // No placeholder
+    const review = earningsData?.estimatedIncome || earningsData?.pendingRewards || ''; // No placeholder
+    const withdrawn = earningsData?.withdrawn || ''; // No placeholder
 
     // Fetch user data to check if user has a plan
     const { data: userData } = useQuery(
@@ -789,6 +786,9 @@ export default function Earning() {
         { enabled: !!token, retry: false }
     );
 
+    const [withdrawalAmount, setWithdrawalAmount] = useState('');
+    const [paymentMethod, setPaymentMethod] = useState('');
+    const [whatsappTelegram, setWhatsappTelegram] = useState('');
 
     return (
         <motion.div
@@ -801,74 +801,129 @@ export default function Earning() {
                 ease: [0.25, 0.46, 0.45, 0.94]
             }}
         >
-            {/* Header */}
-            <motion.div
-                className="page-header"
-                initial={{ opacity: 0, y: -40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                    duration: 0.8,
-                    delay: 0.1,
-                    ease: [0.25, 0.46, 0.45, 0.94]
-                }}
-            >
-                <h1>{t('earning.analyticsDashboard')}</h1>
-                <p>{t('earning.trackPerformance')}</p>
-            </motion.div>
-
             <div className="earning-container__wrapper">
-                {/* Stats Dashboard */}
-                {isLoading ? (
-                    <LoadingSkeleton />
-                ) : (
+                {/* Account Summary Cards */}
+                <motion.div
+                    className="withdraw-summary-cards"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                >
                     <motion.div
-                        className="earning-stats"
-                        variants={containerVariants}
+                        className="withdraw-summary-card withdraw-summary-card--amount"
+                        variants={cardVariants}
                         initial="hidden"
                         animate="visible"
                     >
-                        <StatCard
-                            label={t('earning.totalViews')}
-                            value={totalViews}
-                            icon={<FaEye />}
-                            color="#6366f1"
-                            index={0}
-                            onClick={() => setSelectedStat('views')}
-                        />
-                        <StatCard
-                            label={t('earning.totalDownloads')}
-                            value={totalDownloads}
-                            icon={<FaDownload />}
-                            color="#6366f1"
-                            index={1}
-                            onClick={() => setSelectedStat('downloads')}
-                        />
-                        <StatCard
-                            label={t('earning.totalLinks')}
-                            value={totalLinks}
-                            icon={<FaLink />}
-                            color="#6366f1"
-                            index={2}
-                            onClick={() => setSelectedStat('links')}
-                        />
-                        <StatCard
-                            label={t('earning.totalEarnings')}
-                            value={`${totalEarnings} ${currency}`}
-                            icon={<FaMoneyBillWave />}
-                            color="#4f46e5"
-                            index={3}
-                            onClick={() => setSelectedStat('totalEarnings')}
-                        />
+                        <div className="withdraw-summary-card__icon">
+                            <FaDollarSign />
+                        </div>
+                        <div className="withdraw-summary-card__content">
+                            <div className="withdraw-summary-card__label">{t('withdrawSection.amount') || 'Amount'}</div>
+                            <div className="withdraw-summary-card__value">
+                                {amount ? `${amount} ${currency}` : '-'}
+                            </div>
+                        </div>
                     </motion.div>
-                )}
 
-                {/* Shared Links Table */}
-                <SharedLinksTable
-                    files={files}
-                    isLoading={isLoading}
-                    t={t}
-                />
+                    <motion.div
+                        className="withdraw-summary-card withdraw-summary-card--review"
+                        variants={cardVariants}
+                        initial="hidden"
+                        animate="visible"
+                    >
+                        <div className="withdraw-summary-card__icon">
+                            <FaDollarSign />
+                        </div>
+                        <div className="withdraw-summary-card__content">
+                            <div className="withdraw-summary-card__label">{t('withdrawSection.review') || 'Review'}</div>
+                            <div className="withdraw-summary-card__value">
+                                {review ? `${review} ${currency}` : '-'}
+                            </div>
+                        </div>
+                    </motion.div>
 
+                    <motion.div
+                        className="withdraw-summary-card withdraw-summary-card--withdrawn"
+                        variants={cardVariants}
+                        initial="hidden"
+                        animate="visible"
+                    >
+                        <div className="withdraw-summary-card__icon">
+                            <FaDollarSign />
+                        </div>
+                        <div className="withdraw-summary-card__content">
+                            <div className="withdraw-summary-card__label">{t('withdrawSection.withdrawn') || 'Withdrawn'}</div>
+                            <div className="withdraw-summary-card__value">
+                                {withdrawn ? `${withdrawn} ${currency}` : '-'}
+                            </div>
+                        </div>
+                    </motion.div>
+                </motion.div>
+
+                {/* Apply Section */}
+                <motion.div
+                    className="withdraw-apply-section"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                >
+                    <div className="withdraw-apply-section__header">
+                        <h2 className="withdraw-apply-section__title">{t('withdrawSection.apply') || 'Apply'}</h2>
+                        <a href="#" className="withdraw-apply-section__link">
+                            {t('withdrawSection.record') || 'Record'} <HiArrowRight />
+                        </a>
+                    </div>
+
+                    <div className="withdraw-apply-form">
+                        <div className="withdraw-form-group">
+                            <label className="withdraw-form-label">
+                                * {t('withdrawSection.withdrawalAmount') || 'Withdrawal amount'}
+                            </label>
+                            <input
+                                type="text"
+                                className="withdraw-form-input"
+                                placeholder={t('withdrawSection.withdrawalAmountPlaceholder') || 'Please enter the requested cash withdrawal amount'}
+                                value={withdrawalAmount}
+                                onChange={(e) => setWithdrawalAmount(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="withdraw-form-group">
+                            <label className="withdraw-form-label">
+                                * {t('withdrawSection.paymentMethod') || 'Payment method'}
+                            </label>
+                            <input
+                                type="text"
+                                className="withdraw-form-input"
+                                placeholder={t('withdrawSection.paymentMethodPlaceholder') || 'Please enter the payment method'}
+                                value={paymentMethod}
+                                onChange={(e) => setPaymentMethod(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="withdraw-form-group">
+                            <label className="withdraw-form-label">
+                                * {t('withdrawSection.whatsappTelegram') || 'WhatsApp/Telegram accounts'}
+                            </label>
+                            <div className="withdraw-form-input-wrapper">
+                                <input
+                                    type="text"
+                                    className="withdraw-form-input"
+                                    placeholder={t('withdrawSection.whatsappTelegramPlaceholder') || 'Please enter the whatsapp/telegram accounts'}
+                                    value={whatsappTelegram}
+                                    onChange={(e) => setWhatsappTelegram(e.target.value)}
+                                    maxLength={50}
+                                />
+                                <span className="withdraw-form-char-count">{whatsappTelegram.length}/50</span>
+                            </div>
+                        </div>
+
+                        <button className="withdraw-submit-button">
+                            {t('withdrawSection.withdraw') || 'Withdraw'}
+                        </button>
+                    </div>
+                </motion.div>
             </div>
 
             {/* Stat Detail Modal */}

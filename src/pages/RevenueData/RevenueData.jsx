@@ -1,203 +1,166 @@
 import React, { useState } from 'react';
-import { useQuery } from 'react-query';
-import { useCookies } from 'react-cookie';
-import { motion } from 'framer-motion';
-import { API_URL } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
-import EmptyState from '../../components/EmptyState/EmptyState';
-import { FaChartLine, FaDollarSign, FaDownload, FaUsers } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import { ToastOptions } from '../../helpers/ToastOptions';
+import { motion } from 'framer-motion';
+import { FaQuestionCircle, FaBullhorn, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import { HiArrowRight } from 'react-icons/hi2';
+import { Link } from 'react-router-dom';
 import './RevenueData.scss';
-
-const REVENUE_URL = `${API_URL}/auth/getUserRevenue`;
-
-const USE_MOCK_DATA = false; // Use real API data
 
 export default function RevenueData() {
     const { t } = useLanguage();
-    const [cookies] = useCookies(['MegaBox']);
-    const token = cookies.MegaBox;
-    const [selectedTab, setSelectedTab] = useState('all'); // all, estimated, settled
+    const [userId] = useState('1752693445887135746'); // Default user ID
 
-    // Fetch revenue data
-    const { data: revenueData, isLoading, error: revenueError } = useQuery(
-        ['userRevenue'],
-        async () => {
-            const res = await fetch(REVENUE_URL, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}));
-                throw new Error(errorData.message || `Failed to fetch revenue data: ${res.status}`);
-            }
-            return res.json();
-        },
-        {
-            enabled: !!token,
-            retry: 2,
-            onError: (error) => {
-                console.error('Error fetching revenue data:', error);
-                toast.error(error.message || t('revenueData.fetchError'), ToastOptions("error"));
-            }
-        }
-    );
-
-    // Extract data
-    const revenueList = revenueData?.revenue || revenueData?.data || [];
-    const currency = revenueData?.currency || 'USD';
-    const estimatedRevenue = revenueData?.estimatedRevenue || [];
-    const settledRevenue = revenueData?.settledRevenue || [];
-
-    // Filter data based on selected tab
-    const filteredData = selectedTab === 'estimated'
-        ? estimatedRevenue
-        : selectedTab === 'settled'
-            ? settledRevenue
-            : revenueList;
-
-    // Calculate totals
-    const totalRevenue = filteredData?.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0) || 0;
-    const totalInstallRevenue = filteredData?.reduce((sum, item) => sum + (parseFloat(item.installRevenue) || 0), 0) || 0;
+    // Default values (no API) - removed placeholder numbers
+    const currency = 'USD';
 
     return (
         <div className="revenue-data-page">
             <div className="revenue-data-page__wrapper">
-                {/* Header */}
+                {/* Referral Income Section */}
                 <motion.div
-                    className="revenue-data-header"
+                    className="revenue-referral-section"
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <div className="revenue-data-header__content">
-                        <FaChartLine className="revenue-data-header__icon" />
-                        <div>
-                            <h1 className="revenue-data-header__title">{t('revenueData.title')}</h1>
-                            <p className="revenue-data-header__subtitle">{t('revenueData.subtitle')}</p>
+                    <div className="revenue-referral-section__content">
+                        <div className="revenue-referral-section__text">
+                            <p className="revenue-referral-section__title">
+                                {t('revenueData.referralIncomeTitle') || '10% of referral income'}
+                            </p>
+                            <Link 
+                                to="/dashboard/referral"
+                                className="revenue-referral-section__button"
+                            >
+                                {t('referral.getReferralLink') || 'Get Referral Link'}
+                            </Link>
+                        </div>
+                        <div className="revenue-referral-section__decorations">
+                            <div className="revenue-referral-section__arrow"></div>
+                            <div className="revenue-referral-section__coins"></div>
                         </div>
                     </div>
                 </motion.div>
 
-                {/* Summary Cards */}
-                <div className="revenue-summary">
-                    <motion.div
-                        className="revenue-summary__card"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 }}
-                    >
-                        <FaDollarSign className="revenue-summary__icon" />
-                        <div className="revenue-summary__content">
-                            <div className="revenue-summary__label">{t('revenueData.totalRevenue')}</div>
-                            <div className="revenue-summary__value">{totalRevenue.toFixed(4)} {currency}</div>
-                        </div>
-                    </motion.div>
-
-                    <motion.div
-                        className="revenue-summary__card"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 }}
-                    >
-                        <FaDownload className="revenue-summary__icon" />
-                        <div className="revenue-summary__content">
-                            <div className="revenue-summary__label">{t('revenueData.totalInstallRevenue')}</div>
-                            <div className="revenue-summary__value">{totalInstallRevenue.toFixed(4)} {currency}</div>
-                        </div>
-                    </motion.div>
-                </div>
-
-                {/* Tabs */}
-                <div className="revenue-tabs">
-                    <button
-                        className={`revenue-tabs__tab ${selectedTab === 'all' ? 'active' : ''}`}
-                        onClick={() => setSelectedTab('all')}
-                    >
-                        {t('revenueData.all')}
-                    </button>
-                    <button
-                        className={`revenue-tabs__tab ${selectedTab === 'estimated' ? 'active' : ''}`}
-                        onClick={() => setSelectedTab('estimated')}
-                    >
-                        {t('revenueData.estimated')}
-                    </button>
-                    <button
-                        className={`revenue-tabs__tab ${selectedTab === 'settled' ? 'active' : ''}`}
-                        onClick={() => setSelectedTab('settled')}
-                    >
-                        {t('revenueData.settled')}
-                    </button>
-                </div>
-
-                {/* Revenue Table */}
-                {isLoading ? (
-                    <div className="revenue-table">
-                        <div className="revenue-table__skeleton">
-                            {[...Array(5)].map((_, i) => (
-                                <div key={i} className="skeleton-row">
-                                    <div className="skeleton-cell"></div>
-                                    <div className="skeleton-cell"></div>
-                                    <div className="skeleton-cell"></div>
+                {/* Earning Section */}
+                <motion.div
+                    className="revenue-earning-section"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                >
+                    <div className="revenue-earning-section__header">
+                        <h2 className="revenue-earning-section__title">{t('revenueData.earning') || 'Earning'}</h2>
+                        <span className="revenue-earning-section__id">{userId}</span>
+                    </div>
+                    
+                    <div className="revenue-earning-card">
+                        <div className="revenue-earning-card__top">
+                            <div className="revenue-earning-card__item">
+                                <div className="revenue-earning-card__label">
+                                    {t('revenueData.withdrawable') || 'Withdrawable'} / {currency}
+                                    <FaQuestionCircle className="revenue-earning-card__help-icon" />
                                 </div>
-                            ))}
+                                <div className="revenue-earning-card__value revenue-earning-card__value--large">
+                                    {/* Value removed - placeholder */}
+                                </div>
+                            </div>
+                            <Link 
+                                to="/dashboard/Earnings"
+                                className="revenue-earning-card__withdraw-button"
+                            >
+                                {t('revenueData.withdraw') || 'Withdraw'}
+                            </Link>
+                        </div>
+                        
+                        <div className="revenue-earning-card__bottom">
+                            <div className="revenue-earning-card__item">
+                                <div className="revenue-earning-card__label">
+                                    {t('revenueData.estimatedIncome') || 'Estimated income'} / {currency}
+                                    <FaQuestionCircle className="revenue-earning-card__help-icon" />
+                                </div>
+                                <div className="revenue-earning-card__value">
+                                    {/* Value removed - placeholder */}
+                                </div>
+                            </div>
+                            
+                            <div className="revenue-earning-card__item">
+                                <div className="revenue-earning-card__label">
+                                    {t('revenueData.actualIncome') || 'Actual income'} / {currency}
+                                    <FaQuestionCircle className="revenue-earning-card__help-icon" />
+                                </div>
+                                <div className="revenue-earning-card__value">
+                                    {/* Value removed - placeholder */}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="revenue-earning-card__background">
+                            <span className="revenue-earning-card__dollar-sign">$</span>
                         </div>
                     </div>
-                ) : revenueError ? (
-                    <EmptyState
-                        icon={FaChartLine}
-                        title={t('revenueData.errorTitle')}
-                        message={revenueError.message || t('revenueData.errorMessage')}
-                    />
-                ) : (
-                    <motion.div
-                        className="revenue-table"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                    >
-                        <div className="revenue-table__container">
-                            <table className="revenue-table__table">
-                                <thead>
-                                    <tr>
-                                        <th>{t('revenueData.date')}</th>
-                                        <th>{t('revenueData.total')}</th>
-                                        <th>{t('revenueData.installRevenue')}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredData && filteredData.length > 0 ? (
-                                        filteredData.map((item, index) => (
-                                            <motion.tr
-                                                key={index}
-                                                className="revenue-table__row"
-                                                initial={{ opacity: 0, x: -20 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: index * 0.05 }}
-                                            >
-                                                <td>
-                                                    {item.date || item.dateUTC
-                                                        ? new Date(item.date || item.dateUTC).toLocaleDateString()
-                                                        : '-'}
-                                                </td>
-                                                <td>{parseFloat(item.total || 0).toFixed(4)} {currency}</td>
-                                                <td>{parseFloat(item.installRevenue || 0).toFixed(4)} {currency}</td>
-                                            </motion.tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="3" style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
-                                                {t('revenueData.noDataMessage') || 'No data available'}
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
-                    </motion.div>
-                )}
+                </motion.div>
+
+                {/* Revenue Notification Section */}
+                <motion.div
+                    className="revenue-notification-section"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                >
+                    <h2 className="revenue-notification-section__title">{t('revenueData.revenue') || 'Revenue'}</h2>
+                    <div className="revenue-notification">
+                        <FaBullhorn className="revenue-notification__icon" />
+                        <p className="revenue-notification__text">
+                            {t('revenueData.congratulationsMessage') || 'Congratulations to user S***H for withdrawing 23.85 USD!'}
+                        </p>
+                    </div>
+                </motion.div>
+
+                {/* Revenue Table Section */}
+                <motion.div
+                    className="revenue-table-section"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                >
+                    <div className="revenue-table-container">
+                        <table className="revenue-table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <div className="table-header-sortable">
+                                            {t('revenueData.cpi') || 'cpi / USD'}
+                                            <div className="sort-icons">
+                                                <FaArrowUp className="sort-icon" />
+                                                <FaArrowDown className="sort-icon" />
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className="table-header-sortable">
+                                            {t('revenueData.install') || 'Install'}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className="table-header-sortable">
+                                            {t('revenueData.referralRevenue') || 'Referral revenue'}
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {/* Empty rows - no placeholder data */}
+                                <tr>
+                                    <td>-</td>
+                                    <td>-</td>
+                                    <td>-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </motion.div>
             </div>
         </div>
     );
 }
-

@@ -23,30 +23,42 @@
     padding: 1.5rem 2rem;
     margin-bottom: 1.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--color-indigo-200);
 
-    &__content {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    &__icon {
-        width: 48px;
-        height: 48px;
-        color: var(--color-indigo-600);
-        flex-shrink: 0;
+    @include mix.media-breakpoint-down(md) {
+        padding: 1.25rem 1.5rem;
+        border-radius: 0.875rem;
     }
 
     &__title {
-        font-size: vars.$text-2xl;
+        font-size: 1.5rem;
         font-weight: 700;
         color: var(--color-indigo-900);
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.75rem;
+
+        @include mix.media-breakpoint-down(md) {
+            font-size: 1.25rem;
+        }
     }
 
-    &__subtitle {
-        font-size: vars.$text-sm;
+    &__description {
+        font-size: 0.9375rem;
+        color: var(--color-indigo-700);
+        margin-bottom: 0.5rem;
+
+        @include mix.media-breakpoint-down(md) {
+            font-size: 0.875rem;
+        }
+    }
+
+    &__note {
+        font-size: 0.875rem;
         color: var(--color-indigo-600);
+        margin: 0;
+
+        @include mix.media-breakpoint-down(md) {
+            font-size: 0.8125rem;
+        }
     }
 }
 
@@ -235,5 +247,146 @@
     &__count {
         font-size: vars.$text-sm;
         color: var(--color-indigo-600);
+    }
+}
+
+// Shared Links Table
+.shared-links-table-container {
+    background: white;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--color-indigo-200);
+
+    @include mix.media-breakpoint-down(md) {
+        border-radius: 0.875rem;
+        overflow-x: auto;
+    }
+}
+
+.shared-links-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+        background: var(--color-indigo-50);
+    }
+
+    th {
+        padding: 1rem;
+        text-align: left;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--color-indigo-900);
+        border-bottom: 2px solid var(--color-indigo-200);
+
+        @include mix.media-breakpoint-down(md) {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.8125rem;
+        }
+    }
+
+    td {
+        padding: 1rem;
+        text-align: left;
+        font-size: 0.875rem;
+        color: var(--color-indigo-700);
+        border-bottom: 1px solid var(--color-indigo-100);
+
+        @include mix.media-breakpoint-down(md) {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.8125rem;
+        }
+    }
+
+    tbody tr {
+        transition: background-color 0.2s;
+
+        &:hover {
+            background: var(--color-indigo-50);
+        }
+
+        &:last-child td {
+            border-bottom: none;
+        }
+    }
+}
+
+.table-header-sortable {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+
+    .sort-icons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.125rem;
+        margin-left: auto;
+    }
+
+    .sort-icon {
+        width: 10px;
+        height: 10px;
+        color: var(--color-indigo-400);
+        transition: color 0.2s;
+
+        &:hover {
+            color: var(--color-indigo-600);
+        }
+    }
+}
+
+.link-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .link-icon {
+        width: 16px;
+        height: 16px;
+        color: var(--color-indigo-600);
+        flex-shrink: 0;
+    }
+
+    .link-text {
+        color: var(--color-indigo-700);
+        word-break: break-all;
+    }
+}
+
+.shared-links-table-loading {
+    background: white;
+    border-radius: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--color-indigo-200);
+
+    .loading-row {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--color-indigo-100);
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    .loading-cell {
+        flex: 1;
+        height: 20px;
+        background: var(--color-indigo-100);
+        border-radius: 0.25rem;
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
     }
 }

@@ -43,25 +43,80 @@ export default function Files() {
     // Calculate dropdown position and close when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+            if (
+                profileMenuRef.current && 
+                !profileMenuRef.current.contains(event.target) &&
+                profileButtonRef.current &&
+                !profileButtonRef.current.contains(event.target)
+            ) {
+                setProfileMenuOpen(false);
+            }
+        };
+        
+        const handleTouchOutside = (event) => {
+            if (
+                profileMenuRef.current && 
+                !profileMenuRef.current.contains(event.target) &&
+                profileButtonRef.current &&
+                !profileButtonRef.current.contains(event.target)
+            ) {
                 setProfileMenuOpen(false);
             }
         };
         
         if (profileMenuOpen && profileButtonRef.current) {
-            const rect = profileButtonRef.current.getBoundingClientRect();
-            setDropdownPosition({
-                top: rect.bottom + 8,
-                right: window.innerWidth - rect.right,
-                left: rect.left
-            });
-            document.addEventListener('mousedown', handleClickOutside);
+            // Use setTimeout to ensure DOM is updated
+            setTimeout(() => {
+                if (profileButtonRef.current) {
+                    const rect = profileButtonRef.current.getBoundingClientRect();
+                    const viewportHeight = window.innerHeight;
+                    const viewportWidth = window.innerWidth;
+                    const dropdownHeight = 250;
+                    const dropdownWidth = 200;
+                    const bottomNavHeight = 80;
+                    
+                    // Calculate position - prefer above if not enough space below
+                    let top = rect.bottom + 8;
+                    let right = viewportWidth - rect.right;
+                    let left = rect.left;
+                    
+                    // If dropdown would go below viewport, show it above
+                    if (top + dropdownHeight > viewportHeight - bottomNavHeight) {
+                        top = rect.top - dropdownHeight - 8;
+                    }
+                    
+                    // Adjust horizontal position for RTL and to prevent overflow
+                    if (language === 'ar') {
+                        if (left + dropdownWidth > viewportWidth) {
+                            left = viewportWidth - dropdownWidth - 16;
+                        }
+                    } else {
+                        if (right + dropdownWidth > viewportWidth) {
+                            right = 16;
+                        }
+                    }
+                    
+                    setDropdownPosition({
+                        top: Math.max(8, top),
+                        right: right,
+                        left: left
+                    });
+                }
+            }, 0);
+            
+            // Add both mouse and touch event listeners for responsive screens
+            // Use capture phase to catch events earlier
+            document.addEventListener('mousedown', handleClickOutside, true);
+            document.addEventListener('touchstart', handleTouchOutside, true);
+            document.addEventListener('click', handleClickOutside, true);
         }
         
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('mousedown', handleClickOutside, true);
+            document.removeEventListener('touchstart', handleTouchOutside, true);
+            document.removeEventListener('click', handleClickOutside, true);
         };
-    }, [profileMenuOpen]);
+    }, [profileMenuOpen, language]);
 
     const Active = "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
     const InActive = "inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-700 bg-white border border-indigo-300 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
@@ -367,7 +422,20 @@ export default function Files() {
                                 <button
                                     ref={profileButtonRef}
                                     className="files-header__profile-button"
-                                    onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setProfileMenuOpen(!profileMenuOpen);
+                                    }}
+                                    onTouchStart={(e) => {
+                                        e.stopPropagation();
+                                    }}
+                                    onTouchEnd={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setProfileMenuOpen(!profileMenuOpen);
+                                    }}
                                 >
                                     {userData?.profilePic && typeof userData.profilePic === 'string' && userData.profilePic.trim() !== '' && !profileImageError ? (
                                         <img
@@ -391,13 +459,29 @@ export default function Files() {
                                             top: `${dropdownPosition.top}px`,
                                             right: language === 'ar' ? 'auto' : `${dropdownPosition.right}px`,
                                             left: language === 'ar' ? `${dropdownPosition.left}px` : 'auto',
-                                            zIndex: 10000
+                                            zIndex: window.innerWidth < 768 ? 10002 : 10001
+                                        }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                        }}
+                                        onTouchStart={(e) => {
+                                            e.stopPropagation();
+                                        }}
+                                        onTouchEnd={(e) => {
+                                            e.stopPropagation();
                                         }}
                                     >
                                         <Link
                                             to={isPromoter ? '/Promoter/profile' : '/dashboard/profile'}
                                             className="files-header__profile-item"
-                                            onClick={() => setProfileMenuOpen(false)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setProfileMenuOpen(false);
+                                            }}
+                                            onTouchEnd={(e) => {
+                                                e.stopPropagation();
+                                                setProfileMenuOpen(false);
+                                            }}
                                         >
                                             <HiUserCircle className="files-header__profile-item-icon" />
                                             <span>{t("sidenav.profile")}</span>
@@ -407,7 +491,14 @@ export default function Files() {
                                             <Link
                                                 to="/Partners"
                                                 className="files-header__profile-item"
-                                                onClick={() => setProfileMenuOpen(false)}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setProfileMenuOpen(false);
+                                                }}
+                                                onTouchEnd={(e) => {
+                                                    e.stopPropagation();
+                                                    setProfileMenuOpen(false);
+                                                }}
                                             >
                                                 <HiCurrencyDollar className="files-header__profile-item-icon" />
                                                 <span>{t("sidenav.subscribe") || "Subscribe"}</span>
@@ -418,7 +509,14 @@ export default function Files() {
                                             <Link
                                                 to="/Partners"
                                                 className="files-header__profile-item"
-                                                onClick={() => setProfileMenuOpen(false)}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setProfileMenuOpen(false);
+                                                }}
+                                                onTouchEnd={(e) => {
+                                                    e.stopPropagation();
+                                                    setProfileMenuOpen(false);
+                                                }}
                                             >
                                                 <HiUserGroup className="files-header__profile-item-icon" />
                                                 <span>{t("sidenav.partners") || "Partners Center"}</span>
@@ -426,9 +524,17 @@ export default function Files() {
                                         )}
                                         
                                         <button
+                                            type="button"
                                             className="files-header__profile-item"
                                             onClick={(e) => {
                                                 e.preventDefault();
+                                                e.stopPropagation();
+                                                toggleLanguage(e);
+                                                setProfileMenuOpen(false);
+                                            }}
+                                            onTouchEnd={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
                                                 toggleLanguage(e);
                                                 setProfileMenuOpen(false);
                                             }}
@@ -438,8 +544,17 @@ export default function Files() {
                                         </button>
                                         
                                         <button
+                                            type="button"
                                             className="files-header__profile-item"
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                Logout();
+                                                setProfileMenuOpen(false);
+                                            }}
+                                            onTouchEnd={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
                                                 Logout();
                                                 setProfileMenuOpen(false);
                                             }}

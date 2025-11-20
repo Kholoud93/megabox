@@ -180,6 +180,16 @@
     "earnings": "Earnings",
     "sharedFiles": "Shared Files",
     "linkData": "Link Data",
+    "linkDataSection": {
+      "title": "Shared link",
+      "top10Description": "Only display the top 10 items with the highest number of views",
+      "startDate": "Shared links start counting from May 13, 2024.",
+      "creationTime": "Creation time",
+      "link": "Link",
+      "totalInstall": "Total install",
+      "noData": "No shared links",
+      "noDataMessage": "You haven't shared any links yet"
+    },
     "revenueData": "Revenue Data",
     "withdraw": "Withdraw",
     "referral": "Referral",
@@ -382,7 +392,19 @@
     "noDataMessage": "No revenue data available yet",
     "fetchError": "Failed to fetch revenue data. Please try again later.",
     "errorTitle": "Error loading revenue data",
-    "errorMessage": "Unable to load revenue data. Please try again later."
+    "errorMessage": "Unable to load revenue data. Please try again later.",
+    "referralIncomeTitle": "10% of referral income",
+    "cpi": "cpi / USD",
+    "install": "Install",
+    "referralRevenue": "Referral revenue",
+    "botInfo": "Bot Info",
+    "earning": "Earning",
+    "withdrawable": "Withdrawable",
+    "estimatedIncome": "Estimated income",
+    "actualIncome": "Actual income",
+    "withdraw": "Withdraw",
+    "revenue": "Revenue",
+    "congratulationsMessage": "Congratulations to user S***H for withdrawing 23.85 USD!"
   },
   "referral": {
     "bannerTitle": "Earn money by referring friends!",
