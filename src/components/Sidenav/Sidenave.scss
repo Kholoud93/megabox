@@ -265,6 +265,22 @@ aside {
         overflow-x: hidden;
         box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
         padding-bottom: 100px;
+        
+        // Custom scrollbar styling for sidebar
+        &::-webkit-scrollbar {
+            width: 4px;
+        }
+        &::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            &:hover {
+                background: rgba(255, 255, 255, 0.5);
+            }
+        }
 
         [dir="rtl"] & {
             left: auto;
@@ -788,8 +804,9 @@ aside {
         // Show content only when submenu is open
         .ps-submenu-root[aria-expanded="true"] {
             .ps-submenu-content {
-                max-height: none !important;
-                overflow: visible !important;
+                max-height: 400px !important; // Limit height to allow scrolling (same logic as folders)
+                overflow-y: auto !important; // Enable vertical scrolling
+                overflow-x: hidden !important;
                 padding: 4px 0;
                 background: transparent !important;
                 background-color: transparent !important;
@@ -798,6 +815,22 @@ aside {
                 visibility: visible !important;
                 display: block !important;
                 height: auto !important;
+                
+                // Custom scrollbar styling (same as folders)
+                &::-webkit-scrollbar {
+                    width: 4px;
+                }
+                &::-webkit-scrollbar-track {
+                    background: rgba(255, 255, 255, 0.1);
+                    border-radius: 2px;
+                }
+                &::-webkit-scrollbar-thumb {
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 2px;
+                    &:hover {
+                        background: rgba(255, 255, 255, 0.5);
+                    }
+                }
             }
         }
         
@@ -820,7 +853,7 @@ aside {
                 margin: 0 !important;
             }
             
-            .sidenav-folder-submenu,
+            // Only hide files, not folder submenus (they have their own rules)
             .sidenav-files-tree-item,
             .sidenav-empty-folder {
                 display: none !important;
@@ -873,6 +906,53 @@ aside {
             }
         }
 
+        // Show content when folder is open (same logic as All Files)
+        .ps-submenu-root[aria-expanded="true"] {
+            .ps-submenu-content {
+                max-height: 250px !important; // Reduced height to show dropdown fully
+                overflow-y: auto !important; // Enable vertical scrolling
+                overflow-x: hidden !important;
+                padding: 4px 0;
+                background: transparent !important;
+                background-color: transparent !important;
+                transition: all 0.3s ease;
+                opacity: 1 !important;
+                visibility: visible !important;
+                display: block !important;
+                height: auto !important;
+                
+                // Custom scrollbar styling (same as All Files)
+                &::-webkit-scrollbar {
+                    width: 4px;
+                }
+                &::-webkit-scrollbar-track {
+                    background: rgba(255, 255, 255, 0.1);
+                    border-radius: 2px;
+                }
+                &::-webkit-scrollbar-thumb {
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 2px;
+                    &:hover {
+                        background: rgba(255, 255, 255, 0.5);
+                    }
+                }
+            }
+        }
+        
+        // Hide content when folder is closed
+        .ps-submenu-root:not([aria-expanded="true"]) {
+            .ps-submenu-content {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                height: 0 !important;
+                max-height: 0 !important;
+                overflow: hidden !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+        }
+
         .ps-submenu-content {
             max-height: none !important;
             overflow: visible !important;
@@ -880,9 +960,9 @@ aside {
             background: transparent !important;
             background-color: transparent !important;
             transition: all 0.3s ease;
-            opacity: 1 !important;
-            visibility: visible !important;
             display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
             height: auto !important;
         }
     }
@@ -890,6 +970,74 @@ aside {
     .sidenav-folder-wrapper {
         display: flex;
         align-items: center;
+    }
+    
+    // CRITICAL: Force show folder content when folder is open (outside collapsed rules)
+    // This must be outside .main-side.collapsed to override those rules
+    // Support both aria-expanded and class-based detection
+    // Same logic as All Files submenu
+    .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .ps-submenu-content,
+    .sidenav-folder-submenu .ps-submenu-root.ps-open .ps-submenu-content,
+    .sidenav-folder-submenu .ps-submenu-root.ps-menu-open .ps-submenu-content {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        height: auto !important;
+        max-height: 250px !important; // Reduced height to show dropdown fully (same logic as All Files)
+        overflow-y: auto !important; // Enable vertical scrolling
+        overflow-x: hidden !important;
+        padding: 4px 0 !important;
+        margin: 0 !important;
+        position: relative !important;
+        left: auto !important;
+        top: auto !important;
+        width: auto !important;
+        pointer-events: auto !important;
+        clip-path: none !important;
+        transform: none !important;
+        
+        // Custom scrollbar styling (same as All Files)
+        &::-webkit-scrollbar {
+            width: 4px;
+        }
+        &::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            &:hover {
+                background: rgba(255, 255, 255, 0.5);
+            }
+        }
+    }
+    
+    // CRITICAL: Force show folder items when folder is open
+    .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .ps-submenu-content .sidenav-files-tree-item,
+    .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .ps-submenu-content .sidenav-empty-folder,
+    .sidenav-folder-submenu .ps-submenu-root.ps-open .ps-submenu-content .sidenav-files-tree-item,
+    .sidenav-folder-submenu .ps-submenu-root.ps-open .ps-submenu-content .sidenav-empty-folder,
+    .sidenav-folder-submenu .ps-submenu-root.ps-menu-open .ps-submenu-content .sidenav-files-tree-item,
+    .sidenav-folder-submenu .ps-submenu-root.ps-menu-open .ps-submenu-content .sidenav-empty-folder {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        height: auto !important;
+        max-height: none !important;
+        min-height: auto !important;
+        overflow: visible !important;
+        padding: 0.375rem 0.5rem !important; // Reduced padding
+        margin: 0 !important;
+        border: none !important;
+        pointer-events: auto !important;
+        clip-path: none !important;
+        position: relative !important;
+        left: auto !important;
+        top: auto !important;
+        width: auto !important;
+        font-size: 0.8125rem !important; // Slightly smaller font
+        line-height: 1.3 !important; // Tighter line height
     }
 
     .sidenav-empty-folder {
@@ -902,9 +1050,9 @@ aside {
     }
 
     .sidenav-files-tree-item {
-        padding: 0.5rem 0.75rem !important;
-        margin: 0.125rem 0.5rem !important;
-        font-size: 0.875rem !important;
+        padding: 0.375rem 0.5rem !important; // Reduced padding
+        margin: 0.0625rem 0.375rem !important; // Reduced margin
+        font-size: 0.8125rem !important; // Slightly smaller font
         color: white !important;
         font-weight: 500 !important;
         transition: all 0.2s ease;
@@ -916,6 +1064,7 @@ aside {
         align-items: center;
         max-width: 100%;
         width: auto;
+        line-height: 1.3 !important; // Tighter line height
 
         &:hover {
             background: rgba(255, 255, 255, 0.2) !important;
@@ -968,9 +1117,8 @@ aside {
         }
 
         // Hide all submenu content - multiple selectors for complete coverage
-        .sidenav-files-submenu .ps-submenu-content,
-        .sidenav-folder-submenu .ps-submenu-content,
-        .ps-submenu-content {
+        // BUT only when sidebar is collapsed - allow folders to show when expanded
+        .sidenav-files-submenu .ps-submenu-content {
             display: none !important;
             visibility: hidden !important;
             opacity: 0 !important;
@@ -991,12 +1139,44 @@ aside {
             clip-path: polygon(0 0, 0 0, 0 0, 0 0) !important;
             transform: scale(0) translateX(-100%) !important;
         }
+        
+        // Hide folder submenu content only when not expanded
+        .sidenav-folder-submenu .ps-submenu-root:not([aria-expanded="true"]) .ps-submenu-content {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            max-height: 0 !important;
+            overflow: hidden !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        
+        // IMPORTANT: Override collapsed sidebar rules when folder is expanded
+        // Use maximum specificity to ensure this rule takes precedence
+        aside .main-side.collapsed .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .ps-submenu-content,
+        .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .ps-submenu-content {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+            padding: 4px 0 !important;
+            margin: 0 !important;
+            position: relative !important;
+            left: auto !important;
+            top: auto !important;
+            width: auto !important;
+            pointer-events: auto !important;
+            clip-path: none !important;
+            transform: none !important;
+        }
 
         // Hide all items inside submenus when collapsed
+        // BUT allow folder items to show when folder is expanded
         .sidenav-files-submenu .sidenav-files-tree-item,
-        .sidenav-folder-submenu .sidenav-files-tree-item,
         .sidenav-files-submenu .sidenav-empty-folder,
-        .sidenav-folder-submenu .sidenav-empty-folder,
         .sidenav-files-tree-item,
         .sidenav-empty-folder {
             display: none !important;
@@ -1014,6 +1194,31 @@ aside {
             position: absolute !important;
             left: -99999px !important;
             width: 0 !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        // IMPORTANT: Show folder submenu items when folder is expanded
+        // Use higher specificity to override collapsed sidebar rules
+        .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .ps-submenu-content .sidenav-files-tree-item,
+        .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .ps-submenu-content .sidenav-empty-folder,
+        .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .sidenav-files-tree-item,
+        .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .sidenav-empty-folder {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            height: auto !important;
+            max-height: none !important;
+            min-height: auto !important;
+            overflow: visible !important;
+            padding: 0.5rem 0.75rem !important;
+            margin: 0 !important;
+            border: none !important;
+            pointer-events: auto !important;
+            clip-path: none !important;
+            position: relative !important;
+            left: auto !important;
+            top: auto !important;
+            width: auto !important;
             transition: all 0.3s ease !important;
         }
         

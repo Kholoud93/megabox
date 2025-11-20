@@ -92,39 +92,39 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive }) =
             {showMenu && (
                 <div
                     ref={menuRef}
-                    className="absolute top-8 sm:top-10 right-1.5 sm:right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 sm:py-2 text-xs sm:text-sm min-w-[160px] sm:min-w-[180px]"
-                    style={{ zIndex: 50 }}
+                    className="absolute top-8 sm:top-10 right-1.5 sm:right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 text-xs min-w-[160px] max-h-[280px] overflow-y-auto file-dropdown-menu"
+                    style={{ zIndex: 10001 }}
                     onClick={(e) => e.stopPropagation()}
                 >
                     <button
                         onClick={(e) => handleAction('rename', e)}
-                        className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                     >
-                        <HiPencil className='w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0' />
+                        <HiPencil className='w-4 h-4 text-green-600 flex-shrink-0' />
                         <span className="font-medium">{t("folder.rename")}</span>
                     </button>
                     <button
                         onClick={(e) => handleAction('share', e)}
-                        className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                     >
-                        <HiShare className='w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0' />
+                        <HiShare className='w-4 h-4 text-blue-600 flex-shrink-0' />
                         <span className="font-medium">{t("folder.share")}</span>
                     </button>
                     {onArchive && (
                         <button
                             onClick={(e) => handleAction('archive', e)}
-                            className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                         >
-                            <FiArchive className='w-4 h-4 sm:w-5 sm:h-5 text-purple-600 flex-shrink-0' />
+                            <FiArchive className='w-4 h-4 text-purple-600 flex-shrink-0' />
                             <span className="font-medium">{t("folder.archive")}</span>
                         </button>
                     )}
-                    <div className="border-t border-gray-200 my-0.5 sm:my-1"></div>
+                    <div className="border-t border-gray-200 my-1"></div>
                     <button
                         onClick={(e) => handleAction('delete', e)}
-                        className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-red-50 w-full text-left transition-colors text-red-600"
+                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-red-50 w-full text-left transition-colors text-red-600"
                     >
-                        <HiTrash className='w-4 h-4 sm:w-5 sm:h-5 text-red-600 flex-shrink-0' />
+                        <HiTrash className='w-4 h-4 text-red-600 flex-shrink-0' />
                         <span className="font-medium">{t("folder.delete")}</span>
                     </button>
                 </div>

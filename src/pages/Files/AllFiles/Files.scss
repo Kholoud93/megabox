@@ -658,14 +658,15 @@
   @include mixins.media-breakpoint-down(md) {
     position: relative;
     z-index: 1;
-    padding-bottom: 10rem !important; // Extra padding on mobile for bottom navigation (height ~60px + margin-top 1rem + safe area)
+    padding-bottom: 10rem !important; // Reduced padding since bottom nav is now smaller
     margin-bottom: 1rem;
   }
   
   // Small tablets
   @include mixins.media-breakpoint-up(sm) {
     @include mixins.media-breakpoint-down(md) {
-      padding-bottom: 9rem !important;
+      padding-bottom: 9rem !important; // Reduced padding since bottom nav is now smaller
+      margin-bottom: 1rem;
     }
   }
   
@@ -998,6 +999,25 @@
         background-color: #1f2937;
         border-color: #374151;
       }
+    }
+  }
+}
+
+// File dropdown menu styling
+.file-dropdown-menu {
+  // Custom scrollbar styling
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 2px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
     }
   }
 }

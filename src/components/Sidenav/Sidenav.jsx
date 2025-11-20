@@ -106,7 +106,10 @@ export default function Sidenav({ role }) {
         GetFolders,
         {
             enabled: !!Token.MegaBox && role === "User",
-            retry: false
+            retry: false,
+            refetchInterval: 10000, // Refetch every 10 seconds
+            refetchOnWindowFocus: true, // Refetch when window gains focus
+            refetchOnMount: true // Refetch when component mounts
         }
     );
 
@@ -126,7 +129,10 @@ export default function Sidenav({ role }) {
         GetFiles,
         {
             enabled: !!Token.MegaBox && role === "User",
-            retry: false
+            retry: false,
+            refetchInterval: 10000, // Refetch every 10 seconds
+            refetchOnWindowFocus: true, // Refetch when window gains focus
+            refetchOnMount: true // Refetch when component mounts
         }
     );
 
@@ -305,8 +311,8 @@ export default function Sidenav({ role }) {
                                                         [folderId]: open
                                                     }));
                                                     
-                                                    // If opening folder and files not loaded, fetch them
-                                                    if (open && !folderFiles[folderId]) {
+                                                    // If opening folder, always refetch files to get latest data
+                                                    if (open) {
                                                         try {
                                                             const { data } = await axios.get(`${API_URL}/user/getFolderFiles/${folderId}`, {
                                                                 headers: { Authorization: `Bearer ${Token.MegaBox}` }
@@ -321,6 +327,13 @@ export default function Sidenav({ role }) {
                                                                 [folderId]: []
                                                             }));
                                                         }
+                                                    } else {
+                                                        // When closing folder, clear its files from state
+                                                        setFolderFiles(prev => {
+                                                            const newState = { ...prev };
+                                                            delete newState[folderId];
+                                                            return newState;
+                                                        });
                                                     }
                                                 }}
                                                 defaultOpen={false}

@@ -271,22 +271,23 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             {showMenu && (
                 <div
                     ref={menuRef}
-                    className="absolute top-10 right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-2 z-30 text-sm min-w-[180px]"
+                    className="absolute top-10 right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 text-xs min-w-[160px] max-h-[280px] overflow-y-auto file-dropdown-menu"
+                    style={{ zIndex: 10001 }}
                     onClick={(e) => e.stopPropagation()}
                 >
                     {(Type === 'image' || Type === 'zip' || Type === 'video' || Type === 'document') && (
                         <button
                             onClick={() => handleAction('open')}
-                            className="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                         >
                             {Type === 'zip' ? (
                                 <>
-                                    <HiFolderOpen className='w-5 h-5 text-indigo-600' />
+                                    <HiFolderOpen className='w-4 h-4 text-indigo-600' />
                                     <span className="font-medium">Open</span>
                                 </>
                             ) : (
                                 <>
-                                    <HiEye className='w-5 h-5 text-indigo-600' />
+                                    <HiEye className='w-4 h-4 text-indigo-600' />
                                     <span className="font-medium">Open</span>
                                 </>
                             )}
@@ -294,40 +295,40 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                     )}
                     <button
                         onClick={() => handleAction('rename')}
-                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                     >
-                        <HiPencil className='w-5 h-5 text-green-600' />
+                        <HiPencil className='w-4 h-4 text-green-600' />
                         <span className="font-medium">Rename</span>
                     </button>
                     <button
                         onClick={() => handleAction('share')}
-                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                     >
-                        <HiShare className='w-5 h-5 text-blue-600' />
+                        <HiShare className='w-4 h-4 text-blue-600' />
                         <span className="font-medium">Share</span>
                     </button>
                     {(data?.shareLink || data?.shareUrl || data?.isShared === true || data?.isShared === "true" || data?.shared === true || data?.shared === "true") && (
                         <button
                             onClick={() => handleAction('disableShare')}
-                            className="flex items-center gap-3 px-4 py-2.5 hover:bg-orange-50 w-full text-left transition-colors text-orange-600"
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-orange-50 w-full text-left transition-colors text-orange-600"
                         >
-                            <HiShare className='w-5 h-5 text-orange-600 rotate-180' />
+                            <HiShare className='w-4 h-4 text-orange-600 rotate-180' />
                             <span className="font-medium">Disable Share</span>
                         </button>
                     )}
                     <button
                         onClick={() => handleAction('archive')}
-                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                     >
-                        <FiArchive className='w-5 h-5 text-purple-600' />
+                        <FiArchive className='w-4 h-4 text-purple-600' />
                         <span className="font-medium">Archive</span>
                     </button>
                     <div className="border-t border-gray-200 my-1"></div>
                     <button
                         onClick={() => handleAction('delete')}
-                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 w-full text-left transition-colors text-red-600"
+                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-red-50 w-full text-left transition-colors text-red-600"
                     >
-                        <HiTrash className='w-5 h-5 text-red-600' />
+                        <HiTrash className='w-4 h-4 text-red-600' />
                         <span className="font-medium">Delete</span>
                     </button>
                 </div>

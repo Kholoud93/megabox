@@ -18,7 +18,7 @@
         align-items: center;
         justify-content: space-around;
         max-width: 100%;
-        padding: 8px 4px;
+        padding: 4px 2px; // Reduced padding
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
 
@@ -33,9 +33,9 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 4px;
-        padding: 8px 12px;
-        min-width: 64px;
+        gap: 2px; // Reduced gap
+        padding: 4px 8px; // Reduced padding
+        min-width: 56px; // Reduced min-width
         text-decoration: none;
         color: #6b7280;
         transition: all 0.2s;
@@ -66,8 +66,8 @@
     }
 
     &__icon {
-        width: 24px;
-        height: 24px;
+        width: 20px; // Reduced from 24px
+        height: 20px; // Reduced from 24px
         transition: all 0.2s;
     }
 
@@ -91,13 +91,14 @@
     }
 
     &__label {
-        font-size: 11px;
+        font-size: 9px; // Reduced from 11px
         font-weight: 500;
         text-align: center;
         white-space: nowrap;
         max-width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;
+        line-height: 1.2; // Tighter line height
     }
 
     &__more {
