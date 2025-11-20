@@ -1,4 +1,348 @@
 @use '../../../helpers/functions' as *;
+@use '../../../helpers/_variables.scss' as vars;
+@use '../../../helpers/_mixins.scss' as mixins;
+
+// Files Header - Unified for User and Promoter
+.files-header {
+  background: linear-gradient(135deg, var(--color-indigo-500) 0%, var(--color-indigo-600) 100%);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid var(--color-indigo-400);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 100%;
+  
+  // Prevent horizontal overflow on mobile when sidebar is open
+  @include mixins.media-breakpoint-down(md) {
+    overflow-x: hidden;
+    position: relative;
+    z-index: 1;
+  }
+
+  &__container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 0.5rem;
+    width: 100%;
+
+    @include mixins.media-breakpoint-up(sm) {
+      padding: 0 0.75rem;
+    }
+
+    @include mixins.media-breakpoint-up(md) {
+      padding: 0 1.5rem;
+    }
+
+    @include mixins.media-breakpoint-up(lg) {
+      padding: 0 2rem;
+    }
+
+    @include mixins.media-breakpoint-up(xl) {
+      padding: 0 2.5rem;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    width: 100%;
+
+    @include mixins.media-breakpoint-up(sm) {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 0;
+    }
+
+    @include mixins.media-breakpoint-up(md) {
+      gap: 1.5rem;
+      padding: 1.5rem 0;
+    }
+
+    @include mixins.media-breakpoint-up(lg) {
+      padding: 2rem 0;
+    }
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+
+    @include mixins.media-breakpoint-up(sm) {
+      gap: 0.625rem;
+      width: auto;
+    }
+
+    @include mixins.media-breakpoint-up(md) {
+      gap: 0.75rem;
+    }
+
+    @include mixins.media-breakpoint-up(lg) {
+      gap: 1rem;
+    }
+  }
+
+  &__icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    flex-shrink: 0;
+    filter: drop-shadow(0 4px 8px rgba(255, 255, 255, 0.3));
+
+    @include mixins.media-breakpoint-up(sm) {
+      width: 2.25rem;
+      height: 2.25rem;
+    }
+
+    @include mixins.media-breakpoint-up(md) {
+      width: 2.75rem;
+      height: 2.75rem;
+    }
+
+    @include mixins.media-breakpoint-up(lg) {
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+
+  &__text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.2;
+    max-width: 100%;
+
+    @include mixins.media-breakpoint-up(sm) {
+      font-size: 1.25rem;
+    }
+
+    @include mixins.media-breakpoint-up(md) {
+      font-size: 1.5rem;
+    }
+
+    @include mixins.media-breakpoint-up(lg) {
+      font-size: 1.875rem;
+      white-space: normal;
+    }
+  }
+
+  &__subtitle {
+    margin-top: 0.125rem;
+    font-size: 0.6875rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 1px 5px rgba(255, 255, 255, 0.2);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+
+    @include mixins.media-breakpoint-up(sm) {
+      margin-top: 0.25rem;
+      font-size: 0.75rem;
+    }
+
+    @include mixins.media-breakpoint-up(md) {
+      margin-top: 0.375rem;
+      font-size: 0.8125rem;
+    }
+
+    @include mixins.media-breakpoint-up(lg) {
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      white-space: normal;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    flex-shrink: 0;
+
+    @include mixins.media-breakpoint-up(sm) {
+      flex-direction: row;
+      width: auto;
+      gap: 0.625rem;
+    }
+
+    @include mixins.media-breakpoint-up(md) {
+      gap: 0.75rem;
+    }
+
+    @include mixins.media-breakpoint-up(lg) {
+      gap: 1rem;
+    }
+  }
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.625rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: white;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease-in-out;
+    text-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    width: 100%;
+    white-space: nowrap;
+    min-height: 2.5rem;
+
+    @include mixins.media-breakpoint-up(sm) {
+      width: auto;
+      padding: 0.5625rem 0.875rem;
+      font-size: 0.75rem;
+      min-height: auto;
+    }
+
+    @include mixins.media-breakpoint-up(md) {
+      padding: 0.625rem 1rem;
+      font-size: 0.875rem;
+    }
+
+    @include mixins.media-breakpoint-up(lg) {
+      padding: 0.75rem 1.25rem;
+      font-size: 0.9375rem;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.15), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4), 0 0 0 4px rgba(255, 255, 255, 0.2);
+    }
+
+    // Prevent text wrapping on small screens
+    @include mixins.media-breakpoint-down(sm) {
+      font-size: 0.6875rem;
+      padding: 0.5rem 0.625rem;
+    }
+  }
+
+  &__button-icon {
+    margin-right: 0.25rem;
+    width: 0.875rem;
+    height: 0.875rem;
+    flex-shrink: 0;
+
+    @include mixins.media-breakpoint-up(sm) {
+      margin-right: 0.375rem;
+      width: 1rem;
+      height: 1rem;
+    }
+
+    @include mixins.media-breakpoint-up(md) {
+      margin-right: 0.5rem;
+      width: 1.125rem;
+      height: 1.125rem;
+    }
+
+    @include mixins.media-breakpoint-up(lg) {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+
+  // Extra small screens (phones in portrait)
+  @media (max-width: 360px) {
+    &__container {
+      padding: 0 0.375rem;
+    }
+
+    &__content {
+      padding: 0.625rem 0;
+      gap: 0.625rem;
+    }
+
+    &__icon {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    &__title {
+      font-size: 0.9375rem;
+    }
+
+    &__subtitle {
+      font-size: 0.625rem;
+    }
+
+    &__button {
+      padding: 0.4375rem 0.5rem;
+      font-size: 0.625rem;
+      min-height: 2.25rem;
+    }
+
+    &__button-icon {
+      width: 0.75rem;
+      height: 0.75rem;
+      margin-right: 0.25rem;
+    }
+  }
+}
+
+// Files Content - Adjust for sidebar
+.files-content {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+
+  // Mobile: ensure content doesn't overflow when sidebar is open
+  @include mixins.media-breakpoint-down(md) {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// Main container adjustment for sidebar - prevent horizontal scroll
+.min-h-screen {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
+
+  // Mobile: prevent horizontal scroll when sidebar opens
+  @include mixins.media-breakpoint-down(md) {
+    // Ensure content doesn't shift when sidebar overlay appears
+    body:has(.dropback.apper-dropback) & {
+      overflow-x: hidden;
+    }
+  }
+}
 
 // Professional Files Page Styles
 .files-page {
@@ -9,11 +353,15 @@
 
   // Enhanced button styles
   .btn-primary {
-    @apply bg-primary-500 text-white px-4 py-2 rounded-lg font-medium;
+    background-color: var(--color-indigo-600);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
     
     &:hover {
-      @apply bg-primary-600;
+      background-color: var(--color-indigo-700);
       transform: translateY(-1px);
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     }
@@ -25,13 +373,16 @@
 
   // Card hover effects
   .file-card, .folder-card {
-    @apply bg-white rounded-lg shadow-sm border border-gray-200;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-      border-color: primary-300;
+      border-color: var(--color-indigo-300);
     }
   }
 
@@ -76,10 +427,14 @@
 
   // Empty state styling
   .empty-state {
-    @apply text-center py-12;
+    text-align: center;
+    padding: 3rem 0;
     
     .empty-icon {
-      @apply mx-auto h-12 w-12 text-gray-400;
+      margin: 0 auto;
+      height: 3rem;
+      width: 3rem;
+      color: #9ca3af;
       animation: float 3s ease-in-out infinite;
     }
     
@@ -114,19 +469,41 @@
   // Header section styling
   .page-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    @apply text-white;
+    color: white;
     
     .header-content {
-      @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
+      max-width: 80rem;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+
+      @include mixins.media-breakpoint-up(sm) {
+        padding: 2rem 1.5rem;
+      }
+
+      @include mixins.media-breakpoint-up(lg) {
+        padding: 2rem 2rem;
+      }
     }
   }
 
   // Action buttons container
   .action-buttons {
-    @apply flex flex-col sm:flex-row gap-3;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    @include mixins.media-breakpoint-up(sm) {
+      flex-direction: row;
+    }
     
     .action-btn {
-      @apply inline-flex items-center px-4 py-2.5 text-sm font-medium rounded-lg shadow-sm;
+      display: inline-flex;
+      align-items: center;
+      padding: 0.625rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       transition: all 0.2s ease-in-out;
       
       &:hover {
@@ -137,10 +514,15 @@
 
   // Section headers
   .section-header {
-    @apply flex items-center justify-between mb-6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
     
     .section-title {
-      @apply text-2xl font-semibold text-gray-900;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #111827;
       position: relative;
       
       &::after {
@@ -150,69 +532,93 @@
         left: 0;
         width: 40px;
         height: 3px;
-        background: linear-gradient(90deg, primary-500, primary-600);
+        background: linear-gradient(90deg, var(--color-indigo-600), var(--color-indigo-700));
         border-radius: 2px;
       }
     }
     
     .section-subtitle {
-      @apply mt-1 text-sm text-gray-600;
+      margin-top: 0.25rem;
+      font-size: 0.875rem;
+      color: #4b5563;
     }
   }
 
   // View mode toggle
   .view-toggle {
-    @apply flex items-center space-x-2;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     
     .toggle-btn {
-      @apply p-2 rounded-lg transition-all duration-200;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      transition: all 0.2s ease-in-out;
       
       &.active {
-        @apply bg-primary-100 text-primary-600;
+        background-color: var(--color-indigo-100);
+        color: var(--color-indigo-600);
         transform: scale(1.1);
       }
       
       &:hover:not(.active) {
-        @apply bg-gray-50 text-gray-600;
+        background-color: #f9fafb;
+        color: #4b5563;
       }
     }
   }
 
   // Enhanced filter container
   .filter-container {
-    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-1 mb-6;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+    padding: 0.25rem;
+    margin-bottom: 1.5rem;
     backdrop-filter: blur(10px);
     
     .filter-options {
-      @apply flex flex-wrap gap-1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
     }
   }
 
   // File count badges
   .file-count {
-    @apply ml-2 px-2 py-0.5 text-xs rounded-full font-medium;
+    margin-left: 0.5rem;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.75rem;
+    border-radius: 9999px;
+    font-weight: 500;
     transition: all 0.2s ease-in-out;
     
     &.active {
-      @apply bg-white bg-opacity-20 text-white;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
     }
     
     &.inactive {
-      @apply bg-gray-100 text-gray-600;
+      background-color: #f3f4f6;
+      color: #4b5563;
     }
   }
 
   // Responsive improvements
-  @media (max-width: 640px) {
+  @include mixins.media-breakpoint-down(sm) {
     .section-header {
-      @apply flex-col items-start gap-4;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
     }
     
     .action-buttons {
-      @apply w-full;
+      width: 100%;
       
       .action-btn {
-        @apply w-full justify-center;
+        width: 100%;
+        justify-content: center;
       }
     }
   }
@@ -220,14 +626,17 @@
   // Dark mode support (if needed)
   @media (prefers-color-scheme: dark) {
     .files-page {
-      @apply bg-gray-900 text-white;
+      background-color: #111827;
+      color: white;
       
       .file-card, .folder-card {
-        @apply bg-gray-800 border-gray-700;
+        background-color: #1f2937;
+        border-color: #374151;
       }
       
       .filter-container {
-        @apply bg-gray-800 border-gray-700;
+        background-color: #1f2937;
+        border-color: #374151;
       }
     }
   }

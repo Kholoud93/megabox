@@ -514,6 +514,20 @@
     "all": "All",
     "clearAll": "Clear all filters"
   },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "All notifications",
+    "unreadCount": "unread notification",
+    "unreadCountPlural": "unread notifications",
+    "allCaughtUp": "All caught up!",
+    "markAllAsRead": "Mark all as read",
+    "loading": "Loading notifications...",
+    "noNotifications": "No notifications",
+    "noNotificationsMessage": "You're all caught up! Check back later for updates.",
+    "notification": "Notification",
+    "noMessage": "No message",
+    "recently": "Recently"
+  },
   "partners": {
     "title": "Our Services",
     "selectPlan": "+ Please select your income plan +",

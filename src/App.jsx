@@ -347,6 +347,30 @@ const router = createBrowserRouter(
                 <Notifications />
               </PromoterProtector>
             </LoginProtector>
+        },
+        {
+          path: "profile", element:
+            <LoginProtector>
+              <PromoterProtector>
+                <Profile />
+              </PromoterProtector>
+            </LoginProtector>
+        },
+        {
+          path: "files", element:
+            <LoginProtector>
+              <PromoterProtector>
+                <Files />
+              </PromoterProtector>
+            </LoginProtector>
+        },
+        {
+          path: "file/:fileName/:fileId", element:
+            <LoginProtector>
+              <PromoterProtector>
+                <UploadFiles />
+              </PromoterProtector>
+            </LoginProtector>
         }
       ]
     },

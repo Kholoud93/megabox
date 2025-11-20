@@ -145,9 +145,11 @@ export default function Notifications() {
                                 <FaBell className="text-indigo-600 text-2xl" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold text-indigo-900">Notifications</h1>
+                                <h1 className="text-2xl font-bold text-indigo-900">{t('notifications.title')}</h1>
                                 <p className="text-gray-600">
-                                    {unreadCount > 0 ? `${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}` : 'All caught up!'}
+                                    {unreadCount > 0 
+                                        ? `${unreadCount} ${unreadCount > 1 ? t('notifications.unreadCountPlural') : t('notifications.unreadCount')}` 
+                                        : t('notifications.allCaughtUp')}
                                 </p>
                             </div>
                         </div>
@@ -160,7 +162,7 @@ export default function Notifications() {
                                 whileTap={{ scale: 0.95 }}
                             >
                                 <FaCheckDouble />
-                                <span>Mark all as read</span>
+                                <span>{t('notifications.markAllAsRead')}</span>
                             </motion.button>
                         )}
                     </div>
@@ -176,7 +178,7 @@ export default function Notifications() {
                         >
                             <FaBell className="text-4xl text-indigo-600" />
                         </motion.div>
-                        <p className="mt-4 text-gray-600">Loading notifications...</p>
+                        <p className="mt-4 text-gray-600">{t('notifications.loading')}</p>
                     </div>
                 ) : notifications.length === 0 ? (
                     <motion.div
@@ -186,8 +188,8 @@ export default function Notifications() {
                         transition={{ duration: 0.5 }}
                     >
                         <FaBell className="text-6xl text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold text-gray-700 mb-2">No notifications</h3>
-                        <p className="text-gray-500">You're all caught up! Check back later for updates.</p>
+                        <h3 className="text-xl font-semibold text-gray-700 mb-2">{t('notifications.noNotifications')}</h3>
+                        <p className="text-gray-500">{t('notifications.noNotificationsMessage')}</p>
                     </motion.div>
                 ) : (
                     <motion.div
@@ -224,16 +226,16 @@ export default function Notifications() {
                                                 <div className="flex-1">
                                                     <h3 className={`font-semibold mb-1 ${notification.read ? 'text-gray-700' : 'text-indigo-900'
                                                         }`}>
-                                                        {notification.title || 'Notification'}
+                                                        {notification.title || t('notifications.notification')}
                                                     </h3>
                                                     <p className={`text-sm ${notification.read ? 'text-gray-600' : 'text-gray-800'
                                                         }`}>
-                                                        {notification.message || notification.content || 'No message'}
+                                                        {notification.message || notification.content || t('notifications.noMessage')}
                                                     </p>
                                                     <p className="text-xs text-gray-500 mt-2">
                                                         {notification.createdAt
                                                             ? new Date(notification.createdAt).toLocaleString()
-                                                            : 'Recently'
+                                                            : t('notifications.recently')
                                                         }
                                                     </p>
                                                 </div>

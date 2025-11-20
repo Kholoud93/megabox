@@ -21,7 +21,7 @@ export default function Profile() {
     const fileInputRef = useRef(null);
     const queryClient = useQueryClient();
     const [Token] = useCookies(['MegaBox']);
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const navigate = useNavigate();
     const premiumFileInputRef = useRef(null);
 
@@ -162,14 +162,14 @@ export default function Profile() {
     }
 
     return (
-        <div className="Profile min-h-screen bg-indigo-50" style={{ fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+        <div className="Profile min-h-screen bg-indigo-50" dir={language === 'ar' ? 'rtl' : 'ltr'} style={{ fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" }}>
             <motion.div
                 className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
             >
-                <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border-2 border-indigo-100">
+                <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg border-2 border-indigo-100">
                     <div className="flex flex-col md:flex-row">
                         <motion.div
                             className="md:flex-shrink-0 relative flex justify-center md:justify-start"
@@ -391,7 +391,7 @@ export default function Profile() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
             >
-                <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border-2 border-indigo-100">
+                <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg border-2 border-indigo-100">
                     <div className="p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8">
                         <motion.div
                             className="uppercase tracking-wide text-xs sm:text-sm text-indigo-600 font-semibold flex items-center gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-6"

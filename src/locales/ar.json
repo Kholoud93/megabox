@@ -514,6 +514,20 @@
     "all": "الكل",
     "clearAll": "مسح جميع المرشحات"
   },
+  "notifications": {
+    "title": "الإشعارات",
+    "subtitle": "جميع الإشعارات",
+    "unreadCount": "إشعار غير مقروء",
+    "unreadCountPlural": "إشعارات غير مقروءة",
+    "allCaughtUp": "لا توجد إشعارات جديدة!",
+    "markAllAsRead": "تحديد الكل كمقروء",
+    "loading": "جارٍ تحميل الإشعارات...",
+    "noNotifications": "لا توجد إشعارات",
+    "noNotificationsMessage": "لا توجد إشعارات جديدة. تحقق لاحقاً للحصول على التحديثات.",
+    "notification": "إشعار",
+    "noMessage": "لا توجد رسالة",
+    "recently": "مؤخراً"
+  },
   "partners": {
     "title": "خدماتنا",
     "selectPlan": "+ يرجى اختيار خطة الدخل الخاصة بك +",

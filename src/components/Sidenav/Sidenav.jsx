@@ -139,14 +139,14 @@ export default function Sidenav({ role }) {
 
                         {role === "User" ? (
                             <>
-                                <MenuItem onClick={handleHide} className={pathname === "/dashboard/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.profile") : ""}></Link>}
-                                    icon={<HiUserCircle className={pathname === "/dashboard/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                <MenuItem onClick={handleHide} className={pathname === "/dashboard/profile" || pathname === "/Promoter/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to={isPromoter ? '/Promoter/profile' : '/dashboard/profile'} className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.profile") : ""}></Link>}
+                                    icon={<HiUserCircle className={pathname === "/dashboard/profile" || pathname === "/Promoter/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
                                     data-tooltip={collapsed ? t("sidenav.profile") : ""}>
                                     {t("sidenav.profile")}
                                 </MenuItem>
 
-                                <MenuItem onClick={handleHide} className={pathname === "/dashboard" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.allFiles") : ""}></Link>}
-                                    icon={<HiFolder className={pathname === "/dashboard" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
+                                <MenuItem onClick={handleHide} className={pathname === "/dashboard" || pathname === "/Promoter/files" ? 'menu-items  Active' : 'menu-items'} component={<Link to={isPromoter ? '/Promoter/files' : '/dashboard'} className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.allFiles") : ""}></Link>}
+                                    icon={<HiFolder className={pathname === "/dashboard" || pathname === "/Promoter/files" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
                                     data-tooltip={collapsed ? t("sidenav.allFiles") : ""}>
                                     {t("sidenav.allFiles")}
                                 </MenuItem>

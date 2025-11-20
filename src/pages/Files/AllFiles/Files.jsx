@@ -19,6 +19,7 @@ import { ToastOptions } from '../../../helpers/ToastOptions';
 import { fileService, userService } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 import ShareLinkModal from '../../../components/ShareLinkModal/ShareLinkModal';
+import './Files.scss';
 
 export default function Files() {
     const { t } = useLanguage();
@@ -228,71 +229,66 @@ export default function Files() {
     return <>
         <div className="min-h-screen bg-indigo-50" style={{ fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" }}>
             {/* Header Section */}
-            <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg border-b border-indigo-400">
-                <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-                    <div className="py-4 sm:py-6 md:py-8">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-                            <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
-                                <svg
-                                    className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0"
-                                    viewBox="0 0 48 48"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    style={{ filter: 'drop-shadow(0 4px 8px rgba(255,255,255,0.3))' }}
-                                >
-                                    <defs>
-                                        <linearGradient id="logoGradient" x1="0" y1="0" x2="48" y2="48">
-                                            <stop offset="0%" stopColor="var(--color-indigo-400)" />
-                                            <stop offset="50%" stopColor="var(--color-indigo-500)" />
-                                            <stop offset="100%" stopColor="var(--color-indigo-600)" />
-                                        </linearGradient>
-                                        <linearGradient id="logoGradient2" x1="0" y1="0" x2="48" y2="48">
-                                            <stop offset="0%" stopColor="rgba(255, 255, 255, 0.95)" />
-                                            <stop offset="100%" stopColor="rgba(255, 255, 255, 0.85)" />
-                                        </linearGradient>
-                                    </defs>
-                                    <rect width="48" height="48" rx="12" fill="url(#logoGradient)" />
-                                    <path d="M24 12C18.5 12 14 16.5 14 22C14 22.5 14 23 14.1 23.5C12.3 24.2 11 25.8 11 27.5C11 29.7 12.8 31.5 15 31.5H33C35.2 31.5 37 29.7 37 27.5C37 25.8 35.7 24.2 33.9 23.5C34 23 34 22.5 34 22C34 16.5 29.5 12 24 12Z" fill="url(#logoGradient2)" />
-                                    <rect x="16" y="16" width="16" height="16" rx="2.5" fill="var(--color-indigo-600)" opacity="0.95" />
-                                    <rect x="20" y="20" width="8" height="8" rx="1.5" fill="white" opacity="0.9" />
-                                    <line x1="16" y1="16" x2="16" y2="32" stroke="white" strokeWidth="2.5" opacity="0.8" />
-                                    <line x1="32" y1="16" x2="32" y2="32" stroke="white" strokeWidth="2.5" opacity="0.8" />
-                                    <line x1="16" y1="16" x2="32" y2="16" stroke="white" strokeWidth="2.5" opacity="0.8" />
-                                    <line x1="16" y1="24" x2="32" y2="24" stroke="white" strokeWidth="2" opacity="0.6" />
-                                    <line x1="24" y1="16" x2="24" y2="32" stroke="white" strokeWidth="2" opacity="0.6" />
-                                </svg>
-                                <div className="flex-1 min-w-0">
-                                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white drop-shadow-lg truncate" style={{ textShadow: '0 2px 10px rgba(255,255,255,0.3)' }}>{t("files.headerTitle")}</h1>
-                                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-white/90" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.2)' }}>{t("files.headerSubtitle")}</p>
-                                </div>
+            <div className="files-header">
+                <div className="files-header__container">
+                    <div className="files-header__content">
+                        <div className="files-header__left">
+                            <svg
+                                className="files-header__icon"
+                                viewBox="0 0 48 48"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <defs>
+                                    <linearGradient id="logoGradient" x1="0" y1="0" x2="48" y2="48">
+                                        <stop offset="0%" stopColor="var(--color-indigo-400)" />
+                                        <stop offset="50%" stopColor="var(--color-indigo-500)" />
+                                        <stop offset="100%" stopColor="var(--color-indigo-600)" />
+                                    </linearGradient>
+                                    <linearGradient id="logoGradient2" x1="0" y1="0" x2="48" y2="48">
+                                        <stop offset="0%" stopColor="rgba(255, 255, 255, 0.95)" />
+                                        <stop offset="100%" stopColor="rgba(255, 255, 255, 0.85)" />
+                                    </linearGradient>
+                                </defs>
+                                <rect width="48" height="48" rx="12" fill="url(#logoGradient)" />
+                                <path d="M24 12C18.5 12 14 16.5 14 22C14 22.5 14 23 14.1 23.5C12.3 24.2 11 25.8 11 27.5C11 29.7 12.8 31.5 15 31.5H33C35.2 31.5 37 29.7 37 27.5C37 25.8 35.7 24.2 33.9 23.5C34 23 34 22.5 34 22C34 16.5 29.5 12 24 12Z" fill="url(#logoGradient2)" />
+                                <rect x="16" y="16" width="16" height="16" rx="2.5" fill="var(--color-indigo-600)" opacity="0.95" />
+                                <rect x="20" y="20" width="8" height="8" rx="1.5" fill="white" opacity="0.9" />
+                                <line x1="16" y1="16" x2="16" y2="32" stroke="white" strokeWidth="2.5" opacity="0.8" />
+                                <line x1="32" y1="16" x2="32" y2="32" stroke="white" strokeWidth="2.5" opacity="0.8" />
+                                <line x1="16" y1="16" x2="32" y2="16" stroke="white" strokeWidth="2.5" opacity="0.8" />
+                                <line x1="16" y1="24" x2="32" y2="24" stroke="white" strokeWidth="2" opacity="0.6" />
+                                <line x1="24" y1="16" x2="24" y2="32" stroke="white" strokeWidth="2" opacity="0.6" />
+                            </svg>
+                            <div className="files-header__text">
+                                <h1 className="files-header__title">{t("files.headerTitle")}</h1>
+                                <p className="files-header__subtitle">{t("files.headerSubtitle")}</p>
                             </div>
+                        </div>
 
-                            {/* Action Buttons */}
-                            <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2 sm:gap-3">
-                                <button
-                                    className="w-full sm:w-auto inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2"
-                                    style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
-                                    onClick={ToggleShowAddFile}
-                                >
-                                    <HiOutlinePlus className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                                    {t("files.uploadFile")}
-                                </button>
-                                <button
-                                    className="w-full sm:w-auto inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2"
-                                    style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
-                                    onClick={ToggleFolderAdding}
-                                >
-                                    <LuFolderPlus className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                                    {t("files.newFolder")}
-                                </button>
-                            </div>
+                        {/* Action Buttons */}
+                        <div className="files-header__actions">
+                            <button
+                                className="files-header__button"
+                                onClick={ToggleShowAddFile}
+                            >
+                                <HiOutlinePlus className="files-header__button-icon" />
+                                {t("files.uploadFile")}
+                            </button>
+                            <button
+                                className="files-header__button"
+                                onClick={ToggleFolderAdding}
+                            >
+                                <LuFolderPlus className="files-header__button-icon" />
+                                {t("files.newFolder")}
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
+            <div className="files-content max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
                 {/* Folders Section */}
                 <div className="mb-8 sm:mb-10 md:mb-12">
                     <div className="flex items-center justify-between mb-4 sm:mb-5 md:mb-6">
