@@ -70,7 +70,11 @@ export default function Sidenav({ role }) {
         navigate('/Login')
     }
 
-    const toggleLanguage = () => {
+    const toggleLanguage = (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         const newLang = language === 'en' ? 'ar' : 'en';
         changeLanguage(newLang);
     }
@@ -221,11 +225,10 @@ export default function Sidenav({ role }) {
                                     <MenuItem
                                         className="ps-menuitem-root menu-items css-1t8x7v1 rounded-lg text-base text-white font-medium LanguageToggle"
                                         icon={<FiGlobe className="icon" />}
-                                        type={"button"}
                                         onClick={toggleLanguage}
-                                        data-tooltip={collapsed ? (language === 'en' ? 'العربية' : 'English') : ""}
+                                        data-tooltip={collapsed ? (language === 'en' ? t("navbar.arabic") : t("navbar.english")) : ""}
                                     >
-                                        {!collapsed && (language === 'en' ? 'العربية' : 'English')}
+                                        {!collapsed && (language === 'en' ? t("navbar.arabic") : t("navbar.english"))}
                                     </MenuItem>
 
                                     <MenuItem
@@ -298,11 +301,10 @@ export default function Sidenav({ role }) {
                                     <MenuItem
                                         className="ps-menuitem-root menu-items css-1t8x7v1 rounded-lg text-base text-white font-medium LanguageToggle"
                                         icon={<FiGlobe className="icon" />}
-                                        type={"button"}
                                         onClick={toggleLanguage}
-                                        data-tooltip={collapsed ? (language === 'en' ? 'العربية' : 'English') : ""}
+                                        data-tooltip={collapsed ? (language === 'en' ? t("navbar.arabic") : t("navbar.english")) : ""}
                                     >
-                                        {!collapsed && (language === 'en' ? 'العربية' : 'English')}
+                                        {!collapsed && (language === 'en' ? t("navbar.arabic") : t("navbar.english"))}
                                     </MenuItem>
 
                                     <MenuItem
@@ -333,11 +335,10 @@ export default function Sidenav({ role }) {
                                     <MenuItem
                                         className="ps-menuitem-root menu-items css-1t8x7v1 rounded-lg text-base text-white font-medium LanguageToggle"
                                         icon={<FiGlobe className="icon" />}
-                                        type={"button"}
                                         onClick={toggleLanguage}
-                                        data-tooltip={collapsed ? (language === 'en' ? 'العربية' : 'English') : ""}
+                                        data-tooltip={collapsed ? (language === 'en' ? t("navbar.arabic") : t("navbar.english")) : ""}
                                     >
-                                        {!collapsed && (language === 'en' ? 'العربية' : 'English')}
+                                        {!collapsed && (language === 'en' ? t("navbar.arabic") : t("navbar.english"))}
                                     </MenuItem>
 
                                     <MenuItem

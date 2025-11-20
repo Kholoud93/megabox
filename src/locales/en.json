@@ -5,7 +5,11 @@
     "login": "Login",
     "logout": "Logout",
     "dashboard": "Dashboard",
-    "language": "Language"
+    "language": "Language",
+    "switchToArabic": "Switch to Arabic",
+    "switchToEnglish": "Switch to English",
+    "arabic": "العربية",
+    "english": "English"
   },
   "hero": {
     "title": "1024GB Cloud Storage",
@@ -509,5 +513,79 @@
     "toggleFilters": "Toggle filters",
     "all": "All",
     "clearAll": "Clear all filters"
+  },
+  "partners": {
+    "title": "Our Services",
+    "selectPlan": "+ Please select your income plan +",
+    "alreadySubscribed": "You're Already Subscribed",
+    "seeDashboard": "See Your Dashboard",
+    "choosePlan": "Choose this plan",
+    "services": {
+      "videoUploads": {
+        "title": "Video Uploads",
+        "desc": "Easily upload videos and get unique sharing links to increase the reach of your content."
+      },
+      "videoPlayer": {
+        "title": "Specialized Video Player",
+        "desc": "The Tera Shield app offers an exceptional and seamless viewing experience for all types of videos."
+      },
+      "referrals": {
+        "title": "Referrals and Downloads",
+        "desc": "Earn money by referring new users to download the app via your sharing link."
+      },
+      "viewEarnings": {
+        "title": "View Earnings",
+        "desc": "Earn from every view your content receives through the app."
+      },
+      "analytics": {
+        "title": "Detailed Analytics",
+        "desc": "Accurately track views, downloads, and earnings through an integrated dashboard."
+      },
+      "protection": {
+        "title": "Content Protection",
+        "desc": "Tera Shield protects your content and ensures it cannot be played outside the app."
+      }
+    },
+    "earningSteps": {
+      "title": "How to Start Earning",
+      "step1": {
+        "title": "Upload Your Videos",
+        "desc": "Upload your videos to the Saqr TV platform and get unique sharing links."
+      },
+      "step2": {
+        "title": "Share Your Content",
+        "desc": "Share your video links on social media and other platforms."
+      },
+      "step3": {
+        "title": "Users Watch via the App",
+        "desc": "When users click your link, they will watch the videos through the Tera Shield app."
+      },
+      "step4": {
+        "title": "Earn Profits",
+        "desc": "Earn profits from views or downloads based on the plan you selected."
+      }
+    },
+    "plans": {
+      "viewsPlan": {
+        "title": "Views Plan",
+        "desc": "Ideal for content that gets a high number of views.",
+        "feature1": "Pay per thousand views (CPM)",
+        "feature2": "Competitive rates vary by country",
+        "feature3": "Ability to display in-video ads",
+        "feature4": "Detailed viewer analytics",
+        "feature5": "Withdraw earnings upon reaching minimum threshold",
+        "feature6": "24/7 technical support"
+      },
+      "downloadsPlan": {
+        "title": "Downloads Plan",
+        "desc": "Ideal for reaching a new audience and expanding your user base.",
+        "feature1": "Pay per direct app install (CPI)",
+        "feature2": "Competitive rates vary by country",
+        "feature3": "Detailed conversion statistics",
+        "feature4": "Unique referral links",
+        "feature5": "Accurate tracking of downloads",
+        "feature6": "24/7 technical support"
+      }
+    }
   }
 }

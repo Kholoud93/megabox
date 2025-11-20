@@ -5,6 +5,247 @@
 .promoter-dashboard {
     width: 100%;
     min-height: 100vh;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+
+    &.revenue-dashboard {
+        .revenue-dashboard__wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+
+            @include mixins.media-breakpoint-down(md) {
+                padding: 0 0.75rem;
+            }
+        }
+    }
+
+    .revenue-header {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem 2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        &__content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        &__icon {
+            width: 48px;
+            height: 48px;
+            color: #10b981;
+            flex-shrink: 0;
+        }
+
+        &__title {
+            font-size: vars.$text-2xl;
+            font-weight: 700;
+            color: #065f46;
+            margin-bottom: 0.25rem;
+        }
+
+        &__subtitle {
+            font-size: vars.$text-sm;
+            color: #059669;
+        }
+    }
+
+    .revenue-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+
+        &__card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        &__icon {
+            width: 48px;
+            height: 48px;
+            color: #10b981;
+            flex-shrink: 0;
+        }
+
+        &__content {
+            flex: 1;
+        }
+
+        &__label {
+            font-size: vars.$text-sm;
+            color: #059669;
+            margin-bottom: 0.25rem;
+        }
+
+        &__value {
+            font-size: vars.$text-2xl;
+            font-weight: 700;
+            color: #065f46;
+        }
+    }
+
+    .revenue-banner {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border-radius: 0.75rem;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+
+        &__icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        &__text {
+            font-size: vars.$text-sm;
+            font-weight: 500;
+        }
+    }
+
+    .revenue-empty {
+        background: white;
+        border-radius: 1rem;
+        padding: 3rem 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        text-align: center;
+
+        &__content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        &__icon {
+            width: 64px;
+            height: 64px;
+            color: var(--color-indigo-300);
+            margin-bottom: 0.5rem;
+        }
+
+        &__text {
+            font-size: vars.$text-base;
+            color: var(--color-indigo-600);
+            margin-bottom: 1rem;
+        }
+
+        &__button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--color-indigo-600);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: vars.$text-base;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(var(--color-indigo-600-rgb), 0.3);
+
+            &:hover {
+                background: var(--color-indigo-700);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(var(--color-indigo-600-rgb), 0.4);
+            }
+
+            &-icon {
+                font-size: 1rem;
+            }
+        }
+    }
+
+    .revenue-table {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        @include mixins.media-breakpoint-down(md) {
+            padding: 1rem;
+        }
+
+        &__container {
+            overflow-x: auto;
+        }
+
+        &__table {
+            width: 100%;
+            border-collapse: collapse;
+
+            thead {
+                background: #d1fae5;
+
+                th {
+                    padding: 1rem;
+                    text-align: left;
+                    font-size: vars.$text-sm;
+                    font-weight: 600;
+                    color: #065f46;
+                    border-bottom: 2px solid #10b981;
+
+                    @include mixins.media-breakpoint-down(md) {
+                        padding: 0.75rem 0.5rem;
+                        font-size: vars.$text-xs;
+                    }
+                }
+            }
+
+            tbody {
+                tr {
+                    border-bottom: 1px solid #a7f3d0;
+                    transition: background 0.2s ease;
+
+                    &:hover {
+                        background: #d1fae5;
+                    }
+
+                    td {
+                        padding: 1rem;
+                        font-size: vars.$text-sm;
+                        color: #047857;
+
+                        @include mixins.media-breakpoint-down(md) {
+                            padding: 0.75rem 0.5rem;
+                            font-size: vars.$text-xs;
+                        }
+                    }
+                }
+            }
+        }
+
+        &__skeleton {
+            .skeleton-row {
+                display: flex;
+                gap: 1rem;
+                padding: 1rem;
+                border-bottom: 1px solid var(--color-indigo-100);
+
+                .skeleton-cell {
+                    flex: 1;
+                    height: 20px;
+                    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+                    background-size: 200% 100%;
+                    border-radius: 4px;
+                    animation: shimmer 1.5s infinite;
+                }
+            }
+        }
+    }
 
     .page-header {
         text-align: center;
@@ -18,7 +259,7 @@
         h1 {
             font-size: vars.$text-4xl;
             font-weight: 700;
-            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -35,7 +276,7 @@
 
         p {
             font-size: vars.$text-base;
-            color: #4b5563;
+            color: var(--color-indigo-600);
             font-weight: 500;
 
             @include mixins.media-breakpoint-down(md) {

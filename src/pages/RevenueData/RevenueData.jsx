@@ -12,114 +12,7 @@ import './RevenueData.scss';
 
 const REVENUE_URL = `${API_URL}/auth/getUserRevenue`;
 
-// Mock data for UI display
-const MOCK_REVENUE_DATA = {
-    currency: 'USD',
-    revenue: [
-        {
-            date: new Date(Date.now() - 0 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 0 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 125.50,
-            installRevenue: 85.25
-        },
-        {
-            date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 98.75,
-            installRevenue: 65.50
-        },
-        {
-            date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 145.30,
-            installRevenue: 95.80
-        },
-        {
-            date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 112.40,
-            installRevenue: 72.15
-        },
-        {
-            date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 165.80,
-            installRevenue: 110.25
-        },
-        {
-            date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 88.90,
-            installRevenue: 58.60
-        },
-        {
-            date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 132.25,
-            installRevenue: 88.50
-        },
-        {
-            date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 156.60,
-            installRevenue: 102.40
-        }
-    ],
-    estimatedRevenue: [
-        {
-            date: new Date(Date.now() - 0 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 0 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 45.25,
-            installRevenue: 30.15
-        },
-        {
-            date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 38.50,
-            installRevenue: 25.80
-        },
-        {
-            date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 52.30,
-            installRevenue: 35.20
-        }
-    ],
-    settledRevenue: [
-        {
-            date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 112.40,
-            installRevenue: 72.15
-        },
-        {
-            date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 165.80,
-            installRevenue: 110.25
-        },
-        {
-            date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 88.90,
-            installRevenue: 58.60
-        },
-        {
-            date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 132.25,
-            installRevenue: 88.50
-        },
-        {
-            date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 156.60,
-            installRevenue: 102.40
-        }
-    ]
-};
-
-const USE_MOCK_DATA = true; // Set to false to use real API data
+const USE_MOCK_DATA = false; // Use real API data
 
 export default function RevenueData() {
     const { t } = useLanguage();
@@ -131,11 +24,6 @@ export default function RevenueData() {
     const { data: revenueData, isLoading, error: revenueError } = useQuery(
         ['userRevenue'],
         async () => {
-            if (USE_MOCK_DATA) {
-                // Simulate API delay
-                await new Promise(resolve => setTimeout(resolve, 500));
-                return MOCK_REVENUE_DATA;
-            }
             const res = await fetch(REVENUE_URL, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -146,22 +34,20 @@ export default function RevenueData() {
             return res.json();
         },
         {
-            enabled: USE_MOCK_DATA || !!token,
+            enabled: !!token,
             retry: 2,
             onError: (error) => {
                 console.error('Error fetching revenue data:', error);
-                if (!USE_MOCK_DATA) {
-                    toast.error(error.message || t('revenueData.fetchError'), ToastOptions("error"));
-                }
+                toast.error(error.message || t('revenueData.fetchError'), ToastOptions("error"));
             }
         }
     );
 
     // Extract data
-    const revenueList = revenueData?.revenue || revenueData?.data || MOCK_REVENUE_DATA.revenue;
-    const currency = revenueData?.currency || MOCK_REVENUE_DATA.currency;
-    const estimatedRevenue = revenueData?.estimatedRevenue || MOCK_REVENUE_DATA.estimatedRevenue;
-    const settledRevenue = revenueData?.settledRevenue || MOCK_REVENUE_DATA.settledRevenue;
+    const revenueList = revenueData?.revenue || revenueData?.data || [];
+    const currency = revenueData?.currency || 'USD';
+    const estimatedRevenue = revenueData?.estimatedRevenue || [];
+    const settledRevenue = revenueData?.settledRevenue || [];
 
     // Filter data based on selected tab
     const filteredData = selectedTab === 'estimated'
@@ -263,12 +149,6 @@ export default function RevenueData() {
                         title={t('revenueData.errorTitle')}
                         message={revenueError.message || t('revenueData.errorMessage')}
                     />
-                ) : filteredData?.length === 0 ? (
-                    <EmptyState
-                        icon={FaChartLine}
-                        title={t('revenueData.noDataTitle')}
-                        message={t('revenueData.noDataMessage')}
-                    />
                 ) : (
                     <motion.div
                         className="revenue-table"
@@ -286,23 +166,31 @@ export default function RevenueData() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredData.map((item, index) => (
-                                        <motion.tr
-                                            key={index}
-                                            className="revenue-table__row"
-                                            initial={{ opacity: 0, x: -20 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: index * 0.05 }}
-                                        >
-                                            <td>
-                                                {item.date || item.dateUTC
-                                                    ? new Date(item.date || item.dateUTC).toLocaleDateString()
-                                                    : '-'}
+                                    {filteredData && filteredData.length > 0 ? (
+                                        filteredData.map((item, index) => (
+                                            <motion.tr
+                                                key={index}
+                                                className="revenue-table__row"
+                                                initial={{ opacity: 0, x: -20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: index * 0.05 }}
+                                            >
+                                                <td>
+                                                    {item.date || item.dateUTC
+                                                        ? new Date(item.date || item.dateUTC).toLocaleDateString()
+                                                        : '-'}
+                                                </td>
+                                                <td>{parseFloat(item.total || 0).toFixed(4)} {currency}</td>
+                                                <td>{parseFloat(item.installRevenue || 0).toFixed(4)} {currency}</td>
+                                            </motion.tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="3" style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
+                                                {t('revenueData.noDataMessage') || 'No data available'}
                                             </td>
-                                            <td>{parseFloat(item.total || 0).toFixed(4)} {currency}</td>
-                                            <td>{parseFloat(item.installRevenue || 0).toFixed(4)} {currency}</td>
-                                        </motion.tr>
-                                    ))}
+                                        </tr>
+                                    )}
                                 </tbody>
                             </table>
                         </div>
