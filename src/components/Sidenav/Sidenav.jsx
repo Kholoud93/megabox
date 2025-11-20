@@ -299,6 +299,7 @@ export default function Sidenav({ role }) {
                                                         return;
                                                     }
                                                     
+                                                    // Set folder state based on open parameter
                                                     setExpandedFolders(prev => ({
                                                         ...prev,
                                                         [folderId]: open

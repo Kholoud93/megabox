@@ -329,8 +329,7 @@ aside {
             // Hide all items inside submenus when collapsed
             .sidenav-files-tree-item,
             .sidenav-empty-folder,
-            .sidenav-folder-submenu,
-            .sidenav-files-submenu {
+            .sidenav-folder-submenu {
                 display: none !important;
                 visibility: hidden !important;
                 opacity: 0 !important;
@@ -346,6 +345,24 @@ aside {
                 position: absolute !important;
                 left: -99999px !important;
                 width: 0 !important;
+            }
+            
+            // Keep All Files submenu root visible but hide content
+            .sidenav-files-submenu {
+                .ps-submenu-root {
+                    display: flex !important;
+                    visibility: visible !important;
+                    opacity: 1 !important;
+                    
+                    .ps-menu-button .ps-menu-label,
+                    .ps-menu-button span {
+                        color: white !important;
+                    }
+                }
+                
+                .ps-submenu-content {
+                    display: none !important;
+                }
             }
 
             .ps-menu-button {
@@ -748,12 +765,24 @@ aside {
                     font-weight: 600 !important;
                     transition: opacity 0.2s ease;
                 }
+                
+                // Ensure all text inside is white
+                span,
+                * {
+                    color: white !important;
+                }
 
                 &:hover {
                     background-color: rgba(255, 255, 255, 0.15) !important;
                     color: white !important;
                 }
             }
+        }
+        
+        // Ensure All Files text is white everywhere
+        .ps-menu-label,
+        span {
+            color: white !important;
         }
 
         // Show content only when submenu is open
@@ -762,12 +791,20 @@ aside {
                 max-height: none !important;
                 overflow: visible !important;
                 padding: 4px 0;
-                background: rgba(255, 255, 255, 0.05);
+                background: transparent !important;
+                background-color: transparent !important;
                 transition: all 0.3s ease;
-                opacity: 1;
-                visibility: visible;
-                display: block;
+                opacity: 1 !important;
+                visibility: visible !important;
+                display: block !important;
+                height: auto !important;
             }
+        }
+        
+        // Force background color for submenu content - transparent to match sidebar
+        .ps-submenu-content {
+            background: transparent !important;
+            background-color: transparent !important;
         }
         
         // Hide all content when submenu is closed
@@ -806,16 +843,32 @@ aside {
                 color: white !important;
                 font-weight: 500 !important;
                 transition: all 0.2s ease;
+                position: relative;
 
                 .ps-menu-label {
                     color: white !important;
                     font-weight: 500 !important;
                     transition: opacity 0.2s ease;
+                    cursor: pointer;
+                    flex: 1;
+                    
+                    // Add a small icon or indicator for navigation
+                    &::after {
+                        content: '→';
+                        margin-left: 0.5rem;
+                        opacity: 0;
+                        transition: opacity 0.2s ease;
+                        font-size: 0.875rem;
+                    }
                 }
                 
                 &:hover {
                     background-color: rgba(255, 255, 255, 0.12) !important;
                     color: white !important;
+                    
+                    .ps-menu-label::after {
+                        opacity: 0.6;
+                    }
                 }
             }
         }
@@ -824,11 +877,13 @@ aside {
             max-height: none !important;
             overflow: visible !important;
             padding: 4px 0;
-            background: rgba(255, 255, 255, 0.05);
+            background: transparent !important;
+            background-color: transparent !important;
             transition: all 0.3s ease;
-            opacity: 1;
-            visibility: visible;
-            display: block;
+            opacity: 1 !important;
+            visibility: visible !important;
+            display: block !important;
+            height: auto !important;
         }
     }
 

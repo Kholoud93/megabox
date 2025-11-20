@@ -3,6 +3,7 @@
 .Represents_backDrob {
     @include BackDrop();
     background-color: rgba(black, 0.8);
+    z-index: 99999 !important; // Ensure it's above everything including profile menu
 }
 
 .viewer-container {
