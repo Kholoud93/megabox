@@ -190,7 +190,7 @@
     overflow: visible; // Changed from hidden to visible
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     color: white;
-    z-index: 10; // Ensure it's above sidenav
+    z-index: 10 !important; // Ensure it's above sidenav
 
     @include mix.media-breakpoint-down(md) {
         padding: 1.25rem;
@@ -285,7 +285,7 @@
         border: none;
         cursor: pointer;
         position: relative;
-        z-index: 20;
+        z-index: 10 !important; // Ensure buttons stay clickable
 
         &:hover {
             background: var(--color-indigo-50);
@@ -319,7 +319,7 @@
         cursor: pointer !important;
         width: auto !important;
         position: relative !important;
-        z-index: 20 !important;
+        z-index: 10 !important; // Ensure buttons stay clickable
 
         &:hover {
             background: linear-gradient(135deg, #5568d3 0%, #653a8f 100%) !important;

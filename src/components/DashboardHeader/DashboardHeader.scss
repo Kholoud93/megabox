@@ -1,5 +1,5 @@
 @use '../../helpers/_mixins.scss' as mix;
-@import '../../pages/Files/AllFiles/Files.scss';
+@use '../../pages/Files/AllFiles/Files.scss' as *;
 
 // Ensure profile menu has the highest z-index on all pages
 .files-header {

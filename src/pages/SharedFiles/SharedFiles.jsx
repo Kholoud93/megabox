@@ -179,15 +179,15 @@ export default function SharedFiles() {
                         transition={{ delay: 0.1 }}
                     >
                         <div className="revenue-earning-section__header">
-                            <h2 className="revenue-earning-section__title">{t('revenueData.earning') || 'Earning'}</h2>
-                            <span className="revenue-earning-section__id">{t('revenueData.id') || 'ID'}: {userId}</span>
+                            <h2 className="revenue-earning-section__title">{t('revenueData.earning')}</h2>
+                            <span className="revenue-earning-section__id">{t('revenueData.id')}: {userId}</span>
                         </div>
                         
                         <div className="revenue-earning-card">
                             <div className="revenue-earning-card__top">
                                 <div className="revenue-earning-card__item">
                                     <div className="revenue-earning-card__label">
-                                        {t('revenueData.withdrawable') || 'Withdrawable'} / {currency}
+                                        {t('revenueData.withdrawable')} / {currency}
                                         <FaQuestionCircle className="revenue-earning-card__help-icon" />
                                     </div>
                                     <div className="revenue-earning-card__value revenue-earning-card__value--large">
@@ -198,14 +198,14 @@ export default function SharedFiles() {
                                     to="/dashboard/Earnings"
                                     className="revenue-earning-card__withdraw-button"
                                 >
-                                    {t('revenueData.withdraw') || 'Withdraw'}
+                                    {t('revenueData.withdraw')}
                                 </Link>
                             </div>
                             
                             <div className="revenue-earning-card__bottom">
                                 <div className="revenue-earning-card__item">
                                     <div className="revenue-earning-card__label">
-                                        {t('revenueData.estimatedIncome') || 'Estimated income'} / {currency}
+                                        {t('revenueData.estimatedIncome')} / {currency}
                                         <FaQuestionCircle className="revenue-earning-card__help-icon" />
                                     </div>
                                     <div className="revenue-earning-card__value">
@@ -215,7 +215,7 @@ export default function SharedFiles() {
                                 
                                 <div className="revenue-earning-card__item">
                                     <div className="revenue-earning-card__label">
-                                        {t('revenueData.actualIncome') || 'Actual income'} / {currency}
+                                        {t('revenueData.actualIncome')} / {currency}
                                         <FaQuestionCircle className="revenue-earning-card__help-icon" />
                                     </div>
                                     <div className="revenue-earning-card__value">
@@ -239,9 +239,9 @@ export default function SharedFiles() {
                     >
                         <div className="revenue-table-container">
                             <div className="shared-links-header">
-                                <h2 className="shared-links-header__title">{t("linkDataSection.sharedLinksTitle")}</h2>
+                                <h2 className="shared-links-header__title">{t("sidenav.linkDataSection.sharedLinksTitle")}</h2>
                                 <p className="shared-links-header__description">
-                                    {t("linkDataSection.sharedLinksDescription")}
+                                    {t("sidenav.linkDataSection.sharedLinksDescription")}
                                 </p>
                             </div>
 
@@ -251,15 +251,15 @@ export default function SharedFiles() {
                                         <tr>
                                             <th>
                                                 <div className="table-header-sortable">
-                                                    {t("linkDataSection.creationTime") || "Creation time"}
+                                                    {t("sidenav.linkDataSection.creationTime") || "Creation Time"}
                                                 </div>
                                             </th>
-                                            <th>{t("linkDataSection.link") || "Link"}</th>
+                                            <th>{t("sidenav.linkDataSection.link") || "Link"}</th>
                                             <th>
                                                 <div className="table-header-sortable">
                                                     {isDownloadsPlan 
-                                                        ? (t("linkDataSection.totalInstall") || "Total install")
-                                                        : (t("linkDataSection.totalViews") || "Total views")
+                                                        ? (t("sidenav.linkDataSection.totalInstall") || "Total Install")
+                                                        : (t("sidenav.linkDataSection.totalViews") || "Total Views")
                                                     }
                                                 </div>
                                             </th>
@@ -287,15 +287,15 @@ export default function SharedFiles() {
                                         <tr>
                                             <th>
                                                 <div className="table-header-sortable">
-                                                    {t("linkDataSection.creationTime") || "Creation time"}
+                                                    {t("sidenav.linkDataSection.creationTime") || "Creation Time"}
                                                 </div>
                                             </th>
-                                            <th>{t("linkDataSection.link") || "Link"}</th>
+                                            <th>{t("sidenav.linkDataSection.link") || "Link"}</th>
                                             <th>
                                                 <div className="table-header-sortable">
                                                     {isDownloadsPlan 
-                                                        ? (t("linkDataSection.totalInstall") || "Total install")
-                                                        : (t("linkDataSection.totalViews") || "Total views")
+                                                        ? (t("sidenav.linkDataSection.totalInstall") || "Total Install")
+                                                        : (t("sidenav.linkDataSection.totalViews") || "Total Views")
                                                     }
                                                 </div>
                                             </th>
@@ -306,7 +306,7 @@ export default function SharedFiles() {
                                             <td colSpan="3" style={{ textAlign: 'center', padding: '2rem' }}>
                                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
                                                     <p style={{ color: '#6b7280', margin: 0 }}>
-                                                        {t("linkDataSection.noDataMessage") || "You haven't shared any links yet"}
+                                                        {t("sidenav.linkDataSection.noDataMessage") || "You haven't shared any links yet"}
                                                     </p>
                                                     <Link 
                                                         to="/dashboard"
@@ -326,7 +326,7 @@ export default function SharedFiles() {
                                         <tr>
                                             <th>
                                                 <div className="table-header-sortable">
-                                                    {t("linkDataSection.creationTime") || "Creation time"}
+                                                    {t("linkDataSection.creationTime") || "Creation Time"}
                                                     <div className="sort-icons">
                                                         <FaArrowUp className="sort-icon" />
                                                         <FaArrowDown className="sort-icon" />
@@ -337,8 +337,8 @@ export default function SharedFiles() {
                                             <th>
                                                 <div className="table-header-sortable">
                                                     {isDownloadsPlan 
-                                                        ? (t("linkDataSection.totalInstall") || "Total install")
-                                                        : (t("linkDataSection.totalViews") || "Total views")
+                                                        ? (t("linkDataSection.totalInstall") || "Total Install")
+                                                        : (t("linkDataSection.totalViews") || "Total Views")
                                                     }
                                                     <div className="sort-icons">
                                                         <FaArrowUp className="sort-icon" />
@@ -388,4 +388,3 @@ export default function SharedFiles() {
         </>
     );
 }
-

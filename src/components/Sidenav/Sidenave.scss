@@ -9,7 +9,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        z-index: 9999999;
+        z-index: 9999999 !important; // Below sidebar but above header on mobile
         visibility: hidden;
         opacity: 0;
         transition: 0.7s linear all;
@@ -21,6 +21,7 @@
         opacity: 1;
         transition: 0.7s linear all;
         -webkit-transition: 0.7s linear all;
+        z-index: 9999999 !important; // Below sidebar but above header on mobile
     }
 }
 
@@ -91,7 +92,7 @@ aside .main-side .ps-menu-button:hover {
     left: auto;
     bottom: 30px;
     opacity: 0;
-    z-index: 10000000;
+    z-index: 950 !important; // Above sidebar to be clickable
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     cursor: pointer;
     transition: all 0.3s ease;
@@ -109,6 +110,7 @@ aside .main-side .ps-menu-button:hover {
     @include Breakpoints(mobile) {
         opacity: 1;
         bottom: 90px;
+        z-index: 10000001 !important; // Above sidebar and header on mobile
     }
 
     @include Breakpoints(small) {
@@ -117,7 +119,12 @@ aside .main-side .ps-menu-button:hover {
 }
 
 .allnav {
-    z-index: 10000000;
+    z-index: 800 !important; // Reduced from 10000000
+
+    // Dropback overlay for mobile
+    @include Breakpoints(mobile) {
+        z-index: 9999999 !important; // Below sidebar but above header on mobile
+    }
 
     .Active {
         background: linear-gradient(90deg, var(--color-indigo-600), rgba(79, 70, 229, 0.8)) !important;
@@ -138,6 +145,24 @@ aside .main-side .ps-menu-button:hover {
         -webkit-transition: 0.7s linear all;
     }
 
+    // When sidebar is visible (Hide = true, no apper class)
+    &:not(.apper) {
+        @include Breakpoints(mobile) {
+            .main-side {
+                transform: translateX(0) !important;
+                -webkit-transform: translateX(0) !important;
+            }
+
+            [dir="rtl"] & {
+                .main-side {
+                    transform: translateX(0) !important;
+                    -webkit-transform: translateX(0) !important;
+                }
+            }
+        }
+    }
+
+    // When sidebar is hidden (Hide = false, has apper class)
     &.apper {
         @include Breakpoints(mobile) {
             width: 250px;
@@ -145,12 +170,22 @@ aside .main-side .ps-menu-button:hover {
             -webkit-transition: 0.7s linear all;
             transform: translateX(-100%);
             -webkit-transform: translateX(-100%);
+
+            .main-side {
+                transform: translateX(-100%) !important;
+                -webkit-transform: translateX(-100%) !important;
+            }
         }
 
         [dir="rtl"] & {
             @include Breakpoints(mobile) {
                 transform: translateX(100%);
                 -webkit-transform: translateX(100%);
+
+                .main-side {
+                    transform: translateX(100%) !important;
+                    -webkit-transform: translateX(100%) !important;
+                }
             }
         }
     }
@@ -164,7 +199,9 @@ aside {
         left: 0;
         right: auto;
         top: 0;
-        z-index: 10000000;
+        z-index: 10000000 !important; // Above header (9999999) on mobile
+        height: 100vh;
+        width: 250px;
     }
 
     [dir="rtl"] & {
@@ -259,7 +296,7 @@ aside {
         top: 0;
         left: 0;
         right: auto;
-        z-index: 10000000;
+        z-index: 100 !important; // Desktop sidebar behind content
         transition: 0.3s linear all;
         -webkit-transition: 0.3s linear all;
         overflow-y: auto !important;
@@ -290,7 +327,49 @@ aside {
         }
 
         @include Breakpoints(mobile) {
+            z-index: 10000000 !important; // Above header (9999999) on mobile
+            width: 250px;
             height: 100% !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            transform: translateX(-100%); // Hidden by default
+            transition: transform 0.3s linear;
+            -webkit-transition: transform 0.3s linear;
+        }
+
+        @include Breakpoints(small) {
+            width: 250px;
+        }
+
+        // Mobile: Show sidebar by default (no transform)
+        &.show {
+            @include Breakpoints(mobile) {
+                transform: translateX(0) !important;
+                -webkit-transform: translateX(0) !important;
+            }
+
+            [dir="rtl"] & {
+                @include Breakpoints(mobile) {
+                    transform: translateX(0) !important;
+                    -webkit-transform: translateX(0) !important;
+                }
+            }
+        }
+
+        // Mobile: Hide sidebar with negative transform
+        &.hide {
+            @include Breakpoints(mobile) {
+                transform: translateX(-100%) !important;
+                -webkit-transform: translateX(-100%) !important;
+            }
+
+            [dir="rtl"] & {
+                @include Breakpoints(mobile) {
+                    transform: translateX(100%) !important;
+                    -webkit-transform: translateX(100%) !important;
+                }
+            }
         }
 
         &.collapsed {
@@ -302,6 +381,12 @@ aside {
             top: 0 !important;
             height: 100vh !important;
             contain: layout style paint !important;
+            z-index: 100 !important;
+
+            @include Breakpoints(mobile) {
+                width: 250px; // Keep full width on mobile even when "collapsed"
+                z-index: 10000000 !important; // Above header on mobile
+            }
 
             [dir="rtl"] & {
                 left: auto;

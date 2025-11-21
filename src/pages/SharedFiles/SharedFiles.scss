@@ -16,15 +16,21 @@
     padding-bottom: 8rem; // Space for bottom navigation
     margin-left: 0 !important; // No margin - sidenav is fixed/absolute
     margin-right: 0 !important;
-
-    // Mobile: No margin (sidenav is overlay)
-    @include mix.media-breakpoint-down(md) {
-        padding-bottom: 8rem;
-    }
+    position: relative;
+    z-index: 1;
 
     // Desktop
     @include mix.media-breakpoint-up(md) {
         padding-bottom: 3rem;
+        z-index: 10 !important;
+    }
+
+    // Mobile: No margin (sidenav is overlay)
+    @include mix.media-breakpoint-down(md) {
+        padding-bottom: 8rem;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        z-index: 1 !important;
     }
 
     &__wrapper {
@@ -44,6 +50,10 @@
 
     @include mix.media-breakpoint-down(md) {
         padding: 1.25rem 1.5rem;
+    }
+
+    @include mix.media-breakpoint-down(sm) {
+        padding: 1rem;
     }
 }
 
@@ -280,6 +290,51 @@
     }
 }
 
+// Shared Links Header
+.shared-links-header {
+    padding: 1.5rem 2rem;
+    background: white;
+    border-bottom: 1px solid var(--color-indigo-200);
+
+    @include mix.media-breakpoint-down(md) {
+        padding: 1.25rem 1.5rem;
+    }
+
+    @include mix.media-breakpoint-down(sm) {
+        padding: 1rem;
+    }
+
+    &__title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-indigo-900);
+        margin: 0 0 0.5rem 0;
+
+        @include mix.media-breakpoint-down(md) {
+            font-size: 1.25rem;
+        }
+
+        @include mix.media-breakpoint-down(sm) {
+            font-size: 1.125rem;
+        }
+    }
+
+    &__description {
+        font-size: 0.9375rem;
+        color: var(--color-indigo-700);
+        margin: 0;
+        line-height: 1.5;
+
+        @include mix.media-breakpoint-down(md) {
+            font-size: 0.875rem;
+        }
+
+        @include mix.media-breakpoint-down(sm) {
+            font-size: 0.8125rem;
+        }
+    }
+}
+
 // Shared Links Table - Use revenue-table styles
 // The table will use .revenue-table class from RevenueData.scss
 
@@ -287,6 +342,12 @@
 .revenue-table-container {
     border-radius: 0;
     border-top: none;
+    overflow-x: auto;
+
+    @include mix.media-breakpoint-down(md) {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 }
 
 .table-header-sortable {
