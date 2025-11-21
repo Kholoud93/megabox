@@ -7,7 +7,7 @@ import { API_URL, adminService } from '../../../services/api';
 import { useCookies } from 'react-cookie';
 import { useQueryClient } from 'react-query';
 // icons 
-import { MdNotificationAdd, MdClose } from "react-icons/md";
+import { MdNotificationAdd, MdClose, MdSearch } from "react-icons/md";
 import { FaCrown, FaBan } from "react-icons/fa";
 import { HiTrash } from "react-icons/hi2";
 // icons 
@@ -28,6 +28,10 @@ export default function Users() {
     const [deleteConfirm, setDeleteConfirm] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [filters, setFilters] = useState({});
+    const [premiumModal, setPremiumModal] = useState(null);
+    const [searchUserModal, setSearchUserModal] = useState(false);
+    const [searchedUser, setSearchedUser] = useState(null);
+    const [searchingUser, setSearchingUser] = useState(false);
     const navigate = useNavigate()
     const [Token] = useCookies(['MegaBox']);
     const queryClient = useQueryClient();
@@ -133,6 +137,71 @@ export default function Users() {
         }
     }
 
+    // Search user by email or ID
+    const handleSearchUser = async (searchValue) => {
+        if (!searchValue.trim()) {
+            toast.error(t("adminUsers.searchRequired"), ToastOptions("error"));
+            return;
+        }
+        setSearchingUser(true);
+        try {
+            const result = await adminService.searchUser(searchValue.trim(), Token.MegaBox);
+            setSearchedUser(result.user || result);
+            setSearchUserModal(true);
+        } catch (error) {
+            setSearchedUser(null);
+        } finally {
+            setSearchingUser(false);
+        }
+    }
+
+    // Toggle user premium
+    const handleTogglePremium = async (userId) => {
+        try {
+            await adminService.toggleUserPremium(userId, Token.MegaBox);
+            queryClient.invalidateQueries("getAllusers");
+            if (searchedUser && (searchedUser._id === userId || searchedUser.id === userId)) {
+                setSearchedUser(prev => ({ ...prev, isBrimume: !prev.isBrimume }));
+            }
+        } catch (error) {
+            // Error is handled in the service
+        }
+    }
+
+    // Set user premium with expiration date
+    const handleSetPremium = async (userId, expirationDate) => {
+        try {
+            await adminService.setUserPremium(userId, expirationDate, Token.MegaBox);
+            queryClient.invalidateQueries("getAllusers");
+            setPremiumModal(null);
+            if (searchedUser && (searchedUser._id === userId || searchedUser.id === userId)) {
+                setSearchedUser(prev => ({ ...prev, isBrimume: true, premiumExpiration: expirationDate }));
+            }
+        } catch (error) {
+            // Error is handled in the service
+        }
+    }
+
+    // Premium form validation
+    const premiumValidation = Yup.object({
+        expirationDate: Yup.date()
+            .min(new Date(), t("adminUsers.expirationDateMustBeFuture"))
+            .required(t("adminUsers.expirationDateRequired"))
+    });
+
+    const premiumFormik = useFormik({
+        initialValues: {
+            expirationDate: ''
+        },
+        validationSchema: premiumValidation,
+        onSubmit: (values) => {
+            const userId = premiumModal?.id || premiumModal?._id;
+            if (userId) {
+                handleSetPremium(userId, values.expirationDate);
+            }
+        }
+    });
+
     // Filter users based on search and filters
     const filteredUsers = useMemo(() => {
         if (!users) return [];
@@ -203,9 +272,13 @@ export default function Users() {
     return (
         <div className="admin-users-page">
             <div className="admin-users-page__wrapper">
-            <div className="add">
+            <div className="add" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 <button onClick={handleaddmod}>
                     {addform ? t("adminUsers.closeNotifyAll") : t("adminUsers.notifyAll")}
+                </button>
+                <button onClick={() => setSearchUserModal(true)} style={{ background: 'var(--color-indigo-600)' }}>
+                    <MdSearch style={{ marginRight: '0.5rem', display: 'inline' }} />
+                    {t("adminUsers.searchUser")}
                 </button>
             </div>
 
@@ -397,6 +470,13 @@ export default function Users() {
                                                         <MdNotificationAdd size={20} />
                                                     </button>
                                                     <button
+                                                        onClick={() => setPremiumModal(ele)}
+                                                        className={`transition-colors ${ele.isBrimume ? 'text-yellow-600 hover:text-yellow-800' : 'text-purple-600 hover:text-purple-800'}`}
+                                                        title={ele.isBrimume ? t("adminUsers.removePremium") : t("adminUsers.makePremium")}
+                                                    >
+                                                        <FaCrown size={20} />
+                                                    </button>
+                                                    <button
                                                         onClick={() => handleToggleBan(ele.id || ele._id)}
                                                         className={`transition-colors ${ele.isBanned ? 'text-green-600 hover:text-green-800' : 'text-orange-600 hover:text-orange-800'
                                                             }`}
@@ -426,6 +506,212 @@ export default function Users() {
                     </table>
                 </div>
             </motion.div>
+
+            {/* Search User Modal */}
+            <AnimatePresence>
+                {searchUserModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6"
+                        >
+                            <div className="flex justify-between items-center border-b pb-4 mb-4">
+                                <h3 className="text-xl font-bold text-gray-900">{t("adminUsers.searchUser")}</h3>
+                                <button
+                                    onClick={() => {
+                                        setSearchUserModal(false);
+                                        setSearchedUser(null);
+                                    }}
+                                    className="text-gray-500 hover:text-gray-700"
+                                >
+                                    <MdClose size={24} />
+                                </button>
+                            </div>
+                            <div className="mb-4">
+                                <label className="block mb-2 text-sm font-medium text-gray-900">
+                                    {t("adminUsers.searchByEmailOrId")}
+                                </label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        id="user-search"
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5"
+                                        placeholder={t("adminUsers.enterEmailOrId")}
+                                        onKeyPress={(e) => {
+                                            if (e.key === 'Enter') {
+                                                handleSearchUser(e.target.value);
+                                            }
+                                        }}
+                                    />
+                                    <button
+                                        onClick={() => {
+                                            const input = document.getElementById('user-search');
+                                            handleSearchUser(input.value);
+                                        }}
+                                        disabled={searchingUser}
+                                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                                    >
+                                        {searchingUser ? t("adminUsers.searching") : t("adminUsers.search")}
+                                    </button>
+                                </div>
+                            </div>
+                            {searchedUser && (
+                                <div className="border-t pt-4">
+                                    <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div>
+                                                <p className="font-semibold text-gray-900">{searchedUser.username}</p>
+                                                <p className="text-sm text-gray-600">{searchedUser.email}</p>
+                                                <p className="text-xs text-gray-500 mt-1">ID: {searchedUser._id || searchedUser.id || searchedUser.userId}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                {searchedUser.isBrimume ? (
+                                                    <div className="flex items-center gap-2 text-yellow-600">
+                                                        <FaCrown />
+                                                        <span className="text-sm font-medium">{t("adminUsers.premium")}</span>
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-sm text-gray-600">{t("adminUsers.notPremium")}</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        {searchedUser.isBrimume && searchedUser.premiumExpiration && (
+                                            <div className="mt-2 pt-2 border-t border-gray-200">
+                                                <p className="text-xs text-gray-600">
+                                                    {t("adminUsers.premiumExpires")}: {new Date(searchedUser.premiumExpiration).toLocaleDateString()}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => {
+                                                setPremiumModal(searchedUser);
+                                                setSearchUserModal(false);
+                                            }}
+                                            className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                                        >
+                                            {searchedUser.isBrimume ? t("adminUsers.updatePremium") : t("adminUsers.makePremium")}
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setSearchUserModal(false);
+                                                setSearchedUser(null);
+                                            }}
+                                            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                                        >
+                                            {t("adminUsers.close")}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Premium Modal */}
+            <AnimatePresence>
+                {premiumModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6"
+                        >
+                            <div className="flex justify-between items-center border-b pb-4 mb-4">
+                                <h3 className="text-xl font-bold text-gray-900">
+                                    {premiumModal.isBrimume ? t("adminUsers.removePremium") : t("adminUsers.makePremium")}
+                                </h3>
+                                <button
+                                    onClick={() => {
+                                        setPremiumModal(null);
+                                        premiumFormik.resetForm();
+                                    }}
+                                    className="text-gray-500 hover:text-gray-700"
+                                >
+                                    <MdClose size={24} />
+                                </button>
+                            </div>
+                            <div className="mb-4">
+                                <p className="text-gray-600 mb-4">
+                                    {t("adminUsers.user")}: <strong>{premiumModal.username}</strong> ({premiumModal.email})
+                                </p>
+                                {premiumModal.isBrimume && premiumModal.premiumExpiration && (
+                                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+                                        <p className="text-sm text-yellow-800">
+                                            {t("adminUsers.currentPremiumExpires")}: <strong>{new Date(premiumModal.premiumExpiration).toLocaleDateString()}</strong>
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                            {premiumModal.isBrimume ? (
+                                <div>
+                                    <p className="text-gray-600 mb-4">{t("adminUsers.removePremiumConfirm")}</p>
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={() => {
+                                                setPremiumModal(null);
+                                                premiumFormik.resetForm();
+                                            }}
+                                            className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                                        >
+                                            {t("adminUsers.cancel")}
+                                        </button>
+                                        <button
+                                            onClick={() => handleTogglePremium(premiumModal.id || premiumModal._id)}
+                                            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                                        >
+                                            {t("adminUsers.removePremium")}
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <form onSubmit={premiumFormik.handleSubmit}>
+                                    <div className="mb-4">
+                                        <label htmlFor="expirationDate" className="block mb-2 text-sm font-medium text-gray-900">
+                                            {t("adminUsers.premiumExpirationDate")}
+                                        </label>
+                                        <input
+                                            type="datetime-local"
+                                            id="expirationDate"
+                                            name="expirationDate"
+                                            value={premiumFormik.values.expirationDate}
+                                            onChange={premiumFormik.handleChange}
+                                            onBlur={premiumFormik.handleBlur}
+                                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5"
+                                        />
+                                        {premiumFormik.touched.expirationDate && premiumFormik.errors.expirationDate && (
+                                            <p className="mt-1 text-sm text-red-600">{premiumFormik.errors.expirationDate}</p>
+                                        )}
+                                    </div>
+                                    <div className="flex gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setPremiumModal(null);
+                                                premiumFormik.resetForm();
+                                            }}
+                                            className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                                        >
+                                            {t("adminUsers.cancel")}
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                                        >
+                                            {t("adminUsers.makePremium")}
+                                        </button>
+                                    </div>
+                                </form>
+                            )}
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             {/* Delete Confirmation Modal */}
             <AnimatePresence>
