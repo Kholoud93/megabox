@@ -230,7 +230,12 @@
     "users": "Users",
     "promoters": "Promoters",
     "analytics": "Analytics",
-    "logout": "Log out"
+    "logout": "Log out",
+    "withdrawals": "Withdrawals",
+    "payments": "Payments",
+    "subscriptions": "Subscriptions",
+    "storage": "Storage",
+    "downloadsViews": "Downloads & Views"
   },
   "folder": {
     "folder": "Folder",
@@ -505,28 +510,33 @@
   "adminPayments": {
     "title": "Payments Management",
     "subtitle": "View and manage all platform payments",
-    "comingSoon": "Payments management page coming soon..."
+    "comingSoon": "Payments management page coming soon...",
+    "backToAnalytics": "Back to Analytics"
   },
   "adminSubscriptions": {
     "title": "Subscriptions Management",
     "subtitle": "View and manage all platform subscriptions",
-    "comingSoon": "Subscriptions management page coming soon..."
+    "comingSoon": "Subscriptions management page coming soon...",
+    "backToAnalytics": "Back to Analytics"
   },
   "adminStorage": {
     "title": "Storage Management",
     "subtitle": "View and manage platform storage usage",
-    "comingSoon": "Storage management page coming soon..."
+    "comingSoon": "Storage management page coming soon...",
+    "backToAnalytics": "Back to Analytics"
   },
   "adminDownloadsViews": {
     "title": "Downloads & Views",
     "subtitle": "View platform downloads and views statistics",
-    "comingSoon": "Downloads & Views page coming soon..."
+    "comingSoon": "Downloads & Views page coming soon...",
+    "backToAnalytics": "Back to Analytics"
   },
   "adminWithdrawals": {
     "title": "Withdrawals Management",
     "subtitle": "View and manage all withdrawal requests",
     "loading": "Loading withdrawals...",
-    "noWithdrawals": "No withdrawals found"
+    "noWithdrawals": "No withdrawals found",
+    "backToAnalytics": "Back to Analytics"
   },
   "adminUsers": {
     "title": "Users Management",

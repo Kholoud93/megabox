@@ -10,7 +10,11 @@ import {
     HiCurrencyDollar,
     HiUsers,
     HiDocumentText,
-    HiBars3
+    HiBars3,
+    HiCreditCard,
+    HiServer,
+    HiArrowDownTray,
+    HiEye
 } from "react-icons/hi2";
 import { useLanguage } from '../../context/LanguageContext';
 import './BottomNavigation.scss';
@@ -154,6 +158,36 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                     icon: HiDocumentText,
                     label: t("sidenav.reports"),
                     key: 'reports'
+                },
+                {
+                    path: '/Owner/Withdrawals',
+                    icon: HiCurrencyDollar,
+                    label: t("sidenav.withdrawals"),
+                    key: 'withdrawals'
+                },
+                {
+                    path: '/Owner/Payments',
+                    icon: HiCreditCard,
+                    label: t("sidenav.payments"),
+                    key: 'payments'
+                },
+                {
+                    path: '/Owner/Subscriptions',
+                    icon: HiUserGroup,
+                    label: t("sidenav.subscriptions"),
+                    key: 'subscriptions'
+                },
+                {
+                    path: '/Owner/Storage',
+                    icon: HiServer,
+                    label: t("sidenav.storage"),
+                    key: 'storage'
+                },
+                {
+                    path: '/Owner/DownloadsViews',
+                    icon: HiArrowDownTray,
+                    label: t("sidenav.downloadsViews"),
+                    key: 'downloadsViews'
                 }
             ];
         } else if (role === "Advertiser") {

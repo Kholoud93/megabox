@@ -32,6 +32,25 @@
         gap: 1rem;
     }
 
+    &__back {
+        background: var(--color-indigo-50);
+        border: 1px solid var(--color-indigo-200);
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        color: var(--color-indigo-600);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        &:hover {
+            background: var(--color-indigo-100);
+            border-color: var(--color-indigo-300);
+        }
+    }
+
     &__icons {
         display: flex;
         gap: 0.5rem;

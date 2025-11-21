@@ -230,7 +230,12 @@
     "users": "المستخدمون",
     "promoters": "المروجون",
     "analytics": "التحليلات",
-    "logout": "تسجيل الخروج"
+    "logout": "تسجيل الخروج",
+    "withdrawals": "السحوبات",
+    "payments": "المدفوعات",
+    "subscriptions": "الاشتراكات",
+    "storage": "التخزين",
+    "downloadsViews": "التحميلات والمشاهدات"
   },
   "folder": {
     "folder": "مجلد",
@@ -505,28 +510,33 @@
   "adminPayments": {
     "title": "إدارة المدفوعات",
     "subtitle": "عرض وإدارة جميع مدفوعات المنصة",
-    "comingSoon": "صفحة إدارة المدفوعات قريباً..."
+    "comingSoon": "صفحة إدارة المدفوعات قريباً...",
+    "backToAnalytics": "العودة للتحليلات"
   },
   "adminSubscriptions": {
     "title": "إدارة الاشتراكات",
     "subtitle": "عرض وإدارة جميع اشتراكات المنصة",
-    "comingSoon": "صفحة إدارة الاشتراكات قريباً..."
+    "comingSoon": "صفحة إدارة الاشتراكات قريباً...",
+    "backToAnalytics": "العودة للتحليلات"
   },
   "adminStorage": {
     "title": "إدارة التخزين",
     "subtitle": "عرض وإدارة استخدام مساحة التخزين",
-    "comingSoon": "صفحة إدارة التخزين قريباً..."
+    "comingSoon": "صفحة إدارة التخزين قريباً...",
+    "backToAnalytics": "العودة للتحليلات"
   },
   "adminDownloadsViews": {
     "title": "التحميلات والمشاهدات",
     "subtitle": "عرض إحصائيات التحميلات والمشاهدات",
-    "comingSoon": "صفحة التحميلات والمشاهدات قريباً..."
+    "comingSoon": "صفحة التحميلات والمشاهدات قريباً...",
+    "backToAnalytics": "العودة للتحليلات"
   },
   "adminWithdrawals": {
     "title": "إدارة السحوبات",
     "subtitle": "عرض وإدارة جميع طلبات السحب",
     "loading": "جاري تحميل السحوبات...",
-    "noWithdrawals": "لم يتم العثور على سحوبات"
+    "noWithdrawals": "لم يتم العثور على سحوبات",
+    "backToAnalytics": "العودة للتحليلات"
   },
   "adminUsers": {
     "title": "إدارة المستخدمين",

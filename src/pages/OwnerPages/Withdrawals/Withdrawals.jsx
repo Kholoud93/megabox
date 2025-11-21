@@ -2,14 +2,17 @@ import React, { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { withdrawalService } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
 import { FaMoneyBillWave, FaCheck, FaTimes } from 'react-icons/fa';
+import { HiArrowRight, HiArrowLeft } from 'react-icons/hi2';
 import './Withdrawals.scss';
 
 export default function Withdrawals() {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
+    const navigate = useNavigate();
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
     const [searchTerm, setSearchTerm] = useState('');
@@ -127,6 +130,13 @@ export default function Withdrawals() {
             <div className="admin-withdrawals-page__wrapper">
                 <div className="admin-withdrawals-header">
                     <div className="admin-withdrawals-header__content">
+                        <button
+                            onClick={() => navigate('/Owner')}
+                            className="admin-withdrawals-header__back"
+                            title={t('adminWithdrawals.backToAnalytics')}
+                        >
+                            {language === 'ar' ? <HiArrowRight size={24} /> : <HiArrowLeft size={24} />}
+                        </button>
                         <FaMoneyBillWave className="admin-withdrawals-header__icon" />
                         <div>
                             <h1 className="admin-withdrawals-header__title">{t('adminWithdrawals.title')}</h1>
