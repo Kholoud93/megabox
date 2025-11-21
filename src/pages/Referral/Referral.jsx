@@ -56,7 +56,10 @@ export default function Referral() {
                 >
                     <div className="referral-banner__content">
                         <div className="referral-banner__text">
-                            <h2 className="referral-banner__title">{t('referral.bannerTitle') || '10% of 30-day referral income'}</h2>
+                            <h2 className="referral-banner__title">
+                                <span className="referral-banner__title-text">{t('referral.bannerTitle') || '10% of referral income'}</span>
+                                <span className="referral-banner__icon">💰</span>
+                            </h2>
                             <div className="referral-banner__actions">
                                 <button
                                     className="referral-banner__button"
@@ -71,9 +74,6 @@ export default function Referral() {
                                     {t('referral.referralRules') || 'Referral rules'}
                                 </button>
                             </div>
-                        </div>
-                        <div className="referral-banner__illustration">
-                            💰
                         </div>
                     </div>
                 </motion.div>
@@ -157,32 +157,6 @@ export default function Referral() {
                     </motion.div>
                 </div>
 
-                {/* Referral Link Card */}
-                <motion.div
-                    className="referral-link-card"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                >
-                    <h3 className="referral-link-card__title">{t('referral.getReferralLink')}</h3>
-                    <p className="referral-link-card__description">{t('referral.linkDescription')}</p>
-                    <div className="referral-link-card__input-group">
-                        <input
-                            type="text"
-                            readOnly
-                            value={referralLink}
-                            className="referral-link-card__input"
-                        />
-                        <button
-                            className="referral-link-card__copy"
-                            onClick={handleCopyLink}
-                        >
-                            {copied ? <FaCheck /> : <FaCopy />}
-                            {copied ? t('referral.copied') : t('referral.copyLink')}
-                        </button>
-                    </div>
-                </motion.div>
-
                 {/* Refer Users Table */}
                 <motion.div
                     className="refer-users-section"
@@ -196,8 +170,8 @@ export default function Referral() {
                             <thead>
                                 <tr>
                                     <th>{t('referral.user')}</th>
-                                    <th>{t('referral.todayReferral')}</th>
-                                    <th>{t('referral.totalRef')}</th>
+                                    <th>{t('referral.todayReferral')} / {currency}</th>
+                                    <th>{t('referral.totalRef')} /</th>
                                 </tr>
                             </thead>
                             <tbody>
