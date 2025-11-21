@@ -119,9 +119,34 @@ export default function Users() {
     // Toggle user ban
     const handleToggleBan = async (userId) => {
         try {
-            await adminService.toggleUserBanByOwner(userId, Token.MegaBox);
-            queryClient.invalidateQueries("getAllusers");
+            // Get current user data to determine new ban status
+            const currentUsers = queryClient.getQueryData("getAllusers");
+            const currentUser = currentUsers?.find(user => (user.id === userId || user._id === userId));
+            const newBanStatus = !currentUser?.isBanned;
+            
+            // Optimistically update the UI
+            queryClient.setQueryData("getAllusers", (oldData) => {
+                if (!oldData) return oldData;
+                return oldData.map(user => {
+                    if ((user.id === userId || user._id === userId)) {
+                        return { ...user, isBanned: newBanStatus };
+                    }
+                    return user;
+                });
+            });
+            
+            await adminService.toggleUserBanByOwner(userId, Token.MegaBox, newBanStatus);
+            // Show success message with translation
+            toast.success(
+                newBanStatus ? t("adminUsers.userBannedSuccess") : t("adminUsers.userUnbannedSuccess"),
+                ToastOptions("success")
+            );
+            // Only invalidate, don't refetch immediately to keep optimistic update
+            queryClient.invalidateQueries("getAllusers", { refetchActive: false, refetchInactive: false });
         } catch (error) {
+            // Revert optimistic update on error
+            queryClient.invalidateQueries("getAllusers");
+            queryClient.refetchQueries("getAllusers");
             // Error is handled in the service
         }
     }
@@ -275,10 +300,6 @@ export default function Users() {
             <div className="add" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 <button onClick={handleaddmod}>
                     {addform ? t("adminUsers.closeNotifyAll") : t("adminUsers.notifyAll")}
-                </button>
-                <button onClick={() => setSearchUserModal(true)} style={{ background: 'var(--color-indigo-600)' }}>
-                    <MdSearch style={{ marginRight: '0.5rem', display: 'inline' }} />
-                    {t("adminUsers.searchUser")}
                 </button>
             </div>
 
@@ -443,24 +464,24 @@ export default function Users() {
                             {filteredUsers.length > 0 ? (
                                 filteredUsers.map((ele, index) => {
                                     return (
-                                        <tr key={index} className="bg-white border-b hover:bg-gray-50">
-                                            <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{ele?.userId}</td>
-                                            <td className="px-6 py-4">{ele.username}</td>
-                                            <td className="px-6 py-4">{ele.email}</td>
-                                            <td className="px-6 py-4">
+                                        <tr key={ele.id || ele._id || index} className="bg-white border-b hover:bg-gray-50">
+                                            <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap" data-label={t("adminUsers.userId")}>{ele?.userId}</td>
+                                            <td className="px-6 py-4" data-label={t("adminUsers.username")}>{ele.username}</td>
+                                            <td className="px-6 py-4" data-label={t("adminUsers.email")}>{ele.email}</td>
+                                            <td className="px-6 py-4" data-label={t("adminUsers.premiumStatus")}>
                                                 {ele.isBrimume ? (
                                                     <div className='flex items-center gap-3'>{t("adminUsers.premium")} <FaCrown className='primcrown' /></div>
                                                 ) : (
                                                     <div>{t("adminUsers.notPremium")}</div>
                                                 )}
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-6 py-4" data-label={t("adminUsers.status")}>
                                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${ele.isBanned ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
                                                     }`}>
                                                     {ele.isBanned ? t("adminUsers.banned") : t("adminUsers.active")}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-6 py-4" data-label={t("adminUsers.actions")}>
                                                 <div className="flex items-center gap-3">
                                                     <button
                                                         onClick={() => handleNotifyUser(ele)}

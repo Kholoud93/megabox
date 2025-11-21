@@ -4,14 +4,14 @@ import { api } from './apiConfig';
 
 export const adminService = {
     // Toggle user ban
-    toggleUserBanByOwner: async (userId, token) => {
+    toggleUserBanByOwner: async (userId, token, isBanned = null) => {
         try {
             const response = await api.patch(`/auth/toggleUserBanByOwner/${userId}`, {}, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
-            toast.success("User ban status updated successfully", ToastOptions("success"));
+            // Don't show toast here, let the component handle it with translation
             return response.data;
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to update user ban status", ToastOptions("error"));

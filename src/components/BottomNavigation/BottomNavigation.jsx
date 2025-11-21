@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
     HiFolder,
@@ -22,6 +22,37 @@ import './BottomNavigation.scss';
 export default function BottomNavigation({ role, isPromoter, userData }) {
     const { t, language } = useLanguage();
     const { pathname } = useLocation();
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    // Close dropdown when clicking outside or when route changes
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        if (isDropdownOpen) {
+            // Use setTimeout to avoid immediate closure
+            setTimeout(() => {
+                document.addEventListener('mousedown', handleClickOutside);
+                document.addEventListener('touchstart', handleClickOutside);
+                document.addEventListener('click', handleClickOutside);
+            }, 0);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchstart', handleClickOutside);
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [isDropdownOpen]);
+
+    // Close dropdown when route changes
+    useEffect(() => {
+        setIsDropdownOpen(false);
+    }, [pathname]);
 
     const getMenuItems = () => {
         if (role === "User") {
@@ -283,12 +314,27 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                     );
                 })}
                 {overflowItems.length > 0 && (
-                    <div className="bottom-navigation__more">
-                        <button className="bottom-navigation__more-button">
+                    <div className="bottom-navigation__more" ref={dropdownRef}>
+                        <button 
+                            className={`bottom-navigation__more-button ${isDropdownOpen ? 'bottom-navigation__more-button--active' : ''}`}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setIsDropdownOpen(prev => !prev);
+                            }}
+                            aria-expanded={isDropdownOpen}
+                            aria-haspopup="true"
+                            type="button"
+                        >
                             <HiBars3 className="bottom-navigation__icon" />
                             <span className="bottom-navigation__label">{t("sidenav.more") || "More"}</span>
                         </button>
-                        <div className="bottom-navigation__dropdown">
+                        {isDropdownOpen && (
+                            <div 
+                                className="bottom-navigation__dropdown bottom-navigation__dropdown--open"
+                                onClick={(e) => e.stopPropagation()}
+                                style={{ display: 'flex' }}
+                            >
                             {overflowItems.map((item) => {
                                 const Icon = item.icon;
                                 let isActive = false;
@@ -312,6 +358,7 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                                         key={item.key}
                                         to={item.path}
                                         className={`bottom-navigation__dropdown-item ${isActive ? 'bottom-navigation__dropdown-item--active' : ''}`}
+                                        onClick={() => setIsDropdownOpen(false)}
                                     >
                                         <Icon className="bottom-navigation__dropdown-icon" />
                                         <span>{item.label}</span>
@@ -323,7 +370,8 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                                     </Link>
                                 );
                             })}
-                        </div>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

@@ -8,6 +8,10 @@
     padding: 2rem 0;
     background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
 
+    @include mix.media-breakpoint-down(md) {
+        padding: 1rem 0;
+    }
+
     &__wrapper {
         max-width: 1400px;
         margin: 0 auto;
@@ -20,23 +24,44 @@
 }
 
 .addmoderator {
+    margin-bottom: 1.5rem;
+
     .addbody-for-lec {
         width: 95%;
         background-color: white;
         margin: 20px auto;
-        padding: 20px;
+        padding: 1.5rem;
         border-radius: 0.75rem;
         border: 1px solid #e0e7ff;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        @include mix.media-breakpoint-down(md) {
+            width: 100%;
+            margin: 1rem 0;
+            padding: 1rem;
+        }
+
         button {
             background: var(--color-indigo-600);
-            padding: 10px;
-            height: 100%;
+            padding: 0.75rem 1.5rem;
+            height: auto;
             border-radius: 0.5rem;
             color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
             transition: all 0.3s ease;
+            width: 100%;
+
+            @include mix.media-breakpoint-down(md) {
+                padding: 0.875rem 1.25rem;
+            }
+
             &:hover {
                 background: var(--color-indigo-700);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
             }
         }
     }
@@ -44,49 +69,94 @@
         background-color: white;
         width: 95%;
         margin: 20px auto;
-        padding: 20px;
+        padding: 1.5rem;
         border-radius: 0.75rem;
         border: 1px solid #e0e7ff;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        @include mix.media-breakpoint-down(md) {
+            width: 100%;
+            margin: 1rem 0;
+            padding: 1rem;
+        }
 
         form {
             display: flex;
             gap: 10px;
             width: 100%;
+            flex-wrap: wrap;
+
             .main-teacher-select {
                 width: 250px;
+
+                @include mix.media-breakpoint-down(md) {
+                    width: 100%;
+                }
             }
             .modfield {
                 width: 26%;
+                flex: 1;
+                min-width: 200px;
+
+                @include mix.media-breakpoint-down(md) {
+                    width: 100%;
+                    min-width: 100%;
+                }
             }
             .teachfield {
                 width: 20%;
+                flex: 1;
+                min-width: 200px;
+
+                @include mix.media-breakpoint-down(md) {
+                    width: 100%;
+                    min-width: 100%;
+                }
             }
             .chooseimage {
                 border-radius: 50px 50px;
                 background: var(--color-indigo-600);
                 color: white;
                 transition: all 0.3s ease;
+                padding: 0.75rem 1.5rem;
+                border: none;
+                cursor: pointer;
+
+                @include mix.media-breakpoint-down(md) {
+                    width: 100%;
+                }
+
                 &:hover {
                     background: var(--color-indigo-700);
                 }
             }
             button {
                 background: var(--color-indigo-600);
-                padding: 10px;
-                height: 100%;
+                padding: 0.75rem 1.5rem;
+                height: auto;
                 border-radius: 0.5rem;
                 color: white;
+                border: none;
+                cursor: pointer;
                 transition: all 0.3s ease;
+
+                @include mix.media-breakpoint-down(md) {
+                    width: 100%;
+                    padding: 0.875rem 1.25rem;
+                }
+
                 &:hover {
                     background: var(--color-indigo-700);
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
                 }
             }
 
             @include Breakpoints(mobile) {
                 display: flex;
                 flex-direction: column;
-                align-items: center;
+                align-items: stretch;
+                gap: 1rem;
                 .modfield {
                     width: 100%;
                 }
@@ -97,7 +167,8 @@
             @include Breakpoints(small) {
                 display: flex;
                 flex-direction: column;
-                align-items: center;
+                align-items: stretch;
+                gap: 1rem;
                 .modfield {
                     width: 100%;
                 }
@@ -110,16 +181,49 @@
 }
 .add {
     margin-top: 30px;
+    margin-bottom: 1.5rem;
     text-align: center;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+    @include mix.media-breakpoint-down(md) {
+        flex-direction: column;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+
     button {
         background: var(--color-indigo-600);
-        padding: 10px;
+        padding: 0.75rem 1.5rem;
         border-radius: 0.5rem;
         color: white;
-        width: 95%;
+        border: none;
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-weight: 500;
         transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-width: 150px;
+
+        @include mix.media-breakpoint-down(md) {
+            width: 100%;
+            padding: 0.875rem 1.25rem;
+        }
+
         &:hover {
             background: var(--color-indigo-700);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        &:active {
+            transform: translateY(0);
         }
     }
 }
@@ -134,15 +238,83 @@
     border-radius: 0.75rem;
     border: 1px solid #e0e7ff;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+
+    @include mix.media-breakpoint-down(md) {
+        width: 100% !important;
+        margin: 1rem 0;
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
+
     .svg-del {
         svg {
             font-size: 30px;
             color: var(--color-indigo-600);
         }
     }
+
     table {
         transition: 0.3s linear all;
         width: 100%;
+        border-collapse: collapse;
+
+        @include mix.media-breakpoint-down(md) {
+            display: block;
+            width: 100%;
+        }
+
+        thead {
+            @include mix.media-breakpoint-down(md) {
+                display: none;
+            }
+        }
+
+        tbody {
+            @include mix.media-breakpoint-down(md) {
+                display: block;
+                width: 100%;
+            }
+
+            tr {
+                @include mix.media-breakpoint-down(md) {
+                    display: block;
+                    margin-bottom: 1rem;
+                    border: 1px solid #e0e7ff;
+                    border-radius: 0.5rem;
+                    padding: 1rem;
+                    background: white;
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                }
+            }
+
+            td {
+                @include mix.media-breakpoint-down(md) {
+                    display: block;
+                    width: 100% !important;
+                    padding: 0.5rem 0 !important;
+                    text-align: right !important;
+                    border: none !important;
+                    position: relative;
+                    padding-right: 50% !important;
+
+                    &::before {
+                        content: attr(data-label);
+                        position: absolute;
+                        right: 0;
+                        font-weight: 600;
+                        color: var(--color-indigo-700);
+                        font-size: 0.875rem;
+                    }
+                }
+            }
+        }
+
+        th {
+            @include mix.media-breakpoint-down(md) {
+                display: none;
+            }
+        }
         .primcrown {
             color: gold;
         }
@@ -273,7 +445,9 @@
         transform: translate(-50%, -50%) rotate(180deg) scale(0);
         transform-origin: 50% 50%;
         width: 55%;
+        max-width: 600px;
         height: 90%;
+        max-height: 90vh;
         background-color: white;
         visibility: hidden;
         opacity: 0;

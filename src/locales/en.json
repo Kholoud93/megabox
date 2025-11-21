@@ -235,7 +235,8 @@
     "payments": "Payments",
     "subscriptions": "Subscriptions",
     "storage": "Storage",
-    "downloadsViews": "Downloads & Views"
+    "downloadsViews": "Downloads & Views",
+    "more": "More"
   },
   "folder": {
     "folder": "Folder",
@@ -564,6 +565,8 @@
     "active": "Active",
     "banUser": "Ban User",
     "unbanUser": "Unban User",
+    "userBannedSuccess": "User has been banned successfully",
+    "userUnbannedSuccess": "User has been unbanned successfully",
     "deleteUser": "Delete User",
     "deleteUserConfirm": "Delete User",
     "deleteUserMessage": "Are you sure you want to delete user",

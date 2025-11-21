@@ -235,7 +235,8 @@
     "payments": "المدفوعات",
     "subscriptions": "الاشتراكات",
     "storage": "التخزين",
-    "downloadsViews": "التحميلات والمشاهدات"
+    "downloadsViews": "التحميلات والمشاهدات",
+    "more": "المزيد"
   },
   "folder": {
     "folder": "مجلد",
@@ -564,6 +565,8 @@
     "active": "نشط",
     "banUser": "حظر المستخدم",
     "unbanUser": "إلغاء حظر المستخدم",
+    "userBannedSuccess": "تم حظر المستخدم بنجاح",
+    "userUnbannedSuccess": "تم إلغاء حظر المستخدم بنجاح",
     "deleteUser": "حذف المستخدم",
     "deleteUserConfirm": "حذف المستخدم",
     "deleteUserMessage": "هل أنت متأكد من حذف المستخدم",
