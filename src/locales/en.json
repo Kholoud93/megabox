@@ -182,11 +182,16 @@
     "linkData": "Link Data",
     "linkDataSection": {
       "title": "Shared link",
+      "sharedLinksTitle": "Shared links",
+      "sharedLinksDescription": "Only display the top 10 items with the highest number of views. Shared links start counting from May 13, 2024",
       "top10Description": "Only display the top 10 items with the highest number of views",
+      "top10DescriptionDownloads": "Only display the top 10 items with the highest number of installs",
+      "top10DescriptionViews": "Only display the top 10 items with the highest number of views",
       "startDate": "Shared links start counting from May 13, 2024.",
       "creationTime": "Creation time",
       "link": "Link",
       "totalInstall": "Total install",
+      "totalViews": "Total views",
       "noData": "No shared links",
       "noDataMessage": "You haven't shared any links yet"
     },
