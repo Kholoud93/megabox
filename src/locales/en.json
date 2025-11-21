@@ -79,6 +79,28 @@
     "signUp": "Sign Up",
     "login": "Login"
   },
+  "auth": {
+    "login": "Login",
+    "signUp": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "username": "Username",
+    "confirmPassword": "Confirm Password",
+    "emailPlaceholder": "Enter your email",
+    "passwordPlaceholder": "Enter your password",
+    "usernamePlaceholder": "Enter your username",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "forgotPassword": "Forgot password?",
+    "alreadyHaveAccount": "Already have an account?",
+    "loading": "Loading...",
+    "required": "Required",
+    "invalidEmail": "Invalid email",
+    "usernameRequired": "Username is required",
+    "usernameMin": "Username must be at least 3 characters",
+    "passwordMin": "Password must be at least 8 characters",
+    "confirmPasswordRequired": "Please confirm your password",
+    "passwordsMatch": "Passwords must match"
+  },
   "footer": {
     "description": "Secure cloud storage and file sharing platform. Store, share, and earn with confidence.",
     "quickLinks": "Quick Links",

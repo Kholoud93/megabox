@@ -79,6 +79,28 @@
     "signUp": "إنشاء حساب",
     "login": "تسجيل الدخول"
   },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "signUp": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "username": "اسم المستخدم",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "emailPlaceholder": "أدخل بريدك الإلكتروني",
+    "passwordPlaceholder": "أدخل كلمة المرور",
+    "usernamePlaceholder": "أدخل اسم المستخدم",
+    "confirmPasswordPlaceholder": "أكد كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "loading": "جاري التحميل...",
+    "required": "مطلوب",
+    "invalidEmail": "بريد إلكتروني غير صحيح",
+    "usernameRequired": "اسم المستخدم مطلوب",
+    "usernameMin": "يجب أن يكون اسم المستخدم 3 أحرف على الأقل",
+    "passwordMin": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+    "confirmPasswordRequired": "يرجى تأكيد كلمة المرور",
+    "passwordsMatch": "كلمات المرور غير متطابقة"
+  },
   "footer": {
     "description": "منصة تخزين سحابي آمنة لمشاركة الملفات. احفظ وشارك واكسب بثقة.",
     "quickLinks": "روابط سريعة",
