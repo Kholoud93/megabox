@@ -73,7 +73,7 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive }) =
     };
 
     return (
-        <div className="relative bg-gradient-to-br from-white to-indigo-50 rounded-lg border-2 border-indigo-200 shadow-md hover:shadow-xl transition-all duration-300 hover:border-indigo-400 hover:scale-[1.01] sm:hover:scale-[1.02]" style={{ zIndex: 1 }}>
+        <div className="relative bg-gradient-to-br from-white to-indigo-50 rounded-lg border-2 border-indigo-200 shadow-md hover:shadow-xl transition-all duration-300 hover:border-indigo-400 hover:scale-[1.01] sm:hover:scale-[1.02]" style={{ zIndex: 1, position: 'relative', isolation: 'isolate' }}>
             <Link to={folderPath} className="block">
                 <div
                     className="flex items-center p-3 sm:p-4 md:p-5 cursor-pointer group"

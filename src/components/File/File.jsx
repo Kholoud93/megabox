@@ -252,6 +252,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
     return (
         <motion.div
             className={`relative bg-white border rounded-lg ${viewMode === 'list' ? 'h-auto flex items-center gap-4 p-4' : 'h-[300px]'} cursor-pointer hover:shadow-lg transition-shadow`}
+            style={{ zIndex: 1, position: 'relative', isolation: 'isolate' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}

@@ -39,81 +39,72 @@ export default function Files() {
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0, left: 0 });
     const profileMenuRef = useRef(null);
     const profileButtonRef = useRef(null);
+    const profileDropdownRef = useRef(null);
+    const touchStartedRef = useRef(false);
     
-    // Calculate dropdown position and close when clicking outside
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (
-                profileMenuRef.current && 
-                !profileMenuRef.current.contains(event.target) &&
-                profileButtonRef.current &&
-                !profileButtonRef.current.contains(event.target)
-            ) {
-                setProfileMenuOpen(false);
-            }
-        };
-        
-        const handleTouchOutside = (event) => {
-            if (
-                profileMenuRef.current && 
-                !profileMenuRef.current.contains(event.target) &&
-                profileButtonRef.current &&
-                !profileButtonRef.current.contains(event.target)
-            ) {
-                setProfileMenuOpen(false);
-            }
-        };
-        
-        if (profileMenuOpen && profileButtonRef.current) {
-            // Use setTimeout to ensure DOM is updated
-            setTimeout(() => {
-                if (profileButtonRef.current) {
-                    const rect = profileButtonRef.current.getBoundingClientRect();
-                    const viewportHeight = window.innerHeight;
-                    const viewportWidth = window.innerWidth;
-                    const dropdownHeight = 250;
-                    const dropdownWidth = 200;
-                    const bottomNavHeight = 80;
-                    
-                    // Calculate position - prefer above if not enough space below
-                    let top = rect.bottom + 8;
-                    let right = viewportWidth - rect.right;
-                    let left = rect.left;
-                    
-                    // If dropdown would go below viewport, show it above
-                    if (top + dropdownHeight > viewportHeight - bottomNavHeight) {
-                        top = rect.top - dropdownHeight - 8;
-                    }
-                    
-                    // Adjust horizontal position for RTL and to prevent overflow
-                    if (language === 'ar') {
-                        if (left + dropdownWidth > viewportWidth) {
-                            left = viewportWidth - dropdownWidth - 16;
-                        }
-                    } else {
-                        if (right + dropdownWidth > viewportWidth) {
-                            right = 16;
-                        }
-                    }
-                    
-                    setDropdownPosition({
-                        top: Math.max(8, top),
-                        right: right,
-                        left: left
-                    });
-                }
-            }, 0);
-            
-            // Add both mouse and touch event listeners for responsive screens
-            // Use capture phase to catch events earlier
-            document.addEventListener('mousedown', handleClickOutside, true);
-            document.addEventListener('touchstart', handleTouchOutside, true);
-            document.addEventListener('click', handleClickOutside, true);
+        if (!profileMenuOpen) {
+            touchStartedRef.current = false;
+            return;
         }
+
+        const handleClickOutside = (event) => {
+            if (touchStartedRef.current && event.type === 'click') {
+                touchStartedRef.current = false;
+                return;
+            }
+
+            if (
+                profileDropdownRef.current && 
+                !profileDropdownRef.current.contains(event.target) &&
+                profileButtonRef.current &&
+                !profileButtonRef.current.contains(event.target)
+            ) {
+                setProfileMenuOpen(false);
+                touchStartedRef.current = false;
+            }
+        };
+
+        const positionTimer = setTimeout(() => {
+            if (profileButtonRef.current) {
+                const rect = profileButtonRef.current.getBoundingClientRect();
+                const viewportHeight = window.innerHeight;
+                const viewportWidth = window.innerWidth;
+                const dropdownHeight = 250;
+                const dropdownWidth = 220;
+                
+                let top = rect.bottom + 8;
+                let right = viewportWidth - rect.right;
+                let left = rect.left;
+                
+                if (top + dropdownHeight > viewportHeight - 80) {
+                    top = rect.top - dropdownHeight - 8;
+                }
+                
+                if (language === 'ar') {
+                    if (left + dropdownWidth > viewportWidth - 16) {
+                        left = viewportWidth - dropdownWidth - 16;
+                    }
+                    if (left < 16) left = 16;
+                } else {
+                    if (right < 16) right = 16;
+                    if (right + dropdownWidth > viewportWidth) {
+                        right = viewportWidth - dropdownWidth - 16;
+                    }
+                }
+                
+                setDropdownPosition({
+                    top: Math.max(8, top),
+                    right: Math.max(8, right),
+                    left: Math.max(8, left)
+                });
+            }
+        }, 10);
+
+        document.addEventListener('click', handleClickOutside, true);
         
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside, true);
-            document.removeEventListener('touchstart', handleTouchOutside, true);
+            clearTimeout(positionTimer);
             document.removeEventListener('click', handleClickOutside, true);
         };
     }, [profileMenuOpen, language]);
@@ -125,7 +116,7 @@ export default function Files() {
     const [showUploadOptions, setShowUploadOptions] = useState(false);
     const [showUploadFromMegaBox, setShowUploadFromMegaBox] = useState(false);
     const [AddFolderAdding, setAddFolderAdding] = useState(false);
-    const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+    const [viewMode, setViewMode] = useState('grid');
     const [showShareModal, setShowShareModal] = useState(false);
     const [shareUrl, setShareUrl] = useState('');
     const [shareTitle, setShareTitle] = useState('');
@@ -146,7 +137,6 @@ export default function Files() {
     const [FilterKey, setFilterKey] = useState('All');
     const queryClient = useQueryClient();
     
-    // Get user data for profile
     const { data: userData } = useQuery(
         ['userAccount'],
         () => userService.getUserInfo(Token.MegaBox),
@@ -175,7 +165,6 @@ export default function Files() {
         changeLanguage(newLang);
     };
 
-    // get files - using separate APIs for each group
     const GetFiles = async ({ queryKey }) => {
         const [, filterKey] = queryKey;
         const token = Token.MegaBox;
@@ -183,7 +172,6 @@ export default function Files() {
         try {
             let data;
 
-            // Use the appropriate API function based on filter
             switch (filterKey.toLowerCase()) {
                 case 'image':
                     data = await fileService.getImageFiles(token);
@@ -215,7 +203,6 @@ export default function Files() {
 
     const { data, refetch, isLoading: filesLoading } = useQuery(["GetUserFiles", FilterKey], GetFiles);
 
-    // get folders 
     const Getfolders = async () => {
         const config = {
             headers: {
@@ -295,7 +282,6 @@ export default function Files() {
     const ShareFile = async (id, isFolder = false) => {
         try {
             if (isFolder) {
-                // Share folder
                 const response = await axios.post(`${API_URL}/user/generateFolderShareLink`, {
                     folderId: id
                 }, {
@@ -303,7 +289,6 @@ export default function Files() {
                         'Authorization': `Bearer ${Token.MegaBox}`
                     }
                 });
-                // Handle both shareUrl and shareLink properties
                 const link = response.data?.shareUrl || response.data?.shareLink;
                 if (link) {
                     setShareUrl(link);
@@ -313,7 +298,6 @@ export default function Files() {
                     toast.error("Failed to generate share link", ToastOptions("error"));
                 }
             } else {
-                // Share file
                 const response = await axios.post(`${API_URL}/auth/generateShareLink`, {
                     fileId: id
                 }, {
@@ -321,7 +305,6 @@ export default function Files() {
                         'Authorization': `Bearer ${Token.MegaBox}`
                     }
                 });
-                // Handle both shareUrl and shareLink properties
                 const link = response.data?.shareUrl || response.data?.shareLink || response.data?.data?.shareLink || response.data?.data?.shareUrl;
                 if (link) {
                     setShareUrl(link);
@@ -336,7 +319,6 @@ export default function Files() {
         }
     }
 
-    // Get archived files count separately
     const GetArchivedFilesCount = async () => {
         try {
             const data = await fileService.getArchivedFiles(Token.MegaBox);
@@ -348,7 +330,7 @@ export default function Files() {
 
     const { data: archivedData } = useQuery("GetArchivedFilesCount", GetArchivedFilesCount, {
         refetchInterval: false,
-        staleTime: 30000, // Cache for 30 seconds
+        staleTime: 30000
     });
 
     const filterOptions = [
@@ -362,7 +344,6 @@ export default function Files() {
 
     return <>
         <div className="min-h-screen bg-indigo-50" style={{ fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-            {/* Header Section */}
             <div className="files-header">
                 <div className="files-header__container">
                     <div className="files-header__content">
@@ -400,7 +381,6 @@ export default function Files() {
                             </div>
                         </div>
 
-                        {/* Action Buttons */}
                         <div className="files-header__actions">
                             <button
                                 className="files-header__button"
@@ -417,7 +397,6 @@ export default function Files() {
                                 {t("files.newFolder")}
                             </button>
                             
-                            {/* Profile Menu */}
                             <div className="files-header__profile-menu" ref={profileMenuRef}>
                                 <button
                                     ref={profileButtonRef}
@@ -428,12 +407,10 @@ export default function Files() {
                                         e.stopPropagation();
                                         setProfileMenuOpen(!profileMenuOpen);
                                     }}
-                                    onTouchStart={(e) => {
-                                        e.stopPropagation();
-                                    }}
                                     onTouchEnd={(e) => {
                                         e.preventDefault();
                                         e.stopPropagation();
+                                        touchStartedRef.current = true;
                                         setProfileMenuOpen(!profileMenuOpen);
                                     }}
                                 >
@@ -452,25 +429,35 @@ export default function Files() {
                                 </button>
                                 
                                 {profileMenuOpen && (
-                                    <div 
-                                        className="files-header__profile-dropdown"
-                                        style={{
-                                            position: 'fixed',
-                                            top: `${dropdownPosition.top}px`,
-                                            right: language === 'ar' ? 'auto' : `${dropdownPosition.right}px`,
-                                            left: language === 'ar' ? `${dropdownPosition.left}px` : 'auto',
-                                            zIndex: window.innerWidth < 768 ? 10002 : 10001
-                                        }}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                        }}
-                                        onTouchStart={(e) => {
-                                            e.stopPropagation();
-                                        }}
-                                        onTouchEnd={(e) => {
-                                            e.stopPropagation();
-                                        }}
-                                    >
+                                    <>
+                                        <div 
+                                            className="files-header__profile-backdrop"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setProfileMenuOpen(false);
+                                            }}
+                                            onTouchStart={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setProfileMenuOpen(false);
+                                            }}
+                                        />
+                                        <div 
+                                            ref={profileDropdownRef}
+                                            className="files-header__profile-dropdown"
+                                            style={{
+                                                position: 'fixed',
+                                                top: `${dropdownPosition.top}px`,
+                                                ...(language === 'ar' 
+                                                    ? { left: `${dropdownPosition.left}px`, right: 'auto' }
+                                                    : { right: `${dropdownPosition.right}px`, left: 'auto' }
+                                                ),
+                                            }}
+                                            onClick={(e) => e.stopPropagation()}
+                                            onTouchStart={(e) => e.stopPropagation()}
+                                            onTouchEnd={(e) => e.stopPropagation()}
+                                        >
                                         <Link
                                             to={isPromoter ? '/Promoter/profile' : '/dashboard/profile'}
                                             className="files-header__profile-item"
@@ -562,7 +549,8 @@ export default function Files() {
                                             <HiArrowRightOnRectangle className="files-header__profile-item-icon" />
                                             <span>{t("sidenav.logout")}</span>
                                         </button>
-                                    </div>
+                                        </div>
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -570,9 +558,7 @@ export default function Files() {
                 </div>
             </div>
 
-            {/* Main Content */}
             <div className="files-content max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
-                {/* Folders Section */}
                 <div className="mb-8 sm:mb-10 md:mb-12">
                     <div className="flex items-center justify-between mb-4 sm:mb-5 md:mb-6">
                         <div>
@@ -625,7 +611,6 @@ export default function Files() {
                     )}
                 </div>
 
-                {/* Files Section */}
                 <div>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-5 md:mb-6 gap-3 sm:gap-4">
                         <div className="flex-1 min-w-0">
@@ -635,7 +620,6 @@ export default function Files() {
                             </p>
                         </div>
 
-                        {/* View Mode Toggle */}
                         <div className="flex items-center space-x-2 flex-shrink-0">
                             <span className="text-xs sm:text-sm text-indigo-700 mr-1 sm:mr-2 hidden xs:inline" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>{t("files.view")}</span>
                             <button
@@ -659,7 +643,6 @@ export default function Files() {
                         </div>
                     </div>
 
-                    {/* Filter Tabs */}
                     <div className="bg-white rounded-lg shadow-sm border border-indigo-200 p-0.5 sm:p-1 mb-4 sm:mb-5 md:mb-6 overflow-x-auto">
                         <div className="flex flex-wrap gap-0.5 sm:gap-1 min-w-max sm:min-w-0">
                             {filterOptions.map((option) => (
@@ -682,7 +665,6 @@ export default function Files() {
                         </div>
                     </div>
 
-                    {/* Files Grid/List */}
                     {filesLoading ? (
                         <div className={`grid gap-4 sm:gap-5 md:gap-6 ${viewMode === 'grid'
                             ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'

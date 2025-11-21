@@ -296,27 +296,20 @@ export default function Sidenav({ role }) {
                                                 className="sidenav-folder-submenu"
                                                 open={!collapsed && allFilesOpen && isExpanded}
                                                 onOpenChange={async (open) => {
-                                                    // Prevent opening if All Files is closed or sidebar is collapsed
-                                                    if (collapsed || !allFilesOpen) {
-                                                        setExpandedFolders(prev => ({
-                                                            ...prev,
-                                                            [folderId]: false
-                                                        }));
-                                                        return;
-                                                    }
-                                                    
-                                                    // Set folder state based on open parameter
+                                                    // Always allow state update regardless of collapsed state
                                                     setExpandedFolders(prev => ({
                                                         ...prev,
                                                         [folderId]: open
                                                     }));
                                                     
-                                                    // If opening folder, always refetch files to get latest data
                                                     if (open) {
                                                         try {
-                                                            const { data } = await axios.get(`${API_URL}/user/getFolderFiles/${folderId}`, {
-                                                                headers: { Authorization: `Bearer ${Token.MegaBox}` }
-                                                            });
+                                                            const { data } = await axios.get(
+                                                                `${API_URL}/user/getFolderFiles/${folderId}`, 
+                                                                {
+                                                                    headers: { Authorization: `Bearer ${Token.MegaBox}` }
+                                                                }
+                                                            );
                                                             setFolderFiles(prev => ({
                                                                 ...prev,
                                                                 [folderId]: data?.files || []

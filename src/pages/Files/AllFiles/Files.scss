@@ -187,6 +187,7 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   border-bottom: 1px solid var(--color-indigo-400);
   position: relative;
+  z-index: 1000; // Creates stacking context above content
   overflow: visible; // Changed from hidden to allow dropdown to show
   width: 100%;
   max-width: 100%;
@@ -381,9 +382,10 @@
     align-items: center;
     z-index: 1001;
     
-    // Ensure it works on mobile/tablet
+    // Ensure it works on mobile/tablet - higher z-index to appear above folders/files
     @include mixins.media-breakpoint-down(md) {
-      z-index: 10002;
+      z-index: 99999 !important;
+      position: relative;
     }
     
     // Hide profile menu when image/video is being displayed
@@ -449,6 +451,21 @@
     color: white;
   }
 
+  &__profile-backdrop {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3); // Darker backdrop for better visibility
+    z-index: 99998 !important;
+    display: none;
+    
+    @include mixins.media-breakpoint-down(md) {
+      display: block;
+    }
+  }
+
   &__profile-dropdown {
     position: fixed !important;
     top: auto;
@@ -458,7 +475,8 @@
     border-radius: 0.75rem;
     box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2), 0 4px 10px rgba(79, 70, 229, 0.1);
     min-width: 200px;
-    z-index: 10001 !important;
+    z-index: 100000 !important; // Higher than backdrop (99999) and folders/files
+    isolation: isolate !important; // Create new stacking context
     overflow: hidden;
     border: 2px solid var(--color-indigo-200);
     margin-top: 0.5rem;
@@ -469,15 +487,20 @@
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
     user-select: none;
+    will-change: transform, opacity;
+    transform: translateZ(0); // Force hardware acceleration
     
-    // Responsive adjustments
+    // Responsive adjustments - much higher z-index to appear above folders/files
     @include mixins.media-breakpoint-down(md) {
       min-width: 180px;
       max-width: calc(100vw - 2rem);
-      z-index: 10002 !important;
+      z-index: 100000 !important; // Higher than backdrop (99999) and folders/files
       box-shadow: 0 20px 40px rgba(79, 70, 229, 0.3), 0 8px 16px rgba(79, 70, 229, 0.2);
       pointer-events: auto !important;
       touch-action: manipulation !important;
+      position: fixed !important;
+      transform: translateZ(0); // Force hardware acceleration
+      -webkit-transform: translateZ(0);
     }
     
     // Hide dropdown when image/video is being displayed
@@ -688,6 +711,15 @@
   max-width: 100%;
   overflow-x: hidden;
   padding-bottom: 5rem; // Add space at bottom to prevent content from being hidden behind bottom navigation
+  position: relative;
+  z-index: 1; // Lower than header to ensure dropdown appears above
+
+  // Grid containers - ensure they don't create stacking context issues
+  .grid {
+    position: relative;
+    z-index: 1; // Lower than header/dropdown
+    isolation: isolate; // Create new stacking context to contain children
+  }
 
   // Mobile: ensure content doesn't overflow when sidebar is open
   @include mixins.media-breakpoint-down(md) {
@@ -696,6 +728,12 @@
     padding-bottom: 10rem !important; // Reduced padding since bottom nav is now smaller
     margin-bottom: 1rem;
     pointer-events: auto; // Ensure content is clickable
+    
+    .grid {
+      position: relative;
+      z-index: 1;
+      isolation: isolate;
+    }
   }
   
   // Small tablets
@@ -773,6 +811,9 @@
     background-color: white;
     border-radius: 0.5rem;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    position: relative;
+    z-index: 1 !important; // Lower z-index than profile dropdown (100000)
+    isolation: isolate; // Create stacking context to prevent interference
     border: 1px solid #e5e7eb;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     
@@ -780,6 +821,7 @@
       transform: translateY(-2px);
       box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
       border-color: var(--color-indigo-300);
+      z-index: 1 !important; // Keep z-index low even on hover
     }
   }
 
@@ -1056,4 +1098,25 @@
       background: rgba(0, 0, 0, 0.3);
     }
   }
+}
+
+// CRITICAL FIX: Force profile dropdown above all content
+body {
+  .files-header__profile-backdrop,
+  .files-header__profile-dropdown {
+    position: fixed !important;
+    z-index: 999999 !important;
+  }
+}
+
+// Force all content below the dropdown
+.files-content,
+.files-content * {
+  z-index: auto !important;
+}
+
+// Only apply z-index to file/folder cards, keep them low
+.files-content .grid > div {
+  position: relative;
+  z-index: 1 !important;
 }
