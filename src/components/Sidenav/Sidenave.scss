@@ -1,86 +1,34 @@
 @use "./../../helpers/_functions.scss" as *;
 @use "./../../helpers/_variables.scss" as vars;
 
+// ===========================
+// MOBILE OVERLAY BACKDROP
+// ===========================
 .dropback {
     @include Breakpoints(mobile) {
-        background-color: #00000070;
+        background-color: rgba(0, 0, 0, 0.7);
         width: 100%;
         height: 100%;
         position: fixed;
         top: 0;
         left: 0;
-        z-index: 9999999 !important; // Below sidebar but above header on mobile
+        z-index: 9999;
         visibility: hidden;
         opacity: 0;
-        transition: 0.7s linear all;
-        -webkit-transition: 0.7s linear all;
-    }
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        pointer-events: none;
 
-    &.apper-dropback {
-        visibility: visible;
-        opacity: 1;
-        transition: 0.7s linear all;
-        -webkit-transition: 0.7s linear all;
-        z-index: 9999999 !important; // Below sidebar but above header on mobile
+        &.apper-dropback {
+            visibility: visible;
+            opacity: 1;
+            pointer-events: auto;
+        }
     }
 }
 
-.css-wx7wi4 {
-    color: white;
-}
-
-aside .main-side .ps-menu-button:hover {
-    background-color: rgba(255, 255, 255, 0.08) !important;
-    transform: translateX(4px);
-}
-
-[dir="rtl"] aside .main-side .ps-menu-button:hover {
-    transform: translateX(-4px);
-}
-
-.navbar__logo {
-    padding: 0 13px !important;
-    font-weight: bold;
-    color: #ffffff;
-    background: none;
-    text-decoration: none;
-
-    &.Open {
-        font-size: 2rem;
-    }
-
-    &.Close {
-        font-size: 1rem;
-    }
-}
-
-.css-ewdv3l {
-    width: 100% !important;
-    display: block !important;
-}
-
-.css-1tqrhto>.ps-menu-button {
-    transition: all 0.2s ease-in-out;
-    border-radius: 0.75rem;
-    margin: 0.03125rem 0.5rem;
-
-    &:hover {
-        background-color: rgba(255, 255, 255, 0.08) !important;
-        transform: translateX(4px);
-    }
-}
-
-[dir="rtl"] .css-1tqrhto>.ps-menu-button {
-    &:hover {
-        transform: translateX(-4px);
-    }
-}
-
-.MainItem:hover {
-    background-color: rgba(255, 255, 255, 0.08) !important;
-    border-radius: 0.75rem;
-}
-
+// ===========================
+// HAMBURGER MENU BUTTON
+// ===========================
 .bars {
     font-size: 28px;
     padding: 14px;
@@ -88,120 +36,72 @@ aside .main-side .ps-menu-button:hover {
     background: linear-gradient(135deg, vars.$BaseColor, vars.$Secondcolor);
     position: fixed;
     border-radius: 50%;
-    right: 40px;
-    left: auto;
-    bottom: 30px;
-    opacity: 0;
-    z-index: 950 !important; // Above sidebar to be clickable
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     cursor: pointer;
+    opacity: 0;
+    z-index: 10000001;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
-
-    [dir="rtl"] & {
-        right: auto;
-        left: 40px;
-    }
-
-    &:hover {
-        transform: scale(1.1);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-    }
+    display: none;
 
     @include Breakpoints(mobile) {
-        opacity: 1;
+        display: block;
+        right: 40px;
         bottom: 90px;
-        z-index: 10000001 !important; // Above sidebar and header on mobile
+        opacity: 1;
+
+        &:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
     }
 
     @include Breakpoints(small) {
         bottom: 90px;
     }
-}
-
-.allnav {
-    z-index: 800 !important; // Reduced from 10000000
-
-    // Dropback overlay for mobile
-    @include Breakpoints(mobile) {
-        z-index: 9999999 !important; // Below sidebar but above header on mobile
-    }
-
-    .Active {
-        background: linear-gradient(90deg, var(--color-indigo-600), rgba(79, 70, 229, 0.8)) !important;
-        border-left: 3px solid white;
-        font-weight: 600;
-    }
 
     [dir="rtl"] & {
-        .Active {
-            border-left: none;
-            border-right: 3px solid white;
-        }
+        right: auto;
+        left: 40px;
     }
+}
+
+// ===========================
+// NAV CONTAINER
+// ===========================
+.allnav {
+    z-index: 800;
 
     @include Breakpoints(mobile) {
-        width: 250px;
-        transition: 0.7s linear all;
-        -webkit-transition: 0.7s linear all;
-    }
+        z-index: 10000000;
+        position: fixed;
+        width: 100%;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: transparent;
+        pointer-events: none;
 
-    // When sidebar is visible (Hide = true, no apper class)
-    &:not(.apper) {
-        @include Breakpoints(mobile) {
-            .main-side {
-                transform: translateX(0) !important;
-                -webkit-transform: translateX(0) !important;
-            }
-
-            [dir="rtl"] & {
-                .main-side {
-                    transform: translateX(0) !important;
-                    -webkit-transform: translateX(0) !important;
-                }
-            }
-        }
-    }
-
-    // When sidebar is hidden (Hide = false, has apper class)
-    &.apper {
-        @include Breakpoints(mobile) {
-            width: 250px;
-            transition: 0.7s linear all;
-            -webkit-transition: 0.7s linear all;
-            transform: translateX(-100%);
-            -webkit-transform: translateX(-100%);
-
-            .main-side {
-                transform: translateX(-100%) !important;
-                -webkit-transform: translateX(-100%) !important;
-            }
-        }
-
-        [dir="rtl"] & {
-            @include Breakpoints(mobile) {
-                transform: translateX(100%);
-                -webkit-transform: translateX(100%);
-
-                .main-side {
-                    transform: translateX(100%) !important;
-                    -webkit-transform: translateX(100%) !important;
-                }
-            }
+        &.apper {
+            pointer-events: auto;
         }
     }
 }
 
+// ===========================
+// SIDEBAR NAVIGATION
+// ===========================
 aside {
     position: relative;
 
     @include Breakpoints(mobile) {
         position: fixed;
-        left: 0;
-        right: auto;
         top: 0;
-        z-index: 10000000 !important; // Above header (9999999) on mobile
+        left: 0;
         height: 100vh;
-        width: 250px;
+        z-index: 10000000;
+        pointer-events: auto;
     }
 
     [dir="rtl"] & {
@@ -211,106 +111,29 @@ aside {
         }
     }
 
-    .Remove_hover {
-        &:hover {
-            background-color: transparent !important;
-        }
-    }
-
-    .sidenav-bottom-actions {
-        margin-top: 0.5rem;
-        padding-top: 0.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.03125rem;
-    }
-
-    .LanguageToggle {
-        margin: 0.03125rem 0.5rem !important;
-        padding: 0.4rem 0.75rem !important;
-    }
-
-    .Logout {
-        margin: 0.03125rem 0.5rem !important;
-        padding: 0.4rem 0.75rem !important;
-    }
-
-    // Styles for collapsed sidebar
-    .main-side.collapsed {
-        .sidenav-bottom-actions {
-            margin-top: 0.5rem;
-            padding-top: 0.5rem;
-            gap: 0.25rem;
-            position: relative;
-            bottom: auto;
-        }
-
-        .LanguageToggle {
-            margin: 0.125rem 0.25rem !important;
-            padding: 0.5rem !important;
-            position: relative !important;
-            bottom: auto !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-        }
-
-        .Logout {
-            margin: 0.125rem 0.25rem !important;
-            padding: 0.5rem !important;
-            position: relative !important;
-            bottom: auto !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-        }
-    }
-
     .main-side {
-        &::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        /* Track */
-        &::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        /* Handle */
-        &::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-
-            &:hover {
-                background: rgba(255, 255, 255, 0.3);
-            }
-        }
-
         background: radial-gradient(circle at 20% 30%, var(--color-indigo-600) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, var(--color-indigo-500) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, var(--color-indigo-400) 0%, transparent 70%),
-        linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-indigo-600) 100%);
+            radial-gradient(circle at 80% 70%, var(--color-indigo-500) 0%, transparent 50%),
+            radial-gradient(circle at 50% 50%, var(--color-indigo-400) 0%, transparent 70%),
+            linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-indigo-600) 100%);
         position: fixed;
         width: 250px;
         height: 100vh;
         top: 0;
         left: 0;
-        right: auto;
-        z-index: 100 !important; // Desktop sidebar behind content
-        transition: 0.3s linear all;
-        -webkit-transition: 0.3s linear all;
-        overflow-y: auto !important;
+        z-index: 100;
+        transition: all 0.3s linear;
+        overflow-y: auto;
         overflow-x: hidden;
         box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
         padding-bottom: 100px;
-        
-        // Custom scrollbar styling for sidebar
+
+        // Custom scrollbar
         &::-webkit-scrollbar {
             width: 4px;
         }
         &::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
         }
         &::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.3);
@@ -326,321 +149,75 @@ aside {
             box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
         }
 
+        // MOBILE: Hidden by default
         @include Breakpoints(mobile) {
-            z-index: 10000000 !important; // Above header (9999999) on mobile
             width: 250px;
-            height: 100% !important;
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            transform: translateX(-100%); // Hidden by default
-            transition: transform 0.3s linear;
-            -webkit-transition: transform 0.3s linear;
-        }
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translateX(-250px);
+            transition: transform 0.3s ease;
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
 
-        @include Breakpoints(small) {
-            width: 250px;
-        }
+            [dir="rtl"] & {
+                transform: translateX(250px);
+            }
 
-        // Mobile: Show sidebar by default (no transform)
-        &.show {
-            @include Breakpoints(mobile) {
+            // Show sidebar
+            &.show {
                 transform: translateX(0) !important;
-                -webkit-transform: translateX(0) !important;
-            }
 
-            [dir="rtl"] & {
-                @include Breakpoints(mobile) {
+                [dir="rtl"] & {
                     transform: translateX(0) !important;
-                    -webkit-transform: translateX(0) !important;
+                }
+            }
+
+            // Hide sidebar
+            &.hide {
+                transform: translateX(-250px) !important;
+
+                [dir="rtl"] & {
+                    transform: translateX(250px) !important;
                 }
             }
         }
 
-        // Mobile: Hide sidebar with negative transform
-        &.hide {
-            @include Breakpoints(mobile) {
-                transform: translateX(-100%) !important;
-                -webkit-transform: translateX(-100%) !important;
-            }
-
-            [dir="rtl"] & {
-                @include Breakpoints(mobile) {
-                    transform: translateX(100%) !important;
-                    -webkit-transform: translateX(100%) !important;
-                }
-            }
-        }
-
+        // COLLAPSED STATE
         &.collapsed {
             width: 78px;
-            transition: 0.3s linear all;
-            -webkit-transition: 0.3s linear all;
-            overflow: hidden !important;
-            position: fixed !important;
-            top: 0 !important;
-            height: 100vh !important;
-            contain: layout style paint !important;
-            z-index: 100 !important;
 
             @include Breakpoints(mobile) {
-                width: 250px; // Keep full width on mobile even when "collapsed"
-                z-index: 10000000 !important; // Above header on mobile
-            }
-
-            [dir="rtl"] & {
-                left: auto;
-                right: 0;
-            }
-
-            // Target react-pro-sidebar menu
-            .ps-menuitem-root {
-                max-width: 78px !important;
-                overflow: hidden !important;
-            }
-
-            // CRITICAL: Hide all submenu content when collapsed
-            .ps-submenu-root {
-                max-width: 78px !important;
-                overflow: hidden !important;
-                width: 100% !important;
-            }
-
-            .ps-submenu-content {
-                display: none !important;
-                visibility: hidden !important;
-                opacity: 0 !important;
-                height: 0 !important;
-                max-height: 0 !important;
-                min-height: 0 !important;
-                overflow: hidden !important;
-                overflow-y: hidden !important;
-                overflow-x: hidden !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                border: none !important;
-                position: absolute !important;
-                left: -99999px !important;
-                top: -99999px !important;
-                width: 0 !important;
-                pointer-events: none !important;
-                clip-path: polygon(0 0, 0 0, 0 0, 0 0) !important;
-                transform: scale(0) translateX(-100%) !important;
-            }
-
-            // Hide all items inside submenus when collapsed
-            .sidenav-files-tree-item,
-            .sidenav-empty-folder,
-            .sidenav-folder-submenu {
-                display: none !important;
-                visibility: hidden !important;
-                opacity: 0 !important;
-                height: 0 !important;
-                max-height: 0 !important;
-                min-height: 0 !important;
-                overflow: hidden !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                border: none !important;
-                pointer-events: none !important;
-                clip-path: polygon(0 0, 0 0, 0 0, 0 0) !important;
-                position: absolute !important;
-                left: -99999px !important;
-                width: 0 !important;
-            }
-            
-            // Keep All Files submenu root visible but hide content
-            .sidenav-files-submenu {
-                .ps-submenu-root {
-                    display: flex !important;
-                    visibility: visible !important;
-                    opacity: 1 !important;
-                    
-                    .ps-menu-button .ps-menu-label,
-                    .ps-menu-button span {
-                        color: white !important;
-                    }
-                }
-                
-                .ps-submenu-content {
-                    display: none !important;
-                }
+                width: 250px;
+                transform: translateX(-250px);
             }
 
             .ps-menu-button {
-                padding: 0.5rem !important;
-                margin: 0.125rem 0.25rem !important;
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                min-width: auto !important;
-                overflow: hidden !important;
-                position: relative !important;
+                padding: 0.5rem;
+                margin: 0.125rem 0.25rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
 
-                // Hide text label when collapsed
                 .ps-menu-label {
-                    display: none !important;
-                    width: 0 !important;
-                    overflow: hidden !important;
+                    display: none;
                 }
 
-                // Ensure icon wrapper is visible and centered
                 >*:first-child {
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    visibility: visible !important;
-                    opacity: 1 !important;
-                    margin: 0 auto !important;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    visibility: visible;
+                    opacity: 1;
+                    margin: 0 auto;
                 }
 
-                // Hide submenu arrow when collapsed
                 .ps-submenu-expand-icon {
-                    display: none !important;
-                }
-
-                // Show tooltip on hover when collapsed - appears inside the sidebar
-                &[title]:not([title=""]),
-                &[data-tooltip]:not([data-tooltip=""]) {
-                    position: relative;
-                    overflow: visible !important;
-
-                    &::after {
-                        z-index: 10000;
-                    }
-
-                    &::after {
-                        content: attr(title) attr(data-tooltip);
-                        position: absolute;
-                        left: 45px;
-                        right: auto;
-                        top: 50%;
-                        transform: translateY(-50%);
-                        background-color: rgba(0, 0, 0, 0.95);
-                        color: white;
-                        padding: 0.4rem 0.6rem;
-                        border-radius: 0.5rem;
-                        font-size: 0.8rem;
-                        white-space: nowrap;
-                        opacity: 0;
-                        pointer-events: none;
-                        transition: opacity 0.2s ease-in-out;
-                        z-index: 10000;
-                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-                        max-width: 150px;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                    }
-
-                    [dir="rtl"] & {
-                        &::after {
-                            left: auto;
-                            right: 45px;
-                        }
-                    }
-
-                    &:hover::after {
-                        opacity: 1;
-                        pointer-events: auto;
-                    }
-                }
-            }
-
-            .menu-items {
-                padding: 0.5rem !important;
-                justify-content: center !important;
-                gap: 0;
-                text-align: center;
-
-                // Ensure icons are visible and centered
-                .icon,
-                svg,
-                [class*="icon"] {
-                    display: block !important;
-                    visibility: visible !important;
-                    opacity: 1 !important;
-                    width: 20px !important;
-                    height: 20px !important;
-                    min-width: 20px !important;
-                    margin: 0 auto !important;
-                    flex-shrink: 0 !important;
-                }
-            }
-
-            .close {
-                margin: 0.5rem auto !important;
-                padding: 0.5rem !important;
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                width: auto !important;
-
-                >*:first-child {
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    margin: 0 auto !important;
-                }
-            }
-
-            // Language toggle and Logout tooltips when collapsed
-            .sidenav-bottom-actions {
-
-                .LanguageToggle,
-                .Logout {
-
-                    svg,
-                    .icon {
-                        margin: 0 auto !important;
-                        font-size: 20px;
-                        width: 20px;
-                        height: 20px;
-                        min-width: 20px;
-                    }
-
-                    // Tooltip when collapsed - appears inside the sidebar
-                    &[data-tooltip]:not([data-tooltip=""]) {
-                        overflow: visible !important;
-
-                        &::after {
-                            content: attr(data-tooltip);
-                            position: absolute;
-                            left: 45px;
-                            right: auto;
-                            top: 50%;
-                            transform: translateY(-50%);
-                            background-color: rgba(0, 0, 0, 0.95);
-                            color: white;
-                            padding: 0.4rem 0.6rem;
-                            border-radius: 0.5rem;
-                            font-size: 0.8rem;
-                            white-space: nowrap;
-                            opacity: 0;
-                            pointer-events: none;
-                            transition: opacity 0.2s ease-in-out;
-                            z-index: 10000;
-                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-                            max-width: 150px;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                        }
-
-                        [dir="rtl"] & {
-                            &::after {
-                                left: auto;
-                                right: 45px;
-                            }
-                        }
-
-                        &:hover::after {
-                            opacity: 1;
-                            pointer-events: auto;
-                        }
-                    }
+                    display: none;
                 }
             }
         }
 
+        // MENU ITEMS
         .ps-menu-button {
             font-size: 0.9375rem;
             font-weight: 500;
@@ -651,61 +228,43 @@ aside {
             position: relative;
 
             &:hover {
-                background-color: rgba(255, 255, 255, 0.08) !important;
+                background-color: rgba(255, 255, 255, 0.08);
+                transform: translateX(4px);
+
+                [dir="rtl"] & {
+                    transform: translateX(-4px);
+                }
             }
         }
 
         .menu-items {
             color: rgba(255, 255, 255, 0.95);
-            background-color: transparent;
             font-size: 0.9375rem;
             font-weight: 500;
-            letter-spacing: 0.01em;
             padding: 0.4rem 0.75rem;
             display: flex;
             align-items: center;
             gap: 0.75rem;
             transition: all 0.2s ease-in-out;
-            margin: 0;
         }
 
-        .Logo {
-            width: 48px;
-            height: 48px;
-            transition: 0.3s linear all;
-            -webkit-transition: 0.3s linear all;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-            flex-shrink: 0;
+        // ACTIVE STATE
+        .Active {
+            background: linear-gradient(90deg, var(--color-indigo-600), rgba(79, 70, 229, 0.8));
+            border-left: 3px solid white;
+            font-weight: 600;
+
+            [dir="rtl"] & {
+                border-left: none;
+                border-right: 3px solid white;
+            }
         }
 
-        .Logo-colaps {
-            width: 40px;
-            height: 40px;
-            border-radius: 5px;
-            padding: 2px;
-            transition: 0.3s linear all;
-            -webkit-transition: 0.3s linear all;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-            flex-shrink: 0;
-        }
-
-        .sidenav-logo-text {
-            color: white;
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: 0.02em;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
+        // LOGO
         .sidenav-logo-container {
-            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: row;
             gap: 0.75rem;
             margin: 0.5rem 0 0.75rem 0;
             padding: 0 0.5rem;
@@ -716,1018 +275,80 @@ aside {
             }
         }
 
-        .sidenav-logo-link {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: row;
-            gap: 0.75rem;
-            text-decoration: none;
-            transition: all 0.3s ease;
-
-            .main-side.collapsed & {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
+        .sidenav-logo-text {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 700;
+            white-space: nowrap;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        .sidenav-notification-bell {
-            position: absolute;
-            top: 0;
-            right: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-            z-index: 10;
-
-            &:hover {
-                background: rgba(255, 255, 255, 0.2);
-                transform: scale(1.1);
-                color: white;
-            }
-
-            .notification-icon {
-                font-size: 20px;
-                width: 20px;
-                height: 20px;
-            }
-
-            .notification-badge {
-                position: absolute;
-                top: -4px;
-                right: -4px;
-                background: #ef4444;
-                color: white;
-                font-size: 10px;
-                font-weight: 700;
-                border-radius: 50%;
-                min-width: 18px;
-                height: 18px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 0 4px;
-                border: 2px solid var(--color-indigo-700);
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            }
-
-            &[data-tooltip]:not([data-tooltip=""]) {
-                position: relative;
-                overflow: visible !important;
-
-                &::after {
-                    content: attr(data-tooltip);
-                    position: absolute;
-                    left: 45px;
-                    right: auto;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    background-color: rgba(0, 0, 0, 0.95);
-                    color: white;
-                    padding: 0.4rem 0.6rem;
-                    border-radius: 0.5rem;
-                    font-size: 0.8rem;
-                    white-space: nowrap;
-                    opacity: 0;
-                    pointer-events: none;
-                    transition: opacity 0.2s ease-in-out;
-                    z-index: 10000;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-                    max-width: 150px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-
-                [dir="rtl"] & {
-                    &::after {
-                        left: auto;
-                        right: 45px;
-                    }
-                }
-
-                &:hover::after {
-                    opacity: 1;
-                    pointer-events: auto;
-                }
-            }
+        .Logo {
+            width: 48px;
+            height: 48px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+            flex-shrink: 0;
         }
 
-        .main-side.collapsed {
-            .sidenav-logo-container {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .sidenav-notification-bell {
-                position: static;
-                margin-top: 0.5rem;
-                width: 40px;
-                height: 40px;
-            }
-        }
-
+        // ICON
         .icon {
             color: rgba(255, 255, 255, 0.9);
             font-size: 20px;
             width: 20px;
             height: 20px;
             min-width: 20px;
+            flex-shrink: 0;
             transition: all 0.2s ease-in-out;
-            flex-shrink: 0;
-            display: inline-block;
+
+            &.Active {
+                color: white;
+                transform: scale(1.1);
+            }
         }
 
-        .icon.Active {
+        // FILES & FOLDERS
+        .sidenav-files-tree-item {
+            padding: 0.375rem 0.5rem;
+            margin: 0.0625rem 0.375rem;
+            font-size: 0.8125rem;
             color: white;
-            transform: scale(1.1);
-        }
-    }
-
-    // Files and Folders Tree
-    .sidenav-files-submenu {
-        transition: all 0.3s ease;
-        
-        .ps-submenu-root {
-            .ps-menu-button {
-                color: white !important;
-                font-weight: 600 !important;
-                font-size: 0.9375rem !important;
-                transition: all 0.2s ease;
-
-                .ps-menu-label {
-                    color: white !important;
-                    font-weight: 600 !important;
-                    transition: opacity 0.2s ease;
-                }
-                
-                // Ensure all text inside is white
-                span,
-                * {
-                    color: white !important;
-                }
-
-                &:hover {
-                    background-color: rgba(255, 255, 255, 0.15) !important;
-                    color: white !important;
-                }
-            }
-        }
-        
-        // Ensure All Files text is white everywhere
-        .ps-menu-label,
-        span {
-            color: white !important;
-        }
-
-        // Show content only when submenu is open
-        .ps-submenu-root[aria-expanded="true"] {
-            .ps-submenu-content {
-                max-height: 400px !important; // Limit height to allow scrolling (same logic as folders)
-                overflow-y: auto !important; // Enable vertical scrolling
-                overflow-x: hidden !important;
-                padding: 4px 0;
-                background: transparent !important;
-                background-color: transparent !important;
-                transition: all 0.3s ease;
-                opacity: 1 !important;
-                visibility: visible !important;
-                display: block !important;
-                height: auto !important;
-                
-                // Custom scrollbar styling (same as folders)
-                &::-webkit-scrollbar {
-                    width: 4px;
-                }
-                &::-webkit-scrollbar-track {
-                    background: rgba(255, 255, 255, 0.1);
-                    border-radius: 2px;
-                }
-                &::-webkit-scrollbar-thumb {
-                    background: rgba(255, 255, 255, 0.3);
-                    border-radius: 2px;
-                    &:hover {
-                        background: rgba(255, 255, 255, 0.5);
-                    }
-                }
-            }
-        }
-        
-        // Force background color for submenu content - transparent to match sidebar
-        .ps-submenu-content {
-            background: transparent !important;
-            background-color: transparent !important;
-        }
-        
-        // Hide all content when submenu is closed (same logic as All Files)
-        .ps-submenu-root:not([aria-expanded="true"]) {
-            .ps-submenu-content {
-                display: none !important;
-                visibility: hidden !important;
-                opacity: 0 !important;
-                height: 0 !important;
-                max-height: 0 !important;
-                overflow: hidden !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-            
-            // Hide all items when submenu is closed (same as All Files)
-            .sidenav-files-tree-item,
-            .sidenav-empty-folder,
-            .sidenav-folder-submenu {
-                display: none !important;
-                visibility: hidden !important;
-                opacity: 0 !important;
-                height: 0 !important;
-                overflow: hidden !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-        }
-    }
-
-    // Folder SubMenu
-    .sidenav-folder-submenu {
-        transition: all 0.3s ease;
-        
-        .ps-submenu-root {
-            .ps-menu-button {
-                color: white !important;
-                font-weight: 500 !important;
-                transition: all 0.2s ease;
-                position: relative;
-
-                .ps-menu-label {
-                    color: white !important;
-                    font-weight: 500 !important;
-                    transition: opacity 0.2s ease;
-                    cursor: pointer;
-                    flex: 1;
-                    
-                    // Add a small icon or indicator for navigation
-                    &::after {
-                        content: '→';
-                        margin-left: 0.5rem;
-                        opacity: 0;
-                        transition: opacity 0.2s ease;
-                        font-size: 0.875rem;
-                    }
-                }
-                
-                &:hover {
-                    background-color: rgba(255, 255, 255, 0.12) !important;
-                    color: white !important;
-                    
-                    .ps-menu-label::after {
-                        opacity: 0.6;
-                    }
-                }
-            }
-        }
-
-        // Default state - same as All Files
-        .ps-submenu-content {
-            background: transparent !important;
-            background-color: transparent !important;
-            transition: all 0.3s ease;
-        }
-    }
-
-    .sidenav-folder-wrapper {
-        display: flex;
-        align-items: center;
-    }
-    
-    // CRITICAL: Force show folder content when folder is open (outside collapsed rules)
-    // This must be outside .main-side.collapsed to override those rules
-    // Support both aria-expanded and class-based detection
-    // Same logic as All Files submenu
-    .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .ps-submenu-content,
-    .sidenav-folder-submenu .ps-submenu-root.ps-open .ps-submenu-content,
-    .sidenav-folder-submenu .ps-submenu-root.ps-menu-open .ps-submenu-content {
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        height: auto !important;
-        max-height: 250px !important; // Reduced height to show dropdown fully (same logic as All Files)
-        overflow-y: auto !important; // Enable vertical scrolling
-        overflow-x: hidden !important;
-        padding: 4px 0 !important;
-        margin: 0 !important;
-        position: relative !important;
-        left: auto !important;
-        top: auto !important;
-        width: auto !important;
-        pointer-events: auto !important;
-        clip-path: none !important;
-        transform: none !important;
-        
-        // Custom scrollbar styling (same as All Files)
-        &::-webkit-scrollbar {
-            width: 4px;
-        }
-        &::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-        }
-        &::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
-            &:hover {
-                background: rgba(255, 255, 255, 0.5);
-            }
-        }
-    }
-    
-    // CRITICAL: Force show folder items when folder is open
-    .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .ps-submenu-content .sidenav-files-tree-item,
-    .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .ps-submenu-content .sidenav-empty-folder,
-    .sidenav-folder-submenu .ps-submenu-root.ps-open .ps-submenu-content .sidenav-files-tree-item,
-    .sidenav-folder-submenu .ps-submenu-root.ps-open .ps-submenu-content .sidenav-empty-folder,
-    .sidenav-folder-submenu .ps-submenu-root.ps-menu-open .ps-submenu-content .sidenav-files-tree-item,
-    .sidenav-folder-submenu .ps-submenu-root.ps-menu-open .ps-submenu-content .sidenav-empty-folder {
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        height: auto !important;
-        max-height: none !important;
-        min-height: auto !important;
-        overflow: visible !important;
-        padding: 0.375rem 0.5rem !important; // Reduced padding
-        margin: 0 !important;
-        border: none !important;
-        pointer-events: auto !important;
-        clip-path: none !important;
-        position: relative !important;
-        left: auto !important;
-        top: auto !important;
-        width: auto !important;
-        font-size: 0.8125rem !important; // Slightly smaller font
-        line-height: 1.3 !important; // Tighter line height
-    }
-
-    .sidenav-empty-folder {
-        padding: 0.5rem 0.75rem;
-        margin: 0.125rem 0.5rem;
-        font-size: 0.875rem;
-        color: rgba(255, 255, 255, 0.75);
-        font-style: italic;
-        padding-left: 2rem;
-    }
-    
-    // CRITICAL: Force show folder files when folder is open (outside .main-side.collapsed)
-    // This must override all collapsed rules
-    .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .ps-submenu-content .sidenav-files-tree-item,
-    .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .ps-submenu-content .sidenav-empty-folder {
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        height: auto !important;
-        max-height: none !important;
-        min-height: auto !important;
-        overflow: visible !important;
-        padding: 0.375rem 0.5rem !important;
-        margin: 0 !important;
-        border: none !important;
-        pointer-events: auto !important;
-        clip-path: none !important;
-        position: relative !important;
-        left: auto !important;
-        top: auto !important;
-        width: auto !important;
-        transition: all 0.3s ease !important;
-    }
-
-    .sidenav-files-tree-item {
-        padding: 0.375rem 0.5rem !important; // Reduced padding
-        margin: 0.0625rem 0.375rem !important; // Reduced margin
-        font-size: 0.8125rem !important; // Slightly smaller font
-        color: white !important;
-        font-weight: 500 !important;
-        transition: all 0.2s ease;
-        border-radius: 6px !important;
-        overflow: hidden !important;
-        opacity: 1;
-        visibility: visible;
-        display: flex !important;
-        align-items: center;
-        max-width: 100%;
-        width: auto;
-        line-height: 1.3 !important; // Tighter line height
-
-        &:hover {
-            background: rgba(255, 255, 255, 0.2) !important;
-            color: white !important;
-            transform: translateX(4px);
-
-            [dir="rtl"] & {
-                transform: translateX(-4px);
-            }
-        }
-
-        &--file {
-            padding-left: 2rem !important;
-            color: white !important;
-        }
-
-        .sidenav-files-tree-icon {
-            width: 18px;
-            height: 18px;
-            flex-shrink: 0;
-            margin-right: 0.5rem;
-            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
-            transition: all 0.2s ease;
-        }
-
-        .ps-menu-label {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
             font-weight: 500;
-            color: white !important;
-            max-width: calc(250px - 4rem);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             transition: all 0.2s ease;
-        }
-    }
 
-    // Hide submenu content when sidebar is collapsed - with maximum specificity
-    .main-side.collapsed {
-        // Contain submenu overflow - CRITICAL
-        .ps-submenu-root {
-            max-width: 78px !important;
-            overflow: hidden !important;
-            width: 100% !important;
-            position: relative !important;
-        }
+            &:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: translateX(4px);
 
-        .ps-menuitem-root {
-            max-width: 78px !important;
-            overflow: hidden !important;
-        }
-
-        // Hide all submenu content - multiple selectors for complete coverage
-        // BUT only when sidebar is collapsed - allow folders to show when expanded
-        .sidenav-files-submenu .ps-submenu-content {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            height: 0 !important;
-            max-height: 0 !important;
-            min-height: 0 !important;
-            overflow: hidden !important;
-            overflow-y: hidden !important;
-            overflow-x: hidden !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            border: none !important;
-            position: absolute !important;
-            left: -99999px !important;
-            top: -99999px !important;
-            width: 0 !important;
-            pointer-events: none !important;
-            clip-path: polygon(0 0, 0 0, 0 0, 0 0) !important;
-            transform: scale(0) translateX(-100%) !important;
-        }
-        
-        // Hide folder submenu content only when not expanded (same logic as All Files)
-        .sidenav-folder-submenu .ps-submenu-root:not([aria-expanded="true"]) .ps-submenu-content {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            height: 0 !important;
-            max-height: 0 !important;
-            overflow: hidden !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-        
-        // Hide folder items when folder is closed (same logic as All Files)
-        .sidenav-folder-submenu .ps-submenu-root:not([aria-expanded="true"]) .ps-submenu-content .sidenav-files-tree-item,
-        .sidenav-folder-submenu .ps-submenu-root:not([aria-expanded="true"]) .ps-submenu-content .sidenav-empty-folder {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            height: 0 !important;
-            overflow: hidden !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-        
-        // IMPORTANT: Override collapsed sidebar rules when folder is expanded
-        // Use maximum specificity to ensure this rule takes precedence
-        // Same logic as All Files - show content when expanded
-        aside .main-side.collapsed .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .ps-submenu-content,
-        .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .ps-submenu-content {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            height: auto !important;
-            max-height: 250px !important; // Same as All Files logic - limit height with scroll
-            overflow-y: auto !important; // Enable scrolling like All Files
-            overflow-x: hidden !important;
-            padding: 4px 0 !important;
-            margin: 0 !important;
-            position: relative !important;
-            left: auto !important;
-            top: auto !important;
-            width: auto !important;
-            pointer-events: auto !important;
-            clip-path: none !important;
-            transform: none !important;
-            
-            // Custom scrollbar styling (same as All Files)
-            &::-webkit-scrollbar {
-                width: 4px;
-            }
-            &::-webkit-scrollbar-track {
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 2px;
-            }
-            &::-webkit-scrollbar-thumb {
-                background: rgba(255, 255, 255, 0.3);
-                border-radius: 2px;
-                &:hover {
-                    background: rgba(255, 255, 255, 0.5);
-                }
-            }
-        }
-
-        // Hide all items inside submenus when collapsed
-        // BUT allow folder items to show when folder is expanded
-        .sidenav-files-submenu .sidenav-files-tree-item,
-        .sidenav-files-submenu .sidenav-empty-folder,
-        .sidenav-files-tree-item,
-        .sidenav-empty-folder {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            height: 0 !important;
-            max-height: 0 !important;
-            min-height: 0 !important;
-            overflow: hidden !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            border: none !important;
-            pointer-events: none !important;
-            clip-path: polygon(0 0, 0 0, 0 0, 0 0) !important;
-            position: absolute !important;
-            left: -99999px !important;
-            width: 0 !important;
-            transition: all 0.3s ease !important;
-        }
-        
-        // IMPORTANT: Show folder submenu items when folder is expanded
-        // Use higher specificity to override collapsed sidebar rules
-        // Support both aria-expanded and class-based detection
-        .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .ps-submenu-content .sidenav-files-tree-item,
-        .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .ps-submenu-content .sidenav-empty-folder,
-        .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .sidenav-files-tree-item,
-        .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] .sidenav-empty-folder,
-        .sidenav-folder-submenu .ps-submenu-root.ps-open .ps-submenu-content .sidenav-files-tree-item,
-        .sidenav-folder-submenu .ps-submenu-root.ps-open .ps-submenu-content .sidenav-empty-folder,
-        .sidenav-folder-submenu .ps-submenu-root.ps-menu-open .ps-submenu-content .sidenav-files-tree-item,
-        .sidenav-folder-submenu .ps-submenu-root.ps-menu-open .ps-submenu-content .sidenav-empty-folder {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            height: auto !important;
-            max-height: none !important;
-            min-height: auto !important;
-            overflow: visible !important;
-            padding: 0.375rem 0.5rem !important; // Same padding as other files
-            margin: 0 !important;
-            border: none !important;
-            pointer-events: auto !important;
-            clip-path: none !important;
-            position: relative !important;
-            left: auto !important;
-            top: auto !important;
-            width: auto !important;
-            transition: all 0.3s ease !important;
-        }
-    }
-    
-    // Keep submenu root visible but hide content
-    .sidenav-files-submenu,
-    .sidenav-folder-submenu {
-        .ps-submenu-root {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-    }
-}
-
-// CRITICAL FIX: Ensure folder content shows when expanded
-// Place this OUTSIDE the .main-side.collapsed block
-.sidenav-folder-submenu {
-    // When folder is expanded, ALWAYS show content
-    .ps-submenu-root[aria-expanded="true"] {
-        .ps-submenu-content {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            height: auto !important;
-            max-height: 300px !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
-            padding: 4px 0 !important;
-            margin: 0 !important;
-            position: relative !important;
-            pointer-events: auto !important;
-            background: transparent !important;
-            z-index: 100 !important;
-        }
-        
-        // Show all items inside expanded folder
-        .sidenav-files-tree-item,
-        .sidenav-empty-folder {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            height: auto !important;
-            max-height: none !important;
-            overflow: visible !important;
-            padding: 0.375rem 0.5rem !important;
-            margin: 0 !important;
-            pointer-events: auto !important;
-            position: relative !important;
-            width: auto !important;
-        }
-    }
-    
-    // When folder is closed, hide content
-    .ps-submenu-root:not([aria-expanded="true"]) {
-        .ps-submenu-content {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            height: 0 !important;
-            max-height: 0 !important;
-            overflow: hidden !important;
-            pointer-events: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-        
-        .sidenav-files-tree-item,
-        .sidenav-empty-folder {
-            display: none !important;
-        }
-    }
-}
-
-// CRITICAL: Override collapsed state for expanded folders
-.main-side.collapsed {
-    .sidenav-folder-submenu {
-        .ps-submenu-root[aria-expanded="true"] {
-            .ps-submenu-content {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                height: auto !important;
-                max-height: 300px !important;
-                overflow-y: auto !important;
-                position: fixed !important;
-                left: 78px !important;
-                top: auto !important;
-                width: 200px !important;
-                background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
-                border-radius: 8px !important;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-                z-index: 1000 !important;
-                pointer-events: auto !important;
-                padding: 8px 0 !important;
-            }
-            
-            .sidenav-files-tree-item,
-            .sidenav-empty-folder {
-                display: flex !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                height: auto !important;
-                max-height: none !important;
-                pointer-events: auto !important;
-                padding: 0.375rem 0.5rem !important;
-            }
-        }
-    }
-}
-
-.allnav aside .main-side {
-    .sidenav-folder-submenu {
-        .ps-submenu-root.ps-open,
-        .ps-submenu-root[aria-expanded="true"] {
-            > .ps-submenu-content {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                height: auto !important;
-                max-height: 300px !important;
-                min-height: auto !important;
-                overflow-y: auto !important;
-                overflow-x: hidden !important;
-                padding: 4px 0 !important;
-                margin: 0 !important;
-                position: relative !important;
-                left: auto !important;
-                top: auto !important;
-                right: auto !important;
-                bottom: auto !important;
-                width: auto !important;
-                pointer-events: auto !important;
-                clip-path: none !important;
-                transform: none !important;
-                background: transparent !important;
-                transition: all 0.3s ease !important;
-                
-                &::-webkit-scrollbar {
-                    width: 4px;
-                }
-                &::-webkit-scrollbar-track {
-                    background: rgba(255, 255, 255, 0.1);
-                    border-radius: 2px;
-                }
-                &::-webkit-scrollbar-thumb {
-                    background: rgba(255, 255, 255, 0.3);
-                    border-radius: 2px;
-                }
-            }
-            
-            .ps-submenu-content .sidenav-files-tree-item,
-            .ps-submenu-content .sidenav-empty-folder,
-            .sidenav-files-tree-item,
-            .sidenav-empty-folder {
-                display: flex !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                height: auto !important;
-                max-height: none !important;
-                min-height: auto !important;
-                overflow: visible !important;
-                padding: 0.375rem 0.75rem !important;
-                margin: 0.0625rem 0.375rem !important;
-                border: none !important;
-                pointer-events: auto !important;
-                clip-path: none !important;
-                position: relative !important;
-                left: auto !important;
-                top: auto !important;
-                width: auto !important;
-                font-size: 0.8125rem !important;
-                color: white !important;
-                border-radius: 6px !important;
-                transition: all 0.2s ease !important;
-                
-                &:hover {
-                    background: rgba(255, 255, 255, 0.15) !important;
-                }
-            }
-        }
-        
-        .ps-submenu-root:not(.ps-open):not([aria-expanded="true"]) {
-            > .ps-submenu-content {
-                display: none !important;
-                height: 0 !important;
-                overflow: hidden !important;
-            }
-        }
-    }
-}
-
-.allnav aside .main-side.collapsed {
-    .sidenav-folder-submenu {
-        .ps-submenu-root.ps-open,
-        .ps-submenu-root[aria-expanded="true"] {
-            > .ps-submenu-content {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                height: auto !important;
-                max-height: 300px !important;
-                overflow-y: auto !important;
-                position: fixed !important;
-                left: 78px !important;
-                top: auto !important;
-                width: 220px !important;
-                background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
-                border-radius: 8px !important;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
-                z-index: 1000 !important;
-                padding: 8px 0 !important;
-                pointer-events: auto !important;
-                
                 [dir="rtl"] & {
-                    left: auto !important;
-                    right: 78px !important;
+                    transform: translateX(-4px);
                 }
             }
-            
-            .ps-submenu-content .sidenav-files-tree-item,
-            .ps-submenu-content .sidenav-empty-folder {
-                display: flex !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                height: auto !important;
-                padding: 0.5rem 0.75rem !important;
-                pointer-events: auto !important;
+
+            &--file {
+                padding-left: 2rem;
+            }
+
+            .ps-menu-label {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                color: white;
             }
         }
-    }
-}
 
-.allnav aside .main-side .sidenav-folder-submenu .ps-submenu-root.ps-open > .ps-submenu-content,
-.allnav aside .main-side .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] > .ps-submenu-content,
-.allnav aside .main-side .sidenav-folder-submenu .ps-submenu-root.ps-open > div[data-testid="ps-submenu-content-test-id"],
-.allnav aside .main-side .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] > div[data-testid="ps-submenu-content-test-id"],
-.allnav aside .main-side .sidenav-folder-submenu .ps-submenu-root.ps-open > .ps-submenu-content.ps-open,
-.allnav aside .main-side .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] > .ps-submenu-content.ps-open {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    height: auto !important;
-    max-height: 300px !important;
-    min-height: auto !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    padding: 4px 0 !important;
-    margin: 0 !important;
-    position: relative !important;
-    left: auto !important;
-    top: auto !important;
-    right: auto !important;
-    bottom: auto !important;
-    width: auto !important;
-    pointer-events: auto !important;
-    clip-path: none !important;
-    transform: none !important;
-    background: transparent !important;
-    transition: all 0.3s ease !important;
-}
-
-.allnav aside .main-side .sidenav-folder-submenu .ps-submenu-root.ps-open > .ps-submenu-content .sidenav-files-tree-item,
-.allnav aside .main-side .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] > .ps-submenu-content .sidenav-files-tree-item,
-.allnav aside .main-side .sidenav-folder-submenu .ps-submenu-root.ps-open > .ps-submenu-content .sidenav-empty-folder,
-.allnav aside .main-side .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] > .ps-submenu-content .sidenav-empty-folder,
-.allnav aside .main-side .sidenav-folder-submenu .ps-submenu-root.ps-open > div[data-testid="ps-submenu-content-test-id"] .sidenav-files-tree-item,
-.allnav aside .main-side .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] > div[data-testid="ps-submenu-content-test-id"] .sidenav-files-tree-item,
-.allnav aside .main-side .sidenav-folder-submenu .ps-submenu-root.ps-open > div[data-testid="ps-submenu-content-test-id"] .sidenav-empty-folder,
-.allnav aside .main-side .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] > div[data-testid="ps-submenu-content-test-id"] .sidenav-empty-folder {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    height: auto !important;
-    max-height: none !important;
-    min-height: auto !important;
-    overflow: visible !important;
-    padding: 0.375rem 0.75rem !important;
-    margin: 0.0625rem 0.375rem !important;
-    border: none !important;
-    pointer-events: auto !important;
-    clip-path: none !important;
-    position: relative !important;
-    left: auto !important;
-    top: auto !important;
-    width: auto !important;
-    font-size: 0.8125rem !important;
-    color: white !important;
-    border-radius: 6px !important;
-    transition: all 0.2s ease !important;
-}
-
-.allnav aside .main-side:not(.collapsed) {
-    .sidenav-folder-submenu {
-        .ps-submenu-root[aria-expanded="true"],
-        .ps-submenu-root.ps-open {
-            > .ps-submenu-content {
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                height: auto !important;
-                max-height: 300px !important;
-                overflow-y: auto !important;
-                overflow-x: hidden !important;
-                padding: 4px 0 !important;
-                margin: 0 !important;
-                position: relative !important;
-                left: auto !important;
-                top: auto !important;
-                width: auto !important;
-                pointer-events: auto !important;
-                clip-path: none !important;
-                transform: none !important;
-                background: transparent !important;
-                
-                &::-webkit-scrollbar {
-                    width: 4px;
-                }
-                &::-webkit-scrollbar-track {
-                    background: rgba(255, 255, 255, 0.1);
-                    border-radius: 2px;
-                }
-                &::-webkit-scrollbar-thumb {
-                    background: rgba(255, 255, 255, 0.3);
-                    border-radius: 2px;
-                    &:hover {
-                        background: rgba(255, 255, 255, 0.5);
-                    }
-                }
-            }
-            
-            .ps-submenu-content .sidenav-files-tree-item,
-            .ps-submenu-content .sidenav-empty-folder {
-                display: flex !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                height: auto !important;
-                max-height: none !important;
-                overflow: visible !important;
-                padding: 0.375rem 0.75rem !important;
-                margin: 0.0625rem 0.375rem !important;
-                pointer-events: auto !important;
-                position: relative !important;
-                width: auto !important;
-            }
+        .sidenav-empty-folder {
+            padding: 0.5rem 0.75rem;
+            margin: 0.125rem 0.5rem;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.75);
+            font-style: italic;
         }
-    }
-}
 
-aside .main-side:not(.collapsed) {
-    .sidenav-folder-submenu {
-        .ps-submenu-content {
-            display: none !important;
-            height: 0 !important;
-            overflow: hidden !important;
-        }
-        
-        .ps-submenu-root[aria-expanded="true"] > .ps-submenu-content,
-        .ps-submenu-root.ps-open > .ps-submenu-content,
-        .ps-submenu-root.ps-menu-open > .ps-submenu-content {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            height: auto !important;
-            max-height: 300px !important;
-            min-height: auto !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
-            padding: 4px 0 !important;
-            margin: 0 !important;
-            position: relative !important;
-            left: auto !important;
-            top: auto !important;
-            width: auto !important;
-            pointer-events: auto !important;
-            clip-path: none !important;
-            transform: none !important;
-            background: transparent !important;
-            z-index: 100 !important;
-            
-            &::-webkit-scrollbar {
-                width: 4px;
-            }
-            &::-webkit-scrollbar-track {
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 2px;
-            }
-            &::-webkit-scrollbar-thumb {
-                background: rgba(255, 255, 255, 0.3);
-                border-radius: 2px;
-                &:hover {
-                    background: rgba(255, 255, 255, 0.5);
-                }
-            }
-        }
-        
-        .ps-submenu-root[aria-expanded="true"] .sidenav-files-tree-item,
-        .ps-submenu-root[aria-expanded="true"] .sidenav-empty-folder,
-        .ps-submenu-root.ps-open .sidenav-files-tree-item,
-        .ps-submenu-root.ps-open .sidenav-empty-folder {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            height: auto !important;
-            max-height: none !important;
-            overflow: visible !important;
-            padding: 0.375rem 0.75rem !important;
-            margin: 0.0625rem 0.375rem !important;
-            pointer-events: auto !important;
-            position: relative !important;
-            width: auto !important;
-        }
-    }
-}
-
-aside .main-side.collapsed {
-    .sidenav-folder-submenu {
+        // SUBMENU - OPEN STATE
         .ps-submenu-root[aria-expanded="true"] > .ps-submenu-content,
         .ps-submenu-root.ps-open > .ps-submenu-content {
             display: block !important;
@@ -1736,25 +357,37 @@ aside .main-side.collapsed {
             height: auto !important;
             max-height: 300px !important;
             overflow-y: auto !important;
-            position: fixed !important;
-            left: 78px !important;
-            top: auto !important;
-            width: 220px !important;
-            background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
-            border-radius: 8px !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
-            z-index: 10000 !important;
-            padding: 8px 0 !important;
+            overflow-x: hidden !important;
+            padding: 4px 0 !important;
+            margin: 0 !important;
+            position: relative !important;
+            background: transparent !important;
             pointer-events: auto !important;
-            clip-path: none !important;
-            transform: none !important;
-            
-            [dir="rtl"] & {
-                left: auto !important;
-                right: 78px !important;
+
+            &::-webkit-scrollbar {
+                width: 4px;
+            }
+            &::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 2px;
+            }
+            &::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 2px;
+                &:hover {
+                    background: rgba(255, 255, 255, 0.5);
+                }
             }
         }
-        
+
+        // SUBMENU - CLOSED STATE
+        .ps-submenu-root:not([aria-expanded="true"]):not(.ps-open) > .ps-submenu-content {
+            display: none !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
+
+        // SUBMENU ITEMS
         .ps-submenu-root[aria-expanded="true"] .sidenav-files-tree-item,
         .ps-submenu-root[aria-expanded="true"] .sidenav-empty-folder,
         .ps-submenu-root.ps-open .sidenav-files-tree-item,
@@ -1762,16 +395,109 @@ aside .main-side.collapsed {
             display: flex !important;
             visibility: visible !important;
             opacity: 1 !important;
+            height: auto !important;
+            padding: 0.375rem 0.75rem !important;
+            margin: 0.0625rem 0.375rem !important;
             pointer-events: auto !important;
+        }
+
+        // BOTTOM ACTIONS
+        .sidenav-bottom-actions {
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.03125rem;
+        }
+
+        .LanguageToggle,
+        .Logout {
+            margin: 0.03125rem 0.5rem;
+            padding: 0.4rem 0.75rem;
+        }
+    }
+
+    // REMOVE HOVER
+    .Remove_hover {
+        &:hover {
+            background-color: transparent !important;
         }
     }
 }
 
-.allnav aside .main-side .sidenav-folder-submenu .ps-submenu-root[aria-expanded="true"] > .ps-submenu-content,
-.allnav aside .main-side .sidenav-folder-submenu .ps-submenu-root.ps-open > .ps-submenu-content {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    height: auto !important;
-    overflow: visible !important;
+// ===========================
+// PAGE CONTENT
+// ===========================
+.revenue-data-page {
+    position: relative;
+    z-index: 1;
+
+    @include Breakpoints(md) {
+        z-index: 10;
+    }
+
+    @include Breakpoints(mobile) {
+        z-index: 1;
+        margin: 0;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    &__wrapper {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+}
+
+// ===========================
+// NAVBAR LOGO
+// ===========================
+.navbar__logo {
+    padding: 0 13px;
+    font-weight: bold;
+    color: #ffffff;
+    background: none;
+    text-decoration: none;
+
+    &.Open {
+        font-size: 2rem;
+    }
+
+    &.Close {
+        font-size: 1rem;
+    }
+}
+
+// ===========================
+// UTILITY CLASSES
+// ===========================
+.css-wx7wi4 {
+    color: white;
+}
+
+.css-ewdv3l {
+    width: 100%;
+    display: block;
+}
+
+.css-1tqrhto > .ps-menu-button {
+    transition: all 0.2s ease-in-out;
+    border-radius: 0.75rem;
+    margin: 0.03125rem 0.5rem;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+        transform: translateX(4px);
+
+        [dir="rtl"] & {
+            transform: translateX(-4px);
+        }
+    }
+}
+
+.MainItem:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 0.75rem;
 }
