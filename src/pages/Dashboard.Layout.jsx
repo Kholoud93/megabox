@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import Sidenav from '../components/Sidenav/Sidenav'
 import BottomNavigation from '../components/BottomNavigation/BottomNavigation'
 import DashboardHeader from '../components/DashboardHeader/DashboardHeader'
@@ -42,6 +42,7 @@ export default function DashboardLayout({ role }) {
     }
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         if (!auth) {
@@ -57,6 +58,9 @@ export default function DashboardLayout({ role }) {
         }
 
     }, [auth, navigate]);
+
+    // Ensure /dashboard shows Files (via index route in App.jsx)
+    // The index route already handles this correctly
 
 
     if (RoleLoading)

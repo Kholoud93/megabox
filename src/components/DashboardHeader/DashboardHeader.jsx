@@ -130,7 +130,7 @@ export default function DashboardHeader({ onUploadClick, onDownloadClick }) {
         <div className="files-header">
             <div className="files-header__container">
                 <div className="files-header__content">
-                    <div className="files-header__left">
+                    <Link to="/" className="files-header__left" style={{ textDecoration: 'none', color: 'inherit' }}>
                         <svg
                             className="files-header__icon"
                             viewBox="0 0 48 48"
@@ -161,7 +161,7 @@ export default function DashboardHeader({ onUploadClick, onDownloadClick }) {
                         <div className="files-header__text">
                             <h1 className="files-header__title">MegaBox</h1>
                         </div>
-                    </div>
+                    </Link>
 
                     <div className="files-header__actions">
                         <div className="files-header__profile-menu" ref={profileMenuRef}>

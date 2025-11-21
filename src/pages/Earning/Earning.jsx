@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import './Earning.scss';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
-import { motion } from 'framer-motion';
-import { FaDollarSign } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaDollarSign, FaTimes } from 'react-icons/fa';
 import { HiArrowRight } from 'react-icons/hi2';
 import { API_URL } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
+import { withdrawalService } from '../../services/withdrawalService';
 
 const EARNINGS_URL = `${API_URL}/auth/getUserEarnings`;
 
@@ -67,6 +68,19 @@ export default function Earning() {
     const [whatsappTelegram, setWhatsappTelegram] = useState('');
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({});
+    const [showRecordModal, setShowRecordModal] = useState(false);
+
+    // Fetch withdrawal history
+    const { data: withdrawalHistory, isLoading: withdrawalHistoryLoading } = useQuery(
+        ['withdrawalHistory'],
+        async () => {
+            return withdrawalService.getWithdrawalHistory(token);
+        },
+        {
+            enabled: !!token && showRecordModal,
+            retry: false
+        }
+    );
 
     // Validation functions
     const validateWithdrawalAmount = (value) => {
@@ -233,9 +247,13 @@ export default function Earning() {
                 >
                     <div className="withdraw-apply-section__header">
                         <h2 className="withdraw-apply-section__title">{t('withdrawSection.apply') || 'Apply'}</h2>
-                        <a href="#" className="withdraw-apply-section__link">
+                        <button 
+                            type="button"
+                            onClick={() => setShowRecordModal(true)}
+                            className="withdraw-apply-section__link"
+                        >
                             {t('withdrawSection.record') || 'Record'} <HiArrowRight />
-                        </a>
+                        </button>
                     </div>
 
                     <form className="withdraw-apply-form" onSubmit={handleSubmit} noValidate>
@@ -324,10 +342,95 @@ export default function Earning() {
 
                     <div className="withdraw-notice">
                         <div className="withdraw-notice__title">{t('withdrawSection.notice') || 'Notice:'}</div>
-                        <div className="withdraw-notice__text">{t('withdrawSection.noticeText') || '1. The amount of cash withdrawal must be ≥ 10 US dollars If not please go ahead and share the link'}</div>
+                        <div className="withdraw-notice__text">{t('withdrawSection.noticeText') || 'The amount of cash withdrawal must be ≥ 10 US dollars If not please go ahead and share the link'}</div>
                     </div>
                 </motion.div>
             </div>
+
+            {/* Withdrawal Record Modal */}
+            <AnimatePresence>
+                {showRecordModal && (
+                    <motion.div
+                        className="withdraw-record-modal-backdrop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setShowRecordModal(false)}
+                    >
+                        <motion.div
+                            className="withdraw-record-modal"
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="withdraw-record-modal__header">
+                                <h3 className="withdraw-record-modal__title">
+                                    {t('withdrawSection.record') || 'Withdrawal Record'}
+                                </h3>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowRecordModal(false)}
+                                    className="withdraw-record-modal__close"
+                                >
+                                    <FaTimes />
+                                </button>
+                            </div>
+
+                            <div className="withdraw-record-modal__content">
+                                {withdrawalHistoryLoading ? (
+                                    <div className="withdraw-record-modal__loading">
+                                        <div className="withdraw-record-modal__spinner"></div>
+                                        <p>{t('withdrawSection.loadingHistory') || 'Loading withdrawal history...'}</p>
+                                    </div>
+                                ) : withdrawalHistory?.withdrawals?.length > 0 || withdrawalHistory?.data?.length > 0 ? (
+                                    <div className="withdraw-table-container">
+                                        <table className="withdraw-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>{t('withdrawSection.tableDate') || 'Date'}</th>
+                                                    <th>{t('withdrawSection.tableAmount') || 'Amount'}</th>
+                                                    <th>{t('withdrawSection.tableMethod') || 'Payment Method'}</th>
+                                                    <th>{t('withdrawSection.tableStatus') || 'Status'}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {(withdrawalHistory?.withdrawals || withdrawalHistory?.data || []).map((withdrawal, index) => (
+                                                    <tr key={withdrawal?._id || withdrawal?.id || index}>
+                                                        <td className="withdraw-date">
+                                                            {withdrawal?.createdAt 
+                                                                ? new Date(withdrawal.createdAt).toLocaleDateString()
+                                                                : withdrawal?.date || '-'}
+                                                        </td>
+                                                        <td className="withdraw-amount">
+                                                            {withdrawal?.amount || '-'} {withdrawal?.currency || currency}
+                                                        </td>
+                                                        <td className="withdraw-payment-method">
+                                                            {withdrawal?.paymentMethod || '-'}
+                                                        </td>
+                                                        <td>
+                                                            <span className={`withdraw-status withdraw-status--${(withdrawal?.status || 'pending').toLowerCase()}`}>
+                                                                {withdrawal?.status || 'Pending'}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ) : (
+                                    <div className="withdraw-table-empty">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        <p>{t('withdrawSection.noWithdrawalHistory') || 'No withdrawal history found'}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 }
