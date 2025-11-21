@@ -45,10 +45,24 @@
     &__title {
         font-size: vars.$text-3xl;
         font-weight: 700;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
 
         @include mix.media-breakpoint-down(md) {
             font-size: vars.$text-2xl;
+            margin-bottom: 1.25rem;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+
+        @include mix.media-breakpoint-down(md) {
+            justify-content: center;
+            width: 100%;
         }
     }
 
@@ -61,9 +75,14 @@
         font-size: vars.$text-base;
         font-weight: 600;
         cursor: pointer;
-        margin-right: 1rem;
         transition: all 0.3s ease;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        white-space: nowrap;
+
+        @include mix.media-breakpoint-down(md) {
+            padding: 0.625rem 1.5rem;
+            font-size: vars.$text-sm;
+        }
 
         &:hover {
             transform: translateY(-2px);
@@ -75,13 +94,19 @@
         padding: 0.75rem 1.5rem;
         background: transparent;
         color: white;
-        border: 2px solid white;
+        border: none;
         border-radius: 0.5rem;
         font-size: vars.$text-base;
         font-weight: 600;
         cursor: pointer;
         text-decoration: underline;
         transition: all 0.3s ease;
+        white-space: nowrap;
+
+        @include mix.media-breakpoint-down(md) {
+            padding: 0.625rem 1.25rem;
+            font-size: vars.$text-sm;
+        }
 
         &:hover {
             background: rgba(255, 255, 255, 0.1);

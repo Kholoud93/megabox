@@ -4,7 +4,7 @@ import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaDollarSign, FaTimes } from 'react-icons/fa';
-import { HiArrowRight } from 'react-icons/hi2';
+import { HiArrowRight, HiChevronDown } from 'react-icons/hi2';
 import { API_URL } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { withdrawalService } from '../../services/withdrawalService';
@@ -69,6 +69,33 @@ export default function Earning() {
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({});
     const [showRecordModal, setShowRecordModal] = useState(false);
+    const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
+
+    // Payment methods details
+    const paymentMethodsDetails = {
+        'USDT': {
+            min: 10,
+            fees: t('withdrawSection.free') || 'Free',
+            time: t('withdrawSection.within24Hours') || 'Within 24 hours'
+        },
+        'PayPal': {
+            min: 10,
+            fees: t('withdrawSection.free') || 'Free',
+            time: t('withdrawSection.within24Hours') || 'Within 24 hours'
+        },
+        'Payoneer': {
+            min: 10,
+            fees: t('withdrawSection.free') || 'Free',
+            time: t('withdrawSection.within24Hours') || 'Within 24 hours'
+        },
+        'Bank Transfer': {
+            min: 10,
+            fees: t('withdrawSection.free') || 'Free',
+            time: t('withdrawSection.threeToFiveDays') || '3-5 days'
+        }
+    };
+
+    const selectedPaymentDetails = paymentMethod ? paymentMethodsDetails[paymentMethod] : null;
 
     // Fetch withdrawal history
     const { data: withdrawalHistory, isLoading: withdrawalHistoryLoading } = useQuery(
@@ -243,7 +270,7 @@ export default function Earning() {
                     className="withdraw-apply-section"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
+                    transition={{ delay: 0.3 }}
                 >
                     <div className="withdraw-apply-section__header">
                         <h2 className="withdraw-apply-section__title">{t('withdrawSection.apply') || 'Apply'}</h2>
@@ -283,26 +310,64 @@ export default function Earning() {
                             <label className="withdraw-form-label">
                                 * {t('withdrawSection.paymentMethod') || 'Payment method'}
                             </label>
-                            <div className="withdraw-form-input-wrapper">
-                                <select
-                                    className={`withdraw-form-input withdraw-form-select ${touched.paymentMethod && errors.paymentMethod ? 'withdraw-form-input--error' : ''}`}
-                                    value={paymentMethod}
-                                    onChange={(e) => {
-                                        setPaymentMethod(e.target.value);
-                                        if (touched.paymentMethod) {
-                                            validateField('paymentMethod');
-                                        }
+                            <div className="withdraw-form-input-wrapper withdraw-payment-dropdown-wrapper">
+                                <div
+                                    className={`withdraw-form-input withdraw-payment-dropdown ${touched.paymentMethod && errors.paymentMethod ? 'withdraw-form-input--error' : ''} ${showPaymentDropdown ? 'withdraw-payment-dropdown--open' : ''}`}
+                                    onClick={() => setShowPaymentDropdown(!showPaymentDropdown)}
+                                    onBlur={() => {
+                                        setTimeout(() => setShowPaymentDropdown(false), 200);
+                                        handleBlur('paymentMethod');
                                     }}
-                                    onBlur={() => handleBlur('paymentMethod')}
-                                    required
+                                    tabIndex={0}
                                 >
-                                    <option value="">{t('withdrawSection.paymentMethodPlaceholder') || 'Please enter the payment method'}</option>
-                                    <option value="USDT">{t('withdrawSection.usdt') || 'USDT'}</option>
-                                    <option value="PayPal">{t('withdrawSection.paypal') || 'PayPal'}</option>
-                                    <option value="Payoneer">{t('withdrawSection.payoneer') || 'Payoneer'}</option>
-                                    <option value="Bank Transfer">{t('withdrawSection.bankTransfer') || 'Bank transfer (personal)'}</option>
-                                </select>
-                                <HiArrowRight className="withdraw-form-select-arrow" />
+                                    <span className="withdraw-payment-dropdown__selected">
+                                        {paymentMethod 
+                                            ? (paymentMethodsDetails[paymentMethod] 
+                                                ? `${paymentMethod} | ${t('withdrawSection.minAmount') || 'Min'}: ${paymentMethodsDetails[paymentMethod].min} ${currency} | ${t('withdrawSection.fees') || 'Fees'}: ${paymentMethodsDetails[paymentMethod].fees} | ${t('withdrawSection.processingTime') || 'Time'}: ${paymentMethodsDetails[paymentMethod].time}`
+                                                : paymentMethod)
+                                            : (t('withdrawSection.paymentMethodPlaceholder') || 'Please enter the payment method')}
+                                    </span>
+                                    <HiChevronDown className={`withdraw-form-select-arrow ${showPaymentDropdown ? 'withdraw-form-select-arrow--open' : ''}`} />
+                                </div>
+                                {showPaymentDropdown && (
+                                    <div className="withdraw-payment-dropdown__menu">
+                                        {Object.keys(paymentMethodsDetails).map((method) => {
+                                            const details = paymentMethodsDetails[method];
+                                            const methodLabel = method === 'USDT' ? t('withdrawSection.usdt') || 'USDT' :
+                                                               method === 'PayPal' ? t('withdrawSection.paypal') || 'PayPal' :
+                                                               method === 'Payoneer' ? t('withdrawSection.payoneer') || 'Payoneer' :
+                                                               t('withdrawSection.bankTransfer') || 'Bank transfer (personal)';
+                                            return (
+                                                <div
+                                                    key={method}
+                                                    className={`withdraw-payment-dropdown__option ${paymentMethod === method ? 'withdraw-payment-dropdown__option--selected' : ''}`}
+                                                    onClick={() => {
+                                                        setPaymentMethod(method);
+                                                        setShowPaymentDropdown(false);
+                                                        if (touched.paymentMethod) {
+                                                            validateField('paymentMethod');
+                                                        }
+                                                    }}
+                                                >
+                                                    <div className="withdraw-payment-dropdown__option-header">
+                                                        <span className="withdraw-payment-dropdown__option-name">{methodLabel}</span>
+                                                    </div>
+                                                    <div className="withdraw-payment-dropdown__option-details">
+                                                        <span className="withdraw-payment-dropdown__option-detail">
+                                                            {t('withdrawSection.minAmount') || 'Min'}: <strong>{details.min} {currency}</strong>
+                                                        </span>
+                                                        <span className="withdraw-payment-dropdown__option-detail">
+                                                            {t('withdrawSection.fees') || 'Fees'}: <strong>{details.fees}</strong>
+                                                        </span>
+                                                        <span className="withdraw-payment-dropdown__option-detail">
+                                                            {t('withdrawSection.processingTime') || 'Time'}: <strong>{details.time}</strong>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </div>
                             {touched.paymentMethod && errors.paymentMethod && (
                                 <span className="withdraw-form-error">{errors.paymentMethod}</span>

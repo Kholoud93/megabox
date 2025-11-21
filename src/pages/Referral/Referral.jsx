@@ -56,19 +56,21 @@ export default function Referral() {
                 >
                     <div className="referral-banner__content">
                         <div className="referral-banner__text">
-                            <h2 className="referral-banner__title">{t('referral.bannerTitle')}</h2>
-                            <button
-                                className="referral-banner__button"
-                                onClick={() => handleCopyLink()}
-                            >
-                                {t('referral.getReferralLink')}
-                            </button>
-                            <button
-                                className="referral-banner__rules"
-                                onClick={() => setShowRulesModal(true)}
-                            >
-                                {t('referral.referralRules')}
-                            </button>
+                            <h2 className="referral-banner__title">{t('referral.bannerTitle') || '10% of 30-day referral income'}</h2>
+                            <div className="referral-banner__actions">
+                                <button
+                                    className="referral-banner__button"
+                                    onClick={() => handleCopyLink()}
+                                >
+                                    {t('referral.getReferralLink') || 'Get Referral Link'}
+                                </button>
+                                <button
+                                    className="referral-banner__rules"
+                                    onClick={() => setShowRulesModal(true)}
+                                >
+                                    {t('referral.referralRules') || 'Referral rules'}
+                                </button>
+                            </div>
                         </div>
                         <div className="referral-banner__illustration">
                             💰

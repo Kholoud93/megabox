@@ -1146,10 +1146,157 @@
   appearance: none;
   padding-right: 2.5rem;
   cursor: pointer;
+  font-size: 0.875rem;
+  line-height: 1.5;
+
+  @include functions.Breakpoints(mobile) {
+    font-size: 0.8125rem;
+  }
 
   [dir="rtl"] & {
     padding-right: 1rem;
     padding-left: 2.5rem;
+  }
+
+  option {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    white-space: normal;
+    word-wrap: break-word;
+
+    @include functions.Breakpoints(mobile) {
+      font-size: 0.8125rem;
+    }
+  }
+}
+
+// Custom Payment Dropdown
+.withdraw-payment-dropdown-wrapper {
+  position: relative;
+}
+
+.withdraw-payment-dropdown {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 2.75rem;
+
+  &__selected {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    color: var(--color-indigo-900);
+
+    @include functions.Breakpoints(mobile) {
+      font-size: 0.8125rem;
+    }
+  }
+
+  &--open {
+    border-color: var(--color-indigo-600);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  }
+
+  &__menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #e0e7ff;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 0.25rem;
+
+    @include functions.Breakpoints(mobile) {
+      max-height: 350px;
+    }
+  }
+
+  &__option {
+    padding: 1rem;
+    border-bottom: 1px solid #e0e7ff;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background: #f8fafc;
+    }
+
+    &--selected {
+      background: #eef2ff;
+      border-left: 3px solid var(--color-indigo-600);
+
+      [dir="rtl"] & {
+        border-left: none;
+        border-right: 3px solid var(--color-indigo-600);
+      }
+    }
+  }
+
+  &__option-header {
+    margin-bottom: 0.5rem;
+  }
+
+  &__option-name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-indigo-900);
+
+    @include functions.Breakpoints(mobile) {
+      font-size: 0.875rem;
+    }
+  }
+
+  &__option-details {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+
+    @include functions.Breakpoints(mobile) {
+      gap: 0.5rem;
+    }
+  }
+
+  &__option-detail {
+    font-size: 0.75rem;
+    color: #64748b;
+    line-height: 1.4;
+    white-space: nowrap;
+
+    @include functions.Breakpoints(mobile) {
+      font-size: 0.6875rem;
+    }
+
+    strong {
+      color: var(--color-indigo-900);
+      font-weight: 600;
+    }
+  }
+}
+
+.withdraw-form-select-arrow {
+  &--open {
+    transform: translateY(-50%) rotate(180deg);
+
+    [dir="rtl"] & {
+      transform: translateY(-50%) rotate(0deg);
+    }
   }
 }
 
@@ -1167,7 +1314,14 @@
   [dir="rtl"] & {
     right: auto;
     left: 1rem;
+  }
+
+  &--open {
     transform: translateY(-50%) rotate(180deg);
+
+    [dir="rtl"] & {
+      transform: translateY(-50%) rotate(180deg);
+    }
   }
 }
 
@@ -1175,7 +1329,7 @@
   transform: translateY(-50%) rotate(180deg);
 
   [dir="rtl"] & {
-    transform: translateY(-50%) rotate(0deg);
+    transform: translateY(-50%) rotate(180deg);
   }
 }
 
@@ -1225,6 +1379,145 @@
 
   &:active {
     transform: translateY(0);
+  }
+}
+
+// Payment Methods Section
+.withdraw-payment-methods {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e7ff;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+
+  @include functions.Breakpoints(mobile) {
+    padding: 1.25rem 1rem;
+    margin-top: 1.25rem;
+    border-radius: 0.625rem;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-indigo-900);
+    margin: 0 0 1.25rem 0;
+
+    @include functions.Breakpoints(mobile) {
+      font-size: 1.125rem;
+      margin-bottom: 1rem;
+    }
+  }
+
+  &__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+
+    @include functions.Breakpoints(mobile) {
+      grid-template-columns: 1fr;
+      gap: 0.875rem;
+    }
+  }
+}
+
+.withdraw-payment-method-card {
+  background: #f8fafc;
+  border: 1px solid #e0e7ff;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  transition: all 0.2s;
+
+  @include functions.Breakpoints(mobile) {
+    padding: 0.875rem;
+  }
+
+  &:hover {
+    border-color: var(--color-indigo-400);
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.1);
+  }
+
+  &__header {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e0e7ff;
+  }
+
+  &__name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-indigo-900);
+
+    @include functions.Breakpoints(mobile) {
+      font-size: 0.9375rem;
+    }
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+
+    @include functions.Breakpoints(mobile) {
+      font-size: 0.8125rem;
+    }
+  }
+
+  &__label {
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  &__value {
+    color: var(--color-indigo-900);
+    font-weight: 600;
+  }
+}
+
+// Payment Details (shown when payment method is selected)
+.withdraw-payment-details {
+  margin-top: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: #f8fafc;
+  border: 1px solid #e0e7ff;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  @include functions.Breakpoints(mobile) {
+    padding: 0.75rem 0.875rem;
+    gap: 0.75rem;
+    flex-direction: column;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+
+    @include functions.Breakpoints(mobile) {
+      font-size: 0.8125rem;
+      justify-content: space-between;
+    }
+  }
+
+  &__label {
+    color: #64748b;
+    font-weight: 500;
+  }
+
+  &__value {
+    color: var(--color-indigo-900);
+    font-weight: 600;
   }
 }
 
