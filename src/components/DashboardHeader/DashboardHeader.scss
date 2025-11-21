@@ -34,15 +34,16 @@
   &__content {
     position: relative !important;
     display: flex !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
     
-    // Extra small screens (< 640px)
+    // Mobile: column layout
     @media (max-width: 639px) {
+      flex-direction: column !important;
+      align-items: stretch !important;
       padding: 0.625rem 0 !important;
       gap: 0.625rem !important;
     }
 
+    // Desktop: row layout
     @include mix.media-breakpoint-up(sm) {
       flex-direction: row !important;
       align-items: center !important;

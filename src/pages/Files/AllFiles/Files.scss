@@ -769,33 +769,12 @@
 // Adjust sidebar to start from same level as header
 .sidnav {
   position: relative;
-  z-index: 1000; // Below header but above content
   
   aside {
-    position: relative;
-    
     .main-side {
       // Sidebar starts from top (same as header)
-      top: 0 !important;
-      height: 100vh !important;
-      position: fixed !important;
-      z-index: 999 !important; // Below header (9999999) but above content
-      
-      // Ensure sidebar doesn't interfere with sticky header
-      @include mixins.media-breakpoint-up(md) {
-        top: 0 !important;
-      }
-    }
-  }
-  
-  // On mobile, sidebar should be below header
-  @include mixins.media-breakpoint-down(md) {
-    z-index: 998;
-    
-    aside {
-      .main-side {
-        z-index: 998 !important;
-      }
+      top: 0;
+      height: 100vh;
     }
   }
 }
