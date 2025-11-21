@@ -18,6 +18,7 @@ import { ToastOptions } from '../../../helpers/ToastOptions';
 import { toast } from 'react-toastify';
 import { useLanguage } from '../../../context/LanguageContext';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
+import NotificationModal from '../../../components/NotificationModal/NotificationModal';
 
 export default function Users() {
     const { t } = useLanguage();
@@ -316,172 +317,26 @@ export default function Users() {
             <div className="admin-users-page__wrapper">
 
             {/* Notify All Modal */}
-            <AnimatePresence>
-                {addform && (
-                    <div className="admin-notification-modal-backdrop" onClick={closeNotifyAllModal}>
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            transition={{ duration: 0.2 }}
-                            className="admin-notification-modal"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <div className="admin-notification-modal__header">
-                                <h3 className="admin-notification-modal__title">
-                                    {t("adminUsers.notifyAll")}
-                                </h3>
-                                <button
-                                    onClick={closeNotifyAllModal}
-                                    className="admin-notification-modal__close"
-                                >
-                                    <MdClose size={24} />
-                                </button>
-                            </div>
-
-                            <form onSubmit={formik.handleSubmit} className="admin-notification-modal__form">
-                                <div className="admin-notification-modal__field">
-                                    <label htmlFor="notify-all-title" className="admin-notification-modal__label">
-                                        {t("adminUsers.titleLabel")}
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="notify-all-title"
-                                        name="title"
-                                        value={formik.values.title}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        className="admin-notification-modal__input"
-                                        placeholder={t("adminUsers.titlePlaceholder")}
-                                    />
-                                    {formik.touched.title && formik.errors.title && (
-                                        <p className="admin-notification-modal__error">{formik.errors.title}</p>
-                                    )}
-                                </div>
-
-                                <div className="admin-notification-modal__field">
-                                    <label htmlFor="notify-all-body" className="admin-notification-modal__label">
-                                        {t("adminUsers.messageLabel")}
-                                    </label>
-                                    <textarea
-                                        id="notify-all-body"
-                                        name="body"
-                                        rows={4}
-                                        value={formik.values.body}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        className="admin-notification-modal__textarea"
-                                        placeholder={t("adminUsers.messagePlaceholder")}
-                                    />
-                                    {formik.touched.body && formik.errors.body && (
-                                        <p className="admin-notification-modal__error">{formik.errors.body}</p>
-                                    )}
-                                </div>
-
-                                <div className="admin-notification-modal__actions">
-                                    <button
-                                        type="button"
-                                        onClick={closeNotifyAllModal}
-                                        className="admin-notification-modal__btn admin-notification-modal__btn--cancel"
-                                    >
-                                        {t("adminUsers.cancel")}
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="admin-notification-modal__btn admin-notification-modal__btn--submit"
-                                    >
-                                        {t("adminUsers.notifyAll")}
-                                    </button>
-                                </div>
-                            </form>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
+            <NotificationModal
+                isOpen={addform}
+                onClose={closeNotifyAllModal}
+                onSubmit={formik.handleSubmit}
+                formik={formik}
+                title={t("adminUsers.notifyAll")}
+                submitButtonText={t("adminUsers.notifyAll")}
+            />
 
             {/* Notification Popup for Single User */}
-            <AnimatePresence>
-                {selectedUser && (
-                    <div className="admin-notification-modal-backdrop" onClick={closeNotificationPopup}>
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            transition={{ duration: 0.2 }}
-                            className="admin-notification-modal"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <div className="admin-notification-modal__header">
-                                <h3 className="admin-notification-modal__title">
-                                    {t("adminUsers.sendNotificationTo")} <span className="admin-notification-modal__username">{selectedUser.username}</span>
-                                </h3>
-                                <button
-                                    onClick={closeNotificationPopup}
-                                    className="admin-notification-modal__close"
-                                >
-                                    <MdClose size={24} />
-                                </button>
-                            </div>
-
-                            <form onSubmit={notificationFormik.handleSubmit} className="admin-notification-modal__form">
-                                <div className="admin-notification-modal__field">
-                                    <label htmlFor="notification-title" className="admin-notification-modal__label">
-                                        {t("adminUsers.titleLabel")}
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="notification-title"
-                                        name="title"
-                                        value={notificationFormik.values.title}
-                                        onChange={notificationFormik.handleChange}
-                                        onBlur={notificationFormik.handleBlur}
-                                        className="admin-notification-modal__input"
-                                        placeholder={t("adminUsers.titlePlaceholder")}
-                                    />
-                                    {notificationFormik.touched.title && notificationFormik.errors.title && (
-                                        <p className="admin-notification-modal__error">{notificationFormik.errors.title}</p>
-                                    )}
-                                </div>
-
-                                <div className="admin-notification-modal__field">
-                                    <label htmlFor="notification-body" className="admin-notification-modal__label">
-                                        {t("adminUsers.messageLabel")}
-                                    </label>
-                                    <textarea
-                                        id="notification-body"
-                                        name="body"
-                                        rows={4}
-                                        value={notificationFormik.values.body}
-                                        onChange={notificationFormik.handleChange}
-                                        onBlur={notificationFormik.handleBlur}
-                                        className="admin-notification-modal__textarea"
-                                        placeholder={t("adminUsers.messagePlaceholder")}
-                                    />
-                                    {notificationFormik.touched.body && notificationFormik.errors.body && (
-                                        <p className="admin-notification-modal__error">{notificationFormik.errors.body}</p>
-                                    )}
-                                </div>
-
-                                <div className="admin-notification-modal__actions">
-                                    <button
-                                        type="button"
-                                        onClick={closeNotificationPopup}
-                                        className="admin-notification-modal__btn admin-notification-modal__btn--cancel"
-                                    >
-                                        {t("adminUsers.cancel")}
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        className="admin-notification-modal__btn admin-notification-modal__btn--submit"
-                                    >
-                                        {t("adminUsers.sendNotification")}
-                                    </button>
-                                </div>
-                            </form>
-                        </motion.div>
-                    </div>
-                )}
-            </AnimatePresence>
+            <NotificationModal
+                isOpen={!!selectedUser}
+                onClose={closeNotificationPopup}
+                onSubmit={notificationFormik.handleSubmit}
+                formik={notificationFormik}
+                title={t("adminUsers.sendNotificationTo")}
+                submitButtonText={t("adminUsers.sendNotification")}
+                showUsername={true}
+                username={selectedUser?.username || ''}
+            />
 
             <motion.div
                 layout
@@ -510,7 +365,15 @@ export default function Users() {
                     </div>
                     {users && (
                         <p className="admin-users-count text-sm text-gray-600 mt-2">
-                            {filteredUsers.length} {t('adminUsers.of')} {users.length} {t('adminUsers.users')}
+                            {paginatedUsers.length > 0 ? (
+                                <>
+                                    {startIndex + 1}-{Math.min(endIndex, filteredUsers.length)} {t('adminUsers.of')} {filteredUsers.length} {t('adminUsers.users')}
+                                </>
+                            ) : (
+                                <>
+                                    0 {t('adminUsers.of')} {filteredUsers.length} {t('adminUsers.users')}
+                                </>
+                            )}
                         </p>
                     )}
                 </div>
