@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo } from 'react'
+import React, { useRef, useState, useMemo, useEffect } from 'react'
 import "./Users.scss"
 import { useQuery } from 'react-query';
 import axios from 'axios';
@@ -32,6 +32,8 @@ export default function Users() {
     const [searchUserModal, setSearchUserModal] = useState(false);
     const [searchedUser, setSearchedUser] = useState(null);
     const [searchingUser, setSearchingUser] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
     const navigate = useNavigate()
     const [Token] = useCookies(['MegaBox']);
     const queryClient = useQueryClient();
@@ -91,8 +93,7 @@ export default function Users() {
     const notfiyAll = async (values) => {
         await axios.post(`${API_URL}/user/notifyall`, { ...values })
             .then((res) => {
-                setaddform(!addform)
-                formik.resetForm()
+                closeNotifyAllModal()
                 toast.success(`${res?.data.message}`, ToastOptions("success"))
             }).catch((err) => {
                 toast.error(`${err?.data.message}`, ToastOptions("error"))
@@ -113,7 +114,12 @@ export default function Users() {
     })
 
     const handleaddmod = () => {
-        setaddform(!addform)
+        setaddform(true)
+    }
+
+    const closeNotifyAllModal = () => {
+        setaddform(false)
+        formik.resetForm()
     }
 
     // Toggle user ban
@@ -265,6 +271,17 @@ export default function Users() {
         });
     }, [users, searchTerm, filters]);
 
+    // Pagination logic
+    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+
+    // Reset to page 1 when filters change
+    React.useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, filters]);
+
     // Filter configuration
     const filterConfig = [
         {
@@ -297,78 +314,118 @@ export default function Users() {
     return (
         <div className="admin-users-page">
             <div className="admin-users-page__wrapper">
-            <div className="add" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <button onClick={handleaddmod}>
-                    {addform ? t("adminUsers.closeNotifyAll") : t("adminUsers.notifyAll")}
-                </button>
-            </div>
 
-            {addform && (
-                <AnimatePresence>
-                    <motion.div key="addteacher" layout className="addmoderator"
-                        variants={animationVariants} initial="hidden" animate="visible" exit="exit">
-                        <div className="addbody-for-lec">
-                            <form onSubmit={formik.handleSubmit} className="mx-auto justify-between items-center">
-                                <div className="mb-5 studentfield">
-                                    <label htmlFor="Title" className="block mb-2 text-sm font-medium text-gray-900">{t("adminUsers.titleLabel")}</label>
-                                    <input type="text" id="Title" name="title" value={formik.values.title}
-                                        onBlur={formik.handleBlur} onChange={formik.handleChange}
-                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 "
-                                        placeholder={t("adminUsers.titlePlaceholder")} />
-                                    {formik.touched.title && formik.errors.title && (
-                                        <p className="text-red-500 text-sm">{formik.errors.title}</p>
-                                    )}
-                                </div>
-                                <div className="mb-5 studentfield">
-                                    <label htmlFor="body" className="block mb-2 text-sm font-medium text-gray-900">{t("adminUsers.messageLabel")}</label>
-                                    <textarea
-                                        id="notification-body"
-                                        name="body"
-                                        rows={4}
-                                        value={formik.values.body}
-                                        onChange={formik.handleChange}
-                                        onBlur={formik.handleBlur}
-                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5"
-                                        placeholder={t("adminUsers.messagePlaceholder")}
-                                    ></textarea>
-
-                                    {formik.touched.body && formik.errors.body && (
-                                        <p className="text-red-500 text-sm">{formik.errors.body}</p>
-                                    )}
-                                </div>
-                                <button type="submit" className="text-white focus:ring-blue-300 font-medium px-5 py-2.5 text-center">{t("adminUsers.notifyAll")}</button>
-                            </form>
-                        </div>
-                    </motion.div>
-                </AnimatePresence>
-            )}
-
-            {/* Notification Popup for Single User */}
+            {/* Notify All Modal */}
             <AnimatePresence>
-                {selectedUser && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                {addform && (
+                    <div className="admin-notification-modal-backdrop" onClick={closeNotifyAllModal}>
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.9 }}
                             transition={{ duration: 0.2 }}
-                            className="bg-white rounded-lg shadow-xl w-full max-w-md"
+                            className="admin-notification-modal"
+                            onClick={(e) => e.stopPropagation()}
                         >
-                            <div className="flex justify-between items-center border-b p-4">
-                                <h3 className="text-lg font-semibold text-gray-900">
-                                    {t("adminUsers.sendNotificationTo")} {selectedUser.username}
+                            <div className="admin-notification-modal__header">
+                                <h3 className="admin-notification-modal__title">
+                                    {t("adminUsers.notifyAll")}
                                 </h3>
                                 <button
-                                    onClick={closeNotificationPopup}
-                                    className="text-gray-500 hover:text-gray-700"
+                                    onClick={closeNotifyAllModal}
+                                    className="admin-notification-modal__close"
                                 >
                                     <MdClose size={24} />
                                 </button>
                             </div>
 
-                            <form onSubmit={notificationFormik.handleSubmit} className="p-4">
-                                <div className="mb-4">
-                                    <label htmlFor="notification-title" className="block mb-2 text-sm font-medium text-gray-900">
+                            <form onSubmit={formik.handleSubmit} className="admin-notification-modal__form">
+                                <div className="admin-notification-modal__field">
+                                    <label htmlFor="notify-all-title" className="admin-notification-modal__label">
+                                        {t("adminUsers.titleLabel")}
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="notify-all-title"
+                                        name="title"
+                                        value={formik.values.title}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        className="admin-notification-modal__input"
+                                        placeholder={t("adminUsers.titlePlaceholder")}
+                                    />
+                                    {formik.touched.title && formik.errors.title && (
+                                        <p className="admin-notification-modal__error">{formik.errors.title}</p>
+                                    )}
+                                </div>
+
+                                <div className="admin-notification-modal__field">
+                                    <label htmlFor="notify-all-body" className="admin-notification-modal__label">
+                                        {t("adminUsers.messageLabel")}
+                                    </label>
+                                    <textarea
+                                        id="notify-all-body"
+                                        name="body"
+                                        rows={4}
+                                        value={formik.values.body}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        className="admin-notification-modal__textarea"
+                                        placeholder={t("adminUsers.messagePlaceholder")}
+                                    />
+                                    {formik.touched.body && formik.errors.body && (
+                                        <p className="admin-notification-modal__error">{formik.errors.body}</p>
+                                    )}
+                                </div>
+
+                                <div className="admin-notification-modal__actions">
+                                    <button
+                                        type="button"
+                                        onClick={closeNotifyAllModal}
+                                        className="admin-notification-modal__btn admin-notification-modal__btn--cancel"
+                                    >
+                                        {t("adminUsers.cancel")}
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="admin-notification-modal__btn admin-notification-modal__btn--submit"
+                                    >
+                                        {t("adminUsers.notifyAll")}
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Notification Popup for Single User */}
+            <AnimatePresence>
+                {selectedUser && (
+                    <div className="admin-notification-modal-backdrop" onClick={closeNotificationPopup}>
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ duration: 0.2 }}
+                            className="admin-notification-modal"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="admin-notification-modal__header">
+                                <h3 className="admin-notification-modal__title">
+                                    {t("adminUsers.sendNotificationTo")} <span className="admin-notification-modal__username">{selectedUser.username}</span>
+                                </h3>
+                                <button
+                                    onClick={closeNotificationPopup}
+                                    className="admin-notification-modal__close"
+                                >
+                                    <MdClose size={24} />
+                                </button>
+                            </div>
+
+                            <form onSubmit={notificationFormik.handleSubmit} className="admin-notification-modal__form">
+                                <div className="admin-notification-modal__field">
+                                    <label htmlFor="notification-title" className="admin-notification-modal__label">
                                         {t("adminUsers.titleLabel")}
                                     </label>
                                     <input
@@ -378,16 +435,16 @@ export default function Users() {
                                         value={notificationFormik.values.title}
                                         onChange={notificationFormik.handleChange}
                                         onBlur={notificationFormik.handleBlur}
-                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5"
+                                        className="admin-notification-modal__input"
                                         placeholder={t("adminUsers.titlePlaceholder")}
                                     />
                                     {notificationFormik.touched.title && notificationFormik.errors.title && (
-                                        <p className="mt-1 text-sm text-red-600">{notificationFormik.errors.title}</p>
+                                        <p className="admin-notification-modal__error">{notificationFormik.errors.title}</p>
                                     )}
                                 </div>
 
-                                <div className="mb-4">
-                                    <label htmlFor="notification-body" className="block mb-2 text-sm font-medium text-gray-900">
+                                <div className="admin-notification-modal__field">
+                                    <label htmlFor="notification-body" className="admin-notification-modal__label">
                                         {t("adminUsers.messageLabel")}
                                     </label>
                                     <textarea
@@ -397,25 +454,25 @@ export default function Users() {
                                         value={notificationFormik.values.body}
                                         onChange={notificationFormik.handleChange}
                                         onBlur={notificationFormik.handleBlur}
-                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5"
+                                        className="admin-notification-modal__textarea"
                                         placeholder={t("adminUsers.messagePlaceholder")}
-                                    ></textarea>
+                                    />
                                     {notificationFormik.touched.body && notificationFormik.errors.body && (
-                                        <p className="mt-1 text-sm text-red-600">{notificationFormik.errors.body}</p>
+                                        <p className="admin-notification-modal__error">{notificationFormik.errors.body}</p>
                                     )}
                                 </div>
 
-                                <div className="flex justify-end gap-3 pt-2">
+                                <div className="admin-notification-modal__actions">
                                     <button
                                         type="button"
                                         onClick={closeNotificationPopup}
-                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                                        className="admin-notification-modal__btn admin-notification-modal__btn--cancel"
                                     >
                                         {t("adminUsers.cancel")}
                                     </button>
                                     <button
                                         type="submit"
-                                        className="px-4 py-2 text-sm font-medium text-white bg-[#01677e] rounded-lg hover:bg-[#01566a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#01677e]"
+                                        className="admin-notification-modal__btn admin-notification-modal__btn--submit"
                                     >
                                         {t("adminUsers.sendNotification")}
                                     </button>
@@ -435,22 +492,32 @@ export default function Users() {
                 className='main-Orders'
             >
                 <div className="mb-4">
-                    <SearchFilter
-                        searchPlaceholder={t('adminUsers.searchUsers')}
-                        filters={filterConfig}
-                        onSearchChange={setSearchTerm}
-                        onFilterChange={setFilters}
-                    />
+                    <div className="admin-users-header">
+                        <div className="admin-users-header__search">
+                            <SearchFilter
+                                searchPlaceholder={t('adminUsers.searchUsers')}
+                                filters={filterConfig}
+                                onSearchChange={setSearchTerm}
+                                onFilterChange={setFilters}
+                            />
+                        </div>
+                        <button 
+                            onClick={handleaddmod}
+                            className="admin-users-header__notify-btn"
+                        >
+                            {t("adminUsers.notifyAll")}
+                        </button>
+                    </div>
                     {users && (
-                        <p className="text-sm text-gray-600 mt-2">
+                        <p className="admin-users-count text-sm text-gray-600 mt-2">
                             {filteredUsers.length} {t('adminUsers.of')} {users.length} {t('adminUsers.users')}
                         </p>
                     )}
                 </div>
 
                 <div className="overflow-x-auto shadow-md sm:rounded-lg">
-                    <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                    <table className="admin-users-table">
+                        <thead className="admin-users-table__header">
                             <tr>
                                 <th scope="col" className="px-6 py-3 ">{t("adminUsers.userId")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminUsers.username")}</th>
@@ -461,8 +528,8 @@ export default function Users() {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredUsers.length > 0 ? (
-                                filteredUsers.map((ele, index) => {
+                            {paginatedUsers.length > 0 ? (
+                                paginatedUsers.map((ele, index) => {
                                     return (
                                         <tr key={ele.id || ele._id || index} className="bg-white border-b hover:bg-gray-50">
                                             <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap" data-label={t("adminUsers.userId")}>{ele?.userId}</td>
@@ -485,7 +552,7 @@ export default function Users() {
                                                 <div className="flex items-center gap-3">
                                                     <button
                                                         onClick={() => handleNotifyUser(ele)}
-                                                        className="text-blue-600 hover:text-blue-800 transition-colors"
+                                                        className="text-indigo-600 hover:text-indigo-800 transition-colors"
                                                         title={t("adminUsers.sendNotification")}
                                                     >
                                                         <MdNotificationAdd size={20} />
@@ -526,6 +593,29 @@ export default function Users() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="admin-users-pagination">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1}
+                            className="admin-users-pagination__btn admin-users-pagination__btn--prev"
+                        >
+                            {t("prev")}
+                        </button>
+                        <div className="admin-users-pagination__info">
+                            {t("adminUsers.page")} {currentPage} {t("adminUsers.of")} {totalPages}
+                        </div>
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                            disabled={currentPage === totalPages}
+                            className="admin-users-pagination__btn admin-users-pagination__btn--next"
+                        >
+                            {t("next")}
+                        </button>
+                    </div>
+                )}
             </motion.div>
 
             {/* Search User Modal */}

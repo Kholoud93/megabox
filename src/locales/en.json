@@ -577,6 +577,7 @@
     "of": "of",
     "users": "users",
     "noUsersFound": "No users found matching your criteria",
+    "page": "Page",
     "searchUser": "Search User",
     "searchByEmailOrId": "Search by Email or User ID",
     "enterEmailOrId": "Enter email or user ID",
