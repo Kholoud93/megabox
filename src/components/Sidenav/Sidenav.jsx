@@ -23,7 +23,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { notificationService, userService } from '../../services';
 import { fileService } from '../../services/api';
 import axios from 'axios';
@@ -47,6 +47,7 @@ export default function Sidenav({ role }) {
     const { t, language, changeLanguage } = useLanguage();
     const [Token] = useCookies(['MegaBox']);
     const [, , removeToken] = useCookies(['MegaBox']);
+    const queryClient = useQueryClient();
 
     const Representation = (path, type, close) => {
         if (close) {
@@ -308,6 +309,12 @@ export default function Sidenav({ role }) {
                                             return;
                                         }
                                         setAllFilesOpen(open);
+                                        
+                                        // Refetch data when opening All Files to get latest changes
+                                        if (open) {
+                                            queryClient.invalidateQueries(['userFolders']);
+                                            queryClient.invalidateQueries(['userFiles']);
+                                        }
                                     }}
                                     defaultOpen={false}
                                 >
@@ -348,7 +355,8 @@ export default function Sidenav({ role }) {
                                                         [folderId]: open
                                                     }));
                                                     
-                                                    if (open && !folderFiles[folderId]) {
+                                                    if (open) {
+                                                        // Always refetch folder files when opening to get latest data
                                                         axios.get(
                                                             `${API_URL}/user/getFolderFiles/${folderId}`, 
                                                             {
@@ -367,6 +375,10 @@ export default function Sidenav({ role }) {
                                                                 [folderId]: []
                                                             }));
                                                         });
+                                                        
+                                                        // Refetch folders and files to update sidebar
+                                                        queryClient.invalidateQueries(['userFolders']);
+                                                        queryClient.invalidateQueries(['userFiles']);
                                                     }
                                                 }}
                                             >

@@ -378,7 +378,7 @@ aside {
             }
 
             &--file {
-                padding-left: 2rem;
+                padding-left: 0.75rem; // Reduced from 2rem to align files properly
             }
 
             .ps-menu-label {
@@ -386,6 +386,16 @@ aside {
                 text-overflow: ellipsis;
                 white-space: nowrap;
                 color: white;
+            }
+        }
+        
+        // Make folder names (All Files, lolo, etc.) white
+        .sidenav-files-submenu,
+        .sidenav-folder-submenu {
+            .ps-menu-button {
+                .ps-menu-label {
+                    color: white !important;
+                }
             }
         }
 
