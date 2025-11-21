@@ -1,43 +1,38 @@
 @use '../../../helpers/functions' as *;
-
-
-$card-bg: #ffffff;
-$header-color: #4CAF50;
-$text-color: #333;
-$label-color: #555;
-$value-color: #222;
-$item-bg: #f9f9f9;
-$item-bg-hover: #f1f1f1;
-$total-bg: #e3f2fd;
-$shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+@use '../../../helpers/_variables.scss' as vars;
+@use '../../../helpers/_mixins.scss' as mix;
 
 .earnings-container {
     width: 100%;
     padding: 20px;
+    background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+    min-height: 100vh;
 
     .earnings-card {
         width: 100%;
-        background: $card-bg;
-        border-radius: 12px;
-        box-shadow: $shadow;
+        background: white;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e0e7ff;
         padding: 24px;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: $text-color;
+        color: #1e293b;
 
         .main-heading {
             font-size: 24px;
             margin: 0 0 12px;
-            color: $BaseColor;
+            color: var(--color-indigo-900);
+            font-weight: 700;
         }
 
         .user-id {
             margin-bottom: 20px;
             font-size: 14px;
-            color: $label-color;
+            color: var(--color-indigo-600);
 
             span {
                 font-weight: bold;
-                color: $text-color;
+                color: var(--color-indigo-900);
                 word-break: break-all;
             }
         }
@@ -48,32 +43,38 @@ $shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             gap: 16px;
 
             .earning-item {
-                background: $item-bg;
-                border-radius: 8px;
+                background: var(--color-indigo-50);
+                border-radius: 0.5rem;
                 padding: 16px;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                transition: background 0.3s;
+                transition: all 0.3s ease;
+                border: 1px solid #e0e7ff;
 
                 &:hover {
-                    background: $item-bg-hover;
+                    background: #e0e7ff;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
                 }
 
                 &.total {
-                    background: $total-bg;
+                    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
                     font-weight: bold;
+                    border: 2px solid var(--color-indigo-300);
                 }
 
                 .label {
                     font-size: 14px;
-                    color: $label-color;
+                    color: var(--color-indigo-600);
                     margin-bottom: 6px;
+                    font-weight: 500;
                 }
 
                 .value {
                     font-size: 18px;
-                    color: $value-color;
+                    color: var(--color-indigo-900);
+                    font-weight: 700;
                 }
             }
         }

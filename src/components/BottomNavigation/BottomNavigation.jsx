@@ -154,18 +154,6 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                     icon: HiDocumentText,
                     label: t("sidenav.reports"),
                     key: 'reports'
-                },
-                {
-                    path: '/Owner/notifications',
-                    icon: HiBell,
-                    label: t("sidenav.notifications"),
-                    key: 'notifications'
-                },
-                {
-                    path: '/Partners',
-                    icon: HiHandRaised,
-                    label: t("sidenav.partners"),
-                    key: 'partners'
                 }
             ];
         } else if (role === "Advertiser") {
@@ -187,6 +175,40 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
     const visibleItems = menuItems.slice(0, 5);
     const overflowItems = menuItems.slice(5);
 
+    // Helper function to check if a path is active
+    // Only the most specific matching tab should be active
+    const isPathActive = (itemPath, currentPathname, allMenuItems) => {
+        const normalizedPathname = currentPathname.endsWith('/') ? currentPathname.slice(0, -1) : currentPathname;
+        const normalizedItemPath = itemPath.endsWith('/') ? itemPath.slice(0, -1) : itemPath;
+        
+        // Exact match - always active
+        if (normalizedPathname === normalizedItemPath) {
+            return true;
+        }
+        
+        // Check if pathname starts with item path + '/'
+        if (normalizedPathname.startsWith(normalizedItemPath + '/')) {
+            // Check if there's a more specific menu item that also matches
+            // If yes, this item should not be active (only the most specific one should be)
+            const hasMoreSpecificMatch = allMenuItems.some(otherItem => {
+                if (otherItem.path === itemPath) return false; // Skip self
+                const normalizedOtherPath = otherItem.path.endsWith('/') ? otherItem.path.slice(0, -1) : otherItem.path;
+                
+                // Check if other item is more specific (longer path) and also matches
+                if (normalizedOtherPath.startsWith(normalizedItemPath + '/')) {
+                    return normalizedPathname === normalizedOtherPath || 
+                           normalizedPathname.startsWith(normalizedOtherPath + '/');
+                }
+                return false;
+            });
+            
+            // Only active if no more specific match exists
+            return !hasMoreSpecificMatch;
+        }
+        
+        return false;
+    };
+
     return (
         <nav className="bottom-navigation" dir={language === 'ar' ? 'rtl' : 'ltr'}>
             <div className="bottom-navigation__container">
@@ -203,19 +225,9 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                                    pathname === '/Promoter/files' || 
                                    pathname === '/Promoter/files/' ||
                                    pathname.startsWith('/Promoter/files/');
-                    } else if (item.path === '/dashboard/files') {
-                        // For dashboard files, check exact match and sub-routes
-                        isActive = pathname === '/dashboard/files' || 
-                                   pathname === '/dashboard/files/' ||
-                                   pathname.startsWith('/dashboard/files/');
-                    } else if (item.path === '/Promoter/files') {
-                        // For Promoter files, check exact match and sub-routes
-                        isActive = pathname === '/Promoter/files' || 
-                                   pathname === '/Promoter/files/' ||
-                                   pathname.startsWith('/Promoter/files/');
                     } else {
-                        // For other items, check exact match or if pathname starts with item path
-                        isActive = pathname === item.path || pathname.startsWith(item.path + '/');
+                        // Use the helper function for all other items
+                        isActive = isPathActive(item.path, pathname, menuItems);
                     }
                     
                     return (
@@ -256,19 +268,9 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                                                pathname === '/Promoter/files' || 
                                                pathname === '/Promoter/files/' ||
                                                pathname.startsWith('/Promoter/files/');
-                                } else if (item.path === '/dashboard/files') {
-                                    // For dashboard files, check exact match and sub-routes
-                                    isActive = pathname === '/dashboard/files' || 
-                                               pathname === '/dashboard/files/' ||
-                                               pathname.startsWith('/dashboard/files/');
-                                } else if (item.path === '/Promoter/files') {
-                                    // For Promoter files, check exact match and sub-routes
-                                    isActive = pathname === '/Promoter/files' || 
-                                               pathname === '/Promoter/files/' ||
-                                               pathname.startsWith('/Promoter/files/');
                                 } else {
-                                    // For other items, check exact match or if pathname starts with item path
-                                    isActive = pathname === item.path || pathname.startsWith(item.path + '/');
+                                    // Use the helper function for all other items
+                                    isActive = isPathActive(item.path, pathname, menuItems);
                                 }
                                 
                                 return (

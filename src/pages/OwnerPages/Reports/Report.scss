@@ -1,10 +1,12 @@
 @use '../../../helpers/functions' as *;
+@use '../../../helpers/_variables.scss' as vars;
+@use '../../../helpers/_mixins.scss' as mix;
 
 .copyright-card {
     background: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e7ff;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     padding: 24px;
     max-width: 700px;
     font-family: 'Segoe UI', sans-serif;
@@ -57,16 +59,18 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: $BaseColor;
+            background: var(--color-indigo-600);
             color: white;
             padding: 10px 16px;
-            border-radius: 8px;
+            border-radius: 0.5rem;
             text-decoration: none;
             font-weight: 500;
-            transition: background 0.3s;
+            transition: all 0.3s ease;
 
             &:hover {
-                background-color: rgba($BaseColor, 0.9);
+                background: var(--color-indigo-700);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
             }
 
             .icon {

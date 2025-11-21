@@ -101,6 +101,7 @@ export default function DashboardHeader({ onUploadClick, onDownloadClick }) {
     );
     
     const isPromoter = userData?.isPromoter === "true" || userData?.isPromoter === true;
+    const isOwner = location.pathname.startsWith('/Owner');
     
     const Logout = () => {
         removeToken("MegaBox", {
@@ -241,23 +242,25 @@ export default function DashboardHeader({ onUploadClick, onDownloadClick }) {
                                             <span>{t("sidenav.profile")}</span>
                                         </Link>
                                         
-                                        <Link
-                                            to={isPromoter ? '/Promoter/notifications' : '/dashboard/notifications'}
-                                            className="files-header__profile-item"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setProfileMenuOpen(false);
-                                            }}
-                                            onTouchEnd={(e) => {
-                                                e.stopPropagation();
-                                                setProfileMenuOpen(false);
-                                            }}
-                                        >
-                                            <HiBell className="files-header__profile-item-icon" />
-                                            <span>{t("sidenav.notifications")}</span>
-                                        </Link>
+                                        {!isOwner && (
+                                            <Link
+                                                to={isPromoter ? '/Promoter/notifications' : '/dashboard/notifications'}
+                                                className="files-header__profile-item"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setProfileMenuOpen(false);
+                                                }}
+                                                onTouchEnd={(e) => {
+                                                    e.stopPropagation();
+                                                    setProfileMenuOpen(false);
+                                                }}
+                                            >
+                                                <HiBell className="files-header__profile-item-icon" />
+                                                <span>{t("sidenav.notifications")}</span>
+                                            </Link>
+                                        )}
                                         
-                                        {!isPromoter && (
+                                        {!isOwner && !isPromoter && (
                                             <Link
                                                 to="/Partners"
                                                 className="files-header__profile-item"
@@ -275,7 +278,7 @@ export default function DashboardHeader({ onUploadClick, onDownloadClick }) {
                                             </Link>
                                         )}
                                         
-                                        {isPromoter && (
+                                        {!isOwner && isPromoter && (
                                             <Link
                                                 to="/Partners"
                                                 className="files-header__profile-item"

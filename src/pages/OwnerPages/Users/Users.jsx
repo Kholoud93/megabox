@@ -201,7 +201,8 @@ export default function Users() {
     };
 
     return (
-        <>
+        <div className="admin-users-page">
+            <div className="admin-users-page__wrapper">
             <div className="add">
                 <button onClick={handleaddmod}>
                     {addform ? t("adminUsers.closeNotifyAll") : t("adminUsers.notifyAll")}
@@ -218,7 +219,7 @@ export default function Users() {
                                     <label htmlFor="Title" className="block mb-2 text-sm font-medium text-gray-900">{t("adminUsers.titleLabel")}</label>
                                     <input type="text" id="Title" name="title" value={formik.values.title}
                                         onBlur={formik.handleBlur} onChange={formik.handleChange}
-                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#01677e] focus:border-[#01677e] block w-full p-2.5 "
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 "
                                         placeholder={t("adminUsers.titlePlaceholder")} />
                                     {formik.touched.title && formik.errors.title && (
                                         <p className="text-red-500 text-sm">{formik.errors.title}</p>
@@ -233,7 +234,7 @@ export default function Users() {
                                         value={formik.values.body}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
-                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#01677e] focus:border-[#01677e] block w-full p-2.5"
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5"
                                         placeholder={t("adminUsers.messagePlaceholder")}
                                     ></textarea>
 
@@ -283,7 +284,7 @@ export default function Users() {
                                         value={notificationFormik.values.title}
                                         onChange={notificationFormik.handleChange}
                                         onBlur={notificationFormik.handleBlur}
-                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#01677e] focus:border-[#01677e] block w-full p-2.5"
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5"
                                         placeholder={t("adminUsers.titlePlaceholder")}
                                     />
                                     {notificationFormik.touched.title && notificationFormik.errors.title && (
@@ -302,7 +303,7 @@ export default function Users() {
                                         value={notificationFormik.values.body}
                                         onChange={notificationFormik.handleChange}
                                         onBlur={notificationFormik.handleBlur}
-                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#01677e] focus:border-[#01677e] block w-full p-2.5"
+                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5"
                                         placeholder={t("adminUsers.messagePlaceholder")}
                                     ></textarea>
                                     {notificationFormik.touched.body && notificationFormik.errors.body && (
@@ -458,6 +459,7 @@ export default function Users() {
                     </div>
                 )}
             </AnimatePresence>
-        </>
+            </div>
+        </div>
     )
 }

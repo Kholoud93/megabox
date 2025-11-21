@@ -436,12 +436,6 @@ const router = createBrowserRouter(
               <Reports />
             </RoleProtector>
           </LoginProtector>
-        }, {
-          path: "notifications", element: <LoginProtector>
-            <RoleProtector requiredRole="Owner">
-              <Notifications />
-            </RoleProtector>
-          </LoginProtector>
         }
       ]
     },

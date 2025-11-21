@@ -68,9 +68,11 @@ export default function DashboardLayout({ role }) {
 
 
     return <div className='flex justify-start items-center bg-[#f2f0f0]'>
-        <div className="sidnav">
-            <Sidenav role={role} />
-        </div>
+        {role !== "Owner" && (
+            <div className="sidnav">
+                <Sidenav role={role} />
+            </div>
+        )}
         <div className="min-h-screen w-full overflow-hidden pb-24 md:pb-4">
             <DashboardHeader />
             <Outlet>

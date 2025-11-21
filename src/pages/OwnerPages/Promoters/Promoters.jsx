@@ -97,7 +97,8 @@ export default function Promoters() {
     ];
 
     return (
-        <>
+        <div className="admin-promoters-page">
+            <div className="admin-promoters-page__wrapper">
             <motion.div
                 layout
                 ref={animationRef}
@@ -187,6 +188,7 @@ export default function Promoters() {
                     </table>
                 </div>
             </motion.div>
-        </>
+            </div>
+        </div>
     )
 }
