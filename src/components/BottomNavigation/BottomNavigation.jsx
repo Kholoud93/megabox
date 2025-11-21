@@ -194,17 +194,27 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                     const Icon = item.icon;
                     let isActive = false;
                     
-                    if (item.path === '/dashboard/files') {
-                        // For dashboard files, check exact match
-                        isActive = pathname === '/dashboard/files' || pathname === '/dashboard/files/';
+                    // Check for files tab first (most specific)
+                    if (item.key === 'files') {
+                        // For files tab, check both dashboard/files and Promoter/files
+                        isActive = pathname === '/dashboard/files' || 
+                                   pathname === '/dashboard/files/' ||
+                                   pathname.startsWith('/dashboard/files/') ||
+                                   pathname === '/Promoter/files' || 
+                                   pathname === '/Promoter/files/' ||
+                                   pathname.startsWith('/Promoter/files/');
+                    } else if (item.path === '/dashboard/files') {
+                        // For dashboard files, check exact match and sub-routes
+                        isActive = pathname === '/dashboard/files' || 
+                                   pathname === '/dashboard/files/' ||
+                                   pathname.startsWith('/dashboard/files/');
                     } else if (item.path === '/Promoter/files') {
-                        // For Promoter files, check exact match
-                        isActive = pathname === '/Promoter/files' || pathname === '/Promoter/files/';
-                    } else if (item.key === 'files') {
-                        // For files tab in general, check both dashboard/files and Promoter/files
-                        isActive = pathname === '/dashboard/files' || pathname === '/dashboard/files/' || 
-                                   pathname === '/Promoter/files' || pathname === '/Promoter/files/';
+                        // For Promoter files, check exact match and sub-routes
+                        isActive = pathname === '/Promoter/files' || 
+                                   pathname === '/Promoter/files/' ||
+                                   pathname.startsWith('/Promoter/files/');
                     } else {
+                        // For other items, check exact match or if pathname starts with item path
                         isActive = pathname === item.path || pathname.startsWith(item.path + '/');
                     }
                     
@@ -237,17 +247,27 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                                 const Icon = item.icon;
                                 let isActive = false;
                                 
-                                if (item.path === '/dashboard/files') {
-                                    // For dashboard files, check exact match
-                                    isActive = pathname === '/dashboard/files' || pathname === '/dashboard/files/';
+                                // Check for files tab first (most specific)
+                                if (item.key === 'files') {
+                                    // For files tab, check both dashboard/files and Promoter/files
+                                    isActive = pathname === '/dashboard/files' || 
+                                               pathname === '/dashboard/files/' ||
+                                               pathname.startsWith('/dashboard/files/') ||
+                                               pathname === '/Promoter/files' || 
+                                               pathname === '/Promoter/files/' ||
+                                               pathname.startsWith('/Promoter/files/');
+                                } else if (item.path === '/dashboard/files') {
+                                    // For dashboard files, check exact match and sub-routes
+                                    isActive = pathname === '/dashboard/files' || 
+                                               pathname === '/dashboard/files/' ||
+                                               pathname.startsWith('/dashboard/files/');
                                 } else if (item.path === '/Promoter/files') {
-                                    // For Promoter files, check exact match
-                                    isActive = pathname === '/Promoter/files' || pathname === '/Promoter/files/';
-                                } else if (item.key === 'files') {
-                                    // For files tab in general, check both dashboard/files and Promoter/files
-                                    isActive = pathname === '/dashboard/files' || pathname === '/dashboard/files/' || 
-                                               pathname === '/Promoter/files' || pathname === '/Promoter/files/';
+                                    // For Promoter files, check exact match and sub-routes
+                                    isActive = pathname === '/Promoter/files' || 
+                                               pathname === '/Promoter/files/' ||
+                                               pathname.startsWith('/Promoter/files/');
                                 } else {
+                                    // For other items, check exact match or if pathname starts with item path
                                     isActive = pathname === item.path || pathname.startsWith(item.path + '/');
                                 }
                                 
