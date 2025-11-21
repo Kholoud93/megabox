@@ -396,6 +396,31 @@ aside {
                 .ps-menu-label {
                     color: white !important;
                 }
+                
+                // Make expand arrow icon white
+                .ps-submenu-expand-icon {
+                    color: white !important;
+                    
+                    svg {
+                        color: white !important;
+                        fill: white !important;
+                    }
+                }
+            }
+        }
+        
+        // Also target the expand icon directly
+        .ps-submenu-expand-icon {
+            color: white !important;
+            
+            svg {
+                color: white !important;
+                fill: white !important;
+            }
+            
+            path {
+                fill: white !important;
+                stroke: white !important;
             }
         }
 
@@ -421,6 +446,22 @@ aside {
             position: relative !important;
             background: transparent !important;
             pointer-events: auto !important;
+        }
+        
+        // Make all submenu expand arrows white
+        .ps-submenu-root {
+            .ps-menu-button {
+                .ps-submenu-expand-icon {
+                    color: white !important;
+                    
+                    svg,
+                    svg * {
+                        color: white !important;
+                        fill: white !important;
+                        stroke: white !important;
+                    }
+                }
+            }
         }
 
         .ps-submenu-root:not([aria-expanded="true"]):not(.ps-open) > .ps-submenu-content {
