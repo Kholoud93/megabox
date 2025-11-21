@@ -613,6 +613,7 @@
     }
     .action-buttons {
         display: flex;
+        flex-direction: column;
         gap: 0.5rem;
         align-items: center;
         justify-content: center;
@@ -620,15 +621,19 @@
 
         @include mix.media-breakpoint-down(md) {
             width: 100%;
+            flex-direction: row;
         }
 
-        button {
+        button, a {
             padding: 0.5rem;
             border: none;
             background: transparent;
             cursor: pointer;
             transition: all 0.2s;
             border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
             &:hover {
                 background: rgba(0, 0, 0, 0.05);

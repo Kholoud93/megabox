@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo } from 'react'
+import React, { useRef, useState, useMemo, useEffect } from 'react'
 import "./Promoters.scss"
 import { useQuery } from 'react-query';
 import axios from 'axios';
@@ -15,6 +15,8 @@ export default function Promoters() {
     const { t } = useLanguage();
     const [searchTerm, setSearchTerm] = useState('');
     const [filters, setFilters] = useState({});
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     const animationRef = useRef();
     const animationInView = useInView(animationRef, { once: true });
@@ -74,6 +76,17 @@ export default function Promoters() {
         });
     }, [Promoters, searchTerm, filters]);
 
+    // Pagination logic
+    const totalPages = Math.ceil(filteredPromoters.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedPromoters = filteredPromoters.slice(startIndex, endIndex);
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, filters]);
+
     // Filter configuration
     const filterConfig = [
         {
@@ -115,15 +128,23 @@ export default function Promoters() {
                         onFilterChange={setFilters}
                     />
                     {Promoters && (
-                        <p className="text-sm text-gray-600 mt-2">
-                            {filteredPromoters.length} {t('adminPromoters.of')} {Promoters.length} {t('adminPromoters.promoters')}
+                        <p className="admin-users-count text-sm text-gray-600 mt-2">
+                            {paginatedPromoters.length > 0 ? (
+                                <>
+                                    {startIndex + 1}-{Math.min(endIndex, filteredPromoters.length)} {t('adminPromoters.of')} {filteredPromoters.length} {t('adminPromoters.promoters')}
+                                </>
+                            ) : (
+                                <>
+                                    0 {t('adminPromoters.of')} {filteredPromoters.length} {t('adminPromoters.promoters')}
+                                </>
+                            )}
                         </p>
                     )}
                 </div>
 
                 <div className="overflow-x-auto shadow-md sm:rounded-lg">
-                    <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                    <table className="admin-users-table">
+                        <thead className="admin-users-table__header">
                             <tr>
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.username")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.email")}</th>
@@ -133,14 +154,14 @@ export default function Promoters() {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredPromoters.length > 0 ? (
-                                filteredPromoters.map((ele, index) => {
+                            {paginatedPromoters.length > 0 ? (
+                                paginatedPromoters.map((ele, index) => {
                                     return (
-                                        <tr key={index} className="bg-white border-b hover:bg-gray-50">
-                                            <td className="px-6 py-4">{ele.username}</td>
-                                            <td className="px-6 py-4">{ele.email}</td>
+                                        <tr key={ele._id || ele.id || index}>
+                                            <td data-label={t("adminPromoters.username")}>{ele.username}</td>
+                                            <td data-label={t("adminPromoters.email")}>{ele.email}</td>
 
-                                            <td className="px-6 py-4">
+                                            <td data-label={t("adminPromoters.watchingPlan")}>
                                                 {ele?.watchingplan ? (
                                                     <span className='text-green-700'>{t("adminPromoters.subscribed")}</span>
                                                 ) : (
@@ -148,7 +169,7 @@ export default function Promoters() {
                                                 )}
                                             </td>
 
-                                            <td className="px-6 py-4">
+                                            <td data-label={t("adminPromoters.downloadsPlan")}>
                                                 {ele?.Downloadsplan ? (
                                                     <span className='text-green-700'>{t("adminPromoters.subscribed")}</span>
                                                 ) : (
@@ -156,24 +177,23 @@ export default function Promoters() {
                                                 )}
                                             </td>
 
-                                            <td className="px-6 py-4 svg-del">
-                                                <div className="w-full flex gap-2">
+                                            <td data-label={t("adminPromoters.actions")}>
+                                                <div className="action-buttons">
                                                     <Link
                                                         title={t("adminPromoters.viewEarnings")}
                                                         to={`/Owner/Promoter/${ele?._id}`}
-                                                        className="text-blue-600 hover:text-blue-800"
+                                                        className="text-indigo-600 hover:text-indigo-800 transition-colors"
                                                     >
-                                                        <MdAttachMoney className='Analysis' size={20} />
+                                                        <MdAttachMoney size={20} />
                                                     </Link>
                                                     <button
                                                         title={t("adminPromoters.delete")}
                                                         onClick={() => { }}
-                                                        className="text-blue-600 hover:text-blue-800"
+                                                        className="text-red-600 hover:text-red-800 transition-colors"
                                                     >
-                                                        <MdDelete className='text-red-600 hover:text-red-800' size={20} />
+                                                        <MdDelete size={20} />
                                                     </button>
                                                 </div>
-
                                             </td>
                                         </tr>
                                     )
@@ -187,6 +207,29 @@ export default function Promoters() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="admin-users-pagination">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1}
+                            className="admin-users-pagination__btn admin-users-pagination__btn--prev"
+                        >
+                            {t("adminPromoters.prev")}
+                        </button>
+                        <div className="admin-users-pagination__info">
+                            {t("adminPromoters.page")} {currentPage} {t("adminPromoters.of")} {totalPages}
+                        </div>
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                            disabled={currentPage === totalPages}
+                            className="admin-users-pagination__btn admin-users-pagination__btn--next"
+                        >
+                            {t("adminPromoters.next")}
+                        </button>
+                    </div>
+                )}
             </motion.div>
             </div>
         </div>

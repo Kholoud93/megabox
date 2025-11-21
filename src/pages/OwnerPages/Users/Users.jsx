@@ -465,7 +465,7 @@ export default function Users() {
                             disabled={currentPage === 1}
                             className="admin-users-pagination__btn admin-users-pagination__btn--prev"
                         >
-                            {t("prev")}
+                            {t("adminUsers.prev")}
                         </button>
                         <div className="admin-users-pagination__info">
                             {t("adminUsers.page")} {currentPage} {t("adminUsers.of")} {totalPages}
@@ -475,7 +475,7 @@ export default function Users() {
                             disabled={currentPage === totalPages}
                             className="admin-users-pagination__btn admin-users-pagination__btn--next"
                         >
-                            {t("next")}
+                            {t("adminUsers.next")}
                         </button>
                     </div>
                 )}

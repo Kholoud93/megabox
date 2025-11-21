@@ -578,6 +578,8 @@
     "users": "users",
     "noUsersFound": "No users found matching your criteria",
     "page": "Page",
+    "prev": "Previous",
+    "next": "Next",
     "searchUser": "Search User",
     "searchByEmailOrId": "Search by Email or User ID",
     "enterEmailOrId": "Enter email or user ID",
@@ -597,6 +599,8 @@
     "close": "Close"
   },
   "adminPromoters": {
+    "page": "Page",
+    "of": "of",
     "title": "Promoters Management",
     "username": "Username",
     "email": "Email",
@@ -608,9 +612,10 @@
     "viewEarnings": "View Earnings",
     "delete": "Delete",
     "searchPromoters": "Search by username or email...",
-    "of": "of",
     "promoters": "promoters",
-    "noPromotersFound": "No promoters found matching your criteria"
+    "noPromotersFound": "No promoters found matching your criteria",
+    "prev": "Previous",
+    "next": "Next"
   },
   "adminReports": {
     "title": "Complaints",
