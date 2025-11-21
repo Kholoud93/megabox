@@ -7,13 +7,13 @@
 
   & {
     padding-top: 2rem;
-    padding-bottom: 6rem; // Space for bottom navigation
+    padding-bottom: 8rem; // Space for bottom navigation
     max-width: 100%;
     background: var(--color-indigo-50);
     min-height: 100vh;
 
     @include mixins.media-breakpoint-up(md) {
-      padding-bottom: 2rem;
+      padding-bottom: 3rem;
     }
   }
 
@@ -33,7 +33,7 @@
 
   @include functions.Breakpoints(mobile) {
     padding-top: 1rem;
-    padding-bottom: 6rem;
+    padding-bottom: 8rem;
   }
 }
 

@@ -6,10 +6,10 @@
     min-height: 100vh;
     padding: 1rem 0;
     background: #f9fafb;
-    padding-bottom: 6rem; // Space for bottom navigation
+    padding-bottom: 8rem; // Space for bottom navigation
 
     @include mix.media-breakpoint-up(md) {
-        padding-bottom: 2rem;
+        padding-bottom: 3rem;
     }
 
     &__wrapper {
@@ -159,12 +159,12 @@
 }
 
 .revenue-earning-card {
-    background: linear-gradient(135deg, var(--color-indigo-600) 0%, var(--color-indigo-700) 100%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 1rem;
     padding: 1.5rem;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     color: white;
 
     @include mix.media-breakpoint-down(md) {
@@ -255,6 +255,7 @@
         transition: all 0.2s;
         white-space: nowrap;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        gap: 0.5rem;
 
         &:hover {
             background: var(--color-indigo-50);
@@ -267,6 +268,23 @@
             font-size: 0.8125rem;
             width: 100%;
         }
+    }
+
+    &__share-button {
+        // Ensure share button has same styles as withdraw button
+        background: white !important;
+        color: #4f46e5 !important;
+
+        &:hover {
+            background: #eef2ff !important;
+            color: #4f46e5 !important;
+        }
+    }
+
+    &__share-icon {
+        width: 1rem;
+        height: 1rem;
+        flex-shrink: 0;
     }
 
     &__background {

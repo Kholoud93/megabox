@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import Sidenav from '../components/Sidenav/Sidenav'
 import BottomNavigation from '../components/BottomNavigation/BottomNavigation'
+import DashboardHeader from '../components/DashboardHeader/DashboardHeader'
 import { useAuth } from '../context/AuthContext'
 import { useCookies } from 'react-cookie';
 import { jwtDecode } from "jwt-decode";
@@ -66,7 +67,8 @@ export default function DashboardLayout({ role }) {
         <div className="sidnav">
             <Sidenav role={role} />
         </div>
-        <div className="min-h-screen w-full overflow-hidden pb-20 md:pb-0">
+        <div className="min-h-screen w-full overflow-hidden pb-24 md:pb-4">
+            <DashboardHeader />
             <Outlet>
             </Outlet>
         </div>

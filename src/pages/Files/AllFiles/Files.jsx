@@ -23,7 +23,7 @@ import { useLanguage } from '../../../context/LanguageContext';
 import ShareLinkModal from '../../../components/ShareLinkModal/ShareLinkModal';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-import { HiUserCircle, HiArrowRightOnRectangle, HiUserGroup, HiCurrencyDollar } from 'react-icons/hi2';
+import { HiUserCircle, HiArrowRightOnRectangle, HiUserGroup, HiCurrencyDollar, HiArrowUp, HiArrowDown, HiBell } from 'react-icons/hi2';
 import { FiGlobe } from 'react-icons/fi';
 import { FaUser } from 'react-icons/fa';
 import './Files.scss';
@@ -386,7 +386,7 @@ export default function Files() {
                                 className="files-header__button"
                                 onClick={ToggleUploadOptions}
                             >
-                                <HiOutlinePlus className="files-header__button-icon" />
+                                <HiArrowUp className="files-header__button-icon" />
                                 {t("files.uploadFile")}
                             </button>
                             <button
@@ -472,6 +472,22 @@ export default function Files() {
                                         >
                                             <HiUserCircle className="files-header__profile-item-icon" />
                                             <span>{t("sidenav.profile")}</span>
+                                        </Link>
+                                        
+                                        <Link
+                                            to={isPromoter ? '/Promoter/notifications' : '/dashboard/notifications'}
+                                            className="files-header__profile-item"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setProfileMenuOpen(false);
+                                            }}
+                                            onTouchEnd={(e) => {
+                                                e.stopPropagation();
+                                                setProfileMenuOpen(false);
+                                            }}
+                                        >
+                                            <HiBell className="files-header__profile-item-icon" />
+                                            <span>{t("sidenav.notifications")}</span>
                                         </Link>
                                         
                                         {!isPromoter && (
@@ -698,7 +714,7 @@ export default function Files() {
                                         className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 border border-transparent shadow-sm text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
                                         style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                     >
-                                        <HiOutlinePlus className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                        <HiArrowUp className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                         {t("files.uploadFile")}
                                     </button>
                                 </div>

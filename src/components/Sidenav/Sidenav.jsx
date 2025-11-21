@@ -209,6 +209,64 @@ export default function Sidenav({ role }) {
         }
     }, [allFilesOpen]);
 
+    // Apply folder styles after React renders, using a timeout to avoid infinite loops
+    useEffect(() => {
+        if (collapsed || !allFilesOpen) {
+            return;
+        }
+
+        // Use a timeout to apply styles after React has finished rendering
+        const timeoutId = setTimeout(() => {
+            const allFolderSubmenus = document.querySelectorAll('.sidenav-folder-submenu');
+            
+            allFolderSubmenus.forEach((submenu) => {
+                const isSubmenuRoot = submenu.classList.contains('ps-submenu-root');
+                const isOpen = submenu.classList.contains('ps-open') || 
+                               submenu.getAttribute('aria-expanded') === 'true' ||
+                               submenu.classList.contains('ps-menu-open');
+                
+                if (isSubmenuRoot && isOpen) {
+                    const content = submenu.querySelector('.ps-submenu-content') || 
+                                   submenu.querySelector('div[data-testid="ps-submenu-content-test-id"]');
+                    
+                    if (content) {
+                        content.style.setProperty('display', 'block', 'important');
+                        content.style.setProperty('visibility', 'visible', 'important');
+                        content.style.setProperty('opacity', '1', 'important');
+                        content.style.setProperty('height', 'auto', 'important');
+                        content.style.setProperty('max-height', '300px', 'important');
+                        content.style.setProperty('overflow-y', 'auto', 'important');
+                        content.style.setProperty('overflow-x', 'hidden', 'important');
+                    }
+                } else {
+                    const submenuRoot = submenu.querySelector('.ps-submenu-root');
+                    if (submenuRoot) {
+                        const rootIsOpen = submenuRoot.classList.contains('ps-open') || 
+                                          submenuRoot.getAttribute('aria-expanded') === 'true' ||
+                                          submenuRoot.classList.contains('ps-menu-open');
+                        
+                        if (rootIsOpen) {
+                            const content = submenuRoot.querySelector('.ps-submenu-content') || 
+                                           submenuRoot.querySelector('div[data-testid="ps-submenu-content-test-id"]');
+                            
+                            if (content) {
+                                content.style.setProperty('display', 'block', 'important');
+                                content.style.setProperty('visibility', 'visible', 'important');
+                                content.style.setProperty('opacity', '1', 'important');
+                                content.style.setProperty('height', 'auto', 'important');
+                                content.style.setProperty('max-height', '300px', 'important');
+                                content.style.setProperty('overflow-y', 'auto', 'important');
+                                content.style.setProperty('overflow-x', 'hidden', 'important');
+                            }
+                        }
+                    }
+                }
+            });
+        }, 50); // Small delay to ensure DOM is ready
+
+        return () => clearTimeout(timeoutId);
+    }, [expandedFolders, allFilesOpen, collapsed]);
+
     return <>
         <div className={Hide ? "dropback apper-dropback" : "dropback"} onClick={handleHide}>
         </div>
@@ -276,80 +334,89 @@ export default function Sidenav({ role }) {
                                     }}
                                     defaultOpen={false}
                                 >
-                                    {/* Folders */}
                                     {foldersData?.folders?.map((folder) => {
                                         const folderId = folder?._id || folder?.id;
-                                        const isExpanded = expandedFolders[folderId];
+                                        const isExpanded = expandedFolders[folderId] === true;
                                         const files = folderFiles[folderId] || [];
                                         
                                         return (
                                             <SubMenu
                                                 key={folderId}
-                                                label={folder?.name}
+                                                label={
+                                                    <span 
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleFolderClick(folder, e);
+                                                        }}
+                                                        style={{ cursor: 'pointer', flex: 1 }}
+                                                    >
+                                                        {folder?.name}
+                                                    </span>
+                                                }
                                                 icon={
-                                                    <div className="sidenav-folder-wrapper">
-                                                        <svg className="sidenav-files-tree-icon" width="18" height="18" viewBox="0 0 20 20" fill="none">
-                                                            <path d="M3 6C3 4.89543 3.89543 4 5 4H8.58579C8.851 4 9.10536 4.10536 9.29289 4.29289L10.7071 5.70711C10.8946 5.89464 11.149 6 11.4142 6H15C16.1046 6 17 6.89543 17 8V14C17 15.1046 16.1046 16 15 16H5C3.89543 16 3 15.1046 3 14V6Z" fill="#FCD34D" stroke="#F59E0B" strokeWidth="1.5" />
-                                                        </svg>
-                                                    </div>
+                                                    <svg className="sidenav-files-tree-icon" width="18" height="18" viewBox="0 0 20 20" fill="none">
+                                                        <path d="M3 6C3 4.89543 3.89543 4 5 4H8.58579C8.851 4 9.10536 4.10536 9.29289 4.29289L10.7071 5.70711C10.8946 5.89464 11.149 6 11.4142 6H15C16.1046 6 17 6.89543 17 8V14C17 15.1046 16.1046 16 15 16H5C3.89543 16 3 15.1046 3 14V6Z" fill="#FCD34D" stroke="#F59E0B" strokeWidth="1.5" />
+                                                    </svg>
                                                 }
                                                 className="sidenav-folder-submenu"
-                                                open={!collapsed && allFilesOpen && isExpanded}
-                                                onOpenChange={async (open) => {
-                                                    // Always allow state update regardless of collapsed state
+                                                open={isExpanded}
+                                                defaultOpen={false}
+                                                onOpenChange={(open) => {
+                                                    if (collapsed) {
+                                                        return;
+                                                    }
+                                                    
                                                     setExpandedFolders(prev => ({
                                                         ...prev,
                                                         [folderId]: open
                                                     }));
                                                     
-                                                    if (open) {
-                                                        try {
-                                                            const { data } = await axios.get(
-                                                                `${API_URL}/user/getFolderFiles/${folderId}`, 
-                                                                {
-                                                                    headers: { Authorization: `Bearer ${Token.MegaBox}` }
-                                                                }
-                                                            );
+                                                    if (open && !folderFiles[folderId]) {
+                                                        axios.get(
+                                                            `${API_URL}/user/getFolderFiles/${folderId}`, 
+                                                            {
+                                                                headers: { Authorization: `Bearer ${Token.MegaBox}` }
+                                                            }
+                                                        )
+                                                        .then(({ data }) => {
                                                             setFolderFiles(prev => ({
                                                                 ...prev,
                                                                 [folderId]: data?.files || []
                                                             }));
-                                                        } catch (error) {
+                                                        })
+                                                        .catch((error) => {
+                                                            console.error('Error fetching folder files:', error);
                                                             setFolderFiles(prev => ({
                                                                 ...prev,
                                                                 [folderId]: []
                                                             }));
-                                                        }
-                                                    } else {
-                                                        // When closing folder, clear its files from state
-                                                        setFolderFiles(prev => {
-                                                            const newState = { ...prev };
-                                                            delete newState[folderId];
-                                                            return newState;
                                                         });
                                                     }
                                                 }}
-                                                defaultOpen={false}
                                             >
-                                                {isExpanded && files.map((file) => (
-                                                    <MenuItem
-                                                        key={file?._id || file?.id}
-                                                        className="sidenav-files-tree-item sidenav-files-tree-item--file"
-                                                        onClick={() => handleFileClick(file)}
-                                                        icon={
-                                                            <svg className="sidenav-files-tree-icon" width="18" height="18" viewBox="0 0 20 20" fill="none">
-                                                                <path d="M4 4C4 2.89543 4.89543 2 6 2H10.5858C10.851 2 11.1054 2.10536 11.2929 2.29289L15.7071 6.70711C15.8946 6.89464 16 7.149 16 7.41421V16C16 17.1046 15.1046 18 14 18H6C4.89543 18 4 17.1046 4 16V4Z" fill="#93C5FD" stroke="#3B82F6" strokeWidth="1.5"/>
-                                                            </svg>
-                                                        }
-                                                    >
-                                                        {file?.fileName || file?.name}
-                                                    </MenuItem>
-                                                ))}
-                                                {files.length === 0 && isExpanded && (
+                                                {files.length > 0 ? (
+                                                    files.map((file) => (
+                                                        <MenuItem
+                                                            key={file?._id || file?.id}
+                                                            className="sidenav-files-tree-item sidenav-files-tree-item--file"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleFileClick(file);
+                                                            }}
+                                                            icon={
+                                                                <svg className="sidenav-files-tree-icon" width="18" height="18" viewBox="0 0 20 20" fill="none">
+                                                                    <path d="M4 4C4 2.89543 4.89543 2 6 2H10.5858C10.851 2 11.1054 2.10536 11.2929 2.29289L15.7071 6.70711C15.8946 6.89464 16 7.149 16 7.41421V16C16 17.1046 15.1046 18 14 18H6C4.89543 18 4 17.1046 4 16V4Z" fill="#93C5FD" stroke="#3B82F6" strokeWidth="1.5"/>
+                                                                </svg>
+                                                            }
+                                                        >
+                                                            {file?.fileName || file?.name}
+                                                        </MenuItem>
+                                                    ))
+                                                ) : isExpanded && folderFiles[folderId] ? (
                                                     <div className="sidenav-empty-folder">
                                                         {t("sidenav.emptyFolder") || "Empty folder"}
                                                     </div>
-                                                )}
+                                                ) : null}
                                             </SubMenu>
                                         );
                                     })}

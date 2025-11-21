@@ -389,7 +389,8 @@
     "total": "Total",
     "installRevenue": "Install Revenue",
     "noDataTitle": "No revenue data",
-    "noDataMessage": "No revenue data available yet",
+    "noDataMessage": "No data, make money by sharing videos",
+    "toShare": "To share",
     "fetchError": "Failed to fetch revenue data. Please try again later.",
     "errorTitle": "Error loading revenue data",
     "errorMessage": "Unable to load revenue data. Please try again later.",
@@ -397,6 +398,7 @@
     "cpi": "cpi / USD",
     "install": "Install",
     "referralRevenue": "Referral revenue",
+    "bonus": "Bonus",
     "botInfo": "Bot Info",
     "earning": "Earning",
     "withdrawable": "Withdrawable",
@@ -404,6 +406,7 @@
     "actualIncome": "Actual income",
     "withdraw": "Withdraw",
     "revenue": "Revenue",
+    "id": "ID",
     "congratulationsMessage": "Congratulations to user S***H for withdrawing 23.85 USD!"
   },
   "referral": {
