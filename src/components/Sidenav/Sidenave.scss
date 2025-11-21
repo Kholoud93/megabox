@@ -9,7 +9,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        z-index: 8;
+        z-index: 9999999;
         visibility: hidden;
         opacity: 0;
         transition: 0.7s linear all;
@@ -91,7 +91,7 @@ aside .main-side .ps-menu-button:hover {
     left: auto;
     bottom: 30px;
     opacity: 0;
-    z-index: 10;
+    z-index: 10000000;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     cursor: pointer;
     transition: all 0.3s ease;
@@ -117,7 +117,7 @@ aside .main-side .ps-menu-button:hover {
 }
 
 .allnav {
-    z-index: 10;
+    z-index: 10000000;
 
     .Active {
         background: linear-gradient(90deg, var(--color-indigo-600), rgba(79, 70, 229, 0.8)) !important;
@@ -164,6 +164,7 @@ aside {
         left: 0;
         right: auto;
         top: 0;
+        z-index: 10000000;
     }
 
     [dir="rtl"] & {
@@ -258,7 +259,7 @@ aside {
         top: 0;
         left: 0;
         right: auto;
-        z-index: 999;
+        z-index: 10000000;
         transition: 0.3s linear all;
         -webkit-transition: 0.3s linear all;
         overflow-y: auto !important;

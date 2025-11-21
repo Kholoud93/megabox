@@ -34,20 +34,18 @@
   &__content {
     position: relative !important;
     display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
     
-    // Mobile: column layout
+    // Mobile: keep row layout but adjust padding
     @media (max-width: 639px) {
-      flex-direction: column !important;
-      align-items: stretch !important;
       padding: 0.625rem 0 !important;
       gap: 0.625rem !important;
     }
 
     // Desktop: row layout
     @include mix.media-breakpoint-up(sm) {
-      flex-direction: row !important;
-      align-items: center !important;
-      justify-content: space-between !important;
       padding: 1rem 0 !important;
       gap: 1rem !important;
     }
@@ -333,7 +331,9 @@ body {
     &__content {
       padding: 0.5rem 0 !important;
       gap: 0.5rem !important;
-      flex-direction: column !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: space-between !important;
     }
 
     &__left {
