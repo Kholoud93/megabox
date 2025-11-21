@@ -34,6 +34,8 @@
   &__content {
     position: relative !important;
     display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
     
     // Extra small screens (< 640px)
     @media (max-width: 639px) {
@@ -42,6 +44,9 @@
     }
 
     @include mix.media-breakpoint-up(sm) {
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: space-between !important;
       padding: 1rem 0 !important;
       gap: 1rem !important;
     }
@@ -62,6 +67,9 @@
     position: relative !important;
     display: flex !important;
     align-items: center !important;
+    width: 100% !important;
+    flex: 1 !important;
+    min-width: 0 !important;
     
     // Extra small screens (< 640px)
     @media (max-width: 639px) {
@@ -69,6 +77,7 @@
     }
 
     @include mix.media-breakpoint-up(sm) {
+      width: auto !important;
       gap: 0.625rem !important;
     }
 
@@ -125,20 +134,33 @@
   &__actions {
     position: relative !important;
     display: flex !important;
+    flex-direction: row !important; // Override column from Files.scss
     align-items: center !important;
     flex-shrink: 0 !important;
+    width: auto !important; // Override 100% from Files.scss
+    justify-content: flex-end !important;
+    gap: 0.5rem !important;
     
     // Extra small screens (< 640px)
     @media (max-width: 639px) {
       gap: 0.375rem !important;
+      justify-content: flex-end !important;
+      flex-direction: row !important; // Keep row even on mobile
+      width: auto !important;
+      align-items: center !important; // Override stretch from Files.scss
     }
 
     @include mix.media-breakpoint-up(sm) {
+      width: auto !important;
       gap: 0.5rem !important;
+      flex-direction: row !important;
+      align-items: center !important;
     }
 
     @include mix.media-breakpoint-up(md) {
       gap: 0.625rem !important;
+      flex-direction: row !important;
+      align-items: center !important;
     }
   }
 
@@ -310,6 +332,16 @@ body {
     &__content {
       padding: 0.5rem 0 !important;
       gap: 0.5rem !important;
+      flex-direction: column !important;
+    }
+
+    &__left {
+      width: 100% !important;
+    }
+
+    &__actions {
+      width: 100% !important;
+      justify-content: flex-end !important;
     }
 
     &__icon {
