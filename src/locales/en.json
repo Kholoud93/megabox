@@ -473,8 +473,14 @@
     "title": "Admin Analytics",
     "subtitle": "Overview of platform statistics and performance",
     "totalUsers": "Total Users",
+    "newUsers": "New Users (30 days)",
     "totalPromoters": "Total Promoters",
     "promotersWithPlans": "Promoters with Plans",
+    "totalStorage": "Total Storage",
+    "totalPayments": "Total Payments",
+    "totalSubscriptions": "Total Subscriptions",
+    "totalDownloads": "Total Downloads",
+    "totalViews": "Total Views",
     "totalWithdrawals": "Total Withdrawals",
     "totalWithdrawalAmount": "Total Withdrawal Amount",
     "pendingWithdrawals": "Pending Withdrawals",
@@ -490,7 +496,11 @@
     "rejected": "Rejected",
     "searchWithdrawals": "Search by user, amount, or payment method...",
     "of": "of",
-    "noWithdrawalsFound": "No withdrawals found matching your criteria"
+    "noWithdrawalsFound": "No withdrawals found matching your criteria",
+    "actions": "Actions",
+    "approve": "Approve",
+    "reject": "Reject",
+    "noAction": "-"
   },
   "adminUsers": {
     "title": "Users Management",

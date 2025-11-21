@@ -186,3 +186,58 @@
         color: #991b1b;
     }
 }
+
+.admin-analytics-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+
+    &__btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 0.375rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.875rem;
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        &--approve {
+            background: #10b981;
+            color: white;
+
+            &:hover:not(:disabled) {
+                background: #059669;
+            }
+        }
+
+        &--reject {
+            background: #ef4444;
+            color: white;
+
+            &:hover:not(:disabled) {
+                background: #dc2626;
+            }
+        }
+
+        @include mix.media-breakpoint-down(md) {
+            width: 28px;
+            height: 28px;
+            font-size: 0.75rem;
+        }
+    }
+
+    &__no-action {
+        color: #9ca3af;
+        font-size: vars.$text-sm;
+        font-style: italic;
+    }
+}

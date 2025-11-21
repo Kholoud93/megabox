@@ -473,8 +473,14 @@
     "title": "تحليلات الإدمن",
     "subtitle": "نظرة عامة على إحصائيات وأداء المنصة",
     "totalUsers": "إجمالي المستخدمين",
+    "newUsers": "المستخدمون الجدد (30 يوم)",
     "totalPromoters": "إجمالي المروجين",
     "promotersWithPlans": "المروجون مع الخطط",
+    "totalStorage": "مساحة التخزين",
+    "totalPayments": "إجمالي المدفوعات",
+    "totalSubscriptions": "إجمالي الاشتراكات",
+    "totalDownloads": "إجمالي التحميلات",
+    "totalViews": "إجمالي المشاهدات",
     "totalWithdrawals": "إجمالي السحوبات",
     "totalWithdrawalAmount": "إجمالي مبلغ السحوبات",
     "pendingWithdrawals": "السحوبات المعلقة",
@@ -490,7 +496,11 @@
     "rejected": "مرفوض",
     "searchWithdrawals": "البحث عن طريق المستخدم أو المبلغ أو طريقة الدفع...",
     "of": "من",
-    "noWithdrawalsFound": "لم يتم العثور على سحوبات تطابق معاييرك"
+    "noWithdrawalsFound": "لم يتم العثور على سحوبات تطابق معاييرك",
+    "actions": "الإجراءات",
+    "approve": "موافقة",
+    "reject": "رفض",
+    "noAction": "-"
   },
   "adminUsers": {
     "title": "إدارة المستخدمين",
