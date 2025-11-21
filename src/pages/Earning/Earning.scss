@@ -853,6 +853,12 @@
   gap: 1rem;
   margin-bottom: 1.5rem;
 
+  @include functions.Breakpoints(mobile) {
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+    margin-bottom: 1.25rem;
+  }
+
   @include mixins.media-breakpoint-down(md) {
     grid-template-columns: 1fr;
     gap: 0.875rem;
@@ -862,13 +868,19 @@
 .withdraw-summary-card {
   background: white;
   border-radius: 0.75rem;
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--color-indigo-200);
+  border: 1px solid #e0e7ff;
   transition: all 0.2s;
+
+  @include functions.Breakpoints(mobile) {
+    padding: 1rem 1.25rem;
+    border-radius: 0.625rem;
+    gap: 0.875rem;
+  }
 
   @include mixins.media-breakpoint-down(md) {
     padding: 1.25rem;
@@ -881,14 +893,20 @@
   }
 
   &__icon {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     flex-shrink: 0;
+
+    @include functions.Breakpoints(mobile) {
+      width: 36px;
+      height: 36px;
+      font-size: 1.125rem;
+    }
 
     @include mixins.media-breakpoint-down(md) {
       width: 40px;
@@ -897,30 +915,44 @@
     }
   }
 
-  &--amount &__icon {
+  &__icon--amount {
     background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
     color: #d97706;
   }
 
-  &--review &__icon {
+  &__icon--review {
     background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 100%);
     color: #7c3aed;
   }
 
-  &--withdrawn &__icon {
+  &__icon--withdrawn {
     background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
     color: #059669;
   }
 
   &__content {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+
+    [dir="rtl"] & {
+      align-items: flex-start;
+      text-align: left;
+    }
   }
 
   &__label {
     font-size: 0.875rem;
     color: var(--color-indigo-600);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.375rem;
     font-weight: 500;
+
+    @include functions.Breakpoints(mobile) {
+      font-size: 0.8125rem;
+      margin-bottom: 0.25rem;
+    }
 
     @include mixins.media-breakpoint-down(md) {
       font-size: 0.8125rem;
@@ -928,9 +960,13 @@
   }
 
   &__value {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: var(--color-indigo-900);
+
+    @include functions.Breakpoints(mobile) {
+      font-size: 1.125rem;
+    }
 
     @include mixins.media-breakpoint-down(md) {
       font-size: 1.25rem;
@@ -944,7 +980,12 @@
   border-radius: 1rem;
   padding: 1.5rem 2rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--color-indigo-200);
+  border: 1px solid #e0e7ff;
+
+  @include functions.Breakpoints(mobile) {
+    padding: 1.25rem 1.5rem;
+    border-radius: 0.875rem;
+  }
 
   @include mixins.media-breakpoint-down(md) {
     padding: 1.25rem 1.5rem;
@@ -957,6 +998,10 @@
     justify-content: space-between;
     margin-bottom: 1.5rem;
 
+    @include functions.Breakpoints(mobile) {
+      margin-bottom: 1.25rem;
+    }
+
     @include mixins.media-breakpoint-down(md) {
       margin-bottom: 1.25rem;
     }
@@ -967,6 +1012,10 @@
     font-weight: 700;
     color: var(--color-indigo-900);
     margin: 0;
+
+    @include functions.Breakpoints(mobile) {
+      font-size: 1.125rem;
+    }
 
     @include mixins.media-breakpoint-down(md) {
       font-size: 1.125rem;
@@ -982,6 +1031,10 @@
     font-weight: 600;
     text-decoration: none;
     transition: color 0.2s;
+
+    @include functions.Breakpoints(mobile) {
+      font-size: 0.8125rem;
+    }
 
     &:hover {
       color: var(--color-indigo-700);
@@ -1022,17 +1075,24 @@
 
 .withdraw-form-input-wrapper {
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .withdraw-form-input {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid var(--color-indigo-300);
+  border: 1px solid #c7d2fe;
   border-radius: 0.5rem;
   font-size: 0.875rem;
   color: var(--color-indigo-900);
   background: white;
   transition: all 0.2s;
+
+  @include functions.Breakpoints(mobile) {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.8125rem;
+  }
 
   @include mixins.media-breakpoint-down(md) {
     padding: 0.625rem 0.875rem;
@@ -1046,7 +1106,44 @@
   }
 
   &::placeholder {
-    color: var(--color-indigo-400);
+    color: #94a3b8;
+  }
+}
+
+.withdraw-form-select {
+  appearance: none;
+  padding-right: 2.5rem;
+  cursor: pointer;
+
+  [dir="rtl"] & {
+    padding-right: 1rem;
+    padding-left: 2.5rem;
+  }
+}
+
+.withdraw-form-select-arrow {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--color-indigo-500);
+  pointer-events: none;
+  transition: transform 0.2s;
+
+  [dir="rtl"] & {
+    right: auto;
+    left: 1rem;
+    transform: translateY(-50%) rotate(180deg);
+  }
+}
+
+.withdraw-form-select:focus + .withdraw-form-select-arrow {
+  transform: translateY(-50%) rotate(180deg);
+
+  [dir="rtl"] & {
+    transform: translateY(-50%) rotate(0deg);
   }
 }
 
@@ -1057,11 +1154,17 @@
   transform: translateY(-50%);
   font-size: 0.75rem;
   color: var(--color-indigo-500);
+  pointer-events: none;
+
+  [dir="rtl"] & {
+    right: auto;
+    left: 1rem;
+  }
 }
 
 .withdraw-submit-button {
   padding: 0.875rem 2rem;
-  background: var(--color-indigo-600);
+  background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700));
   color: white;
   border: none;
   border-radius: 0.5rem;
@@ -1070,6 +1173,12 @@
   cursor: pointer;
   transition: all 0.2s;
   margin-top: 0.5rem;
+  width: 100%;
+
+  @include functions.Breakpoints(mobile) {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.8125rem;
+  }
 
   @include mixins.media-breakpoint-down(md) {
     padding: 0.75rem 1.5rem;
@@ -1077,12 +1186,53 @@
   }
 
   &:hover {
-    background: var(--color-indigo-700);
+    background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800));
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
   }
 
   &:active {
     transform: translateY(0);
+  }
+}
+
+// Withdraw Notice Section
+.withdraw-notice {
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  border-left: 3px solid var(--color-indigo-600);
+
+  [dir="rtl"] & {
+    border-left: none;
+    border-right: 3px solid var(--color-indigo-600);
+  }
+
+  @include functions.Breakpoints(mobile) {
+    margin-top: 1.25rem;
+    padding: 0.875rem 1rem;
+  }
+
+  &__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-indigo-900);
+    margin-bottom: 0.5rem;
+
+    @include functions.Breakpoints(mobile) {
+      font-size: 0.8125rem;
+      margin-bottom: 0.375rem;
+    }
+  }
+
+  &__text {
+    font-size: 0.8125rem;
+    color: #64748b;
+    line-height: 1.5;
+
+    @include functions.Breakpoints(mobile) {
+      font-size: 0.75rem;
+    }
   }
 }

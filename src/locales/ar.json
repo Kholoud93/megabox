@@ -897,5 +897,31 @@
     "uploaded": "تم الرفع بنجاح",
     "failed": "فشل",
     "allFailed": "فشل رفع جميع الملفات"
+  },
+  "withdrawSection": {
+    "amount": "المبلغ",
+    "review": "قيد المراجعة",
+    "withdrawn": "المسحوب",
+    "apply": "تقديم طلب",
+    "record": "السجل",
+    "withdrawalAmount": "مبلغ السحب",
+    "withdrawalAmountPlaceholder": "يرجى إدخال مبلغ السحب النقدي المطلوب",
+    "paymentMethod": "طريقة الدفع",
+    "paymentMethodPlaceholder": "يرجى إدخال طريقة الدفع",
+    "whatsappTelegram": "حسابات واتساب/تيليجرام",
+    "whatsappTelegramPlaceholder": "يرجى إدخال حسابات واتساب/تيليجرام",
+    "withdraw": "سحب",
+    "notice": "ملاحظة:",
+    "noticeText": "1. يجب أن يكون مبلغ السحب النقدي ≥ 10 دولارات أمريكية. إذا لم يكن كذلك، يرجى المتابعة ومشاركة الرابط",
+    "usdt": "USDT",
+    "paypal": "PayPal",
+    "payoneer": "Payoneer",
+    "bankTransfer": "تحويل بنكي (شخصي)",
+    "minAmount": "الحد الأدنى",
+    "fees": "الرسوم",
+    "free": "مجاني",
+    "processingTime": "الوقت",
+    "within24Hours": "خلال 24 ساعة",
+    "threeToFiveDays": "3-5 أيام"
   }
 }

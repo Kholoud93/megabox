@@ -897,5 +897,31 @@
     "uploaded": "uploaded successfully",
     "failed": "failed",
     "allFailed": "All file uploads failed"
+  },
+  "withdrawSection": {
+    "amount": "Amount",
+    "review": "Review",
+    "withdrawn": "Withdrawn",
+    "apply": "Apply",
+    "record": "Record",
+    "withdrawalAmount": "Withdrawal amount",
+    "withdrawalAmountPlaceholder": "Please enter the requested cash withdrawal amount",
+    "paymentMethod": "Payment method",
+    "paymentMethodPlaceholder": "Please enter the payment method",
+    "whatsappTelegram": "WhatsApp/Telegram accounts",
+    "whatsappTelegramPlaceholder": "Please enter the whatsapp/telegram accounts",
+    "withdraw": "Withdraw",
+    "notice": "Notice:",
+    "noticeText": "1. The amount of cash withdrawal must be ≥ 10 US dollars If not please go ahead and share the link",
+    "usdt": "USDT",
+    "paypal": "PayPal",
+    "payoneer": "Payoneer",
+    "bankTransfer": "Bank transfer (personal)",
+    "minAmount": "Min",
+    "fees": "Fees",
+    "free": "Free",
+    "processingTime": "Time",
+    "within24Hours": "Within 24 hours",
+    "threeToFiveDays": "3-5 days"
   }
 }
