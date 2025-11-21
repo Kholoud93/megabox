@@ -192,8 +192,14 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
             <div className="bottom-navigation__container">
                 {visibleItems.map((item) => {
                     const Icon = item.icon;
-                    const isActive = pathname === item.path || 
-                        (item.path !== '/dashboard' && pathname.startsWith(item.path));
+                    let isActive = false;
+                    
+                    if (item.path === '/dashboard') {
+                        // For dashboard, check if we're on the index route
+                        isActive = pathname === '/dashboard' || pathname === '/dashboard/';
+                    } else {
+                        isActive = pathname === item.path || pathname.startsWith(item.path + '/');
+                    }
                     
                     return (
                         <Link
@@ -222,8 +228,14 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                         <div className="bottom-navigation__dropdown">
                             {overflowItems.map((item) => {
                                 const Icon = item.icon;
-                                const isActive = pathname === item.path || 
-                                    (item.path !== '/dashboard' && pathname.startsWith(item.path));
+                                let isActive = false;
+                                
+                                if (item.path === '/dashboard') {
+                                    // For dashboard, check if we're on the index route
+                                    isActive = pathname === '/dashboard' || pathname === '/dashboard/';
+                                } else {
+                                    isActive = pathname === item.path || pathname.startsWith(item.path + '/');
+                                }
                                 
                                 return (
                                     <Link

@@ -347,7 +347,7 @@ export default function Files() {
             <div className="files-header">
                 <div className="files-header__container">
                     <div className="files-header__content">
-                        <div className="files-header__left">
+                        <Link to="/" className="files-header__left" style={{ textDecoration: 'none', color: 'inherit' }}>
                             <svg
                                 className="files-header__icon"
                                 viewBox="0 0 48 48"
@@ -379,7 +379,7 @@ export default function Files() {
                                 <h1 className="files-header__title">{t("files.headerTitle")}</h1>
                                 <p className="files-header__subtitle">{t("files.headerSubtitle")}</p>
                             </div>
-                        </div>
+                        </Link>
 
                         <div className="files-header__actions">
                             <button
