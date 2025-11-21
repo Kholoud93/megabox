@@ -122,7 +122,7 @@ export default function DashboardHeader({ onUploadClick, onDownloadClick }) {
 
 
     // Don't show header on Files page since it has its own complete header
-    if (location.pathname === '/dashboard' || location.pathname === '/dashboard/files' || location.pathname === '/Promoter/files') {
+    if (location.pathname === '/dashboard/files' || location.pathname === '/Promoter/files') {
         return null;
     }
 

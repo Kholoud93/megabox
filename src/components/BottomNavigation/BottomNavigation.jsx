@@ -65,7 +65,7 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
             // For regular users (non-promoters or promoters without plans)
             const items = [
                 {
-                    path: isPromoter ? '/Promoter/files' : '/dashboard',
+                    path: isPromoter ? '/Promoter/files' : '/dashboard/files',
                     icon: HiFolder,
                     label: t("sidenav.allFiles"),
                     key: 'files'
@@ -194,9 +194,16 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                     const Icon = item.icon;
                     let isActive = false;
                     
-                    if (item.path === '/dashboard') {
-                        // For dashboard, check if we're on the index route
-                        isActive = pathname === '/dashboard' || pathname === '/dashboard/';
+                    if (item.path === '/dashboard/files') {
+                        // For dashboard files, check exact match
+                        isActive = pathname === '/dashboard/files' || pathname === '/dashboard/files/';
+                    } else if (item.path === '/Promoter/files') {
+                        // For Promoter files, check exact match
+                        isActive = pathname === '/Promoter/files' || pathname === '/Promoter/files/';
+                    } else if (item.key === 'files') {
+                        // For files tab in general, check both dashboard/files and Promoter/files
+                        isActive = pathname === '/dashboard/files' || pathname === '/dashboard/files/' || 
+                                   pathname === '/Promoter/files' || pathname === '/Promoter/files/';
                     } else {
                         isActive = pathname === item.path || pathname.startsWith(item.path + '/');
                     }
@@ -230,9 +237,16 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                                 const Icon = item.icon;
                                 let isActive = false;
                                 
-                                if (item.path === '/dashboard') {
-                                    // For dashboard, check if we're on the index route
-                                    isActive = pathname === '/dashboard' || pathname === '/dashboard/';
+                                if (item.path === '/dashboard/files') {
+                                    // For dashboard files, check exact match
+                                    isActive = pathname === '/dashboard/files' || pathname === '/dashboard/files/';
+                                } else if (item.path === '/Promoter/files') {
+                                    // For Promoter files, check exact match
+                                    isActive = pathname === '/Promoter/files' || pathname === '/Promoter/files/';
+                                } else if (item.key === 'files') {
+                                    // For files tab in general, check both dashboard/files and Promoter/files
+                                    isActive = pathname === '/dashboard/files' || pathname === '/dashboard/files/' || 
+                                               pathname === '/Promoter/files' || pathname === '/Promoter/files/';
                                 } else {
                                     isActive = pathname === item.path || pathname.startsWith(item.path + '/');
                                 }

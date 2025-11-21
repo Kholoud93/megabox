@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { BrowserRouter as Router, Routes, Route, createBrowserRouter, RouterProvider, useNavigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, createBrowserRouter, RouterProvider, useNavigate, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import LandingPage from './pages/LandingPage'
 import Login from './pages/Auth/Login'
@@ -268,7 +268,11 @@ const router = createBrowserRouter(
     {
       path: "/dashboard", element: <LoginProtector><DashboardLayout role={"User"} /> </LoginProtector>, children: [
         {
-          index: true, element:
+          index: true,
+          element: <Navigate to="/dashboard/files" replace />
+        },
+        {
+          path: "files", element:
             <LoginProtector>
               <RoleProtector requiredRole="User">
                 <Files />
