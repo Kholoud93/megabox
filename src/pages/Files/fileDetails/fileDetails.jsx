@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState } from 'react'
 import { useCookies } from 'react-cookie';
 import { useQuery } from 'react-query';
-import { useParams, Link, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { API_URL } from '../../../services/api';
 import { getFileCategory } from '../../../helpers/MimeType';
 import File from '../../../components/File/File';
@@ -11,7 +11,6 @@ import UploadFile from '../../../components/Upload/UploadFile/UploadFile';
 import UploadOptions from '../../../components/Upload/UploadOptions/UploadOptions';
 import UploadFromMegaBox from '../../../components/Upload/UploadFromMegaBox/UploadFromMegaBox';
 import { HiOutlinePlus } from 'react-icons/hi2';
-import { HiArrowLeft, HiArrowRight } from 'react-icons/hi2';
 import { HiViewGrid, HiViewList } from "react-icons/hi";
 import Represents from '../../../components/Represents/Represents';
 import ChangeName from '../../../components/ChangeName/ChangeName';
@@ -21,25 +20,12 @@ import { ToastOptions } from '../../../helpers/ToastOptions';
 import ShareLinkModal from '../../../components/ShareLinkModal/ShareLinkModal';
 
 export default function fileDetails() {
-    const { t, language } = useLanguage();
-    const { pathname } = useLocation();
+    const { t } = useLanguage();
 
     const Active = "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
     const InActive = "inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-700 bg-white border border-indigo-300 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
 
     const { fileId, fileName } = useParams();
-    
-    // Determine back path based on current location
-    const getBackPath = () => {
-        if (pathname.startsWith('/Promoter')) {
-            return '/Promoter/files';
-        } else if (pathname.startsWith('/dashboard')) {
-            return '/dashboard';
-        } else if (pathname.startsWith('/Owner')) {
-            return '/Owner';
-        }
-        return '/dashboard'; // Default fallback
-    };
     const [FilterKey, setFilterKey] = useState('All');
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
     const [Token] = useCookies(['MegaBox']);
@@ -169,53 +155,6 @@ export default function fileDetails() {
 
     return <>
         <div className="min-h-screen bg-indigo-50" style={{ fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-            {/* Header Section */}
-            <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg border-b border-indigo-400">
-                <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-                    <div className="py-4 sm:py-5 md:py-6">
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
-                                <Link
-                                    to={getBackPath()}
-                                    className="inline-flex items-center px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2 flex-shrink-0"
-                                    style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
-                                >
-                                    {language === 'ar' ? (
-                                        <>
-                                            <HiArrowLeft className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" style={{ transform: 'scaleX(-1)' }} />
-                                            <span className="hidden xs:inline">{t("fileDetails.backToFiles")}</span>
-                                            <span className="xs:hidden">Back</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <HiArrowLeft className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                                            <span className="hidden xs:inline">{t("fileDetails.backToFiles")}</span>
-                                            <span className="xs:hidden">Back</span>
-                                        </>
-                                    )}
-                                </Link>
-                                <div className="flex-1 min-w-0">
-                                    <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-white drop-shadow-lg truncate" style={{ textShadow: '0 2px 10px rgba(255,255,255,0.3)' }}>{fileName}</h1>
-                                    <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-white/90" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.2)' }}>{t("fileDetails.folderContents")}</p>
-                                </div>
-                            </div>
-
-                            {/* Action Button */}
-                            <div className="w-full sm:w-auto sm:mt-0">
-                                <button
-                                    className="w-full sm:w-auto inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2"
-                                    style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
-                                    onClick={ToggleUploadOptions}
-                                >
-                                    <HiOutlinePlus className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                                    {t("fileDetails.uploadFile")}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             {/* Main Content */}
             <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
                 {/* Files Section */}
