@@ -65,6 +65,93 @@ export default function Earning() {
     const [withdrawalAmount, setWithdrawalAmount] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('');
     const [whatsappTelegram, setWhatsappTelegram] = useState('');
+    const [errors, setErrors] = useState({});
+    const [touched, setTouched] = useState({});
+
+    // Validation functions
+    const validateWithdrawalAmount = (value) => {
+        if (!value || value.trim() === '') {
+            return t('withdrawSection.amountRequired') || 'Withdrawal amount is required';
+        }
+        const numValue = parseFloat(value);
+        if (isNaN(numValue) || numValue <= 0) {
+            return t('withdrawSection.amountInvalid') || 'Please enter a valid amount';
+        }
+        if (numValue < 10) {
+            return t('withdrawSection.amountMinimum') || 'Minimum withdrawal amount is 10 USD';
+        }
+        if (amount && numValue > parseFloat(amount)) {
+            return t('withdrawSection.amountExceeds') || 'Amount exceeds available balance';
+        }
+        return '';
+    };
+
+    const validatePaymentMethod = (value) => {
+        if (!value || value.trim() === '') {
+            return t('withdrawSection.paymentMethodRequired') || 'Payment method is required';
+        }
+        return '';
+    };
+
+    const validateWhatsappTelegram = (value) => {
+        if (!value || value.trim() === '') {
+            return t('withdrawSection.accountRequired') || 'WhatsApp/Telegram account is required';
+        }
+        if (value.trim().length < 3) {
+            return t('withdrawSection.accountInvalid') || 'Please enter a valid account';
+        }
+        return '';
+    };
+
+    const handleBlur = (field) => {
+        setTouched(prev => ({ ...prev, [field]: true }));
+        validateField(field);
+    };
+
+    const validateField = (field) => {
+        let error = '';
+        switch (field) {
+            case 'withdrawalAmount':
+                error = validateWithdrawalAmount(withdrawalAmount);
+                break;
+            case 'paymentMethod':
+                error = validatePaymentMethod(paymentMethod);
+                break;
+            case 'whatsappTelegram':
+                error = validateWhatsappTelegram(whatsappTelegram);
+                break;
+            default:
+                break;
+        }
+        setErrors(prev => ({ ...prev, [field]: error }));
+        return error === '';
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        
+        // Mark all fields as touched
+        setTouched({
+            withdrawalAmount: true,
+            paymentMethod: true,
+            whatsappTelegram: true
+        });
+
+        // Validate all fields
+        const isAmountValid = validateField('withdrawalAmount');
+        const isPaymentValid = validateField('paymentMethod');
+        const isAccountValid = validateField('whatsappTelegram');
+
+        if (isAmountValid && isPaymentValid && isAccountValid) {
+            // Form is valid, proceed with submission
+            console.log('Form submitted:', {
+                withdrawalAmount,
+                paymentMethod,
+                whatsappTelegram
+            });
+            // TODO: Add API call here
+        }
+    };
 
     return (
         <motion.div
@@ -151,18 +238,27 @@ export default function Earning() {
                         </a>
                     </div>
 
-                    <div className="withdraw-apply-form">
+                    <form className="withdraw-apply-form" onSubmit={handleSubmit} noValidate>
                         <div className="withdraw-form-group">
                             <label className="withdraw-form-label">
                                 * {t('withdrawSection.withdrawalAmount') || 'Withdrawal amount'}
                             </label>
                             <input
                                 type="text"
-                                className="withdraw-form-input"
+                                className={`withdraw-form-input ${touched.withdrawalAmount && errors.withdrawalAmount ? 'withdraw-form-input--error' : ''}`}
                                 placeholder={t('withdrawSection.withdrawalAmountPlaceholder') || 'Please enter the requested cash withdrawal amount'}
                                 value={withdrawalAmount}
-                                onChange={(e) => setWithdrawalAmount(e.target.value)}
+                                onChange={(e) => {
+                                    setWithdrawalAmount(e.target.value);
+                                    if (touched.withdrawalAmount) {
+                                        validateField('withdrawalAmount');
+                                    }
+                                }}
+                                onBlur={() => handleBlur('withdrawalAmount')}
                             />
+                            {touched.withdrawalAmount && errors.withdrawalAmount && (
+                                <span className="withdraw-form-error">{errors.withdrawalAmount}</span>
+                            )}
                         </div>
 
                         <div className="withdraw-form-group">
@@ -171,9 +267,15 @@ export default function Earning() {
                             </label>
                             <div className="withdraw-form-input-wrapper">
                                 <select
-                                    className="withdraw-form-input withdraw-form-select"
+                                    className={`withdraw-form-input withdraw-form-select ${touched.paymentMethod && errors.paymentMethod ? 'withdraw-form-input--error' : ''}`}
                                     value={paymentMethod}
-                                    onChange={(e) => setPaymentMethod(e.target.value)}
+                                    onChange={(e) => {
+                                        setPaymentMethod(e.target.value);
+                                        if (touched.paymentMethod) {
+                                            validateField('paymentMethod');
+                                        }
+                                    }}
+                                    onBlur={() => handleBlur('paymentMethod')}
                                     required
                                 >
                                     <option value="">{t('withdrawSection.paymentMethodPlaceholder') || 'Please enter the payment method'}</option>
@@ -184,6 +286,9 @@ export default function Earning() {
                                 </select>
                                 <HiArrowRight className="withdraw-form-select-arrow" />
                             </div>
+                            {touched.paymentMethod && errors.paymentMethod && (
+                                <span className="withdraw-form-error">{errors.paymentMethod}</span>
+                            )}
                         </div>
 
                         <div className="withdraw-form-group">
@@ -193,20 +298,29 @@ export default function Earning() {
                             <div className="withdraw-form-input-wrapper">
                                 <input
                                     type="text"
-                                    className="withdraw-form-input"
+                                    className={`withdraw-form-input ${touched.whatsappTelegram && errors.whatsappTelegram ? 'withdraw-form-input--error' : ''}`}
                                     placeholder={t('withdrawSection.whatsappTelegramPlaceholder') || 'Please enter the whatsapp/telegram accounts'}
                                     value={whatsappTelegram}
-                                    onChange={(e) => setWhatsappTelegram(e.target.value)}
+                                    onChange={(e) => {
+                                        setWhatsappTelegram(e.target.value);
+                                        if (touched.whatsappTelegram) {
+                                            validateField('whatsappTelegram');
+                                        }
+                                    }}
+                                    onBlur={() => handleBlur('whatsappTelegram')}
                                     maxLength={50}
                                 />
                                 <span className="withdraw-form-char-count">{whatsappTelegram.length}/50</span>
                             </div>
+                            {touched.whatsappTelegram && errors.whatsappTelegram && (
+                                <span className="withdraw-form-error">{errors.whatsappTelegram}</span>
+                            )}
                         </div>
 
-                        <button className="withdraw-submit-button">
+                        <button type="submit" className="withdraw-submit-button">
                             {t('withdrawSection.withdraw') || 'Withdraw'}
                         </button>
-                    </div>
+                    </form>
 
                     <div className="withdraw-notice">
                         <div className="withdraw-notice__title">{t('withdrawSection.notice') || 'Notice:'}</div>
