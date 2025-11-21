@@ -33,7 +33,7 @@ import Represents from '../Represents/Represents';
 
 export default function Sidenav({ role }) {
     const [collapsed, setcollapsed] = useState(false)
-    const [Hide, setHide] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false); // renamed from Hide for clarity
     const [expandedFolders, setExpandedFolders] = useState({});
     const [folderFiles, setFolderFiles] = useState({});
     const [allFilesOpen, setAllFilesOpen] = useState(false);
@@ -46,7 +46,6 @@ export default function Sidenav({ role }) {
     const { setUserRole } = useAuth();
     const { t, language, changeLanguage } = useLanguage();
     const [Token] = useCookies(['MegaBox']);
-
     const [, , removeToken] = useCookies(['MegaBox']);
 
     const Representation = (path, type, close) => {
@@ -140,15 +139,13 @@ export default function Sidenav({ role }) {
         const fileCategory = getFileCategory(file?.fileType);
         const fileUrl = file?.url || file?.fileUrl;
         
-        // If it's an image or video, open it directly
         if (fileCategory === 'image' || fileCategory === 'video') {
             Representation(fileUrl, file?.fileType, false);
-            handleHide();
+            closeSidebar();
         } else {
-            // For other files, navigate to file page
             const filePath = isPromoter ? '/Promoter/file' : '/dashboard/file';
             navigate(`${filePath}/${encodeURIComponent(file?.fileName || file?.name)}/${file?._id || file?.id}`);
-            handleHide();
+            closeSidebar();
         }
     };
 
@@ -161,7 +158,7 @@ export default function Sidenav({ role }) {
         const folderName = folder?.name;
         const filePath = isPromoter ? '/Promoter/file' : '/dashboard/file';
         navigate(`${filePath}/${encodeURIComponent(folderName)}/${folderId}`);
-        handleHide();
+        closeSidebar();
     };
 
     // Filter files that are not in any folder
@@ -184,16 +181,21 @@ export default function Sidenav({ role }) {
         changeLanguage(newLang);
     }
 
-
-
-    const handleHide = () => {
-        setHide(!Hide)
+    // Toggle sidebar open/close
+    const toggleSidebar = () => {
+        setSidebarOpen(!sidebarOpen);
     }
+
+    // Close sidebar (for mobile)
+    const closeSidebar = () => {
+        setSidebarOpen(false);
+    }
+
     const handleICon = () => {
         setcollapsed(!collapsed);
     }
 
-    // Close All Files and folders when sidebar is collapsed
+    // Close submenus when sidebar is collapsed
     useEffect(() => {
         if (collapsed) {
             setAllFilesOpen(false);
@@ -202,33 +204,26 @@ export default function Sidenav({ role }) {
         }
     }, [collapsed]);
     
-    // Close all folders when All Files is closed
     useEffect(() => {
         if (!allFilesOpen) {
             setExpandedFolders({});
         }
     }, [allFilesOpen]);
 
-    // Apply folder styles after React renders, using a timeout to avoid infinite loops
+    // Apply folder styles after render
     useEffect(() => {
-        if (collapsed || !allFilesOpen) {
-            return;
-        }
+        if (collapsed || !allFilesOpen) return;
 
-        // Use a timeout to apply styles after React has finished rendering
         const timeoutId = setTimeout(() => {
             const allFolderSubmenus = document.querySelectorAll('.sidenav-folder-submenu');
             
             allFolderSubmenus.forEach((submenu) => {
                 const isSubmenuRoot = submenu.classList.contains('ps-submenu-root');
                 const isOpen = submenu.classList.contains('ps-open') || 
-                               submenu.getAttribute('aria-expanded') === 'true' ||
-                               submenu.classList.contains('ps-menu-open');
+                               submenu.getAttribute('aria-expanded') === 'true';
                 
                 if (isSubmenuRoot && isOpen) {
-                    const content = submenu.querySelector('.ps-submenu-content') || 
-                                   submenu.querySelector('div[data-testid="ps-submenu-content-test-id"]');
-                    
+                    const content = submenu.querySelector('.ps-submenu-content');
                     if (content) {
                         content.style.setProperty('display', 'block', 'important');
                         content.style.setProperty('visibility', 'visible', 'important');
@@ -236,46 +231,30 @@ export default function Sidenav({ role }) {
                         content.style.setProperty('height', 'auto', 'important');
                         content.style.setProperty('max-height', '300px', 'important');
                         content.style.setProperty('overflow-y', 'auto', 'important');
-                        content.style.setProperty('overflow-x', 'hidden', 'important');
-                    }
-                } else {
-                    const submenuRoot = submenu.querySelector('.ps-submenu-root');
-                    if (submenuRoot) {
-                        const rootIsOpen = submenuRoot.classList.contains('ps-open') || 
-                                          submenuRoot.getAttribute('aria-expanded') === 'true' ||
-                                          submenuRoot.classList.contains('ps-menu-open');
-                        
-                        if (rootIsOpen) {
-                            const content = submenuRoot.querySelector('.ps-submenu-content') || 
-                                           submenuRoot.querySelector('div[data-testid="ps-submenu-content-test-id"]');
-                            
-                            if (content) {
-                                content.style.setProperty('display', 'block', 'important');
-                                content.style.setProperty('visibility', 'visible', 'important');
-                                content.style.setProperty('opacity', '1', 'important');
-                                content.style.setProperty('height', 'auto', 'important');
-                                content.style.setProperty('max-height', '300px', 'important');
-                                content.style.setProperty('overflow-y', 'auto', 'important');
-                                content.style.setProperty('overflow-x', 'hidden', 'important');
-                            }
-                        }
                     }
                 }
             });
-        }, 50); // Small delay to ensure DOM is ready
+        }, 50);
 
         return () => clearTimeout(timeoutId);
     }, [expandedFolders, allFilesOpen, collapsed]);
 
     return <>
-        <div className={Hide ? "dropback apper-dropback" : "dropback"} onClick={handleHide}>
-        </div>
-        <aside className={Hide ? 'allnav' : 'allnav apper'} >
+
+        {/* Backdrop - only visible when sidebar is open on mobile */}
+        <div 
+            className={`dropback ${sidebarOpen ? 'apper-dropback' : ''}`} 
+            onClick={closeSidebar}
+        />
+        
+        {/* Sidebar container - doesn't cover the whole screen */}
+        <aside className="allnav">
+
             <Sidebar collapsed={collapsed}>
                 <Menu className='main-menu'>
 
-                    <Menu className={collapsed ? 'collapsed main-side overflow-y-auto min-h-screen' :
-                        'main-side p-1 overflow-y-auto min-h-screen'}>
+                    {/* Main sidebar panel - this is what slides in/out */}
+                    <Menu className={`main-side ${sidebarOpen ? 'show' : 'hide'} ${collapsed ? 'collapsed' : ''} p-1 overflow-y-auto min-h-screen`}>
 
                         <MenuItem
                             className="mb-3 rounded-lg text-xl mt-3 text-white cursor-pointer close"
@@ -318,14 +297,12 @@ export default function Sidenav({ role }) {
 
                         {role === "User" ? (
                             <>
-                                {/* Files and Folders Tree */}
                                 <SubMenu
                                     label={t("sidenav.allFiles")}
                                     icon={<HiFolder className="icon transition ease-linear" />}
                                     className="sidenav-files-submenu"
                                     open={!collapsed && allFilesOpen}
                                     onOpenChange={(open) => {
-                                        // Prevent opening when collapsed
                                         if (collapsed) {
                                             setAllFilesOpen(false);
                                             return;
@@ -384,8 +361,7 @@ export default function Sidenav({ role }) {
                                                                 [folderId]: data?.files || []
                                                             }));
                                                         })
-                                                        .catch((error) => {
-                                                            console.error('Error fetching folder files:', error);
+                                                        .catch(() => {
                                                             setFolderFiles(prev => ({
                                                                 ...prev,
                                                                 [folderId]: []
@@ -417,11 +393,11 @@ export default function Sidenav({ role }) {
                                                         {t("sidenav.emptyFolder") || "Empty folder"}
                                                     </div>
                                                 ) : null}
+
                                             </SubMenu>
                                         );
                                     })}
                                     
-                                    {/* Files not in folders */}
                                     {filesNotInFolders.slice(0, 50).map((file) => (
                                         <MenuItem
                                             key={file?._id || file?.id}
@@ -440,73 +416,111 @@ export default function Sidenav({ role }) {
                             </>
                         ) : role === "Owner" ? (
                             <>
-                                <MenuItem onClick={handleHide} className={pathname === "/Owner/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.profile") : ""}></Link>}
-                                    icon={<HiUserCircle className={pathname === "/Owner/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                    data-tooltip={collapsed ? t("sidenav.profile") : ""}>
+                                <MenuItem onClick={closeSidebar} className={pathname === "/Owner/profile" ? 'menu-items Active' : 'menu-items'} component={<Link to='/Owner/profile' className='Remove_hover transition ease-linear' />}
+                                    icon={<HiUserCircle className={pathname === "/Owner/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}>
+
                                     {t("sidenav.profile")}
+
                                 </MenuItem>
 
-                                {/* Notifications - Owner */}
-                                <MenuItem onClick={handleHide} className={pathname === "/Owner/notifications" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/Owner/notifications' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.notifications") : ""}></Link>}
+
+
+                                <MenuItem onClick={closeSidebar} className={pathname === "/Owner/notifications" ? 'menu-items Active' : 'menu-items'} component={<Link to='/Owner/notifications' className='Remove_hover transition ease-linear' />}
                                     icon={
                                         <div className="relative">
                                             <HiBell className={pathname === "/Owner/notifications" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />
                                         </div>
-                                    }
-                                    data-tooltip={collapsed ? t("sidenav.notifications") : ""}>
+                                    }>
+
                                     {t("sidenav.notifications")}
+
                                 </MenuItem>
 
+
+
                                 <div className="sidenav-bottom-actions">
-                                    <MenuItem
-                                        className="ps-menuitem-root menu-items css-1t8x7v1 rounded-lg text-base text-white font-medium LanguageToggle"
-                                        icon={<FiGlobe className="icon" />}
-                                        onClick={toggleLanguage}
-                                        data-tooltip={collapsed ? (language === 'en' ? t("navbar.arabic") : t("navbar.english")) : ""}
-                                    >
-                                        {!collapsed && (language === 'en' ? t("navbar.arabic") : t("navbar.english"))}
-                                    </MenuItem>
 
                                     <MenuItem
-                                        className="ps-menuitem-root menu-items css-1t8x7v1 rounded-lg text-base text-white font-medium Logout"
-                                        icon={<HiArrowRightOnRectangle className="icon" />}
-                                        type={"button"}
-                                        onClick={Logout}
-                                        data-tooltip={collapsed ? t("sidenav.logout") : ""}
+
+                                        className="menu-items LanguageToggle"
+
+                                        icon={<FiGlobe className="icon" />}
+
+                                        onClick={toggleLanguage}
+
                                     >
-                                        {!collapsed && t("sidenav.logout")}
+
+                                        {!collapsed && (language === 'en' ? t("navbar.arabic") : t("navbar.english"))}
+
                                     </MenuItem>
+
+
+
+                                    <MenuItem
+
+                                        className="menu-items Logout"
+
+                                        icon={<HiArrowRightOnRectangle className="icon" />}
+
+                                        onClick={Logout}
+
+                                    >
+
+                                        {!collapsed && t("sidenav.logout")}
+
+                                    </MenuItem>
+
                                 </div>
+
                             </>
+
                         ) : role === "Advertiser" ? (
                             <>
-                                <MenuItem onClick={handleHide} className={pathname === "/dashboard/profile" ? 'menu-items  Active' : 'menu-items'} component={<Link to='/dashboard/profile' className='Remove_hover transition ease-linear' data-tooltip={collapsed ? t("sidenav.profile") : ""}></Link>}
-                                    icon={<HiUserCircle className={pathname === "/dashboard/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}
-                                    data-tooltip={collapsed ? t("sidenav.profile") : ""}>
+                                <MenuItem onClick={closeSidebar} className={pathname === "/dashboard/profile" ? 'menu-items Active' : 'menu-items'} component={<Link to='/dashboard/profile' className='Remove_hover transition ease-linear' />}
+                                    icon={<HiUserCircle className={pathname === "/dashboard/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}>
+
                                     {t("sidenav.profile")}
+
                                 </MenuItem>
 
+
+
                                 <div className="sidenav-bottom-actions">
-                                    <MenuItem
-                                        className="ps-menuitem-root menu-items css-1t8x7v1 rounded-lg text-base text-white font-medium LanguageToggle"
-                                        icon={<FiGlobe className="icon" />}
-                                        onClick={toggleLanguage}
-                                        data-tooltip={collapsed ? (language === 'en' ? t("navbar.arabic") : t("navbar.english")) : ""}
-                                    >
-                                        {!collapsed && (language === 'en' ? t("navbar.arabic") : t("navbar.english"))}
-                                    </MenuItem>
 
                                     <MenuItem
-                                        className="ps-menuitem-root menu-items css-1t8x7v1 rounded-lg text-base text-white font-medium Logout"
-                                        icon={<HiArrowRightOnRectangle className="icon" />}
-                                        type={"button"}
-                                        onClick={Logout}
-                                        data-tooltip={collapsed ? t("sidenav.logout") : ""}
+
+                                        className="menu-items LanguageToggle"
+
+                                        icon={<FiGlobe className="icon" />}
+
+                                        onClick={toggleLanguage}
+
                                     >
-                                        {!collapsed && t("sidenav.logout")}
+
+                                        {!collapsed && (language === 'en' ? t("navbar.arabic") : t("navbar.english"))}
+
                                     </MenuItem>
+
+
+
+                                    <MenuItem
+
+                                        className="menu-items Logout"
+
+                                        icon={<HiArrowRightOnRectangle className="icon" />}
+
+                                        onClick={Logout}
+
+                                    >
+
+                                        {!collapsed && t("sidenav.logout")}
+
+                                    </MenuItem>
+
                                 </div>
+
                             </>
+
                         ) : null}
 
 
@@ -518,11 +532,19 @@ export default function Sidenav({ role }) {
                     </Menu>
 
                 </Menu>
-            </Sidebar >
-        </aside >
 
-        <span className='bars' onClick={handleHide}>
-            {Hide ? (language === 'ar' ? <HiChevronRight /> : <HiChevronLeft />) : <HiBars3 />}
+            </Sidebar>
+
+        </aside>
+
+
+
+        {/* Mobile hamburger button */}
+
+        <span className='bars' onClick={toggleSidebar}>
+
+            {sidebarOpen ? (language === 'ar' ? <HiChevronRight /> : <HiChevronLeft />) : <HiBars3 />}
+
         </span>
 
         {/* File Preview Modal */}

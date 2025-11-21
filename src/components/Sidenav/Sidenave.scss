@@ -5,7 +5,13 @@
 // MOBILE OVERLAY BACKDROP
 // ===========================
 .dropback {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+
     @include Breakpoints(mobile) {
+        display: block !important;
         background-color: rgba(0, 0, 0, 0.7);
         width: 100%;
         height: 100%;
@@ -19,9 +25,9 @@
         pointer-events: none;
 
         &.apper-dropback {
-            visibility: visible;
-            opacity: 1;
-            pointer-events: auto;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
         }
     }
 }
@@ -66,42 +72,73 @@
 }
 
 // ===========================
-// NAV CONTAINER
+// NAV CONTAINER - FIXED VERSION
 // ===========================
 .allnav {
     z-index: 800;
+    position: relative;
+    background: transparent !important;
+    width: auto;
+    height: auto;
 
+    // Desktop styles
+    @media (min-width: 768px) {
+        position: relative !important;
+        width: auto !important;
+        height: auto !important;
+        background: transparent !important;
+        pointer-events: auto !important;
+        z-index: 800 !important;
+    }
+
+    // MOBILE: Don't make the container fullscreen - only position it
     @include Breakpoints(mobile) {
         z-index: 10000000;
         position: fixed;
-        width: 100%;
-        height: 100vh;
         top: 0;
         left: 0;
-        right: 0;
-        bottom: 0;
-        background: transparent;
-        pointer-events: none;
+        // DON'T set width: 100% or height: 100vh here!
+        width: auto !important;
+        height: auto !important;
+        background: transparent !important;
+        pointer-events: none; // Allow clicks to pass through the container
 
-        &.apper {
-            pointer-events: auto;
+        // When sidebar is open, still don't block the whole screen
+        // The .main-side inside will have pointer-events: auto
+    }
+
+    [dir="rtl"] & {
+        @include Breakpoints(mobile) {
+            left: auto;
+            right: 0;
         }
     }
 }
 
 // ===========================
-// SIDEBAR NAVIGATION
+// SIDEBAR NAVIGATION - FIXED VERSION
 // ===========================
 aside {
     position: relative;
 
+    @media (min-width: 768px) {
+        position: relative !important;
+        width: auto !important;
+        height: auto !important;
+        background: transparent !important;
+        pointer-events: auto !important;
+    }
+
+    // MOBILE: Don't make aside fullscreen
     @include Breakpoints(mobile) {
         position: fixed;
         top: 0;
         left: 0;
-        height: 100vh;
+        width: auto !important; // Don't stretch to full width
+        height: auto !important; // Don't stretch to full height
         z-index: 10000000;
-        pointer-events: auto;
+        pointer-events: none; // Allow clicks through
+
     }
 
     [dir="rtl"] & {
@@ -115,7 +152,7 @@ aside {
         background: radial-gradient(circle at 20% 30%, var(--color-indigo-600) 0%, transparent 50%),
             radial-gradient(circle at 80% 70%, var(--color-indigo-500) 0%, transparent 50%),
             radial-gradient(circle at 50% 50%, var(--color-indigo-400) 0%, transparent 70%),
-            linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-indigo-600) 100%);
+            linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-indigo-600) 100%) !important;
         position: fixed;
         width: 250px;
         height: 100vh;
@@ -127,8 +164,13 @@ aside {
         overflow-x: hidden;
         box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
         padding-bottom: 100px;
+        pointer-events: auto; // Sidebar itself should receive clicks
 
-        // Custom scrollbar
+        .ps-sidebar-container {
+            background-color: transparent !important;
+            background: transparent !important;
+        }
+
         &::-webkit-scrollbar {
             width: 4px;
         }
@@ -149,7 +191,7 @@ aside {
             box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
         }
 
-        // MOBILE: Hidden by default
+        // MOBILE: Hidden by default, slide in when shown
         @include Breakpoints(mobile) {
             width: 250px;
             position: fixed;
@@ -158,12 +200,14 @@ aside {
             transform: translateX(-250px);
             transition: transform 0.3s ease;
             box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+            pointer-events: auto; // Always allow clicks on sidebar when visible
 
             [dir="rtl"] & {
+                left: auto;
+                right: 0;
                 transform: translateX(250px);
             }
 
-            // Show sidebar
             &.show {
                 transform: translateX(0) !important;
 
@@ -172,9 +216,9 @@ aside {
                 }
             }
 
-            // Hide sidebar
             &.hide {
                 transform: translateX(-250px) !important;
+                pointer-events: none; // When hidden, don't catch clicks
 
                 [dir="rtl"] & {
                     transform: translateX(250px) !important;
@@ -189,6 +233,11 @@ aside {
             @include Breakpoints(mobile) {
                 width: 250px;
                 transform: translateX(-250px);
+                pointer-events: none;
+
+                [dir="rtl"] & {
+                    transform: translateX(250px);
+                }
             }
 
             .ps-menu-button {
@@ -348,7 +397,7 @@ aside {
             font-style: italic;
         }
 
-        // SUBMENU - OPEN STATE
+        // SUBMENU STYLES
         .ps-submenu-root[aria-expanded="true"] > .ps-submenu-content,
         .ps-submenu-root.ps-open > .ps-submenu-content {
             display: block !important;
@@ -359,46 +408,15 @@ aside {
             overflow-y: auto !important;
             overflow-x: hidden !important;
             padding: 4px 0 !important;
-            margin: 0 !important;
             position: relative !important;
             background: transparent !important;
             pointer-events: auto !important;
-
-            &::-webkit-scrollbar {
-                width: 4px;
-            }
-            &::-webkit-scrollbar-track {
-                background: rgba(255, 255, 255, 0.1);
-                border-radius: 2px;
-            }
-            &::-webkit-scrollbar-thumb {
-                background: rgba(255, 255, 255, 0.3);
-                border-radius: 2px;
-                &:hover {
-                    background: rgba(255, 255, 255, 0.5);
-                }
-            }
         }
 
-        // SUBMENU - CLOSED STATE
         .ps-submenu-root:not([aria-expanded="true"]):not(.ps-open) > .ps-submenu-content {
             display: none !important;
             height: 0 !important;
             overflow: hidden !important;
-        }
-
-        // SUBMENU ITEMS
-        .ps-submenu-root[aria-expanded="true"] .sidenav-files-tree-item,
-        .ps-submenu-root[aria-expanded="true"] .sidenav-empty-folder,
-        .ps-submenu-root.ps-open .sidenav-files-tree-item,
-        .ps-submenu-root.ps-open .sidenav-empty-folder {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            height: auto !important;
-            padding: 0.375rem 0.75rem !important;
-            margin: 0.0625rem 0.375rem !important;
-            pointer-events: auto !important;
         }
 
         // BOTTOM ACTIONS
@@ -416,12 +434,14 @@ aside {
             padding: 0.4rem 0.75rem;
         }
     }
+}
 
-    // REMOVE HOVER
-    .Remove_hover {
-        &:hover {
-            background-color: transparent !important;
-        }
+// ===========================
+// REMOVE HOVER EFFECT
+// ===========================
+.Remove_hover {
+    &:hover {
+        background-color: transparent !important;
     }
 }
 
@@ -432,42 +452,27 @@ aside {
     position: relative;
     z-index: 1;
 
-    @include Breakpoints(md) {
-        z-index: 10;
-    }
-
     @include Breakpoints(mobile) {
         z-index: 1;
         margin: 0;
         width: 100%;
         overflow: hidden;
     }
-
-    &__wrapper {
-        width: 100%;
-        max-width: 100%;
-        margin: 0;
-        padding: 0;
-    }
 }
 
 // ===========================
-// NAVBAR LOGO
+// OVERRIDE REACT-PRO-SIDEBAR
 // ===========================
-.navbar__logo {
-    padding: 0 13px;
-    font-weight: bold;
-    color: #ffffff;
-    background: none;
-    text-decoration: none;
+.ps-sidebar-container {
+    background-color: transparent !important;
+    background: transparent !important;
+    z-index: inherit !important;
+}
 
-    &.Open {
-        font-size: 2rem;
-    }
-
-    &.Close {
-        font-size: 1rem;
-    }
+.css-dip3t8,
+.ps-sidebar-container.css-dip3t8 {
+    background-color: transparent !important;
+    background: transparent !important;
 }
 
 // ===========================
@@ -480,21 +485,6 @@ aside {
 .css-ewdv3l {
     width: 100%;
     display: block;
-}
-
-.css-1tqrhto > .ps-menu-button {
-    transition: all 0.2s ease-in-out;
-    border-radius: 0.75rem;
-    margin: 0.03125rem 0.5rem;
-
-    &:hover {
-        background-color: rgba(255, 255, 255, 0.08);
-        transform: translateX(4px);
-
-        [dir="rtl"] & {
-            transform: translateX(-4px);
-        }
-    }
 }
 
 .MainItem:hover {
