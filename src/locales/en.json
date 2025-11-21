@@ -502,6 +502,32 @@
     "reject": "Reject",
     "noAction": "-"
   },
+  "adminPayments": {
+    "title": "Payments Management",
+    "subtitle": "View and manage all platform payments",
+    "comingSoon": "Payments management page coming soon..."
+  },
+  "adminSubscriptions": {
+    "title": "Subscriptions Management",
+    "subtitle": "View and manage all platform subscriptions",
+    "comingSoon": "Subscriptions management page coming soon..."
+  },
+  "adminStorage": {
+    "title": "Storage Management",
+    "subtitle": "View and manage platform storage usage",
+    "comingSoon": "Storage management page coming soon..."
+  },
+  "adminDownloadsViews": {
+    "title": "Downloads & Views",
+    "subtitle": "View platform downloads and views statistics",
+    "comingSoon": "Downloads & Views page coming soon..."
+  },
+  "adminWithdrawals": {
+    "title": "Withdrawals Management",
+    "subtitle": "View and manage all withdrawal requests",
+    "loading": "Loading withdrawals...",
+    "noWithdrawals": "No withdrawals found"
+  },
   "adminUsers": {
     "title": "Users Management",
     "notifyAll": "Notify All",

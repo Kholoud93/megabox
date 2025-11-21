@@ -15,6 +15,11 @@ import Profile from './pages/profile/Profile'
 import RoleProtector from './protectors/RoleProtector'
 import Users from './pages/OwnerPages/Users/Users'
 import Analasys from './pages/OwnerPages/Analasyis/Analasys'
+import Payments from './pages/OwnerPages/Payments/Payments'
+import Subscriptions from './pages/OwnerPages/Subscriptions/Subscriptions'
+import Storage from './pages/OwnerPages/Storage/Storage'
+import DownloadsViews from './pages/OwnerPages/DownloadsViews/DownloadsViews'
+import Withdrawals from './pages/OwnerPages/Withdrawals/Withdrawals'
 import { useCookies } from 'react-cookie'
 import { jwtDecode } from 'jwt-decode'
 import LandingLayout from './pages/LandingLayout'
@@ -434,6 +439,36 @@ const router = createBrowserRouter(
           path: "Reports", element: <LoginProtector>
             <RoleProtector requiredRole="Owner">
               <Reports />
+            </RoleProtector>
+          </LoginProtector>
+        }, {
+          path: "Payments", element: <LoginProtector>
+            <RoleProtector requiredRole="Owner">
+              <Payments />
+            </RoleProtector>
+          </LoginProtector>
+        }, {
+          path: "Subscriptions", element: <LoginProtector>
+            <RoleProtector requiredRole="Owner">
+              <Subscriptions />
+            </RoleProtector>
+          </LoginProtector>
+        }, {
+          path: "Storage", element: <LoginProtector>
+            <RoleProtector requiredRole="Owner">
+              <Storage />
+            </RoleProtector>
+          </LoginProtector>
+        }, {
+          path: "DownloadsViews", element: <LoginProtector>
+            <RoleProtector requiredRole="Owner">
+              <DownloadsViews />
+            </RoleProtector>
+          </LoginProtector>
+        }, {
+          path: "Withdrawals", element: <LoginProtector>
+            <RoleProtector requiredRole="Owner">
+              <Withdrawals />
             </RoleProtector>
           </LoginProtector>
         }
