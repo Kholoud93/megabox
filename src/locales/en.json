@@ -411,7 +411,7 @@
     "noFilesMessage": "You haven't shared any files yet. Share files to see them here.",
     "goToFiles": "Go to Files"
   },
-  "revenueData": {
+    "revenueData": {
     "title": "Revenue Data",
     "subtitle": "View your daily revenue and earnings breakdown",
     "totalRevenue": "Total Revenue",
@@ -419,8 +419,8 @@
     "all": "All",
     "estimated": "Estimated",
     "settled": "Settled",
-    "date": "Date",
-    "total": "Total",
+    "date": "Date (UTC)",
+    "total": "Total / USD",
     "installRevenue": "Install Revenue",
     "noDataTitle": "No revenue data",
     "noDataMessage": "No data, make money by sharing videos",
@@ -441,7 +441,18 @@
     "withdraw": "Withdraw",
     "revenue": "Revenue",
     "id": "ID",
-    "congratulationsMessage": "Congratulations to user S***H for withdrawing 23.85 USD!"
+    "congratulationsMessage": "Congratulations to user S***H for withdrawing 23.85 USD!",
+    "congratulations": "Congratulations to user x***C for withdrawing 298.43 USD!",
+    "loading": "Loading...",
+    "shareLinkAnalytics": "Share Link Analytics",
+    "totalLinks": "Total Links",
+    "totalViews": "Total Views",
+    "totalDownloads": "Total Downloads",
+    "fileName": "File Name",
+    "views": "Views",
+    "downloads": "Downloads",
+    "noLinkData": "No share links data available",
+    "shareFiles": "Share Files"
   },
   "referral": {
     "bannerTitle": "10% of referral income",

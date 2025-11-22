@@ -25,29 +25,41 @@ export default function SharedFiles() {
     const [fileType, setfileType] = useState();
 
 
-    // Get shared files - only files that have been shared (have shareLink)
-    const GetSharedFiles = async () => {
-        try {
-            const data = await fileService.getSharedFilesByUser(Token.MegaBox);
-            // Filter to only show files that have been shared (have shareLink or isShared flag)
-            if (data?.files) {
-                data.files = data.files.filter(file =>
-                    file.shareLink ||
-                    file.shareUrl ||
-                    file.isShared === true ||
-                    file.isShared === "true" ||
-                    file.shared === true ||
-                    file.shared === "true"
-                );
-            }
-            return data || { files: [] };
-        } catch (error) {
-            console.error('Error fetching shared files:', error);
-            return { files: [] };
+    // Get share link analytics - contains link data with views, downloads, etc.
+    const { data: shareLinkAnalyticsData, isLoading: shareLinkAnalyticsLoading, refetch: refetchAnalytics } = useQuery(
+        ['shareLinkAnalytics'],
+        () => promoterService.getShareLinkAnalytics(Token.MegaBox),
+        {
+            enabled: !!Token.MegaBox,
+            retry: 2,
         }
-    };
+    );
 
-    const { data, isLoading: filesLoading, refetch } = useQuery("GetSharedFiles", GetSharedFiles);
+    // Extract analytics data from getShareLinkAnalytics response
+    // Response structure: { analytics: [...] } or { data: [...] } or { links: [...] }
+    const analyticsList = shareLinkAnalyticsData?.analytics || shareLinkAnalyticsData?.data || shareLinkAnalyticsData?.links || [];
+    
+    // For backward compatibility with existing file grid/list view, convert analytics to files format
+    const data = {
+        files: analyticsList.map(link => ({
+            _id: link.fileId || link.id || link._id,
+            id: link.fileId || link.id || link._id,
+            shareLink: link.shareLink || link.fileUrl || link.link || link.shareUrl,
+            shareUrl: link.shareLink || link.fileUrl || link.link || link.shareUrl,
+            createdAt: link.createdAt || link.date || link.lastUpdated || link.uploadDate || new Date().toISOString(),
+            uploadDate: link.createdAt || link.date || link.lastUpdated || link.uploadDate || new Date().toISOString(),
+            totalInstalls: link.downloads || link.totalDownloads || link.installs || 0,
+            installs: link.downloads || link.totalDownloads || link.installs || 0,
+            totalViews: link.views || link.totalViews || 0,
+            views: link.views || link.totalViews || 0,
+            fileName: link.fileName || link.name || link.fileName || 'Unknown',
+            fileType: link.fileType || link.mimeType || 'unknown',
+            isShared: true,
+            shared: true
+        }))
+    };
+    
+    const filesLoading = shareLinkAnalyticsLoading;
 
     // Get shared folders with files
     const GetSharedFolders = async () => {
@@ -121,14 +133,17 @@ export default function SharedFiles() {
     const isDownloadsPlan = hasDownloadsPlan; // Downloads plan takes priority
     const isWatchingPlan = hasWatchingPlan && !hasDownloadsPlan; // Only watching plan if no downloads plan
 
-    // Get shared links data for table - different fields based on plan
-    const sharedLinksData = data?.files?.map(file => ({
-        id: file._id || file.id,
-        creationTime: file.createdAt || file.uploadDate || new Date().toISOString(),
-        link: file.shareLink || file.shareUrl || '',
-        totalInstall: file.totalInstalls || file.installs || 0,
-        totalViews: file.totalViews || file.views || 0
-    })) || [];
+    // Get shared links data for table - use analytics data directly from getShareLinkAnalytics
+    // Response structure from getShareLinkAnalytics:
+    // { analytics: [{ fileId, fileName, fileUrl/shareLink, views/totalViews, downloads/totalDownloads, createdAt/date/lastUpdated }] }
+    const sharedLinksData = analyticsList.map(link => ({
+        id: link.fileId || link.id || link._id,
+        creationTime: link.createdAt || link.date || link.lastUpdated || link.uploadDate || new Date().toISOString(),
+        link: link.shareLink || link.fileUrl || link.link || link.shareUrl || '',
+        totalInstall: link.downloads || link.totalDownloads || link.installs || 0,
+        totalViews: link.views || link.totalViews || 0,
+        fileName: link.fileName || link.name || 'Unknown'
+    }));
 
     // Sort by appropriate metric based on plan (descending) and take top 10
     const topSharedLinks = [...sharedLinksData]
@@ -316,19 +331,19 @@ export default function SharedFiles() {
                                         <tr>
                                             <th>
                                                 <div className="table-header-sortable">
-                                                    {t("linkDataSection.creationTime") || "Creation Time"}
+                                                    {t("sidenav.linkDataSection.creationTime") || "Creation Time"}
                                                     <div className="sort-icons">
                                                         <FaArrowUp className="sort-icon" />
                                                         <FaArrowDown className="sort-icon" />
                                                     </div>
                                                 </div>
                                             </th>
-                                            <th>{t("linkDataSection.link") || "Link"}</th>
+                                            <th>{t("sidenav.linkDataSection.link") || "Link"}</th>
                                             <th>
                                                 <div className="table-header-sortable">
                                                     {isDownloadsPlan 
-                                                        ? (t("linkDataSection.totalInstall") || "Total Install")
-                                                        : (t("linkDataSection.totalViews") || "Total Views")
+                                                        ? (t("sidenav.linkDataSection.totalInstall") || "Total Install")
+                                                        : (t("sidenav.linkDataSection.totalViews") || "Total Views")
                                                     }
                                                     <div className="sort-icons">
                                                         <FaArrowUp className="sort-icon" />
@@ -352,9 +367,15 @@ export default function SharedFiles() {
                                                 <td>
                                                     <div className="link-cell">
                                                         <FaLink className="link-icon" />
-                                                        <span className="link-text" title={link.link}>
+                                                        <a 
+                                                            href={link.link} 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer"
+                                                            className="link-text" 
+                                                            title={link.link}
+                                                        >
                                                             {link.link.length > 30 ? `${link.link.substring(0, 30)}...` : link.link}
-                                                        </span>
+                                                        </a>
                                                     </div>
                                                 </td>
                                                 <td>{isDownloadsPlan ? link.totalInstall : link.totalViews}</td>
