@@ -120,6 +120,8 @@ export default function Files() {
     const [showShareModal, setShowShareModal] = useState(false);
     const [shareUrl, setShareUrl] = useState('');
     const [shareTitle, setShareTitle] = useState('');
+    const [selectedItems, setSelectedItems] = useState({ files: [], folders: [] });
+    const [isSelectionMode, setIsSelectionMode] = useState(false);
 
     const ToggleShowAddFile = () => setAddFileShow(!AddFileShow);
     const ToggleUploadOptions = () => setShowUploadOptions(!showUploadOptions);
@@ -288,6 +290,61 @@ export default function Files() {
                 } else {
                     toast.error("Failed to generate share link", ToastOptions("error"));
                 }
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to generate share link", ToastOptions("error"));
+        }
+    }
+
+    // Toggle selection mode
+    const toggleSelectionMode = () => {
+        setIsSelectionMode(!isSelectionMode);
+        if (isSelectionMode) {
+            setSelectedItems({ files: [], folders: [] });
+        }
+    }
+
+    // Toggle item selection
+    const toggleItemSelection = (id, isFolder = false) => {
+        if (isFolder) {
+            setSelectedItems(prev => ({
+                ...prev,
+                folders: prev.folders.includes(id)
+                    ? prev.folders.filter(fId => fId !== id)
+                    : [...prev.folders, id]
+            }));
+        } else {
+            setSelectedItems(prev => ({
+                ...prev,
+                files: prev.files.includes(id)
+                    ? prev.files.filter(fId => fId !== id)
+                    : [...prev.files, id]
+            }));
+        }
+    }
+
+    // Share multiple items
+    const shareMultipleItems = async () => {
+        if (selectedItems.files.length === 0 && selectedItems.folders.length === 0) {
+            toast.error("Please select at least one item to share", ToastOptions("error"));
+            return;
+        }
+
+        try {
+            const response = await userService.generateMultiShareLink(
+                selectedItems.folders,
+                selectedItems.files,
+                Token.MegaBox
+            );
+            const link = response?.shareUrl || response?.shareLink;
+            if (link) {
+                setShareUrl(link);
+                setShareTitle(`Share ${selectedItems.files.length + selectedItems.folders.length} Items`);
+                setShowShareModal(true);
+                setIsSelectionMode(false);
+                setSelectedItems({ files: [], folders: [] });
+            } else {
+                toast.error("Failed to generate share link", ToastOptions("error"));
             }
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to generate share link", ToastOptions("error"));
@@ -611,7 +668,26 @@ export default function Files() {
                             </p>
                         </div>
 
-                        <div className="flex items-center space-x-2 flex-shrink-0">
+                        <div className="flex items-center space-x-2 flex-shrink-0 gap-2">
+                            {isSelectionMode && (selectedItems.files.length > 0 || selectedItems.folders.length > 0) && (
+                                <button
+                                    onClick={shareMultipleItems}
+                                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-indigo-700 transition-all flex items-center gap-2"
+                                >
+                                    <HiShare className="h-4 w-4" />
+                                    Share ({selectedItems.files.length + selectedItems.folders.length})
+                                </button>
+                            )}
+                            <button
+                                onClick={toggleSelectionMode}
+                                className={`px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center gap-2 ${
+                                    isSelectionMode
+                                        ? 'bg-red-600 text-white hover:bg-red-700'
+                                        : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
+                                }`}
+                            >
+                                {isSelectionMode ? 'Cancel' : 'Select'}
+                            </button>
                             <span className="text-xs sm:text-sm text-indigo-700 mr-1 sm:mr-2 hidden xs:inline" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>{t("files.view")}</span>
                             <button
                                 onClick={() => setViewMode('grid')}

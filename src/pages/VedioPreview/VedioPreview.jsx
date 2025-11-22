@@ -9,16 +9,21 @@ import FilePreview from './FilePreview';
 // import { useLocation } from 'react-router-dom';
 import { extractBranchDataFromUrl } from '../../helpers/Deeplink';
 import axios from 'axios';
-import { API_URL } from '../../services/api';
+import { API_URL, fileService } from '../../services/api';
 import Loading from '../../components/Loading/Loading';
 import { DateFormatter } from '../../helpers/DateFormates';
 import { GetFileTypeByName } from '../../helpers/GetFileTypeByName';
 import { useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../helpers/ToastOptions';
 
 export default function VedioPreview() {
     // const { pathname } = useLocation();
     const [fileData, setFileData] = useState(null);
     const [FileLoading, setFileLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [Token] = useCookies(['MegaBox']);
 
     const navigate = useNavigate();
 
@@ -62,10 +67,29 @@ export default function VedioPreview() {
             });
     }, []);
 
-    // useEffect(() => {
-    //     console.log(fileData);
+    const handleSaveFile = async () => {
+        if (!Token.MegaBox) {
+            toast.error("Please login to save files", ToastOptions("error"));
+            navigate('/Login');
+            return;
+        }
 
-    // }, [fileData])
+        if (!fileData?._id && !fileData?.id) {
+            toast.error("File ID not found", ToastOptions("error"));
+            return;
+        }
+
+        setSaving(true);
+        try {
+            const fileId = fileData._id || fileData.id;
+            await fileService.saveFile(fileId, Token.MegaBox);
+            toast.success("File saved successfully!", ToastOptions("success"));
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to save file", ToastOptions("error"));
+        } finally {
+            setSaving(false);
+        }
+    };
 
     if (FileLoading)
         return <Loading />
@@ -77,8 +101,16 @@ export default function VedioPreview() {
 
                 <div className="VedioPreview container mx-auto flex lg:flex-nowrap gap-3 flex-wrap">
                     <div className="lg:w-1/3 w-full VedioPreview_buttons flex flex-col items-center gap-3">
-                        {/* <button className="First_Button">Save to MegaBox <GiSave /></button>
-                        <button className="Main_Button">Download <GiSaveArrow /></button> */}
+                        {Token.MegaBox && (
+                            <button 
+                                onClick={handleSaveFile}
+                                disabled={saving}
+                                className="First_Button"
+                            >
+                                {saving ? 'Saving...' : 'Save to MegaBox'} <GiSave />
+                            </button>
+                        )}
+                        <button className="Main_Button">Download <GiSaveArrow /></button>
                         <a href='https://play.google.com/store/apps/details?id=com.dubox.drive' className="First_Button">Show it in application <CiMobile3 /></a>
                     </div>
 
