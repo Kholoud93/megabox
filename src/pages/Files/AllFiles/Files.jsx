@@ -653,6 +653,9 @@ export default function Files() {
                                     onDelete={DeleteFolder}
                                     onShare={(id) => ShareFile(id, true)}
                                     onArchive={ArchiveFolder}
+                                    isSelectionMode={isSelectionMode}
+                                    isSelected={selectedItems.folders.includes(ele?._id || ele?.id)}
+                                    onToggleSelect={toggleItemSelection}
                                 />
                             ))}
                         </div>
@@ -789,6 +792,9 @@ export default function Files() {
                                     onRename={ToggleNameChange}
                                     onShare={ShareFile}
                                     viewMode={viewMode}
+                                    isSelectionMode={isSelectionMode}
+                                    isSelected={selectedItems.files.includes(ele?._id || ele?.id)}
+                                    onToggleSelect={toggleItemSelection}
                                 />
                             ))}
                         </div>

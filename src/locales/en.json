@@ -404,12 +404,14 @@
     "subtitle": "View all your shared files",
     "sharedFiles": "Shared Files",
     "sharedFolders": "Shared Folders",
+    "sharedFoldersDescription": "Folders you've shared with others",
     "loadingFiles": "Loading files...",
     "filesCount": "files",
     "files": "files",
     "noFilesFound": "No shared files found",
     "noFilesMessage": "You haven't shared any files yet. Share files to see them here.",
-    "goToFiles": "Go to Files"
+    "goToFiles": "Go to Files",
+    "viewLink": "View Link"
   },
     "revenueData": {
     "title": "Revenue Data",

@@ -149,7 +149,7 @@ const typeConfig = {
     }
 };
 
-export default function File({ Type, data, Representation, onRename, refetch, onShare, viewMode }) {
+export default function File({ Type, data, Representation, onRename, refetch, onShare, viewMode, isSelectionMode, isSelected, onToggleSelect }) {
 
     const [showMenu, setShowMenu] = useState(false);
     const { url, createdAt, fileName, fileType, _id } = data;
@@ -251,13 +251,38 @@ export default function File({ Type, data, Representation, onRename, refetch, on
 
     return (
         <motion.div
-            className={`relative bg-white border rounded-lg ${viewMode === 'list' ? 'h-auto flex items-center gap-4 p-4' : 'h-[300px]'} cursor-pointer hover:shadow-lg transition-shadow`}
+            className={`relative bg-white border rounded-lg ${viewMode === 'list' ? 'h-auto flex items-center gap-4 p-4' : 'h-[300px]'} ${isSelected ? 'border-indigo-600 bg-indigo-50' : ''} cursor-pointer hover:shadow-lg transition-shadow`}
             style={{ zIndex: 1, position: 'relative', isolation: 'isolate' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            onClick={handleOpenFile}
+            onClick={(e) => {
+                if (isSelectionMode) {
+                    e.preventDefault();
+                    if (onToggleSelect) {
+                        onToggleSelect(_id, false);
+                    }
+                } else {
+                    handleOpenFile();
+                }
+            }}
         >
+            {isSelectionMode && (
+                <div className="absolute top-2 left-2 z-20">
+                    <input
+                        type="checkbox"
+                        checked={isSelected || false}
+                        onChange={(e) => {
+                            e.stopPropagation();
+                            if (onToggleSelect) {
+                                onToggleSelect(_id, false);
+                            }
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-5 h-5 text-indigo-600 rounded border-indigo-300 focus:ring-indigo-500 cursor-pointer"
+                    />
+                </div>
+            )}
             <div
                 ref={buttonRef}
                 className="absolute top-2 right-2 z-10"

@@ -404,12 +404,14 @@
     "subtitle": "عرض جميع ملفاتك المشتركة",
     "sharedFiles": "الملفات المشتركة",
     "sharedFolders": "المجلدات المشتركة",
+    "sharedFoldersDescription": "المجلدات التي شاركتها مع الآخرين",
     "loadingFiles": "جارٍ تحميل الملفات...",
     "filesCount": "ملفات",
     "files": "ملفات",
     "noFilesFound": "لم يتم العثور على ملفات مشتركة",
     "noFilesMessage": "لم تشارك أي ملفات بعد. شارك الملفات لرؤيتها هنا.",
-    "goToFiles": "الذهاب إلى الملفات"
+    "goToFiles": "الذهاب إلى الملفات",
+    "viewLink": "عرض الرابط"
   },
   "revenueData": {
     "title": "بيانات الإيرادات",

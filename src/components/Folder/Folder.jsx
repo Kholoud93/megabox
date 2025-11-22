@@ -5,7 +5,7 @@ import { HiTrash, HiPencil, HiShare } from "react-icons/hi2";
 import { LuFolder } from "react-icons/lu";
 import { useLanguage } from '../../context/LanguageContext';
 
-export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive }) => {
+export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isSelectionMode, isSelected, onToggleSelect }) => {
     const [open, setOpen] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef(null);
@@ -73,11 +73,36 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive }) =
     };
 
     return (
-        <div className="relative bg-gradient-to-br from-white to-indigo-50 rounded-lg border-2 border-indigo-200 shadow-md hover:shadow-xl transition-all duration-300 hover:border-indigo-400 hover:scale-[1.01] sm:hover:scale-[1.02]" style={{ zIndex: 1, position: 'relative', isolation: 'isolate' }}>
-            <Link to={folderPath} className="block">
+        <div className={`relative bg-gradient-to-br from-white to-indigo-50 rounded-lg border-2 ${isSelected ? 'border-indigo-600 bg-indigo-100' : 'border-indigo-200'} shadow-md hover:shadow-xl transition-all duration-300 hover:border-indigo-400 hover:scale-[1.01] sm:hover:scale-[1.02]`} style={{ zIndex: 1, position: 'relative', isolation: 'isolate' }}>
+            {isSelectionMode && (
+                <div className="absolute top-2 left-2 z-20">
+                    <input
+                        type="checkbox"
+                        checked={isSelected || false}
+                        onChange={(e) => {
+                            e.stopPropagation();
+                            if (onToggleSelect) {
+                                onToggleSelect(data?._id || data?.id, true);
+                            }
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-5 h-5 text-indigo-600 rounded border-indigo-300 focus:ring-indigo-500 cursor-pointer"
+                    />
+                </div>
+            )}
+            <Link to={folderPath} className="block" onClick={(e) => isSelectionMode && e.preventDefault()}>
                 <div
                     className="flex items-center p-3 sm:p-4 md:p-5 cursor-pointer group"
-                    onClick={() => setOpen(!open)}
+                    onClick={(e) => {
+                        if (isSelectionMode) {
+                            e.preventDefault();
+                            if (onToggleSelect) {
+                                onToggleSelect(data?._id || data?.id, true);
+                            }
+                        } else {
+                            setOpen(!open);
+                        }
+                    }}
                 >
                     <div className="flex-shrink-0 relative">
                         <div className="absolute inset-0 bg-indigo-100 rounded-lg blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>

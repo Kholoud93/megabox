@@ -235,6 +235,67 @@ export default function SharedFiles() {
                         </div>
                     </motion.div>
 
+                    {/* Shared Folders Section */}
+                    {sharedFoldersData?.folders && sharedFoldersData.folders.length > 0 && (
+                        <motion.div
+                            className="revenue-table-section"
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.25 }}
+                        >
+                            <div className="revenue-table-container">
+                                <div className="shared-links-header">
+                                    <h2 className="shared-links-header__title">{t("sharedFiles.sharedFolders") || "Shared Folders"}</h2>
+                                    <p className="shared-links-header__description">
+                                        {t("sharedFiles.sharedFoldersDescription") || "Folders you've shared with others"}
+                                    </p>
+                                </div>
+
+                                {foldersLoading ? (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+                                        {[...Array(4)].map((_, i) => (
+                                            <div key={i} className="animate-pulse bg-gray-200 rounded-lg h-32"></div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+                                        {sharedFoldersData.folders.map((folder, index) => (
+                                            <motion.div
+                                                key={folder._id || folder.id || index}
+                                                className="bg-white rounded-lg border-2 border-indigo-200 p-4 hover:shadow-lg transition-shadow"
+                                                initial={{ opacity: 0, scale: 0.9 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                transition={{ delay: index * 0.1 }}
+                                            >
+                                                <div className="flex items-center gap-3 mb-3">
+                                                    <FaFolder className="text-indigo-600 text-2xl" />
+                                                    <h3 className="font-semibold text-indigo-900 truncate flex-1">
+                                                        {folder.name || folder.folderName || 'Unnamed Folder'}
+                                                    </h3>
+                                                </div>
+                                                {folder.files && folder.files.length > 0 && (
+                                                    <div className="text-sm text-gray-600">
+                                                        <span className="font-medium">{folder.files.length}</span> {t("sharedFiles.files") || "files"}
+                                                    </div>
+                                                )}
+                                                {folder.shareLink && (
+                                                    <a
+                                                        href={folder.shareLink}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="mt-2 inline-flex items-center gap-2 text-xs text-indigo-600 hover:text-indigo-800"
+                                                    >
+                                                        <FaLink /> {t("sharedFiles.viewLink") || "View Link"}
+                                                    </a>
+                                                )}
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    )}
+
                     {/* Shared Links Table Section */}
                     <motion.div
                         className="revenue-table-section"
