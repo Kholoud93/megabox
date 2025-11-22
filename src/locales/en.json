@@ -596,7 +596,8 @@
     "premiumExpires": "Premium expires on",
     "removePremiumConfirm": "Are you sure you want to remove premium status from this user?",
     "user": "User",
-    "close": "Close"
+    "close": "Close",
+    "deleting": "Deleting..."
   },
   "adminPromoters": {
     "page": "Page",
@@ -615,7 +616,12 @@
     "promoters": "promoters",
     "noPromotersFound": "No promoters found matching your criteria",
     "prev": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "deletePromoter": "Delete Promoter",
+    "deletePromoterConfirm": "Are you sure you want to delete this promoter?",
+    "deletePromoterWarning": "This action cannot be undone.",
+    "promoterDeletedSuccess": "Promoter deleted successfully",
+    "deletePromoterFailed": "Failed to delete promoter"
   },
   "adminReports": {
     "title": "Complaints",
@@ -637,7 +643,9 @@
     "noEmail": "No email",
     "deleteComplaint": "Delete Complaint",
     "deleteComplaintConfirm": "Are you sure you want to delete this complaint?",
-    "deleteComplaintWarning": "This action cannot be undone."
+    "deleteComplaintWarning": "This action cannot be undone.",
+    "complaintDeletedSuccess": "Complaint deleted successfully",
+    "deleteComplaintFailed": "Failed to delete complaint"
   },
   "searchFilter": {
     "searchPlaceholder": "Search...",

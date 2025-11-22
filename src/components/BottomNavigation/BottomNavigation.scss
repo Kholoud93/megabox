@@ -174,11 +174,13 @@
             visibility: visible !important;
         }
 
-        // Show on hover (desktop) - Only if not already open
-        .bottom-navigation__more:hover & {
-            display: flex;
-            opacity: 1;
-            visibility: visible;
+        // Only show on hover for non-touch devices
+        @media (hover: hover) and (pointer: fine) {
+            .bottom-navigation__more:hover & {
+                display: flex;
+                opacity: 1;
+                visibility: visible;
+            }
         }
     }
 

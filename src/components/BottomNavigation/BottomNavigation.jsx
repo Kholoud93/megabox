@@ -33,20 +33,20 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
             }
         };
 
+        // Only add listeners when dropdown is open
         if (isDropdownOpen) {
-            // Use setTimeout to avoid immediate closure
-            setTimeout(() => {
-                document.addEventListener('mousedown', handleClickOutside);
-                document.addEventListener('touchstart', handleClickOutside);
-                document.addEventListener('click', handleClickOutside);
-            }, 0);
-        }
+            // Use a small delay to prevent immediate closure from the same click
+            const timeoutId = setTimeout(() => {
+                document.addEventListener('click', handleClickOutside, true);
+                document.addEventListener('touchend', handleClickOutside, true);
+            }, 10);
 
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('touchstart', handleClickOutside);
-            document.removeEventListener('click', handleClickOutside);
-        };
+            return () => {
+                clearTimeout(timeoutId);
+                document.removeEventListener('click', handleClickOutside, true);
+                document.removeEventListener('touchend', handleClickOutside, true);
+            };
+        }
     }, [isDropdownOpen]);
 
     // Close dropdown when route changes
@@ -317,9 +317,9 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                     <div className="bottom-navigation__more" ref={dropdownRef}>
                         <button 
                             className={`bottom-navigation__more-button ${isDropdownOpen ? 'bottom-navigation__more-button--active' : ''}`}
-                            onClick={(e) => {
+                            onClick={() => setIsDropdownOpen(prev => !prev)}
+                            onTouchEnd={(e) => {
                                 e.preventDefault();
-                                e.stopPropagation();
                                 setIsDropdownOpen(prev => !prev);
                             }}
                             aria-expanded={isDropdownOpen}

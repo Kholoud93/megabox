@@ -1,14 +1,17 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react'
 import "./Promoters.scss"
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import axios from 'axios';
-import { motion, useInView } from 'framer-motion';
-import { API_URL } from '../../../services/api';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { API_URL, adminService } from '../../../services/api';
 import { Link, useNavigate } from 'react-router-dom';
 import { TbDeviceAnalytics } from "react-icons/tb";
 import { MdDelete } from "react-icons/md";
 import { MdAttachMoney } from "react-icons/md";
 import { useLanguage } from '../../../context/LanguageContext';
+import { useCookies } from 'react-cookie';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../../helpers/ToastOptions';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
 
 export default function Promoters() {
@@ -17,6 +20,11 @@ export default function Promoters() {
     const [filters, setFilters] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
+    const [deleteConfirm, setDeleteConfirm] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [cookies] = useCookies(['MegaBox']);
+    const token = cookies.MegaBox;
+    const queryClient = useQueryClient();
 
     const animationRef = useRef();
     const animationInView = useInView(animationRef, { once: true });
@@ -86,6 +94,23 @@ export default function Promoters() {
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm, filters]);
+
+    // Handle delete promoter
+    const handleDeletePromoter = async () => {
+        if (!deleteConfirm) return;
+        
+        setIsDeleting(true);
+        try {
+            await adminService.deletePromoter(deleteConfirm._id || deleteConfirm.id, token);
+            toast.success(t("adminPromoters.promoterDeletedSuccess") || "Promoter deleted successfully", ToastOptions("success"));
+            queryClient.invalidateQueries("getAllPromoters");
+            setDeleteConfirm(null);
+        } catch (error) {
+            toast.error(error.response?.data?.message || t("adminPromoters.deletePromoterFailed") || "Failed to delete promoter", ToastOptions("error"));
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
     // Filter configuration
     const filterConfig = [
@@ -188,7 +213,7 @@ export default function Promoters() {
                                                     </Link>
                                                     <button
                                                         title={t("adminPromoters.delete")}
-                                                        onClick={() => { }}
+                                                        onClick={() => setDeleteConfirm(ele)}
                                                         className="text-red-600 hover:text-red-800 transition-colors"
                                                     >
                                                         <MdDelete size={20} />
@@ -232,6 +257,47 @@ export default function Promoters() {
                 )}
             </motion.div>
             </div>
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {deleteConfirm && (
+                    <motion.div
+                        className="admin-delete-modal-backdrop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => !isDeleting && setDeleteConfirm(null)}
+                    >
+                        <motion.div
+                            className="admin-delete-modal"
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <h3>{t("adminPromoters.deletePromoter")}</h3>
+                            <p>{t("adminPromoters.deletePromoterConfirm") || `Are you sure you want to delete ${deleteConfirm.username || deleteConfirm.email}?`}</p>
+                            <p className="admin-delete-modal__warning">{t("adminPromoters.deletePromoterWarning") || "This action cannot be undone."}</p>
+                            <div className="admin-delete-modal__actions">
+                                <button
+                                    onClick={() => setDeleteConfirm(null)}
+                                    disabled={isDeleting}
+                                    className="admin-delete-modal__btn admin-delete-modal__btn--cancel"
+                                >
+                                    {t("adminUsers.cancel")}
+                                </button>
+                                <button
+                                    onClick={handleDeletePromoter}
+                                    disabled={isDeleting}
+                                    className="admin-delete-modal__btn admin-delete-modal__btn--delete"
+                                >
+                                    {isDeleting ? t("adminUsers.deleting") || "Deleting..." : t("adminUsers.delete")}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }

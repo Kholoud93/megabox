@@ -596,7 +596,8 @@
     "premiumExpires": "الاشتراك المميز ينتهي في",
     "removePremiumConfirm": "هل أنت متأكد من إزالة حالة المميز من هذا المستخدم؟",
     "user": "المستخدم",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "deleting": "جاري الحذف..."
   },
   "adminPromoters": {
     "page": "صفحة",
@@ -615,7 +616,12 @@
     "promoters": "مروجين",
     "noPromotersFound": "لم يتم العثور على مروجين يطابقون معاييرك",
     "prev": "السابق",
-    "next": "التالي"
+    "next": "التالي",
+    "deletePromoter": "حذف المروج",
+    "deletePromoterConfirm": "هل أنت متأكد من حذف هذا المروج؟",
+    "deletePromoterWarning": "لا يمكن التراجع عن هذا الإجراء.",
+    "promoterDeletedSuccess": "تم حذف المروج بنجاح",
+    "deletePromoterFailed": "فشل في حذف المروج"
   },
   "adminReports": {
     "title": "الشكاوى",
@@ -637,7 +643,9 @@
     "noEmail": "لا يوجد بريد إلكتروني",
     "deleteComplaint": "حذف الشكوى",
     "deleteComplaintConfirm": "هل أنت متأكد من حذف هذه الشكوى؟",
-    "deleteComplaintWarning": "لا يمكن التراجع عن هذا الإجراء."
+    "deleteComplaintWarning": "لا يمكن التراجع عن هذا الإجراء.",
+    "complaintDeletedSuccess": "تم حذف الشكوى بنجاح",
+    "deleteComplaintFailed": "فشل في حذف الشكوى"
   },
   "searchFilter": {
     "searchPlaceholder": "بحث...",

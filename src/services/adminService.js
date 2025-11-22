@@ -82,6 +82,34 @@ export const adminService = {
             toast.error(error.response?.data?.message || "Failed to update user premium status", ToastOptions("error"));
             throw error.response?.data || error.message;
         }
+    },
+
+    // Delete complaint/report
+    deleteComplaint: async (complaintId, token) => {
+        try {
+            const response = await api.delete(`/auth/deleteCopyrightReport/${complaintId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Delete promoter
+    deletePromoter: async (promoterId, token) => {
+        try {
+            const response = await api.delete(`/auth/deletePromoter/${promoterId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
     }
 };
 
