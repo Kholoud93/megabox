@@ -221,7 +221,7 @@ export default function Profile() {
                                         alt="Profile"
                                         crossOrigin="anonymous"
                                         referrerPolicy="no-referrer"
-                                        onError={(e) => {
+                                        onError={() => {
                                             // Silently handle image load errors and show fallback
                                             setImageError(true);
                                         }}

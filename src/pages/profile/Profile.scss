@@ -4,6 +4,7 @@
 .Profile {
     margin-top: 0;
     min-height: calc(100vh - 100px);
+    padding-bottom: 120px; // Extra padding to prevent content from being hidden under bottom navigation/buttons
 
     .Info {
         img {
