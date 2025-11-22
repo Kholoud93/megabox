@@ -64,6 +64,20 @@ export const promoterService = {
         } catch (error) {
             throw error.response?.data || error.message;
         }
+    },
+
+    // Get all promoters
+    getAllPromoters: async (token) => {
+        try {
+            const response = await api.get('/auth/getAllPromoters', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
     }
 };
 

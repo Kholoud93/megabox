@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCookies } from 'react-cookie';
 import { useQuery } from 'react-query';
 import { userService, notificationService } from '../../services/api';
-import { HiUserCircle, HiArrowRightOnRectangle, HiUserGroup, HiCurrencyDollar, HiBell } from 'react-icons/hi2';
+import { HiUserCircle, HiArrowRightOnRectangle, HiUserGroup, HiCurrencyDollar, HiBell, HiTv } from 'react-icons/hi2';
 import { FiGlobe } from 'react-icons/fi';
 import { FaUser } from 'react-icons/fa';
 import './DashboardHeader.scss';
@@ -265,6 +265,24 @@ export default function DashboardHeader() {
                                             >
                                                 <HiBell className="files-header__profile-item-icon" />
                                                 <span>{t("sidenav.notifications")}</span>
+                                            </Link>
+                                        )}
+                                        
+                                        {!isOwner && !isPromoter && (
+                                            <Link
+                                                to="/dashboard/channels"
+                                                className="files-header__profile-item"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setProfileMenuOpen(false);
+                                                }}
+                                                onTouchEnd={(e) => {
+                                                    e.stopPropagation();
+                                                    setProfileMenuOpen(false);
+                                                }}
+                                            >
+                                                <HiTv className="files-header__profile-item-icon" />
+                                                <span>{t("sidenav.channels") || "Channels"}</span>
                                             </Link>
                                         )}
                                         

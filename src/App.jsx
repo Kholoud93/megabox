@@ -35,6 +35,9 @@ import RevenueData from './pages/RevenueData/RevenueData'
 import Referral from './pages/Referral/Referral'
 import PromoterProtector from './protectors/PromoterProtector'
 import PromoterWithPlanProtector from './protectors/PromoterWithPlanProtector'
+import Channels from './pages/Channels/Channels'
+import ChannelFiles from './pages/Channels/ChannelFiles'
+import PromoterChannels from './pages/Channels/PromoterChannels'
 
 
 // Main Pages
@@ -345,6 +348,22 @@ const router = createBrowserRouter(
                 <Referral />
               </RoleProtector>
             </LoginProtector>
+        },
+        {
+          path: "channels", element:
+            <LoginProtector>
+              <RoleProtector requiredRole="User">
+                <Channels />
+              </RoleProtector>
+            </LoginProtector>
+        },
+        {
+          path: "channels/:channelId/files", element:
+            <LoginProtector>
+              <RoleProtector requiredRole="User">
+                <ChannelFiles />
+              </RoleProtector>
+            </LoginProtector>
         }
       ]
     },
@@ -390,6 +409,22 @@ const router = createBrowserRouter(
             <LoginProtector>
               <PromoterProtector>
                 <UploadFiles />
+              </PromoterProtector>
+            </LoginProtector>
+        },
+        {
+          path: "channels", element:
+            <LoginProtector>
+              <PromoterProtector>
+                <PromoterChannels />
+              </PromoterProtector>
+            </LoginProtector>
+        },
+        {
+          path: "channels/:channelId/files", element:
+            <LoginProtector>
+              <PromoterProtector>
+                <ChannelFiles />
               </PromoterProtector>
             </LoginProtector>
         }

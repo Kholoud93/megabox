@@ -2,7 +2,7 @@
 
 .UploadFile_backDrob {
     @include BackDrop();
-    z-index: 10000000 !important; // Higher than header (9999999)
+    z-index: 10000002 !important; // Higher than sidenav (10000001)
 
     .UploadFile {
         @include InsideBackdrop();

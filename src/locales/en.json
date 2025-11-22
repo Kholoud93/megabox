@@ -121,7 +121,8 @@
     "loading": "Loading...",
     "error": "Error",
     "success": "Success",
-    "back": "Back"
+    "back": "Back",
+    "cancel": "Cancel"
   },
   "about": {
     "storage": {
@@ -236,7 +237,8 @@
     "subscriptions": "Subscriptions",
     "storage": "Storage",
     "downloadsViews": "Downloads & Views",
-    "more": "More"
+    "more": "More",
+    "channels": "Channels"
   },
   "folder": {
     "folder": "Folder",
@@ -275,6 +277,10 @@
     "filesCount": "files",
     "view": "View:",
     "allFiles": "All Files",
+    "image": "Image",
+    "video": "Video",
+    "document": "Document",
+    "zip": "Zip Folder",
     "images": "Images",
     "videos": "Videos",
     "documents": "Documents",
@@ -1120,7 +1126,9 @@
     "files": "files",
     "uploaded": "uploaded successfully",
     "failed": "failed",
-    "allFailed": "All file uploads failed"
+    "allFailed": "All file uploads failed",
+    "multipleFiles": "You can select multiple files",
+    "clickToSelect": "Click to select files"
   },
   "withdrawSection": {
     "amount": "Amount",
@@ -1169,5 +1177,79 @@
     "of": "of",
     "prev": "Previous",
     "next": "Next"
+  },
+  "channels": {
+    "title": "My Channels",
+    "myChannels": "My Channels",
+    "subscribeToChannel": "Subscribe to Channel",
+    "createChannel": "Create Channel",
+    "channelName": "Channel Name",
+    "description": "Description",
+    "channelImage": "Channel Image",
+    "channelId": "Channel ID",
+    "enterChannelId": "Enter channel ID",
+    "noDescription": "No description",
+    "viewFiles": "View Files",
+    "manageFiles": "Manage Files",
+    "noChannels": "No channels subscribed yet",
+    "noChannelsCreated": "No channels created yet",
+    "createFirstChannel": "Create Your First Channel",
+    "subscribe": "Subscribe",
+    "create": "Create",
+    "backToChannels": "Back to Channels",
+    "channelFiles": "Channel Files",
+    "uploadFile": "Upload File",
+    "upload": "Upload",
+    "selectFile": "Select File",
+    "noFiles": "No files in this channel yet",
+    "uploadFirstFile": "Upload the first file",
+    "subscribers": "Subscribers",
+    "files": "files",
+    "subscribersCount": "{{count}} subscribers",
+    "filesCount": "{{count}} file",
+    "createdAt": "Created",
+    "lastUpdated": "Last updated",
+    "channelStats": "Channel Statistics",
+    "totalViews": "Total Views",
+    "totalDownloads": "Total Downloads",
+    "mockup": {
+      "message": "Channels retrieved successfully",
+      "channel1": {
+        "name": "Technology Channel",
+        "description": "Latest tech news and updates"
+      },
+      "channel2": {
+        "name": "Design Inspiration",
+        "description": "Creative designs and inspiration for designers"
+      },
+      "channel3": {
+        "name": "Programming Tutorials",
+        "description": "Learn programming from scratch"
+      },
+      "myChannel1": {
+        "name": "My Tech Channel",
+        "description": "Technology tutorials and reviews"
+      },
+      "myChannel2": {
+        "name": "Business Tips",
+        "description": "Entrepreneurship and business advice"
+      },
+      "subscribedChannel1": {
+        "name": "Design Masterclass",
+        "description": "Learn design from experts"
+      }
+    },
+    "placeholder": {
+      "channelName": "Channel Name",
+      "fileName": "Unnamed File",
+      "subscribersCount": "Subscribers count not available",
+      "createdAt": "Creation date not available",
+      "noDescription": "No description available",
+      "description": "Enter channel description (optional)",
+      "searchChannels": "Search channels...",
+      "noResults": "No channels found",
+      "loading": "Loading channels...",
+      "error": "Failed to load channels"
+    }
   }
 }

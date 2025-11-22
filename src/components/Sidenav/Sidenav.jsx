@@ -198,6 +198,17 @@ export default function Sidenav({ role }) {
         setSidebarOpen(false);
     }
 
+    // Listen for custom event to close sidebar
+    useEffect(() => {
+        const handleCloseSidebar = () => {
+            closeSidebar();
+        };
+        window.addEventListener('closeSidebar', handleCloseSidebar);
+        return () => {
+            window.removeEventListener('closeSidebar', handleCloseSidebar);
+        };
+    }, []);
+
     const handleICon = () => {
         setcollapsed(!collapsed);
     }

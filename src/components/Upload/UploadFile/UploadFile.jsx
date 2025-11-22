@@ -2,19 +2,20 @@ import React, { useRef, useState } from 'react'
 import '../Upload.scss'
 import { HiX } from "react-icons/hi";
 import { PreventFunction } from '../../../helpers/Prevent';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { LuFolderOpen } from "react-icons/lu";
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
 import { useCookies } from 'react-cookie';
-import { API_URL, fileService, userService } from '../../../services/api';
-import axios from 'axios';
+import { API_URL, fileService, userService, channelService } from '../../../services/api';
 import { HiArrowPath } from "react-icons/hi2";
 import { HiTrash } from "react-icons/hi2";
 import { HiCheckCircle } from "react-icons/hi2";
+import { useLanguage } from '../../../context/LanguageContext';
 
-export default function UploadFile({ ToggleUploadFile, refetch, insideFile, id }) {
-
+export default function UploadFile({ ToggleUploadFile, refetch, insideFile, id, isChannel }) {
+    const { t } = useLanguage();
     const Active = "inline-block p-4 cursor-pointer text-white bg-white/30 backdrop-blur-sm border-2 border-white/40 rounded shadow-lg transition-all";
     const InActive = "inline-block p-4 rounded cursor-pointer text-white/80 hover:text-white hover:bg-white/20 hover:border-white/30 border-2 border-white/20 transition-all"
 
@@ -93,7 +94,7 @@ export default function UploadFile({ ToggleUploadFile, refetch, insideFile, id }
 
     const AddFiles = async () => {
         if (selectedFiles.length === 0) {
-            toast.error("Please select at least one file.", ToastOptions("error"));
+            toast.error(t('uploadFromMegaBox.selectFiles') || "Please select at least one file.", ToastOptions("error"));
             return;
         }
 
@@ -109,7 +110,10 @@ export default function UploadFile({ ToggleUploadFile, refetch, insideFile, id }
                 setUploadProgress(prev => ({ ...prev, [i]: 'uploading' }));
 
                 let data;
-                if (insideFile) {
+                if (isChannel && id) {
+                    // Upload file to channel
+                    data = await channelService.createFileInChannel(file, id, Token.MegaBox);
+                } else if (insideFile) {
                     // Upload file to folder
                     data = await userService.createFileInFolder(id, file, Token.MegaBox);
                 } else {
@@ -124,7 +128,7 @@ export default function UploadFile({ ToggleUploadFile, refetch, insideFile, id }
                     setUploadProgress(prev => ({ ...prev, [i]: 'error' }));
                     failCount++;
                 }
-            } catch (err) {
+            } catch {
                 setUploadProgress(prev => ({ ...prev, [i]: 'error' }));
                 failCount++;
             }
@@ -134,16 +138,19 @@ export default function UploadFile({ ToggleUploadFile, refetch, insideFile, id }
 
         // Show results
         if (successCount > 0 && failCount === 0) {
-            toast.success(`${successCount} file(s) uploaded successfully`, ToastOptions("success"));
+            const fileText = successCount === 1 ? t('uploadFromMegaBox.file') : t('uploadFromMegaBox.files');
+            toast.success(`${successCount} ${fileText} ${t('uploadFromMegaBox.uploaded')}`, ToastOptions("success"));
             await refetch();
             setTimeout(() => {
                 ToggleUploadFile();
             }, 1000);
         } else if (successCount > 0 && failCount > 0) {
-            toast.warning(`${successCount} file(s) uploaded, ${failCount} failed`, ToastOptions("warning"));
+            const fileText = successCount === 1 ? t('uploadFromMegaBox.file') : t('uploadFromMegaBox.files');
+            const failedText = failCount === 1 ? t('uploadFromMegaBox.file') : t('uploadFromMegaBox.files');
+            toast.warning(`${successCount} ${fileText} ${t('uploadFromMegaBox.uploaded')}, ${failCount} ${failedText} ${t('uploadFromMegaBox.failed')}`, ToastOptions("warning"));
             await refetch();
         } else {
-            toast.error("All file uploads failed", ToastOptions("error"));
+            toast.error(t('uploadFromMegaBox.allFailed') || "All file uploads failed", ToastOptions("error"));
         }
     }
 
@@ -170,25 +177,25 @@ export default function UploadFile({ ToggleUploadFile, refetch, insideFile, id }
             />
 
             <div className="mb-4">
-                <h2 className="text-2xl font-bold text-white mb-2 drop-shadow-lg" style={{ textShadow: '0 2px 10px rgba(255,255,255,0.3)' }}>Upload Files</h2>
-                <p className="text-sm text-white/90" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.2)' }}>Select file type and upload multiple files at once</p>
+                <h2 className="text-2xl font-bold text-white mb-2 drop-shadow-lg" style={{ textShadow: '0 2px 10px rgba(255,255,255,0.3)' }}>{t('uploadOptions.title') || 'Upload Files'}</h2>
+                <p className="text-sm text-white/90" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.2)' }}>{t('uploadOptions.subtitle') || 'Choose how you want to upload your files'}</p>
             </div>
 
             <ul className="flex flex-wrap mt-3 text-sm font-medium text-center">
                 <li className="me-2" onClick={() => SelectFileType("All")}>
-                    <p className={FileType === "All" ? Active : InActive}>All Files</p>
+                    <p className={FileType === "All" ? Active : InActive}>{t('files.allFiles') || 'All Files'}</p>
                 </li>
                 <li className="me-2" onClick={() => SelectFileType("Image")}>
-                    <p className={FileType === "Image" ? Active : InActive}>Image</p>
+                    <p className={FileType === "Image" ? Active : InActive}>{t('files.image') || 'Image'}</p>
                 </li>
                 <li className="me-2" onClick={() => SelectFileType("Video")}>
-                    <p className={FileType === "Video" ? Active : InActive}>Video</p>
+                    <p className={FileType === "Video" ? Active : InActive}>{t('files.video') || 'Video'}</p>
                 </li>
                 <li className="me-2" onClick={() => SelectFileType("Document")}>
-                    <p className={FileType === "Document" ? Active : InActive}>Document</p>
+                    <p className={FileType === "Document" ? Active : InActive}>{t('files.document') || 'Document'}</p>
                 </li>
                 <li className="me-2" onClick={() => SelectFileType("Zip")}>
-                    <p className={FileType === "Zip" ? Active : InActive}>Zip Folder</p>
+                    <p className={FileType === "Zip" ? Active : InActive}>{t('files.zip') || 'Zip Folder'}</p>
                 </li>
             </ul>
 
@@ -202,8 +209,8 @@ export default function UploadFile({ ToggleUploadFile, refetch, insideFile, id }
                                 <div className="flex flex-col items-center">
                                     <LuFolderOpen className="text-4xl text-white drop-shadow-lg" style={{ filter: 'drop-shadow(0 2px 8px rgba(255,255,255,0.3))' }} />
                                     <span className="block text-white/90 font-normal mt-2 drop-shadow-md text-center" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.2)' }}>
-                                        Click to select files<br />
-                                        <span className="text-xs text-white/70">(You can select multiple files)</span>
+                                        {t('uploadFromMegaBox.clickToSelect') || t('uploadFromMegaBox.selectFiles') || 'Click to select files'}<br />
+                                        <span className="text-xs text-white/70">({t('uploadFromMegaBox.multipleFiles') || 'You can select multiple files'})</span>
                                     </span>
                                 </div>
                             </div>
@@ -225,13 +232,13 @@ export default function UploadFile({ ToggleUploadFile, refetch, insideFile, id }
                     <div className="mt-4">
                         <div className="flex justify-between items-center mb-2">
                             <p className="text-white font-medium drop-shadow-md" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.2)' }}>
-                                {selectedFiles.length} file(s) selected
+                                {selectedFiles.length} {selectedFiles.length === 1 ? t('uploadFromMegaBox.file') : t('uploadFromMegaBox.files')} {t('uploadFromMegaBox.selectedFiles') || 'selected'}
                             </p>
                             <button
                                 onClick={ClearAllFiles}
                                 className="text-white/80 hover:text-white text-sm underline transition-colors"
                             >
-                                Clear All
+                                {t('uploadFromMegaBox.clearAll') || 'Clear All'}
                             </button>
                         </div>
                         <div className="max-h-48 overflow-y-auto space-y-2">
@@ -259,7 +266,7 @@ export default function UploadFile({ ToggleUploadFile, refetch, insideFile, id }
                                             <HiCheckCircle className='h-5 w-5 text-green-300' />
                                         )}
                                         {uploadProgress[index] === 'error' && (
-                                            <span className="text-red-300 text-xs">Failed</span>
+                                            <span className="text-red-300 text-xs">{t('uploadFromMegaBox.failed') || 'Failed'}</span>
                                         )}
                                         <HiTrash
                                             className='h-5 w-5 text-white cursor-pointer hover:text-white/80 transition-colors'
@@ -283,10 +290,10 @@ export default function UploadFile({ ToggleUploadFile, refetch, insideFile, id }
                         {UploadLoading ? (
                             <>
                                 <HiArrowPath className='LoadingButton mr-2' />
-                                Uploading...
+                                {t('uploadFromMegaBox.uploading') || 'Uploading...'}
                             </>
                         ) : (
-                            `Upload ${selectedFiles.length > 0 ? selectedFiles.length : ''} File${selectedFiles.length !== 1 ? 's' : ''}`
+                            `${t('uploadFromMegaBox.upload') || 'Upload'} ${selectedFiles.length > 0 ? selectedFiles.length : ''} ${selectedFiles.length === 1 ? t('uploadFromMegaBox.file') : t('uploadFromMegaBox.files')}`
                         )}
                     </button>
                 </div>

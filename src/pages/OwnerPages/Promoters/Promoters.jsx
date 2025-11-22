@@ -1,9 +1,8 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react'
 import "./Promoters.scss"
 import { useQuery, useQueryClient } from 'react-query';
-import axios from 'axios';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
-import { API_URL, adminService } from '../../../services/api';
+import { useInView, AnimatePresence } from 'framer-motion';
+import { API_URL, adminService, promoterService } from '../../../services/api';
 import { Link, useNavigate } from 'react-router-dom';
 import { TbDeviceAnalytics } from "react-icons/tb";
 import { MdDelete } from "react-icons/md";
@@ -32,10 +31,8 @@ export default function Promoters() {
     const navigate = useNavigate()
 
     const AllPromoters = async () => {
-        let Promoters = await axios.get(`${API_URL}/auth/getAllPromoters`);
-
-
-        return Promoters?.data?.promoters;
+        const response = await promoterService.getAllPromoters(token);
+        return response?.data?.promoters || response?.promoters || response;
     }
 
     const { data: Promoters } = useQuery("getAllPromoters", AllPromoters, {

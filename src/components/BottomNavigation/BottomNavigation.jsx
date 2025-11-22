@@ -11,7 +11,8 @@ import {
     HiDocumentText,
     HiCreditCard,
     HiServer,
-    HiArrowDownTray
+    HiArrowDownTray,
+    HiTv
 } from "react-icons/hi2";
 import { useLanguage } from '../../context/LanguageContext';
 import './BottomNavigation.scss';
@@ -46,6 +47,12 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                         icon: HiFolder,
                         label: t("sidenav.allFiles"),
                         key: 'files'
+                    },
+                    {
+                        path: '/Promoter/channels',
+                        icon: HiTv,
+                        label: t("sidenav.channels") || "Channels",
+                        key: 'channels'
                     },
                     {
                         path: '/dashboard/Earnings',
@@ -86,6 +93,12 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                     icon: HiCurrencyDollar,
                     label: t("sidenav.promoterDashboard"),
                     key: 'promoter'
+                });
+                items.push({
+                    path: '/Promoter/channels',
+                    icon: HiTv,
+                    label: t("sidenav.channels") || "Channels",
+                    key: 'channels'
                 });
             }
 
@@ -178,6 +191,11 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                    pathname === '/Promoter/files' || 
                    pathname === '/Promoter/files/' ||
                    pathname.startsWith('/Promoter/files/');
+        }
+        if (item.key === 'channels') {
+            return pathname === '/Promoter/channels' || 
+                   pathname === '/Promoter/channels/' ||
+                   pathname.startsWith('/Promoter/channels/');
         }
         return isPathActive(item.path, pathname, menuItems);
     };

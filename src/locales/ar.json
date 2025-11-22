@@ -121,7 +121,8 @@
     "loading": "جارٍ التحميل...",
     "error": "حدث خطأ",
     "success": "تم بنجاح",
-    "back": "رجوع"
+    "back": "رجوع",
+    "cancel": "إلغاء"
   },
   "about": {
     "storage": {
@@ -236,7 +237,8 @@
     "subscriptions": "الاشتراكات",
     "storage": "التخزين",
     "downloadsViews": "التحميلات والمشاهدات",
-    "more": "المزيد"
+    "more": "المزيد",
+    "channels": "القنوات"
   },
   "folder": {
     "folder": "مجلد",
@@ -275,6 +277,10 @@
     "filesCount": "ملف",
     "view": "العرض:",
     "allFiles": "جميع الملفات",
+    "image": "صورة",
+    "video": "فيديو",
+    "document": "مستند",
+    "zip": "مجلد مضغوط",
     "images": "الصور",
     "videos": "الفيديوهات",
     "documents": "المستندات",
@@ -1120,7 +1126,9 @@
     "files": "ملفات",
     "uploaded": "تم الرفع بنجاح",
     "failed": "فشل",
-    "allFailed": "فشل رفع جميع الملفات"
+    "allFailed": "فشل رفع جميع الملفات",
+    "multipleFiles": "يمكنك اختيار عدة ملفات",
+    "clickToSelect": "انقر لاختيار الملفات"
   },
   "withdrawSection": {
     "amount": "المبلغ",
@@ -1169,5 +1177,79 @@
     "of": "من",
     "prev": "السابق",
     "next": "التالي"
+  },
+  "channels": {
+    "title": "قنواتي",
+    "myChannels": "قنواتي",
+    "subscribeToChannel": "الاشتراك في القناة",
+    "createChannel": "إنشاء قناة",
+    "channelName": "اسم القناة",
+    "description": "الوصف",
+    "channelImage": "صورة القناة",
+    "channelId": "معرف القناة",
+    "enterChannelId": "أدخل معرف القناة",
+    "noDescription": "لا يوجد وصف",
+    "viewFiles": "عرض الملفات",
+    "manageFiles": "إدارة الملفات",
+    "noChannels": "لم يتم الاشتراك في أي قنوات بعد",
+    "noChannelsCreated": "لم يتم إنشاء أي قنوات بعد",
+    "createFirstChannel": "إنشاء قناتك الأولى",
+    "subscribe": "اشترك",
+    "create": "إنشاء",
+    "backToChannels": "العودة إلى القنوات",
+    "channelFiles": "ملفات القناة",
+    "uploadFile": "رفع ملف",
+    "upload": "رفع",
+    "selectFile": "اختر ملف",
+    "noFiles": "لا توجد ملفات في هذه القناة بعد",
+    "uploadFirstFile": "رفع الملف الأول",
+    "subscribers": "المشتركون",
+    "files": "ملفات",
+    "subscribersCount": "{{count}} مشترك",
+    "filesCount": "{{count}} ملف",
+    "createdAt": "تم الإنشاء",
+    "lastUpdated": "آخر تحديث",
+    "channelStats": "إحصائيات القناة",
+    "totalViews": "إجمالي المشاهدات",
+    "totalDownloads": "إجمالي التحميلات",
+    "mockup": {
+      "message": "تم جلب القنوات بنجاح",
+      "channel1": {
+        "name": "قناة التكنولوجيا",
+        "description": "أحدث أخبار وتحديثات التكنولوجيا"
+      },
+      "channel2": {
+        "name": "إلهام التصميم",
+        "description": "تصاميم إبداعية وإلهام للمصممين"
+      },
+      "channel3": {
+        "name": "دروس البرمجة",
+        "description": "تعلم البرمجة من الصفر"
+      },
+      "myChannel1": {
+        "name": "قناتي التكنولوجية",
+        "description": "دروس ومراجعات التكنولوجيا"
+      },
+      "myChannel2": {
+        "name": "نصائح الأعمال",
+        "description": "ريادة الأعمال ونصائح العمل"
+      },
+      "subscribedChannel1": {
+        "name": "فصل التصميم المتقدم",
+        "description": "تعلم التصميم من الخبراء"
+      }
+    },
+    "placeholder": {
+      "channelName": "اسم القناة",
+      "fileName": "ملف بدون اسم",
+      "subscribersCount": "عدد المشتركين غير متاح",
+      "createdAt": "تاريخ الإنشاء غير متاح",
+      "noDescription": "لا يوجد وصف متاح",
+      "description": "أدخل وصف القناة (اختياري)",
+      "searchChannels": "البحث في القنوات...",
+      "noResults": "لم يتم العثور على قنوات",
+      "loading": "جاري تحميل القنوات...",
+      "error": "فشل تحميل القنوات"
+    }
   }
 }
