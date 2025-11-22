@@ -8,6 +8,8 @@ import { channelService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { FaFolder } from 'react-icons/fa';
 import { HiPlus } from 'react-icons/hi2';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../helpers/ToastOptions';
 import Loading from '../../components/Loading/Loading';
 import './Channels.scss';
 
@@ -226,19 +228,40 @@ export default function Channels() {
                             <h2 className="text-2xl font-bold text-indigo-900 mb-4">
                                 {t('channels.subscribeToChannel') || 'Subscribe to Channel'}
                             </h2>
+                            <p className="text-sm text-gray-600 mb-4">
+                                {t('channels.subscribeHint') || 'Enter the Channel ID provided by the channel owner to subscribe.'}
+                            </p>
                             <form onSubmit={handleSubscribe}>
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         {t('channels.channelId') || 'Channel ID'}
                                     </label>
-                                    <input
-                                        type="text"
-                                        value={channelId}
-                                        onChange={(e) => setChannelId(e.target.value)}
-                                        className="w-full px-4 py-2 border-2 border-indigo-200 rounded-lg focus:border-indigo-500 focus:outline-none"
-                                        placeholder={t('channels.enterChannelId') || 'Enter channel ID'}
-                                        required
-                                    />
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={channelId}
+                                            onChange={(e) => setChannelId(e.target.value)}
+                                            className="flex-1 px-4 py-2 border-2 border-indigo-200 rounded-lg focus:border-indigo-500 focus:outline-none"
+                                            placeholder={t('channels.enterChannelId') || 'Enter channel ID'}
+                                            required
+                                        />
+                                        {channelId && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(channelId).then(() => {
+                                                        toast.success(t('channels.idCopied') || 'Channel ID copied!', ToastOptions("success"));
+                                                    }).catch(() => {
+                                                        toast.error(t('channels.copyFailed') || 'Failed to copy', ToastOptions("error"));
+                                                    });
+                                                }}
+                                                className="px-3 py-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-lg transition-colors text-sm"
+                                                title={t('channels.copyId') || 'Copy ID'}
+                                            >
+                                                {t('channels.copy') || 'Copy'}
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="flex gap-3">
                                     <button

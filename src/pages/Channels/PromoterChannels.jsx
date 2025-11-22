@@ -7,6 +7,8 @@ import { channelService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { HiPlus } from 'react-icons/hi2';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../helpers/ToastOptions';
 import Loading from '../../components/Loading/Loading';
 import './Channels.scss';
 
@@ -115,7 +117,7 @@ export default function PromoterChannels() {
             index === self.findIndex((c) => (c._id || c.id) === (channel._id || channel.id))
         );
         return uniqueChannels;
-    }, [channelsData]);
+    }, [channelsData, mockupData]);
 
     // Create channel mutation
     const createChannelMutation = useMutation(
@@ -129,8 +131,9 @@ export default function PromoterChannels() {
             onSuccess: (response) => {
                 // Manually add the created channel to the cache
                 queryClient.setQueryData('mySubscribedChannels', (oldData) => {
-                    const newChannel = response?.data || response;
-                    if (newChannel) {
+                    // Handle response structure: response.data.data or response.data
+                    const newChannel = response?.data?.data || response?.data || response;
+                    if (newChannel && (newChannel._id || newChannel.id)) {
                         const data = oldData?.data || oldData;
                         const myChannels = data?.myChannels || [];
                         
@@ -226,6 +229,34 @@ export default function PromoterChannels() {
                                 <p className="text-gray-600 text-sm mb-4">
                                     {channel.description || t('channels.noDescription') || 'No description'}
                                 </p>
+                                
+                                {/* Channel ID - for sharing */}
+                                <div className="mb-3 p-2 bg-indigo-50 rounded-lg border border-indigo-200">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-xs text-gray-500 mb-1">{t('channels.channelId') || 'Channel ID'}:</p>
+                                            <p className="text-xs font-mono text-indigo-700 truncate" title={channel._id || channel.id}>
+                                                {channel._id || channel.id}
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                const id = channel._id || channel.id;
+                                                navigator.clipboard.writeText(id).then(() => {
+                                                    toast.success(t('channels.idCopied') || 'Channel ID copied!', ToastOptions("success"));
+                                                }).catch(() => {
+                                                    toast.error(t('channels.copyFailed') || 'Failed to copy', ToastOptions("error"));
+                                                });
+                                            }}
+                                            className="px-2 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs rounded transition-colors flex-shrink-0"
+                                            title={t('channels.copyId') || 'Copy ID'}
+                                        >
+                                            {t('channels.copy') || 'Copy'}
+                                        </button>
+                                    </div>
+                                </div>
+                                
                                 {/* Placeholder for channel stats */}
                                 <div className="flex flex-wrap gap-3 text-xs text-gray-500 mb-3">
                                     {channel.filesCount !== undefined && (
