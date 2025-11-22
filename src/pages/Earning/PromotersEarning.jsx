@@ -7,7 +7,7 @@ import {
     FaEye, FaDownload, FaMoneyBillWave, FaFileAlt, FaFileImage, FaFileVideo, FaFilePdf, FaFileWord,
     FaLink, FaGlobe, FaTimes, FaChartLine, FaUsers, FaRocket
 } from 'react-icons/fa';
-import { API_URL } from '../../services/api';
+import { API_URL, adminService } from '../../services/api';
 import { useParams } from 'react-router-dom';
 import { MdPendingActions } from "react-icons/md";
 import { GiTakeMyMoney } from "react-icons/gi";
@@ -538,6 +538,23 @@ export default function PromotersEarning() {
 
     const { id } = useParams()
 
+    // Fetch user data to get username
+    const { data: userData, isLoading: userDataLoading } = useQuery(
+        ['userData', id],
+        async () => {
+            try {
+                const result = await adminService.searchUser(id, token);
+                return result.user || result;
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                return null;
+            }
+        },
+        { enabled: !!token && !!id, retry: false }
+    );
+
+    const username = userData?.username || userData?.email || userData?.name || '';
+
     // Fetch total earnings
     const { data: earningsData, isLoading: earningsLoading } = useQuery(
         ['userEarnings'],
@@ -607,7 +624,12 @@ export default function PromotersEarning() {
                 }}
             >
                 <h1>{t('earning.analyticsDashboard')}</h1>
-                <p>{t('earning.trackPerformance')}</p>
+                <p>
+                    {username 
+                        ? t('earning.trackPerformanceWithUser').replace('{{username}}', username)
+                        : t('earning.trackPerformance')
+                    }
+                </p>
             </motion.div>
 
             {/* Stats Dashboard */}
@@ -620,12 +642,12 @@ export default function PromotersEarning() {
                     initial="hidden"
                     animate="visible"
                 >
-                    <StatCard label={t('earning.totalViews')} value={totalViews} icon={<FaEye />} color="#01677e" index={0} />
-                    <StatCard label={t('earning.totalDownloads')} value={totalDownloads} icon={<FaDownload />} color="#01677e" index={1} />
-                    <StatCard label={t('earning.totalLinks')} value={totalLinks} icon={<FaLink />} color="#01677e" index={2} />
-                    <StatCard label={t('promoterDashboard.pendingEarnings')} value={`${PendingEarnings} ${currency}`} icon={<MdPendingActions />} color="#003e4b" index={3} />
-                    <StatCard label={t('promoterDashboard.confirmedEarnings')} value={`${ConfirmedEarnings} ${currency}`} icon={<MdOutlineAssuredWorkload />} color="#003e4b" index={3} />
-                    <StatCard label={t('promoterDashboard.totalEarnings')} value={`${totalEarnings} ${currency}`} icon={<GiTakeMyMoney />} color="#003e4b" index={3} />
+                    <StatCard label={t('earning.totalViews')} value={totalViews} icon={<FaEye />} color="#9333ea" index={0} />
+                    <StatCard label={t('earning.totalDownloads')} value={totalDownloads} icon={<FaDownload />} color="#9333ea" index={1} />
+                    <StatCard label={t('earning.totalLinks')} value={totalLinks} icon={<FaLink />} color="#9333ea" index={2} />
+                    <StatCard label={t('promoterDashboard.pendingEarnings')} value={`${PendingEarnings} ${currency}`} icon={<MdPendingActions />} color="#9333ea" index={3} />
+                    <StatCard label={t('promoterDashboard.confirmedEarnings')} value={`${ConfirmedEarnings} ${currency}`} icon={<MdOutlineAssuredWorkload />} color="#9333ea" index={3} />
+                    <StatCard label={t('promoterDashboard.totalEarnings')} value={`${totalEarnings} ${currency}`} icon={<GiTakeMyMoney />} color="#9333ea" index={3} />
                 </motion.div>
             )}
 

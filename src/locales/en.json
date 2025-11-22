@@ -333,7 +333,8 @@
   },
   "earning": {
     "analyticsDashboard": "Analytics Dashboard",
-    "trackPerformance": "Track your content performance and earnings",
+    "trackPerformance": "Track content performance",
+    "trackPerformanceWithUser": "Track content performance and {{username}}",
     "totalViews": "Total Views",
     "totalDownloads": "Total Downloads",
     "totalLinks": "Total Links",

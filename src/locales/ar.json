@@ -333,7 +333,8 @@
   },
   "earning": {
     "analyticsDashboard": "لوحة تحليلات",
-    "trackPerformance": "تتبع أداء المحتوى والأرباح الخاصة بك",
+    "trackPerformance": "تتبع أداء المحتوى الخاص",
+    "trackPerformanceWithUser": "تتبع أداء المحتوى الخاص و{{username}}",
     "totalViews": "إجمالي المشاهدات",
     "totalDownloads": "إجمالي التنزيلات",
     "totalLinks": "إجمالي الروابط",
