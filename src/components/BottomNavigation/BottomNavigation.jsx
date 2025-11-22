@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
     HiFolder,
@@ -6,15 +6,12 @@ import {
     HiChartBar,
     HiUserGroup,
     HiHandRaised,
-    HiBell,
     HiCurrencyDollar,
     HiUsers,
     HiDocumentText,
-    HiBars3,
     HiCreditCard,
     HiServer,
-    HiArrowDownTray,
-    HiEye
+    HiArrowDownTray
 } from "react-icons/hi2";
 import { useLanguage } from '../../context/LanguageContext';
 import './BottomNavigation.scss';
@@ -22,50 +19,6 @@ import './BottomNavigation.scss';
 export default function BottomNavigation({ role, isPromoter, userData }) {
     const { t, language } = useLanguage();
     const { pathname } = useLocation();
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const dropdownRef = useRef(null);
-    const buttonRef = useRef(null);
-
-    // Toggle dropdown
-    const toggleDropdown = useCallback((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDropdownOpen(prev => !prev);
-    }, []);
-
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        if (!isDropdownOpen) return;
-
-        const handleClickOutside = (event) => {
-            // Check if click is outside both button and dropdown
-            if (
-                dropdownRef.current && 
-                !dropdownRef.current.contains(event.target) &&
-                buttonRef.current &&
-                !buttonRef.current.contains(event.target)
-            ) {
-                setIsDropdownOpen(false);
-            }
-        };
-
-        // Add delay to prevent immediate closure
-        const timeoutId = setTimeout(() => {
-            document.addEventListener('mousedown', handleClickOutside);
-            document.addEventListener('touchstart', handleClickOutside, { passive: true });
-        }, 50);
-
-        return () => {
-            clearTimeout(timeoutId);
-            document.removeEventListener('mousedown', handleClickOutside);
-            document.removeEventListener('touchstart', handleClickOutside);
-        };
-    }, [isDropdownOpen]);
-
-    // Close dropdown when route changes
-    useEffect(() => {
-        setIsDropdownOpen(false);
-    }, [pathname]);
 
     const getMenuItems = () => {
         if (role === "User") {
@@ -185,8 +138,6 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
     };
 
     const menuItems = getMenuItems();
-    const visibleItems = menuItems.slice(0, 4); // Show 4 items + More button
-    const overflowItems = menuItems.slice(4);
 
     const isPathActive = (itemPath, currentPathname, allMenuItems) => {
         const normalizedPathname = currentPathname.endsWith('/') ? currentPathname.slice(0, -1) : currentPathname;
@@ -221,13 +172,10 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
         return isPathActive(item.path, pathname, menuItems);
     };
 
-    // Check if any overflow item is active
-    const isOverflowActive = overflowItems.some(item => checkIsActive(item));
-
     return (
         <nav className="bottom-navigation" dir={language === 'ar' ? 'rtl' : 'ltr'}>
             <div className="bottom-navigation__container">
-                {visibleItems.map((item) => {
+                {menuItems.map((item) => {
                     const Icon = item.icon;
                     const isActive = checkIsActive(item);
                     
@@ -249,51 +197,6 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                         </Link>
                     );
                 })}
-
-                {overflowItems.length > 0 && (
-                    <div className="bottom-navigation__more">
-                        <button 
-                            ref={buttonRef}
-                            className={`bottom-navigation__more-button ${isDropdownOpen || isOverflowActive ? 'bottom-navigation__more-button--active' : ''}`}
-                            onClick={toggleDropdown}
-                            aria-expanded={isDropdownOpen}
-                            aria-haspopup="true"
-                            type="button"
-                        >
-                            <HiBars3 className="bottom-navigation__icon" />
-                            <span className="bottom-navigation__label">{t("sidenav.more") || "More"}</span>
-                        </button>
-
-                        {isDropdownOpen && (
-                            <div 
-                                ref={dropdownRef}
-                                className="bottom-navigation__dropdown bottom-navigation__dropdown--open"
-                            >
-                                {overflowItems.map((item) => {
-                                    const Icon = item.icon;
-                                    const isActive = checkIsActive(item);
-                                    
-                                    return (
-                                        <Link
-                                            key={item.key}
-                                            to={item.path}
-                                            className={`bottom-navigation__dropdown-item ${isActive ? 'bottom-navigation__dropdown-item--active' : ''}`}
-                                            onClick={() => setIsDropdownOpen(false)}
-                                        >
-                                            <Icon className="bottom-navigation__dropdown-icon" />
-                                            <span>{item.label}</span>
-                                            {item.badge && item.badge > 0 && (
-                                                <span className="bottom-navigation__dropdown-badge">
-                                                    {item.badge > 9 ? '9+' : item.badge}
-                                                </span>
-                                            )}
-                                        </Link>
-                                    );
-                                })}
-                            </div>
-                        )}
-                    </div>
-                )}
             </div>
         </nav>
     );
