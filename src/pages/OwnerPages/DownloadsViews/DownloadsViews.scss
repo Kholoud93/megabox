@@ -26,10 +26,19 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     border: 1px solid #e0e7ff;
 
+    @include mix.media-breakpoint-down(md) {
+        padding: 1rem 1rem;
+        margin-bottom: 1.5rem;
+    }
+
     &__content {
         display: flex;
         align-items: center;
         gap: 1rem;
+
+        @include mix.media-breakpoint-down(md) {
+            gap: 0.75rem;
+        }
     }
 
     &__back {
@@ -61,6 +70,11 @@
         width: 48px;
         height: 48px;
         color: var(--color-indigo-600);
+
+        @include mix.media-breakpoint-down(md) {
+            width: 40px;
+            height: 40px;
+        }
     }
 
     &__title {
@@ -68,11 +82,19 @@
         font-weight: 700;
         color: var(--color-indigo-900);
         margin-bottom: 0.25rem;
+
+        @include mix.media-breakpoint-down(md) {
+            font-size: vars.$text-xl;
+        }
     }
 
     &__subtitle {
         font-size: vars.$text-sm;
         color: var(--color-indigo-600);
+
+        @include mix.media-breakpoint-down(md) {
+            font-size: vars.$text-xs;
+        }
     }
 }
 
