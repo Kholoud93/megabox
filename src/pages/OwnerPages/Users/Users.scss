@@ -594,17 +594,17 @@
 
                         &::before {
                             content: attr(data-label);
-                            position: absolute;
-                            left: 0;
-                            font-weight: 600;
-                            color: #5b21b6;
-                            font-size: 0.875rem;
-                            text-transform: uppercase;
-                            letter-spacing: 0.5px;
+                            display: none;
 
-                            [dir="rtl"] & {
-                                left: auto;
-                                right: 0;
+                            @include mix.media-breakpoint-down(md) {
+                                display: block;
+                                position: static;
+                                font-weight: 600;
+                                color: #5b21b6;
+                                font-size: 0.875rem;
+                                text-transform: uppercase;
+                                letter-spacing: 0.5px;
+                                margin-bottom: 0.25rem;
                             }
                         }
 
