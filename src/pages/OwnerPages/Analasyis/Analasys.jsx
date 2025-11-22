@@ -4,7 +4,7 @@ import { useCookies } from 'react-cookie';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { API_URL, adminService, withdrawalService } from '../../../services/api';
+import { API_URL, adminService } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 import StatCard from '../../../components/StatCard/StatCard';
 import { FaUsers, FaFileAlt, FaDollarSign, FaChartLine, FaDownload, FaEye, FaLink, FaMoneyBillWave, FaHdd, FaUserPlus, FaCreditCard, FaCrown } from 'react-icons/fa';
@@ -29,7 +29,7 @@ export default function Analasys() {
     // Fetch all withdrawals
     const { data: withdrawalsData, isLoading: withdrawalsLoading } = useQuery(
         ['allWithdrawals'],
-        () => withdrawalService.getAllWithdrawals(token),
+        () => adminService.getAllWithdrawals(token),
         { enabled: !!token }
     );
 

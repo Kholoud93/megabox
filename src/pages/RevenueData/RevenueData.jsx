@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { motion } from 'framer-motion';
-import { FaQuestionCircle, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import { FaQuestionCircle, FaArrowUp, FaArrowDown, FaLink, FaEye, FaDownload } from 'react-icons/fa';
 import { HiArrowRight, HiShare } from 'react-icons/hi2';
 import { Link } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
-import { API_URL, userService } from '../../services/api';
+import { userService, promoterService } from '../../services/api';
 import './RevenueData.scss';
-
-const EARNINGS_URL = `${API_URL}/auth/getUserEarnings`;
 
 export default function RevenueData() {
     const { t } = useLanguage();
@@ -28,15 +26,17 @@ export default function RevenueData() {
     // Fetch earnings data
     const { data: earningsData, isLoading: earningsLoading } = useQuery(
         ['userEarnings'],
-        async () => {
-            const res = await fetch(EARNINGS_URL, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (!res.ok) {
-                throw new Error(`Failed to fetch earnings: ${res.status}`);
-            }
-            return res.json();
-        },
+        () => promoterService.getUserEarnings(token),
+        {
+            enabled: !!token,
+            retry: 2,
+        }
+    );
+
+    // Fetch share link analytics (contains both revenue and link data)
+    const { data: shareLinkAnalyticsData, isLoading: shareLinkAnalyticsLoading } = useQuery(
+        ['shareLinkAnalytics'],
+        () => promoterService.getShareLinkAnalytics(token),
         {
             enabled: !!token,
             retry: 2,
@@ -48,7 +48,15 @@ export default function RevenueData() {
     const withdrawable = earningsData?.withdrawable || earningsData?.totalEarnings || '0';
     const estimatedIncome = earningsData?.totalEarnings || earningsData?.estimatedIncome || '0';
     const actualIncome = earningsData?.confirmedRewards || earningsData?.actualIncome || '0';
-    const revenueList = [];
+    
+    // Extract share link analytics data - this will be used for the table
+    const shareLinksAnalytics = shareLinkAnalyticsData?.analytics || shareLinkAnalyticsData?.data || shareLinkAnalyticsData?.links || shareLinkAnalyticsData?.revenue || [];
+    const totalLinks = shareLinksAnalytics.length;
+    const totalLinkViews = shareLinksAnalytics.reduce((sum, link) => sum + (link.views || link.totalViews || 0), 0);
+    const totalLinkDownloads = shareLinksAnalytics.reduce((sum, link) => sum + (link.downloads || link.totalDownloads || 0), 0);
+    
+    // Use shareLinksAnalytics as revenueList for the table
+    const revenueList = shareLinksAnalytics;
 
     return (
         <div className="revenue-data-page">
@@ -186,28 +194,58 @@ export default function RevenueData() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {revenueList && revenueList.length > 0 ? (
+                                {shareLinkAnalyticsLoading ? (
+                                    <tr>
+                                        <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>
+                                            <p style={{ color: '#6b7280', margin: 0 }}>
+                                                {t('revenueData.loading') || 'Loading...'}
+                                            </p>
+                                        </td>
+                                    </tr>
+                                ) : revenueList && revenueList.length > 0 ? (
                                     revenueList.map((item, index) => (
                                         <motion.tr
-                                            key={index}
+                                            key={item.fileId || item.id || index}
                                             initial={{ opacity: 0, x: -20 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: index * 0.05 }}
                                         >
-                                            <td>{parseFloat(item.cpi || 0).toFixed(4)} {currency}</td>
                                             <td>
-                                                {item.date || item.dateUTC
-                                                    ? new Date(item.date || item.dateUTC).toLocaleDateString()
+                                                {/* CPI or Revenue per view/download */}
+                                                {item.cpi ? parseFloat(item.cpi || 0).toFixed(4) : 
+                                                 item.revenuePerView ? parseFloat(item.revenuePerView || 0).toFixed(4) :
+                                                 '-'} {currency}
+                                            </td>
+                                            <td>
+                                                {item.date || item.dateUTC || item.createdAt || item.lastUpdated
+                                                    ? new Date(item.date || item.dateUTC || item.createdAt || item.lastUpdated).toLocaleDateString()
                                                     : '-'}
                                             </td>
-                                            <td>{parseFloat(item.total || 0).toFixed(4)} {currency}</td>
                                             <td>
-                                                {item.install || item.installRevenue 
-                                                    ? `${parseFloat(item.install || item.installRevenue || 0).toFixed(0)} ${item.detail ? 'Detail' : ''}`
+                                                {/* Total revenue from this link */}
+                                                {item.totalRevenue ? parseFloat(item.totalRevenue || 0).toFixed(4) :
+                                                 item.total ? parseFloat(item.total || 0).toFixed(4) :
+                                                 item.earnings ? parseFloat(item.earnings || 0).toFixed(4) :
+                                                 '0.0000'} {currency}
+                                            </td>
+                                            <td>
+                                                {/* Install/Downloads count */}
+                                                {item.install || item.installRevenue || item.downloads || item.totalDownloads
+                                                    ? `${(item.install || item.installRevenue || item.downloads || item.totalDownloads || 0).toLocaleString()}`
                                                     : '0'}
                                             </td>
-                                            <td>{parseFloat(item.referralRevenue || 0).toFixed(4)} {currency}</td>
-                                            <td>{parseFloat(item.bonus || 0).toFixed(4)} {currency}</td>
+                                            <td>
+                                                {/* Referral revenue or views */}
+                                                {item.referralRevenue ? parseFloat(item.referralRevenue || 0).toFixed(4) :
+                                                 item.views || item.totalViews ? (item.views || item.totalViews || 0).toLocaleString() :
+                                                 '0'} {item.referralRevenue ? currency : ''}
+                                            </td>
+                                            <td>
+                                                {/* Bonus or file name */}
+                                                {item.bonus ? parseFloat(item.bonus || 0).toFixed(4) :
+                                                 item.fileName || item.name ? (item.fileName || item.name).substring(0, 20) + (item.fileName && item.fileName.length > 20 ? '...' : '') :
+                                                 '-'} {item.bonus ? currency : ''}
+                                            </td>
                                         </motion.tr>
                                     ))
                                 ) : (

@@ -9,15 +9,12 @@ import {
 import { MdPendingActions } from "react-icons/md";
 import { MdOutlineAssuredWorkload } from "react-icons/md";
 import { GiTakeMyMoney } from "react-icons/gi";
-import { API_URL, withdrawalService, userService } from '../../services/api';
+import { withdrawalService, userService, promoterService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
 import EmptyState from '../../components/EmptyState/EmptyState';
 import { useNavigate } from 'react-router-dom';
-
-const EARNINGS_URL = `${API_URL}/auth/getUserEarnings`;
-const REVENUE_URL = `${API_URL}/auth/getUserRevenue`;
 
 const USE_MOCK_DATA = false; // Use real API data
 
@@ -207,16 +204,7 @@ export default function PromoterDashboard() {
     // Fetch promoter earnings (financial data: pending, confirmed, total earnings)
     const { data: earningsData, isLoading: earningsLoading, error: earningsError } = useQuery(
         ['promoterEarnings'],
-        async () => {
-            const res = await fetch(EARNINGS_URL, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}));
-                throw new Error(errorData.message || `Failed to fetch promoter earnings: ${res.status}`);
-            }
-            return res.json();
-        },
+        () => promoterService.getUserEarnings(token),
         {
             enabled: !!token,
             retry: 2,
@@ -240,34 +228,25 @@ export default function PromoterDashboard() {
     const hasPlan = userData?.Downloadsplan === "true" || userData?.Downloadsplan === true ||
         userData?.watchingplan === "true" || userData?.watchingplan === true;
 
-    // Fetch revenue data
-    const { data: revenueData, isLoading: revenueLoading, error: revenueError } = useQuery(
-        ['userRevenue'],
-        async () => {
-            const res = await fetch(REVENUE_URL, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}));
-                throw new Error(errorData.message || `Failed to fetch revenue data: ${res.status}`);
-            }
-            return res.json();
-        },
+    // Fetch share link analytics (contains revenue and link data)
+    const { data: shareLinkAnalyticsData, isLoading: shareLinkAnalyticsLoading, error: shareLinkAnalyticsError } = useQuery(
+        ['shareLinkAnalytics'],
+        () => promoterService.getShareLinkAnalytics(token),
         {
             enabled: !!token,
             retry: 2,
             onError: (error) => {
-                console.error('Error fetching revenue data:', error);
+                console.error('Error fetching share link analytics:', error);
                 toast.error(error.message || t('revenueData.fetchError'), ToastOptions("error"));
             }
         }
     );
 
-    // Extract revenue data
-    const revenueList = revenueData?.revenue || revenueData?.data || [];
-    const currency = revenueData?.currency || earningsData?.currency || 'USD';
-    const estimatedRevenue = revenueData?.estimatedRevenue || [];
-    const settledRevenue = revenueData?.settledRevenue || [];
+    // Extract revenue data from share link analytics
+    const revenueList = shareLinkAnalyticsData?.analytics || shareLinkAnalyticsData?.data || shareLinkAnalyticsData?.links || shareLinkAnalyticsData?.revenue || [];
+    const currency = earningsData?.currency || 'USD';
+    const estimatedRevenue = shareLinkAnalyticsData?.estimatedRevenue || [];
+    const settledRevenue = shareLinkAnalyticsData?.settledRevenue || [];
 
     // Extract earnings data
     const totalEarnings = earningsData?.totalEarnings || '0';
@@ -402,7 +381,7 @@ export default function PromoterDashboard() {
                 )}
 
                 {/* Revenue Table */}
-                {revenueLoading ? (
+                {shareLinkAnalyticsLoading ? (
                     <div className="revenue-table">
                         <div className="revenue-table__skeleton">
                             {[...Array(5)].map((_, i) => (
@@ -414,11 +393,11 @@ export default function PromoterDashboard() {
                             ))}
                         </div>
                     </div>
-                ) : revenueError ? (
+                ) : shareLinkAnalyticsError ? (
                     <EmptyState
                         icon={FaChartLine}
                         title={t('revenueData.errorTitle') || 'Error loading revenue data'}
-                        message={revenueError.message || t('revenueData.errorMessage') || 'Failed to load revenue data'}
+                        message={shareLinkAnalyticsError.message || t('revenueData.errorMessage') || 'Failed to load revenue data'}
                     />
                 ) : (
                     <motion.div

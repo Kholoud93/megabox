@@ -5,11 +5,9 @@ import { useCookies } from 'react-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaDollarSign, FaTimes } from 'react-icons/fa';
 import { HiArrowRight, HiChevronDown } from 'react-icons/hi2';
-import { API_URL } from '../../services/api';
+import { promoterService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { withdrawalService } from '../../services/withdrawalService';
-
-const EARNINGS_URL = `${API_URL}/auth/getUserEarnings`;
 
 const cardVariants = {
     hidden: {
@@ -39,16 +37,7 @@ export default function Earning() {
     // Fetch earnings data
     const { data: earningsData, isLoading: earningsLoading } = useQuery(
         ['userEarnings'],
-        async () => {
-            const res = await fetch(EARNINGS_URL, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}));
-                throw new Error(errorData.message || `Failed to fetch earnings: ${res.status}`);
-            }
-            return res.json();
-        },
+        () => promoterService.getUserEarnings(token),
         {
             enabled: !!token,
             retry: 2,

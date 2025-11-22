@@ -11,11 +11,9 @@ import EmptyState from '../../components/EmptyState/EmptyState';
 import { HiViewGrid, HiViewList, HiShare } from "react-icons/hi";
 import { FaShare, FaFolder, FaLink, FaArrowUp, FaArrowDown, FaQuestionCircle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { API_URL } from '../../services/api';
+import { promoterService } from '../../services/api';
 import './SharedFiles.scss';
 import '../RevenueData/RevenueData.scss';
-
-const EARNINGS_URL = `${API_URL}/auth/getUserEarnings`;
 
 export default function SharedFiles() {
     const { t } = useLanguage();
@@ -146,15 +144,7 @@ export default function SharedFiles() {
     // Fetch earnings data
     const { data: earningsData, isLoading: earningsLoading } = useQuery(
         ['userEarnings'],
-        async () => {
-            const res = await fetch(EARNINGS_URL, {
-                headers: { Authorization: `Bearer ${Token.MegaBox}` },
-            });
-            if (!res.ok) {
-                throw new Error(`Failed to fetch earnings: ${res.status}`);
-            }
-            return res.json();
-        },
+        () => promoterService.getUserEarnings(Token.MegaBox),
         {
             enabled: !!Token.MegaBox,
             retry: 2,

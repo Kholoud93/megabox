@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { withdrawalService } from '../../../services/api';
+import { adminService } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
 import Pagination from '../../../components/Pagination/Pagination';
@@ -30,7 +30,7 @@ export default function Withdrawals() {
     // Fetch all withdrawals
     const { data: withdrawalsData, isLoading: withdrawalsLoading } = useQuery(
         ['allWithdrawals'],
-        () => withdrawalService.getAllWithdrawals(token),
+        () => adminService.getAllWithdrawals(token),
         { enabled: !!token }
     );
 
@@ -128,7 +128,7 @@ export default function Withdrawals() {
     const handleApprove = async (withdrawalId) => {
         setProcessingWithdrawals(prev => new Set(prev).add(withdrawalId));
         try {
-            await withdrawalService.updateWithdrawalStatus(withdrawalId, 'approved', token);
+            await adminService.updateWithdrawalStatus(withdrawalId, 'approved', token);
             toast.success(t('adminWithdrawals.approvedSuccess') || 'Withdrawal approved successfully', ToastOptions("success"));
             queryClient.invalidateQueries(['allWithdrawals']);
             // Optimistic update
@@ -158,7 +158,7 @@ export default function Withdrawals() {
     const handleReject = async (withdrawalId) => {
         setProcessingWithdrawals(prev => new Set(prev).add(withdrawalId));
         try {
-            await withdrawalService.updateWithdrawalStatus(withdrawalId, 'rejected', token);
+            await adminService.updateWithdrawalStatus(withdrawalId, 'rejected', token);
             toast.success(t('adminWithdrawals.rejectedSuccess') || 'Withdrawal rejected successfully', ToastOptions("success"));
             queryClient.invalidateQueries(['allWithdrawals']);
             // Optimistic update
