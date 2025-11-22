@@ -329,7 +329,21 @@
     "confirmDeleteImage": "Are you sure you want to delete your profile image? This action cannot be undone.",
     "delete": "Delete",
     "errorLoading": "Error loading profile data. Please try again later.",
-    "noData": "No profile data available."
+    "noData": "No profile data available.",
+    "userAnalytics": "User Analytics",
+    "analytics": {
+      "totalFiles": "Total Files",
+      "totalViews": "Total Views",
+      "totalDownloads": "Total Downloads",
+      "totalShares": "Total Shares",
+      "totalFolders": "Total Folders",
+      "storageUsed": "Storage Used",
+      "loading": "Loading analytics...",
+      "noData": "No analytics data available",
+      "detailedView": "Detailed View",
+      "metric": "Metric",
+      "value": "Value"
+    }
   },
   "earning": {
     "analyticsDashboard": "Analytics Dashboard",

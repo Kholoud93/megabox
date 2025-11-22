@@ -532,76 +532,237 @@ export default function Profile() {
             </motion.div>
 
             {/* User Analytics Section */}
-            {userAnalytics && (
-                <motion.div
-                    className="container mx-auto px-3 sm:px-4 md:px-5 lg:px-6 xl:px-8 py-3 sm:py-4 md:py-5 lg:py-6 xl:py-8 mb-20"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                >
-                    <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg border-2 border-indigo-100">
-                        <div className="p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8">
-                            <motion.div
-                                className={`uppercase tracking-wide text-xs sm:text-sm text-indigo-600 font-semibold flex items-center gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-6 ${language === 'ar' ? 'justify-end' : 'justify-start'}`}
-                                style={{ textAlign: language === 'ar' ? 'right' : 'left' }}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.4 }}
-                            >
-                                {t('profile.userAnalytics') || 'User Analytics'}
-                                <svg className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                </svg>
-                            </motion.div>
+            <motion.div
+                className="container mx-auto px-3 sm:px-4 md:px-5 lg:px-6 xl:px-8 py-3 sm:py-4 md:py-5 lg:py-6 xl:py-8 mb-20"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+            >
+                <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg border-2 border-indigo-100">
+                    <div className="p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8">
+                        <motion.div
+                            className={`uppercase tracking-wide text-xs sm:text-sm text-indigo-600 font-semibold flex items-center gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-6 ${language === 'ar' ? 'justify-end' : 'justify-start'}`}
+                            style={{ textAlign: language === 'ar' ? 'right' : 'left' }}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.4 }}
+                        >
+                            {t('profile.userAnalytics')}
+                            <svg className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                        </motion.div>
 
-                            {analyticsLoading ? (
-                                <div className="flex justify-center items-center py-8">
-                                    <AiOutlineLoading3Quarters className="animate-spin text-indigo-600 text-2xl" />
+                        {analyticsLoading ? (
+                            <div className="flex justify-center items-center py-12">
+                                <div className="flex flex-col items-center gap-3">
+                                    <AiOutlineLoading3Quarters className="animate-spin text-indigo-600 text-3xl" />
+                                    <p className="text-sm text-indigo-600">{t('profile.analytics.loading')}</p>
                                 </div>
-                            ) : userAnalytics ? (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-5">
-                                    {userAnalytics.totalFiles !== undefined && (
-                                        <div className="bg-indigo-50 border-2 border-indigo-100 rounded-lg p-3 sm:p-4">
-                                            <p className="text-xs sm:text-sm text-indigo-600 font-medium mb-1">{t('profile.analytics.totalFiles') || 'Total Files'}</p>
-                                            <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-900">{userAnalytics.totalFiles || 0}</p>
+                            </div>
+                        ) : (
+                            <>
+                                {/* Analytics Cards Grid */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-5 mb-6">
+                                    {/* Total Files Card */}
+                                    <motion.div
+                                        className="bg-gradient-to-br from-indigo-50 to-indigo-100 border-2 border-indigo-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow"
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: 0.5 }}
+                                    >
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="bg-indigo-500 rounded-lg p-2">
+                                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                            </div>
                                         </div>
-                                    )}
-                                    {userAnalytics.totalViews !== undefined && (
-                                        <div className="bg-indigo-50 border-2 border-indigo-100 rounded-lg p-3 sm:p-4">
-                                            <p className="text-xs sm:text-sm text-indigo-600 font-medium mb-1">{t('profile.analytics.totalViews') || 'Total Views'}</p>
-                                            <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-900">{userAnalytics.totalViews || 0}</p>
+                                        <p className="text-xs sm:text-sm text-indigo-600 font-medium mb-2">{t('profile.analytics.totalFiles')}</p>
+                                        <p className="text-2xl sm:text-3xl font-bold text-indigo-900">
+                                            {userAnalytics?.totalFiles ?? 0}
+                                        </p>
+                                    </motion.div>
+
+                                    {/* Total Views Card */}
+                                    <motion.div
+                                        className="bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow"
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: 0.6 }}
+                                    >
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="bg-blue-500 rounded-lg p-2">
+                                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                            </div>
                                         </div>
-                                    )}
-                                    {userAnalytics.totalDownloads !== undefined && (
-                                        <div className="bg-indigo-50 border-2 border-indigo-100 rounded-lg p-3 sm:p-4">
-                                            <p className="text-xs sm:text-sm text-indigo-600 font-medium mb-1">{t('profile.analytics.totalDownloads') || 'Total Downloads'}</p>
-                                            <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-900">{userAnalytics.totalDownloads || 0}</p>
+                                        <p className="text-xs sm:text-sm text-blue-600 font-medium mb-2">{t('profile.analytics.totalViews')}</p>
+                                        <p className="text-2xl sm:text-3xl font-bold text-blue-900">
+                                            {userAnalytics?.totalViews ?? 0}
+                                        </p>
+                                    </motion.div>
+
+                                    {/* Total Downloads Card */}
+                                    <motion.div
+                                        className="bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow"
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: 0.7 }}
+                                    >
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="bg-green-500 rounded-lg p-2">
+                                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                </svg>
+                                            </div>
                                         </div>
-                                    )}
-                                    {userAnalytics.totalShares !== undefined && (
-                                        <div className="bg-indigo-50 border-2 border-indigo-100 rounded-lg p-3 sm:p-4">
-                                            <p className="text-xs sm:text-sm text-indigo-600 font-medium mb-1">{t('profile.analytics.totalShares') || 'Total Shares'}</p>
-                                            <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-900">{userAnalytics.totalShares || 0}</p>
+                                        <p className="text-xs sm:text-sm text-green-600 font-medium mb-2">{t('profile.analytics.totalDownloads')}</p>
+                                        <p className="text-2xl sm:text-3xl font-bold text-green-900">
+                                            {userAnalytics?.totalDownloads ?? 0}
+                                        </p>
+                                    </motion.div>
+
+                                    {/* Total Shares Card */}
+                                    <motion.div
+                                        className="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow"
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: 0.8 }}
+                                    >
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="bg-purple-500 rounded-lg p-2">
+                                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                                </svg>
+                                            </div>
                                         </div>
-                                    )}
-                                    {userAnalytics.totalFolders !== undefined && (
-                                        <div className="bg-indigo-50 border-2 border-indigo-100 rounded-lg p-3 sm:p-4">
-                                            <p className="text-xs sm:text-sm text-indigo-600 font-medium mb-1">{t('profile.analytics.totalFolders') || 'Total Folders'}</p>
-                                            <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-900">{userAnalytics.totalFolders || 0}</p>
+                                        <p className="text-xs sm:text-sm text-purple-600 font-medium mb-2">{t('profile.analytics.totalShares')}</p>
+                                        <p className="text-2xl sm:text-3xl font-bold text-purple-900">
+                                            {userAnalytics?.totalShares ?? 0}
+                                        </p>
+                                    </motion.div>
+
+                                    {/* Total Folders Card */}
+                                    <motion.div
+                                        className="bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow"
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: 0.9 }}
+                                    >
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="bg-orange-500 rounded-lg p-2">
+                                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                                </svg>
+                                            </div>
                                         </div>
-                                    )}
-                                    {userAnalytics.totalStorageUsed !== undefined && (
-                                        <div className="bg-indigo-50 border-2 border-indigo-100 rounded-lg p-3 sm:p-4">
-                                            <p className="text-xs sm:text-sm text-indigo-600 font-medium mb-1">{t('profile.analytics.storageUsed') || 'Storage Used'}</p>
-                                            <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-900">{userAnalytics.totalStorageUsed || 0} GB</p>
+                                        <p className="text-xs sm:text-sm text-orange-600 font-medium mb-2">{t('profile.analytics.totalFolders')}</p>
+                                        <p className="text-2xl sm:text-3xl font-bold text-orange-900">
+                                            {userAnalytics?.totalFolders ?? 0}
+                                        </p>
+                                    </motion.div>
+
+                                    {/* Storage Used Card */}
+                                    <motion.div
+                                        className="bg-gradient-to-br from-pink-50 to-pink-100 border-2 border-pink-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow"
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: 1.0 }}
+                                    >
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="bg-pink-500 rounded-lg p-2">
+                                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                                                </svg>
+                                            </div>
                                         </div>
-                                    )}
+                                        <p className="text-xs sm:text-sm text-pink-600 font-medium mb-2">{t('profile.analytics.storageUsed')}</p>
+                                        <p className="text-2xl sm:text-3xl font-bold text-pink-900">
+                                            {userAnalytics?.storageUsedGB ?? userAnalytics?.totalStorageUsed ?? 0} GB
+                                        </p>
+                                    </motion.div>
                                 </div>
-                            ) : null}
-                        </div>
+
+                                {/* Analytics Table (Optional - for detailed view) */}
+                                <div className="mt-6 overflow-x-auto">
+                                    <div className="bg-indigo-50 rounded-lg border-2 border-indigo-100 p-4">
+                                        <h3 className={`text-sm sm:text-base font-semibold text-indigo-900 mb-4 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                            {t('profile.analytics.totalFiles')} - {t('profile.analytics.detailedView') || 'Detailed View'}
+                                        </h3>
+                                        <div className="bg-white rounded-lg overflow-hidden">
+                                            <table className="w-full text-sm">
+                                                <thead className="bg-indigo-100">
+                                                    <tr>
+                                                        <th className={`px-4 py-3 text-xs sm:text-sm font-semibold text-indigo-900 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                            {t('profile.analytics.metric') || 'Metric'}
+                                                        </th>
+                                                        <th className={`px-4 py-3 text-xs sm:text-sm font-semibold text-indigo-900 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                            {t('profile.analytics.value') || 'Value'}
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-indigo-100">
+                                                    <tr className="hover:bg-indigo-50 transition-colors">
+                                                        <td className={`px-4 py-3 text-indigo-700 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                            {t('profile.analytics.totalFiles')}
+                                                        </td>
+                                                        <td className={`px-4 py-3 font-semibold text-indigo-900 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                            {userAnalytics?.totalFiles ?? 0}
+                                                        </td>
+                                                    </tr>
+                                                    <tr className="hover:bg-indigo-50 transition-colors">
+                                                        <td className={`px-4 py-3 text-indigo-700 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                            {t('profile.analytics.totalViews')}
+                                                        </td>
+                                                        <td className={`px-4 py-3 font-semibold text-indigo-900 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                            {userAnalytics?.totalViews ?? 0}
+                                                        </td>
+                                                    </tr>
+                                                    <tr className="hover:bg-indigo-50 transition-colors">
+                                                        <td className={`px-4 py-3 text-indigo-700 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                            {t('profile.analytics.totalDownloads')}
+                                                        </td>
+                                                        <td className={`px-4 py-3 font-semibold text-indigo-900 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                            {userAnalytics?.totalDownloads ?? 0}
+                                                        </td>
+                                                    </tr>
+                                                    <tr className="hover:bg-indigo-50 transition-colors">
+                                                        <td className={`px-4 py-3 text-indigo-700 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                            {t('profile.analytics.totalShares')}
+                                                        </td>
+                                                        <td className={`px-4 py-3 font-semibold text-indigo-900 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                            {userAnalytics?.totalShares ?? 0}
+                                                        </td>
+                                                    </tr>
+                                                    <tr className="hover:bg-indigo-50 transition-colors">
+                                                        <td className={`px-4 py-3 text-indigo-700 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                            {t('profile.analytics.totalFolders')}
+                                                        </td>
+                                                        <td className={`px-4 py-3 font-semibold text-indigo-900 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                            {userAnalytics?.totalFolders ?? 0}
+                                                        </td>
+                                                    </tr>
+                                                    <tr className="hover:bg-indigo-50 transition-colors">
+                                                        <td className={`px-4 py-3 text-indigo-700 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                            {t('profile.analytics.storageUsed')}
+                                                        </td>
+                                                        <td className={`px-4 py-3 font-semibold text-indigo-900 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
+                                                            {userAnalytics?.storageUsedGB ?? userAnalytics?.totalStorageUsed ?? 0} GB
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </div>
-                </motion.div>
-            )}
+                </div>
+            </motion.div>
 
             {/* Delete Confirmation Modal */}
             <AnimatePresence>
