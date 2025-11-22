@@ -6,7 +6,7 @@
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
-    z-index: 9999;
+    z-index: 10000000 !important; // Higher than header (9999999)
     display: flex;
     justify-content: center;
     align-items: center;
