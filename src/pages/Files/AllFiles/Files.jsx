@@ -17,7 +17,7 @@ import Represents from '../../../components/Represents/Represents';
 import ChangeName from '../../../components/ChangeName/ChangeName';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
-import { fileService, userService } from '../../../services/api';
+import { fileService, userService, notificationService } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 import ShareLinkModal from '../../../components/ShareLinkModal/ShareLinkModal';
 import { useNavigate, Link } from 'react-router-dom';
@@ -148,12 +148,20 @@ export default function Files() {
     
     const isPromoter = userData?.isPromoter === "true" || userData?.isPromoter === true;
     
-    const Logout = () => {
+    const Logout = async () => {
+        // Delete FCM token before logout
+        try {
+            await notificationService.deleteFcmToken(Token.MegaBox);
+        } catch (error) {
+            // Silently fail - token deletion is optional
+            console.warn('Failed to delete FCM token:', error);
+        }
+        
         removeToken("MegaBox", {
             path: '/',
         });
         setUserRole(null);
-        navigate('/Login');
+        navigate('/login');
     };
     
     const toggleLanguage = (e) => {

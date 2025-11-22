@@ -5,7 +5,8 @@ import { useCookies } from 'react-cookie';
 import { ToastOptions } from '../../helpers/ToastOptions';
 import './Auth.scss';
 import GoogleIcon from './GoogleIcon';
-import { API_URL } from '../../services/api';
+import { API_URL, notificationService } from '../../services/api';
+import { getFCMToken } from '../../utils/fcmToken';
 
 // Google OAuth Client ID - can be moved to environment variable
 // Web application client ID (correctly configured)
@@ -38,6 +39,20 @@ const GoogleLoginButton = ({ SignUp }) => {
                     sameSite: 'Lax',
                     maxAge: 7 * 24 * 60 * 60,
                 });
+
+                // Save FCM token for push notifications (if available)
+                try {
+                    const fcmToken = await getFCMToken();
+                    if (fcmToken && data?.data?.checkUser?._id) {
+                        await notificationService.saveFcmToken(
+                            data.data.checkUser._id,
+                            fcmToken
+                        );
+                    }
+                } catch (error) {
+                    // Silently fail - FCM token is optional
+                    console.warn('Failed to save FCM token:', error);
+                }
 
                 toast.success("Successfully logged in with Google!", ToastOptions("success"));
 

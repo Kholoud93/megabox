@@ -24,7 +24,7 @@ import { useCookies } from 'react-cookie'
 import { jwtDecode } from 'jwt-decode'
 import LandingLayout from './pages/LandingLayout'
 
-import VedioPreview from './pages/VedioPreview/VedioPreview'
+import VideoPreview from './pages/VideoPreview/VideoPreview'
 import Earning from './pages/Earning/Earning'
 import Promoters from './pages/OwnerPages/Promoters/Promoters'
 import PromotersEarning from './pages/Earning/PromotersEarning'
@@ -97,7 +97,7 @@ const router = createBrowserRouter(
         }
       ]
     }, {
-      path: "share/:VedioId", element: <VedioPreview />
+      path: "share/:VideoId", element: <VideoPreview />
     },
     {
       path: "/login",
@@ -215,7 +215,7 @@ const router = createBrowserRouter(
                 }
               }}
               onResend={async () => {
-
+                await auth.sendResetCode(auth.tempEmail);
               }}
               loading={auth.loading}
               error={auth.error}

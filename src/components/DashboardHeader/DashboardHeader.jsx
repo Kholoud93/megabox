@@ -4,13 +4,13 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { useCookies } from 'react-cookie';
 import { useQuery } from 'react-query';
-import { userService } from '../../services/api';
+import { userService, notificationService } from '../../services/api';
 import { HiUserCircle, HiArrowRightOnRectangle, HiUserGroup, HiCurrencyDollar, HiBell } from 'react-icons/hi2';
 import { FiGlobe } from 'react-icons/fi';
 import { FaUser } from 'react-icons/fa';
 import './DashboardHeader.scss';
 
-export default function DashboardHeader({ onUploadClick, onDownloadClick }) {
+export default function DashboardHeader() {
     const { t, language, changeLanguage } = useLanguage();
     const navigate = useNavigate();
     const location = useLocation();
@@ -103,12 +103,20 @@ export default function DashboardHeader({ onUploadClick, onDownloadClick }) {
     const isPromoter = userData?.isPromoter === "true" || userData?.isPromoter === true;
     const isOwner = location.pathname.startsWith('/Owner');
     
-    const Logout = () => {
+    const Logout = async () => {
+        // Delete FCM token before logout
+        try {
+            await notificationService.deleteFcmToken(Token.MegaBox);
+        } catch (error) {
+            // Silently fail - token deletion is optional
+            console.warn('Failed to delete FCM token:', error);
+        }
+        
         removeToken("MegaBox", {
             path: '/',
         });
         setUserRole(null);
-        navigate('/Login');
+        navigate('/login');
     };
     
     const toggleLanguage = (e) => {

@@ -139,6 +139,19 @@ export const authService = {
         } catch (error) {
             throw error.response?.data || error.message;
         }
+    },
+
+    getUserAnalytics: async (token) => {
+        try {
+            const response = await api.get('/auth/getUserAnalytics', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
     }
 };
 

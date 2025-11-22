@@ -1,10 +1,10 @@
 @use '../../helpers/functions' as *;
 
-.VedioPreviewLayout {
+.VideoPreviewLayout {
     background-color: whitesmoke;
 
-    .VedioPreview_main {
-        .VedioPreview {
+    .VideoPreview_main {
+        .VideoPreview {
             // background-color: white;
             height: 600px;
             margin-top: 20px;
@@ -15,11 +15,11 @@
         color: $BaseColor;
     }
 
-    .VedioPreview_main_sec2 {
+    .VideoPreview_main_sec2 {
         background-color: white;
     }
 
-    .VedioPreview_buttons {
+    .VideoPreview_buttons {
         padding: 20px;
         background-color: white;
 
@@ -75,3 +75,4 @@
         height: 100%;
     }
 }
+

@@ -3,10 +3,6 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { motion } from "framer-motion";
 import "./Auth.scss";
-import axios from "axios";
-import { API_URL } from "../../services/api";
-import { toast } from "react-toastify";
-import { ToastOptions } from "../../helpers/ToastOptions";
 
 const ConfirmEmail = ({ email, onConfirm, onResend, loading, error }) => {
   const initialValues = { code: "" };
@@ -28,20 +24,8 @@ const ConfirmEmail = ({ email, onConfirm, onResend, loading, error }) => {
   };
 
   const resendOtp = async () => {
-    try {
-      const { data } = await axios.post(`${API_URL}/auth/resendOTP`, {
-        email: email
-      });
-
-      console.log(data);
-
-      if (data?.message === "✅ تم إعادة إرسال رمز التحقق بنجاح!")
-        toast.success("Otp code Resended successfully", ToastOptions("success"))
-
-      return data;
-    } catch (err) {
-      console.log(err);
-      return err
+    if (onResend) {
+      await onResend();
     }
   }
 

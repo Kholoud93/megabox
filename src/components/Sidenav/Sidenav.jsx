@@ -163,12 +163,20 @@ export default function Sidenav({ role }) {
     // Filter files that are not in any folder
     const filesNotInFolders = filesData?.files?.filter(file => !file.folderId && !file.folder) || [];
 
-    const Logout = () => {
+    const Logout = async () => {
+        // Delete FCM token before logout
+        try {
+            await notificationService.deleteFcmToken(Token.MegaBox);
+        } catch (error) {
+            // Silently fail - token deletion is optional
+            console.warn('Failed to delete FCM token:', error);
+        }
+        
         removeToken("MegaBox", {
             path: '/',
         })
         setUserRole(null)
-        navigate('/Login')
+        navigate('/login')
     }
 
     const toggleLanguage = (e) => {

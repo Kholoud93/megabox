@@ -1,14 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { API_URL, userService, fileService } from '../../services/api';
-import { useNavigate } from 'react-router-dom';
+import { API_URL, userService, fileService, authService } from '../../services/api';
 import { toast } from 'react-toastify';
 import { FaCamera, FaEdit, FaSave, FaTimes, FaCrown, FaUser, FaTrash } from 'react-icons/fa';
 import { ToastOptions } from '../../helpers/ToastOptions';
 import './Profile.scss';
 import { useCookies } from 'react-cookie';
-import axios from 'axios';
 import { StoragePrecentage } from '../../helpers/GetStoragePercentage';
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useLanguage } from '../../context/LanguageContext';
@@ -22,7 +21,6 @@ export default function Profile() {
     const queryClient = useQueryClient();
     const [Token] = useCookies(['MegaBox']);
     const { t, language } = useLanguage();
-    const navigate = useNavigate();
     const premiumFileInputRef = useRef(null);
 
     const GetUserStorage = async () => {
@@ -32,6 +30,24 @@ export default function Profile() {
 
     const { data: userStorage, isLoading: StorageLoading } = useQuery("Get user storage", GetUserStorage, {
         cacheTime: 3000000
+    })
+
+    // Get user analytics
+    const GetUserAnalytics = async () => {
+        if (!Token.MegaBox) return null;
+        try {
+            const response = await authService.getUserAnalytics(Token.MegaBox);
+            return response?.data || response;
+        } catch (error) {
+            console.error('Error fetching user analytics:', error);
+            return null;
+        }
+    }
+
+    const { data: userAnalytics, isLoading: analyticsLoading } = useQuery('userAnalytics', GetUserAnalytics, {
+        enabled: !!Token.MegaBox,
+        cacheTime: 300000,
+        retry: 1
     })
 
     // Fetch user data
@@ -100,11 +116,25 @@ export default function Profile() {
     const subscribeToPremiumMutation = useMutation(
         (file) => userService.subscribeToPremium(file, Token.MegaBox),
         {
-            onSuccess: () => {
+            onSuccess: (response) => {
                 queryClient.invalidateQueries('userProfile');
-                toast.success(t('profile.premiumSubscribed') || 'Premium subscription successful!', ToastOptions('success'));
+                // Reset file input after successful upload
+                if (premiumFileInputRef.current) {
+                    premiumFileInputRef.current.value = '';
+                }
+                // Check if subscription is pending approval
+                const isPending = response?.data?.premiumPending || response?.premiumPending || response?.status === 'pending';
+                if (isPending) {
+                    toast.success(t('profile.premiumPendingApproval') || 'Your premium subscription request has been submitted and is pending approval. We will review your payment proof shortly.', ToastOptions('success'));
+                } else {
+                    toast.success(t('profile.premiumSubscribed') || 'Premium subscription successful!', ToastOptions('success'));
+                }
             },
             onError: (error) => {
+                // Reset file input on error too
+                if (premiumFileInputRef.current) {
+                    premiumFileInputRef.current.value = '';
+                }
                 toast.error(error.message || t('profile.premiumSubscribeFailed') || 'Failed to subscribe to premium', ToastOptions('error'));
             }
         }
@@ -113,9 +143,20 @@ export default function Profile() {
     const handlePremiumSubscribe = (event) => {
         const file = event.target.files[0];
         if (file) {
+            // Validate file size (optional - adjust limit as needed)
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            if (file.size > maxSize) {
+                toast.error(t('profile.fileTooLarge') || 'File size is too large. Maximum size is 10MB.', ToastOptions('error'));
+                event.target.value = ''; // Reset input
+                return;
+            }
             subscribeToPremiumMutation.mutate(file);
+        } else {
+            // Reset input if no file selected
+            event.target.value = '';
         }
     };
+
 
 
     const handleImageChange = (event) => {
@@ -157,7 +198,7 @@ export default function Profile() {
     }
 
     return (
-        <div className="Profile min-h-screen bg-indigo-50" dir={language === 'ar' ? 'rtl' : 'ltr'} style={{ fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+        <div className="Profile min-h-screen bg-indigo-50 pb-32" dir={language === 'ar' ? 'rtl' : 'ltr'} style={{ fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" }}>
             <motion.div
                 className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8"
                 initial={{ opacity: 0, y: 20 }}
@@ -350,20 +391,45 @@ export default function Profile() {
                                     <div className="bg-indigo-50 border-2 border-indigo-100 p-2.5 sm:p-3 md:p-4 rounded-lg">
                                         <p className="text-xs sm:text-sm text-indigo-600 font-medium">{t('profile.accountType')}</p>
                                         <div className="flex items-center justify-between mt-1">
-                                            <p className={`text-xs sm:text-sm md:text-base font-semibold ${userData.isBrimume ? 'text-yellow-600' : 'text-indigo-700'}`}>
-                                                {userData.isBrimume ? t('profile.premium') : t('profile.standard')}
-                                            </p>
-                                            {!userData.isBrimume && (
-                                                <motion.button
-                                                    onClick={() => premiumFileInputRef.current?.click()}
-                                                    disabled={subscribeToPremiumMutation.isLoading}
-                                                    className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs bg-yellow-500 hover:bg-yellow-600 text-white rounded-md font-medium transition-colors flex items-center gap-0.5 sm:gap-1 flex-shrink-0"
-                                                    whileHover={{ scale: 1.05 }}
-                                                    whileTap={{ scale: 0.95 }}
-                                                >
-                                                    <FaCrown className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" />
-                                                    <span className="whitespace-normal">{subscribeToPremiumMutation.isLoading ? t('common.loading') || 'Loading...' : t('profile.upgradeToPremium') || 'Upgrade'}</span>
-                                                </motion.button>
+                                            <div className="flex flex-col">
+                                                <p className={`text-xs sm:text-sm md:text-base font-semibold ${userData.isBrimume ? 'text-yellow-600' : userData.premiumPending ? 'text-orange-600' : 'text-indigo-700'}`}>
+                                                    {userData.isBrimume ? t('profile.premium') : userData.premiumPending ? (t('profile.premiumPending') || 'Pending Approval') : t('profile.standard')}
+                                                </p>
+                                                {userData.premiumPending && (
+                                                    <p className="text-[8px] sm:text-[9px] text-orange-500 mt-0.5">
+                                                        {t('profile.waitingForApproval') || 'Waiting for admin approval'}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            {!userData.isBrimume && !userData.premiumPending && (
+                                                <div className="flex flex-col items-end gap-1">
+                                                    <motion.button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            if (premiumFileInputRef.current) {
+                                                                premiumFileInputRef.current.click();
+                                                            }
+                                                        }}
+                                                        disabled={subscribeToPremiumMutation.isLoading}
+                                                        className="px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs bg-yellow-500 hover:bg-yellow-600 disabled:bg-yellow-400 disabled:cursor-not-allowed text-white rounded-md font-medium transition-colors flex items-center gap-1 sm:gap-1.5"
+                                                        whileHover={{ scale: subscribeToPremiumMutation.isLoading ? 1 : 1.05 }}
+                                                        whileTap={{ scale: subscribeToPremiumMutation.isLoading ? 1 : 0.95 }}
+                                                    >
+                                                        <FaCrown className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" />
+                                                        <span className="whitespace-normal">
+                                                            {subscribeToPremiumMutation.isLoading ? (t('common.loading') || 'Loading...') : (t('profile.subscribeToPremium') || 'Subscribe to Premium')}
+                                                        </span>
+                                                    </motion.button>
+                                                    <p className="text-[8px] sm:text-[9px] text-gray-500 text-right max-w-[100px] sm:max-w-none">
+                                                        {t('profile.uploadFileToSubscribe') || 'Upload file to subscribe'}
+                                                    </p>
+                                                </div>
+                                            )}
+                                            {userData.premiumPending && (
+                                                <div className="flex items-center gap-1 text-orange-500">
+                                                    <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-2 border-orange-500 border-t-transparent"></div>
+                                                    <span className="text-[8px] sm:text-[9px]">{t('profile.pending') || 'Pending'}</span>
+                                                </div>
                                             )}
                                         </div>
                                     </div>
@@ -371,8 +437,9 @@ export default function Profile() {
                                         type="file"
                                         ref={premiumFileInputRef}
                                         className="hidden"
-                                        accept="*/*"
+                                        accept="image/*"
                                         onChange={handlePremiumSubscribe}
+                                        disabled={subscribeToPremiumMutation.isLoading}
                                     />
                                 </div>
                             </div>
@@ -463,6 +530,78 @@ export default function Profile() {
                     </div>
                 </div>
             </motion.div>
+
+            {/* User Analytics Section */}
+            {userAnalytics && (
+                <motion.div
+                    className="container mx-auto px-3 sm:px-4 md:px-5 lg:px-6 xl:px-8 py-3 sm:py-4 md:py-5 lg:py-6 xl:py-8 mb-20"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                >
+                    <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg border-2 border-indigo-100">
+                        <div className="p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8">
+                            <motion.div
+                                className={`uppercase tracking-wide text-xs sm:text-sm text-indigo-600 font-semibold flex items-center gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-6 ${language === 'ar' ? 'justify-end' : 'justify-start'}`}
+                                style={{ textAlign: language === 'ar' ? 'right' : 'left' }}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.4 }}
+                            >
+                                {t('profile.userAnalytics') || 'User Analytics'}
+                                <svg className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                            </motion.div>
+
+                            {analyticsLoading ? (
+                                <div className="flex justify-center items-center py-8">
+                                    <AiOutlineLoading3Quarters className="animate-spin text-indigo-600 text-2xl" />
+                                </div>
+                            ) : userAnalytics ? (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-5">
+                                    {userAnalytics.totalFiles !== undefined && (
+                                        <div className="bg-indigo-50 border-2 border-indigo-100 rounded-lg p-3 sm:p-4">
+                                            <p className="text-xs sm:text-sm text-indigo-600 font-medium mb-1">{t('profile.analytics.totalFiles') || 'Total Files'}</p>
+                                            <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-900">{userAnalytics.totalFiles || 0}</p>
+                                        </div>
+                                    )}
+                                    {userAnalytics.totalViews !== undefined && (
+                                        <div className="bg-indigo-50 border-2 border-indigo-100 rounded-lg p-3 sm:p-4">
+                                            <p className="text-xs sm:text-sm text-indigo-600 font-medium mb-1">{t('profile.analytics.totalViews') || 'Total Views'}</p>
+                                            <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-900">{userAnalytics.totalViews || 0}</p>
+                                        </div>
+                                    )}
+                                    {userAnalytics.totalDownloads !== undefined && (
+                                        <div className="bg-indigo-50 border-2 border-indigo-100 rounded-lg p-3 sm:p-4">
+                                            <p className="text-xs sm:text-sm text-indigo-600 font-medium mb-1">{t('profile.analytics.totalDownloads') || 'Total Downloads'}</p>
+                                            <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-900">{userAnalytics.totalDownloads || 0}</p>
+                                        </div>
+                                    )}
+                                    {userAnalytics.totalShares !== undefined && (
+                                        <div className="bg-indigo-50 border-2 border-indigo-100 rounded-lg p-3 sm:p-4">
+                                            <p className="text-xs sm:text-sm text-indigo-600 font-medium mb-1">{t('profile.analytics.totalShares') || 'Total Shares'}</p>
+                                            <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-900">{userAnalytics.totalShares || 0}</p>
+                                        </div>
+                                    )}
+                                    {userAnalytics.totalFolders !== undefined && (
+                                        <div className="bg-indigo-50 border-2 border-indigo-100 rounded-lg p-3 sm:p-4">
+                                            <p className="text-xs sm:text-sm text-indigo-600 font-medium mb-1">{t('profile.analytics.totalFolders') || 'Total Folders'}</p>
+                                            <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-900">{userAnalytics.totalFolders || 0}</p>
+                                        </div>
+                                    )}
+                                    {userAnalytics.totalStorageUsed !== undefined && (
+                                        <div className="bg-indigo-50 border-2 border-indigo-100 rounded-lg p-3 sm:p-4">
+                                            <p className="text-xs sm:text-sm text-indigo-600 font-medium mb-1">{t('profile.analytics.storageUsed') || 'Storage Used'}</p>
+                                            <p className="text-lg sm:text-xl md:text-2xl font-bold text-indigo-900">{userAnalytics.totalStorageUsed || 0} GB</p>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : null}
+                        </div>
+                    </div>
+                </motion.div>
+            )}
 
             {/* Delete Confirmation Modal */}
             <AnimatePresence>

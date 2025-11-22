@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
-import { authService, fileService } from '../services/api';
+import { authService, fileService, notificationService } from '../services/api';
 import { useCookies } from 'react-cookie';
+import { getFCMToken } from '../utils/fcmToken';
 
 const AuthContext = createContext(null);
 
@@ -30,6 +31,20 @@ export const AuthProvider = ({ children }) => {
         console.log(response?.data?.checkUser);
         setUserRole(response?.data?.checkUser?.role);
         setUserRefLink(response?.data?.checkUser?.referralLink);
+        
+        // Save FCM token for push notifications (if available)
+        try {
+          const fcmToken = await getFCMToken();
+          if (fcmToken && response?.data?.checkUser?._id) {
+            await notificationService.saveFcmToken(
+              response.data.checkUser._id,
+              fcmToken
+            );
+          }
+        } catch (error) {
+          // Silently fail - FCM token is optional
+          console.warn('Failed to save FCM token:', error);
+        }
       }
 
       setLoading(false);
