@@ -22,6 +22,11 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
 
     const getMenuItems = () => {
         if (role === "User") {
+            // Hide bottom navigation for regular users (non-promoters)
+            if (!isPromoter) {
+                return [];
+            }
+
             if (isPromoter && (userData?.Downloadsplan === "true" || userData?.Downloadsplan === true || userData?.watchingplan === "true" || userData?.watchingplan === true)) {
                 return [
                     {
@@ -138,6 +143,11 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
     };
 
     const menuItems = getMenuItems();
+
+    // Don't render bottom navigation if there are no menu items
+    if (menuItems.length === 0) {
+        return null;
+    }
 
     const isPathActive = (itemPath, currentPathname, allMenuItems) => {
         const normalizedPathname = currentPathname.endsWith('/') ? currentPathname.slice(0, -1) : currentPathname;
