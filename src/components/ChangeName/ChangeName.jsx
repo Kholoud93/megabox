@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
 import { PreventFunction } from '../../helpers/Prevent';
 import { HiArrowPath } from 'react-icons/hi2';
 import axios from 'axios';
-import { API_URL } from '../../services/api';
+import { API_URL, userService } from '../../services/api';
 
 export default function ChangeName({ oldFileName, Toggle, FileId, refetch, isFolder = false }) {
 
@@ -33,17 +33,9 @@ export default function ChangeName({ oldFileName, Toggle, FileId, refetch, isFol
             let ChangeNameResponse;
             
             if (isFolder) {
-                // Rename folder
-                const response = await axios.patch(
-                    `${API_URL}/user/updateFolderName/${FileId}`,
-                    { newFolderName: New_Name },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${MegaBox.MegaBox}`
-                        }
-                    }
-                );
-                ChangeNameResponse = response.data?.message?.includes('نجاح') || response.status === 200;
+                // Rename folder - API expects "name" not "newFolderName"
+                await userService.updateFolderName(FileId, New_Name, MegaBox.MegaBox);
+                ChangeNameResponse = true;
             } else {
                 // Rename file
                 ChangeNameResponse = await ChangeFileName(FileId, MegaBox.MegaBox, New_Name);

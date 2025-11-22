@@ -1,13 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Folder } from '../../../components/Folder/Folder'
 import File from '../../../components/File/File'
 import { HiOutlinePlus } from "react-icons/hi2";
 import { LuFolderPlus, LuFolder } from "react-icons/lu";
 import { HiViewGrid, HiViewList } from "react-icons/hi";
 import UploadFile from '../../../components/Upload/UploadFile/UploadFile';
+import UploadOptions from '../../../components/Upload/UploadOptions/UploadOptions';
+import UploadFromMegaBox from '../../../components/Upload/UploadFromMegaBox/UploadFromMegaBox';
 import { AnimatePresence } from 'framer-motion';
 import AddFolder from '../../../components/Upload/AddFolder/AddFolder';
-import axios from 'axios';
 import { API_URL } from '../../../services/api';
 import { useCookies } from 'react-cookie';
 import { useQuery, useQueryClient } from 'react-query';
@@ -19,28 +20,151 @@ import { ToastOptions } from '../../../helpers/ToastOptions';
 import { fileService, userService } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 import ShareLinkModal from '../../../components/ShareLinkModal/ShareLinkModal';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
+import { HiUserCircle, HiArrowRightOnRectangle, HiUserGroup, HiCurrencyDollar, HiArrowUp, HiArrowDown, HiBell, HiShare } from 'react-icons/hi2';
+import { FiGlobe } from 'react-icons/fi';
+import { FaUser } from 'react-icons/fa';
+import './Files.scss';
 
 export default function Files() {
-    const { t } = useLanguage();
+    const { t, language, changeLanguage } = useLanguage();
+    const navigate = useNavigate();
+    const { setUserRole } = useAuth();
+    const [Token, , removeToken] = useCookies(['MegaBox']);
+    const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+    const [profileImageError, setProfileImageError] = useState(false);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0, left: 0 });
+    const profileMenuRef = useRef(null);
+    const profileButtonRef = useRef(null);
+    const profileDropdownRef = useRef(null);
+    const touchStartedRef = useRef(false);
+    
+    useEffect(() => {
+        if (!profileMenuOpen) {
+            touchStartedRef.current = false;
+            return;
+        }
+
+        const handleClickOutside = (event) => {
+            if (touchStartedRef.current && event.type === 'click') {
+                touchStartedRef.current = false;
+                return;
+            }
+
+            if (
+                profileDropdownRef.current && 
+                !profileDropdownRef.current.contains(event.target) &&
+                profileButtonRef.current &&
+                !profileButtonRef.current.contains(event.target)
+            ) {
+                setProfileMenuOpen(false);
+                touchStartedRef.current = false;
+            }
+        };
+
+        const positionTimer = setTimeout(() => {
+            if (profileButtonRef.current) {
+                const rect = profileButtonRef.current.getBoundingClientRect();
+                const viewportHeight = window.innerHeight;
+                const viewportWidth = window.innerWidth;
+                const dropdownHeight = 250;
+                const dropdownWidth = 220;
+                
+                let top = rect.bottom + 8;
+                let right = viewportWidth - rect.right;
+                let left = rect.left;
+                
+                if (top + dropdownHeight > viewportHeight - 80) {
+                    top = rect.top - dropdownHeight - 8;
+                }
+                
+                if (language === 'ar') {
+                    if (left + dropdownWidth > viewportWidth - 16) {
+                        left = viewportWidth - dropdownWidth - 16;
+                    }
+                    if (left < 16) left = 16;
+                } else {
+                    if (right < 16) right = 16;
+                    if (right + dropdownWidth > viewportWidth) {
+                        right = viewportWidth - dropdownWidth - 16;
+                    }
+                }
+                
+                setDropdownPosition({
+                    top: Math.max(8, top),
+                    right: Math.max(8, right),
+                    left: Math.max(8, left)
+                });
+            }
+        }, 10);
+
+        document.addEventListener('click', handleClickOutside, true);
+        
+        return () => {
+            clearTimeout(positionTimer);
+            document.removeEventListener('click', handleClickOutside, true);
+        };
+    }, [profileMenuOpen, language]);
 
     const Active = "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
     const InActive = "inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-700 bg-white border border-indigo-300 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
 
     const [AddFileShow, setAddFileShow] = useState(false);
+    const [showUploadOptions, setShowUploadOptions] = useState(false);
+    const [showUploadFromMegaBox, setShowUploadFromMegaBox] = useState(false);
     const [AddFolderAdding, setAddFolderAdding] = useState(false);
-    const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
+    const [viewMode, setViewMode] = useState('grid');
     const [showShareModal, setShowShareModal] = useState(false);
     const [shareUrl, setShareUrl] = useState('');
     const [shareTitle, setShareTitle] = useState('');
+    const [selectedItems, setSelectedItems] = useState({ files: [], folders: [] });
+    const [isSelectionMode, setIsSelectionMode] = useState(false);
 
     const ToggleShowAddFile = () => setAddFileShow(!AddFileShow);
+    const ToggleUploadOptions = () => setShowUploadOptions(!showUploadOptions);
+    const ToggleUploadFromMegaBox = () => setShowUploadFromMegaBox(!showUploadFromMegaBox);
     const ToggleFolderAdding = () => setAddFolderAdding(!AddFolderAdding);
 
-    const [Token] = useCookies(['MegaBox']);
+    const handleSelectDesktop = () => {
+        setAddFileShow(true);
+    };
+
+    const handleSelectMegaBox = () => {
+        setShowUploadFromMegaBox(true);
+    };
+
     const [FilterKey, setFilterKey] = useState('All');
     const queryClient = useQueryClient();
+    
+    const { data: userData } = useQuery(
+        ['userAccount'],
+        () => userService.getUserInfo(Token.MegaBox),
+        {
+            enabled: !!Token.MegaBox,
+            retry: false
+        }
+    );
+    
+    const isPromoter = userData?.isPromoter === "true" || userData?.isPromoter === true;
+    
+    const Logout = () => {
+        removeToken("MegaBox", {
+            path: '/',
+        });
+        setUserRole(null);
+        navigate('/Login');
+    };
+    
+    const toggleLanguage = (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        const newLang = language === 'en' ? 'ar' : 'en';
+        changeLanguage(newLang);
+    };
 
-    // get files - using separate APIs for each group
     const GetFiles = async ({ queryKey }) => {
         const [, filterKey] = queryKey;
         const token = Token.MegaBox;
@@ -48,7 +172,6 @@ export default function Files() {
         try {
             let data;
 
-            // Use the appropriate API function based on filter
             switch (filterKey.toLowerCase()) {
                 case 'image':
                     data = await fileService.getImageFiles(token);
@@ -80,16 +203,8 @@ export default function Files() {
 
     const { data, refetch, isLoading: filesLoading } = useQuery(["GetUserFiles", FilterKey], GetFiles);
 
-    // get folders 
     const Getfolders = async () => {
-        const config = {
-            headers: {
-                Authorization: `Bearer ${Token.MegaBox}`,
-            },
-        };
-
-        const { data } = await axios.get(`${API_URL}/user/getUserFolders`, config);
-        return data;
+        return await userService.getUserFolders(Token.MegaBox);
     };
 
     const { data: folders, refetch: refFolders, isLoading: foldersLoading } = useQuery("GetUserFolders", Getfolders);
@@ -133,16 +248,10 @@ export default function Files() {
 
     const DeleteFolder = async (folderId) => {
         try {
-            const response = await axios.delete(`${API_URL}/user/deleteFolder/${folderId}`, {
-                headers: {
-                    Authorization: `Bearer ${Token.MegaBox}`
-                }
-            });
-            if (response.status === 200 || response.data?.message?.includes('نجاح')) {
-                toast.success(t("files.folderDeletedSuccess"), ToastOptions("success"));
-                refFolders();
-            }
-        } catch (error) {
+            await userService.deleteFolder(folderId, Token.MegaBox);
+            toast.success(t("files.folderDeletedSuccess"), ToastOptions("success"));
+            refFolders();
+        } catch {
             toast.error(t("files.folderDeleteFailed"), ToastOptions("error"));
         }
     }
@@ -152,7 +261,7 @@ export default function Files() {
             await userService.archiveFolder(folderId, Token.MegaBox);
             toast.success("Folder archived successfully", ToastOptions("success"));
             refFolders();
-        } catch (error) {
+        } catch {
             toast.error("Failed to archive folder", ToastOptions("error"));
         }
     }
@@ -160,16 +269,8 @@ export default function Files() {
     const ShareFile = async (id, isFolder = false) => {
         try {
             if (isFolder) {
-                // Share folder
-                const response = await axios.post(`${API_URL}/user/generateFolderShareLink`, {
-                    folderId: id
-                }, {
-                    headers: {
-                        'Authorization': `Bearer ${Token.MegaBox}`
-                    }
-                });
-                // Handle both shareUrl and shareLink properties
-                const link = response.data?.shareUrl || response.data?.shareLink;
+                const response = await userService.generateFolderShareLink(id, Token.MegaBox);
+                const link = response?.shareUrl || response?.shareLink;
                 if (link) {
                     setShareUrl(link);
                     setShareTitle("Share Folder");
@@ -178,15 +279,7 @@ export default function Files() {
                     toast.error("Failed to generate share link", ToastOptions("error"));
                 }
             } else {
-                // Share file
-                const response = await axios.post(`${API_URL}/auth/generateShareLink`, {
-                    fileId: id
-                }, {
-                    headers: {
-                        'Authorization': `Bearer ${Token.MegaBox}`
-                    }
-                });
-                // Handle both shareUrl and shareLink properties
+                const response = await fileService.generateShareLink(id, Token.MegaBox);
                 const link = response.data?.shareUrl || response.data?.shareLink || response.data?.data?.shareLink || response.data?.data?.shareUrl;
                 if (link) {
                     setShareUrl(link);
@@ -201,19 +294,73 @@ export default function Files() {
         }
     }
 
-    // Get archived files count separately
+    // Toggle selection mode
+    const toggleSelectionMode = () => {
+        setIsSelectionMode(!isSelectionMode);
+        if (isSelectionMode) {
+            setSelectedItems({ files: [], folders: [] });
+        }
+    }
+
+    // Toggle item selection
+    const toggleItemSelection = (id, isFolder = false) => {
+        if (isFolder) {
+            setSelectedItems(prev => ({
+                ...prev,
+                folders: prev.folders.includes(id)
+                    ? prev.folders.filter(fId => fId !== id)
+                    : [...prev.folders, id]
+            }));
+        } else {
+            setSelectedItems(prev => ({
+                ...prev,
+                files: prev.files.includes(id)
+                    ? prev.files.filter(fId => fId !== id)
+                    : [...prev.files, id]
+            }));
+        }
+    }
+
+    // Share multiple items
+    const shareMultipleItems = async () => {
+        if (selectedItems.files.length === 0 && selectedItems.folders.length === 0) {
+            toast.error("Please select at least one item to share", ToastOptions("error"));
+            return;
+        }
+
+        try {
+            const response = await userService.generateMultiShareLink(
+                selectedItems.folders,
+                selectedItems.files,
+                Token.MegaBox
+            );
+            const link = response?.shareUrl || response?.shareLink;
+            if (link) {
+                setShareUrl(link);
+                setShareTitle(`Share ${selectedItems.files.length + selectedItems.folders.length} Items`);
+                setShowShareModal(true);
+                setIsSelectionMode(false);
+                setSelectedItems({ files: [], folders: [] });
+            } else {
+                toast.error("Failed to generate share link", ToastOptions("error"));
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to generate share link", ToastOptions("error"));
+        }
+    }
+
     const GetArchivedFilesCount = async () => {
         try {
             const data = await fileService.getArchivedFiles(Token.MegaBox);
             return data?.files?.length || 0;
-        } catch (error) {
+        } catch {
             return 0;
         }
     };
 
     const { data: archivedData } = useQuery("GetArchivedFilesCount", GetArchivedFilesCount, {
         refetchInterval: false,
-        staleTime: 30000, // Cache for 30 seconds
+        staleTime: 30000
     });
 
     const filterOptions = [
@@ -227,73 +374,237 @@ export default function Files() {
 
     return <>
         <div className="min-h-screen bg-indigo-50" style={{ fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-            {/* Header Section */}
-            <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg border-b border-indigo-400">
-                <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-                    <div className="py-4 sm:py-6 md:py-8">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-                            <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-1 min-w-0">
-                                <svg
-                                    className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex-shrink-0"
-                                    viewBox="0 0 48 48"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    style={{ filter: 'drop-shadow(0 4px 8px rgba(255,255,255,0.3))' }}
-                                >
-                                    <defs>
-                                        <linearGradient id="logoGradient" x1="0" y1="0" x2="48" y2="48">
-                                            <stop offset="0%" stopColor="var(--color-indigo-400)" />
-                                            <stop offset="50%" stopColor="var(--color-indigo-500)" />
-                                            <stop offset="100%" stopColor="var(--color-indigo-600)" />
-                                        </linearGradient>
-                                        <linearGradient id="logoGradient2" x1="0" y1="0" x2="48" y2="48">
-                                            <stop offset="0%" stopColor="rgba(255, 255, 255, 0.95)" />
-                                            <stop offset="100%" stopColor="rgba(255, 255, 255, 0.85)" />
-                                        </linearGradient>
-                                    </defs>
-                                    <rect width="48" height="48" rx="12" fill="url(#logoGradient)" />
-                                    <path d="M24 12C18.5 12 14 16.5 14 22C14 22.5 14 23 14.1 23.5C12.3 24.2 11 25.8 11 27.5C11 29.7 12.8 31.5 15 31.5H33C35.2 31.5 37 29.7 37 27.5C37 25.8 35.7 24.2 33.9 23.5C34 23 34 22.5 34 22C34 16.5 29.5 12 24 12Z" fill="url(#logoGradient2)" />
-                                    <rect x="16" y="16" width="16" height="16" rx="2.5" fill="var(--color-indigo-600)" opacity="0.95" />
-                                    <rect x="20" y="20" width="8" height="8" rx="1.5" fill="white" opacity="0.9" />
-                                    <line x1="16" y1="16" x2="16" y2="32" stroke="white" strokeWidth="2.5" opacity="0.8" />
-                                    <line x1="32" y1="16" x2="32" y2="32" stroke="white" strokeWidth="2.5" opacity="0.8" />
-                                    <line x1="16" y1="16" x2="32" y2="16" stroke="white" strokeWidth="2.5" opacity="0.8" />
-                                    <line x1="16" y1="24" x2="32" y2="24" stroke="white" strokeWidth="2" opacity="0.6" />
-                                    <line x1="24" y1="16" x2="24" y2="32" stroke="white" strokeWidth="2" opacity="0.6" />
-                                </svg>
-                                <div className="flex-1 min-w-0">
-                                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white drop-shadow-lg truncate" style={{ textShadow: '0 2px 10px rgba(255,255,255,0.3)' }}>{t("files.headerTitle")}</h1>
-                                    <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-white/90" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.2)' }}>{t("files.headerSubtitle")}</p>
-                                </div>
+            <div className="files-header">
+                <div className="files-header__container">
+                    <div className="files-header__content">
+                        <Link to="/" className="files-header__left" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <svg
+                                className="files-header__icon"
+                                viewBox="0 0 48 48"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <defs>
+                                    <linearGradient id="logoGradient" x1="0" y1="0" x2="48" y2="48">
+                                        <stop offset="0%" stopColor="var(--color-indigo-400)" />
+                                        <stop offset="50%" stopColor="var(--color-indigo-500)" />
+                                        <stop offset="100%" stopColor="var(--color-indigo-600)" />
+                                    </linearGradient>
+                                    <linearGradient id="logoGradient2" x1="0" y1="0" x2="48" y2="48">
+                                        <stop offset="0%" stopColor="rgba(255, 255, 255, 0.95)" />
+                                        <stop offset="100%" stopColor="rgba(255, 255, 255, 0.85)" />
+                                    </linearGradient>
+                                </defs>
+                                <rect width="48" height="48" rx="12" fill="url(#logoGradient)" />
+                                <path d="M24 12C18.5 12 14 16.5 14 22C14 22.5 14 23 14.1 23.5C12.3 24.2 11 25.8 11 27.5C11 29.7 12.8 31.5 15 31.5H33C35.2 31.5 37 29.7 37 27.5C37 25.8 35.7 24.2 33.9 23.5C34 23 34 22.5 34 22C34 16.5 29.5 12 24 12Z" fill="url(#logoGradient2)" />
+                                <rect x="16" y="16" width="16" height="16" rx="2.5" fill="var(--color-indigo-600)" opacity="0.95" />
+                                <rect x="20" y="20" width="8" height="8" rx="1.5" fill="white" opacity="0.9" />
+                                <line x1="16" y1="16" x2="16" y2="32" stroke="white" strokeWidth="2.5" opacity="0.8" />
+                                <line x1="32" y1="16" x2="32" y2="32" stroke="white" strokeWidth="2.5" opacity="0.8" />
+                                <line x1="16" y1="16" x2="32" y2="16" stroke="white" strokeWidth="2.5" opacity="0.8" />
+                                <line x1="16" y1="24" x2="32" y2="24" stroke="white" strokeWidth="2" opacity="0.6" />
+                                <line x1="24" y1="16" x2="24" y2="32" stroke="white" strokeWidth="2" opacity="0.6" />
+                            </svg>
+                            <div className="files-header__text">
+                                <h1 className="files-header__title">{t("files.headerTitle")}</h1>
+                                <p className="files-header__subtitle">{t("files.headerSubtitle")}</p>
                             </div>
+                        </Link>
 
-                            {/* Action Buttons */}
-                            <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-2 sm:gap-3">
+                        <div className="files-header__actions">
+                            <button
+                                className="files-header__button"
+                                onClick={ToggleUploadOptions}
+                            >
+                                <HiArrowUp className="files-header__button-icon" />
+                                {t("files.uploadFile")}
+                            </button>
+                            <button
+                                className="files-header__button"
+                                onClick={ToggleFolderAdding}
+                            >
+                                <LuFolderPlus className="files-header__button-icon" />
+                                {t("files.newFolder")}
+                            </button>
+                            
+                            <div className="files-header__profile-menu" ref={profileMenuRef}>
                                 <button
-                                    className="w-full sm:w-auto inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2"
-                                    style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
-                                    onClick={ToggleShowAddFile}
+                                    ref={profileButtonRef}
+                                    className="files-header__profile-button"
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setProfileMenuOpen(!profileMenuOpen);
+                                    }}
+                                    onTouchEnd={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        touchStartedRef.current = true;
+                                        setProfileMenuOpen(!profileMenuOpen);
+                                    }}
                                 >
-                                    <HiOutlinePlus className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                                    {t("files.uploadFile")}
+                                    {userData?.profilePic && typeof userData.profilePic === 'string' && userData.profilePic.trim() !== '' && !profileImageError ? (
+                                        <img
+                                            src={userData.profilePic}
+                                            alt="Profile"
+                                            className="files-header__profile-image"
+                                            onError={() => setProfileImageError(true)}
+                                        />
+                                    ) : (
+                                        <div className="files-header__profile-placeholder">
+                                            <FaUser className="files-header__profile-icon" />
+                                        </div>
+                                    )}
                                 </button>
-                                <button
-                                    className="w-full sm:w-auto inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium text-white bg-white/20 backdrop-blur-sm border-2 border-white/40 rounded-lg shadow-lg transition-all duration-200 hover:bg-white/30 hover:border-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2"
-                                    style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
-                                    onClick={ToggleFolderAdding}
-                                >
-                                    <LuFolderPlus className="mr-1.5 sm:mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                                    {t("files.newFolder")}
-                                </button>
+                                
+                                {profileMenuOpen && (
+                                    <>
+                                        <div 
+                                            className="files-header__profile-backdrop"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setProfileMenuOpen(false);
+                                            }}
+                                            onTouchStart={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setProfileMenuOpen(false);
+                                            }}
+                                        />
+                                        <div 
+                                            ref={profileDropdownRef}
+                                            className="files-header__profile-dropdown"
+                                            style={{
+                                                position: 'fixed',
+                                                top: `${dropdownPosition.top}px`,
+                                                ...(language === 'ar' 
+                                                    ? { left: `${dropdownPosition.left}px`, right: 'auto' }
+                                                    : { right: `${dropdownPosition.right}px`, left: 'auto' }
+                                                ),
+                                            }}
+                                            onClick={(e) => e.stopPropagation()}
+                                            onTouchStart={(e) => e.stopPropagation()}
+                                            onTouchEnd={(e) => e.stopPropagation()}
+                                        >
+                                        <Link
+                                            to={isPromoter ? '/Promoter/profile' : '/dashboard/profile'}
+                                            className="files-header__profile-item"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setProfileMenuOpen(false);
+                                            }}
+                                            onTouchEnd={(e) => {
+                                                e.stopPropagation();
+                                                setProfileMenuOpen(false);
+                                            }}
+                                        >
+                                            <HiUserCircle className="files-header__profile-item-icon" />
+                                            <span>{t("sidenav.profile")}</span>
+                                        </Link>
+                                        
+                                        <Link
+                                            to={isPromoter ? '/Promoter/notifications' : '/dashboard/notifications'}
+                                            className="files-header__profile-item"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setProfileMenuOpen(false);
+                                            }}
+                                            onTouchEnd={(e) => {
+                                                e.stopPropagation();
+                                                setProfileMenuOpen(false);
+                                            }}
+                                        >
+                                            <HiBell className="files-header__profile-item-icon" />
+                                            <span>{t("sidenav.notifications")}</span>
+                                        </Link>
+                                        
+                                        {!isPromoter && (
+                                            <Link
+                                                to="/Partners"
+                                                className="files-header__profile-item"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setProfileMenuOpen(false);
+                                                }}
+                                                onTouchEnd={(e) => {
+                                                    e.stopPropagation();
+                                                    setProfileMenuOpen(false);
+                                                }}
+                                            >
+                                                <HiCurrencyDollar className="files-header__profile-item-icon" />
+                                                <span>{t("sidenav.subscribe") || "Subscribe"}</span>
+                                            </Link>
+                                        )}
+                                        
+                                        {isPromoter && (
+                                            <Link
+                                                to="/Partners"
+                                                className="files-header__profile-item"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setProfileMenuOpen(false);
+                                                }}
+                                                onTouchEnd={(e) => {
+                                                    e.stopPropagation();
+                                                    setProfileMenuOpen(false);
+                                                }}
+                                            >
+                                                <HiUserGroup className="files-header__profile-item-icon" />
+                                                <span>{t("sidenav.partners") || "Partners Center"}</span>
+                                            </Link>
+                                        )}
+                                        
+                                        <button
+                                            type="button"
+                                            className="files-header__profile-item"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                toggleLanguage(e);
+                                                setProfileMenuOpen(false);
+                                            }}
+                                            onTouchEnd={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                toggleLanguage(e);
+                                                setProfileMenuOpen(false);
+                                            }}
+                                        >
+                                            <FiGlobe className="files-header__profile-item-icon" />
+                                            <span>{language === 'en' ? t("navbar.arabic") : t("navbar.english")}</span>
+                                        </button>
+                                        
+                                        <button
+                                            type="button"
+                                            className="files-header__profile-item"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                Logout();
+                                                setProfileMenuOpen(false);
+                                            }}
+                                            onTouchEnd={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                Logout();
+                                                setProfileMenuOpen(false);
+                                            }}
+                                        >
+                                            <HiArrowRightOnRectangle className="files-header__profile-item-icon" />
+                                            <span>{t("sidenav.logout")}</span>
+                                        </button>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
-                {/* Folders Section */}
+            <div className="files-content max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
                 <div className="mb-8 sm:mb-10 md:mb-12">
                     <div className="flex items-center justify-between mb-4 sm:mb-5 md:mb-6">
                         <div>
@@ -340,13 +651,15 @@ export default function Files() {
                                     onDelete={DeleteFolder}
                                     onShare={(id) => ShareFile(id, true)}
                                     onArchive={ArchiveFolder}
+                                    isSelectionMode={isSelectionMode}
+                                    isSelected={selectedItems.folders.includes(ele?._id || ele?.id)}
+                                    onToggleSelect={toggleItemSelection}
                                 />
                             ))}
                         </div>
                     )}
                 </div>
 
-                {/* Files Section */}
                 <div>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-5 md:mb-6 gap-3 sm:gap-4">
                         <div className="flex-1 min-w-0">
@@ -356,8 +669,26 @@ export default function Files() {
                             </p>
                         </div>
 
-                        {/* View Mode Toggle */}
-                        <div className="flex items-center space-x-2 flex-shrink-0">
+                        <div className="flex items-center space-x-2 flex-shrink-0 gap-2">
+                            {isSelectionMode && (selectedItems.files.length > 0 || selectedItems.folders.length > 0) && (
+                                <button
+                                    onClick={shareMultipleItems}
+                                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-indigo-700 transition-all flex items-center gap-2"
+                                >
+                                    <HiShare className="h-4 w-4" />
+                                    Share ({selectedItems.files.length + selectedItems.folders.length})
+                                </button>
+                            )}
+                            <button
+                                onClick={toggleSelectionMode}
+                                className={`px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium rounded-lg transition-all flex items-center gap-2 ${
+                                    isSelectionMode
+                                        ? 'bg-red-600 text-white hover:bg-red-700'
+                                        : 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
+                                }`}
+                            >
+                                {isSelectionMode ? 'Cancel' : 'Select'}
+                            </button>
                             <span className="text-xs sm:text-sm text-indigo-700 mr-1 sm:mr-2 hidden xs:inline" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>{t("files.view")}</span>
                             <button
                                 onClick={() => setViewMode('grid')}
@@ -380,7 +711,6 @@ export default function Files() {
                         </div>
                     </div>
 
-                    {/* Filter Tabs */}
                     <div className="bg-white rounded-lg shadow-sm border border-indigo-200 p-0.5 sm:p-1 mb-4 sm:mb-5 md:mb-6 overflow-x-auto">
                         <div className="flex flex-wrap gap-0.5 sm:gap-1 min-w-max sm:min-w-0">
                             {filterOptions.map((option) => (
@@ -403,7 +733,6 @@ export default function Files() {
                         </div>
                     </div>
 
-                    {/* Files Grid/List */}
                     {filesLoading ? (
                         <div className={`grid gap-4 sm:gap-5 md:gap-6 ${viewMode === 'grid'
                             ? 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
@@ -433,11 +762,11 @@ export default function Files() {
                             {FilterKey === 'All' && (
                                 <div className="mt-4 sm:mt-6">
                                     <button
-                                        onClick={ToggleShowAddFile}
+                                        onClick={ToggleUploadOptions}
                                         className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 border border-transparent shadow-sm text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
                                         style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                     >
-                                        <HiOutlinePlus className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                        <HiArrowUp className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                                         {t("files.uploadFile")}
                                     </button>
                                 </div>
@@ -461,6 +790,9 @@ export default function Files() {
                                     onRename={ToggleNameChange}
                                     onShare={ShareFile}
                                     viewMode={viewMode}
+                                    isSelectionMode={isSelectionMode}
+                                    isSelected={selectedItems.files.includes(ele?._id || ele?.id)}
+                                    onToggleSelect={toggleItemSelection}
                                 />
                             ))}
                         </div>
@@ -470,7 +802,23 @@ export default function Files() {
         </div>
 
         <AnimatePresence>
+            {showUploadOptions && (
+                <UploadOptions 
+                    key="upload-options" 
+                    onClose={ToggleUploadOptions}
+                    onSelectDesktop={handleSelectDesktop}
+                    onSelectMegaBox={handleSelectMegaBox}
+                    isPromoter={isPromoter}
+                />
+            )}
             {AddFileShow && <UploadFile key="upload-file" ToggleUploadFile={ToggleShowAddFile} refetch={refetch} />}
+            {showUploadFromMegaBox && (
+                <UploadFromMegaBox 
+                    key="upload-from-megabox" 
+                    ToggleUploadFile={ToggleUploadFromMegaBox} 
+                    refetch={refetch} 
+                />
+            )}
             {AddFolderAdding && <AddFolder key="add-folder" ToggleUploadFile={ToggleFolderAdding} refetch={refFolders} />}
             {ShowRepresent && <Represents key="represents" path={Path} type={fileType} ToggleUploadFile={() => Representation("", "", true)} />}
             {ShowUpdateName && (

@@ -6,13 +6,15 @@
     .ChangeName {
         @include InsideBackdrop();
 
-        // Base styles
-        min-height: auto;
-        max-width: 600px;
-        width: 90%;
-        padding: 1.5rem;
-        max-height: 90vh;
-        overflow-y: auto;
+        // Base styles - wrapped to avoid mixed-decls warning
+        & {
+            min-height: auto;
+            max-width: 600px;
+            width: 90%;
+            padding: 1.5rem;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
 
         // Tablet styles
         @include Breakpoints(small) {

@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { BrowserRouter as Router, Routes, Route, createBrowserRouter, RouterProvider, useNavigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, createBrowserRouter, RouterProvider, useNavigate, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import LandingPage from './pages/LandingPage'
 import Login from './pages/Auth/Login'
@@ -15,6 +15,11 @@ import Profile from './pages/profile/Profile'
 import RoleProtector from './protectors/RoleProtector'
 import Users from './pages/OwnerPages/Users/Users'
 import Analasys from './pages/OwnerPages/Analasyis/Analasys'
+import Payments from './pages/OwnerPages/Payments/Payments'
+import Subscriptions from './pages/OwnerPages/Subscriptions/Subscriptions'
+import Storage from './pages/OwnerPages/Storage/Storage'
+import DownloadsViews from './pages/OwnerPages/DownloadsViews/DownloadsViews'
+import Withdrawals from './pages/OwnerPages/Withdrawals/Withdrawals'
 import { useCookies } from 'react-cookie'
 import { jwtDecode } from 'jwt-decode'
 import LandingLayout from './pages/LandingLayout'
@@ -37,6 +42,9 @@ const Feedback = lazy(() => import('./pages/Feedback/Feedback'))
 const PrivacyPolicy = lazy(() => import('./pages/Privacy/Privacy'))
 const RemovalGuidelines = lazy(() => import('./pages/RemovalPolicy/RemovalPolicy'))
 const Partners = lazy(() => import('./pages/Subscription/Subscription'))
+const Contact = lazy(() => import('./pages/Contact/Contact'))
+const TermsOfService = lazy(() => import('./pages/TermsOfService/TermsOfService'))
+const RewardsEligibility = lazy(() => import('./pages/RewardsEligibility/RewardsEligibility'))
 
 import Loading from './components/Loading/Loading'
 import SignupForMoney from './pages/Auth/SignupForMoney'
@@ -77,6 +85,15 @@ const router = createBrowserRouter(
         },
         {
           path: "copyright-feedback", element: <Suspense fallback={<Loading />}> <Feedback /></Suspense>
+        },
+        {
+          path: "contact-support", element: <Suspense fallback={<Loading />}> <Contact /></Suspense>
+        },
+        {
+          path: "terms-of-service", element: <Suspense fallback={<Loading />}> <TermsOfService /></Suspense>
+        },
+        {
+          path: "rewards-eligibility", element: <Suspense fallback={<Loading />}> <RewardsEligibility /></Suspense>
         }
       ]
     }, {
@@ -256,7 +273,11 @@ const router = createBrowserRouter(
     {
       path: "/dashboard", element: <LoginProtector><DashboardLayout role={"User"} /> </LoginProtector>, children: [
         {
-          index: true, element:
+          index: true,
+          element: <Navigate to="/dashboard/files" replace />
+        },
+        {
+          path: "files", element:
             <LoginProtector>
               <RoleProtector requiredRole="User">
                 <Files />
@@ -347,6 +368,30 @@ const router = createBrowserRouter(
                 <Notifications />
               </PromoterProtector>
             </LoginProtector>
+        },
+        {
+          path: "profile", element:
+            <LoginProtector>
+              <PromoterProtector>
+                <Profile />
+              </PromoterProtector>
+            </LoginProtector>
+        },
+        {
+          path: "files", element:
+            <LoginProtector>
+              <PromoterProtector>
+                <Files />
+              </PromoterProtector>
+            </LoginProtector>
+        },
+        {
+          path: "file/:fileName/:fileId", element:
+            <LoginProtector>
+              <PromoterProtector>
+                <UploadFiles />
+              </PromoterProtector>
+            </LoginProtector>
         }
       ]
     },
@@ -397,9 +442,33 @@ const router = createBrowserRouter(
             </RoleProtector>
           </LoginProtector>
         }, {
-          path: "notifications", element: <LoginProtector>
+          path: "Payments", element: <LoginProtector>
             <RoleProtector requiredRole="Owner">
-              <Notifications />
+              <Payments />
+            </RoleProtector>
+          </LoginProtector>
+        }, {
+          path: "Subscriptions", element: <LoginProtector>
+            <RoleProtector requiredRole="Owner">
+              <Subscriptions />
+            </RoleProtector>
+          </LoginProtector>
+        }, {
+          path: "Storage", element: <LoginProtector>
+            <RoleProtector requiredRole="Owner">
+              <Storage />
+            </RoleProtector>
+          </LoginProtector>
+        }, {
+          path: "DownloadsViews", element: <LoginProtector>
+            <RoleProtector requiredRole="Owner">
+              <DownloadsViews />
+            </RoleProtector>
+          </LoginProtector>
+        }, {
+          path: "Withdrawals", element: <LoginProtector>
+            <RoleProtector requiredRole="Owner">
+              <Withdrawals />
             </RoleProtector>
           </LoginProtector>
         }

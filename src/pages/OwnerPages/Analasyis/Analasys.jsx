@@ -2,20 +2,19 @@ import React, { useState, useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { API_URL, adminService, withdrawalService } from '../../../services/api';
+import { API_URL, adminService } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 import StatCard from '../../../components/StatCard/StatCard';
-import SearchFilter from '../../../components/SearchFilter/SearchFilter';
-import { FaUsers, FaFileAlt, FaDollarSign, FaChartLine, FaDownload, FaEye, FaLink, FaMoneyBillWave } from 'react-icons/fa';
+import { FaUsers, FaFileAlt, FaDollarSign, FaChartLine, FaDownload, FaEye, FaLink, FaMoneyBillWave, FaHdd, FaUserPlus, FaCreditCard, FaCrown } from 'react-icons/fa';
 import './Analasys.scss';
 
 export default function Analasys() {
     const { t } = useLanguage();
+    const navigate = useNavigate();
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filters, setFilters] = useState({});
 
     // Fetch all users
     const { data: usersData, isLoading: usersLoading } = useQuery(
@@ -30,7 +29,7 @@ export default function Analasys() {
     // Fetch all withdrawals
     const { data: withdrawalsData, isLoading: withdrawalsLoading } = useQuery(
         ['allWithdrawals'],
-        () => withdrawalService.getAllWithdrawals(token),
+        () => adminService.getAllWithdrawals(token),
         { enabled: !!token }
     );
 
@@ -46,7 +45,28 @@ export default function Analasys() {
         { enabled: !!token }
     );
 
-    const isLoading = usersLoading || withdrawalsLoading || promotersLoading;
+    // Fetch platform statistics (placeholder - will be connected to API later)
+    const { data: platformStats, isLoading: platformStatsLoading } = useQuery(
+        ['platformStats'],
+        async () => {
+            // TODO: Connect to API endpoint
+            // const res = await axios.get(`${API_URL}/admin/getPlatformStats`, {
+            //     headers: { Authorization: `Bearer ${token}` }
+            // });
+            // return res?.data;
+            return {
+                totalStorage: 0, // GB
+                newUsers: 0, // Last 30 days
+                totalPayments: 0,
+                totalSubscriptions: 0,
+                totalDownloads: 0,
+                totalViews: 0
+            };
+        },
+        { enabled: !!token }
+    );
+
+    const isLoading = usersLoading || withdrawalsLoading || promotersLoading || platformStatsLoading;
 
     // Calculate statistics
     const totalUsers = usersData?.length || 0;
@@ -63,71 +83,25 @@ export default function Analasys() {
         p.watchingplan === "true" || p.watchingplan === true
     )?.length || 0;
 
-    // Filter withdrawals based on search and filters
-    const filteredWithdrawals = useMemo(() => {
-        if (!withdrawalsData?.withdrawals) return [];
+    // Calculate new users (last 30 days)
+    const newUsers = useMemo(() => {
+        if (!usersData) return 0;
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        return usersData.filter(user => {
+            const createdAt = user.createdAt || user.created_at || user.dateCreated;
+            if (!createdAt) return false;
+            return new Date(createdAt) >= thirtyDaysAgo;
+        }).length;
+    }, [usersData]);
 
-        return withdrawalsData.withdrawals.filter((withdrawal) => {
-            // Search filter
-            if (searchTerm) {
-                const userInfo = typeof withdrawal.userId === 'object' && withdrawal.userId !== null
-                    ? `${withdrawal.userId.username || ''} ${withdrawal.userId.email || ''} ${withdrawal.userId._id || ''}`
-                    : `${withdrawal.userId || ''} ${withdrawal.username || ''}`;
+    // Platform statistics
+    const totalStorage = platformStats?.totalStorage || 0; // GB
+    const totalPayments = platformStats?.totalPayments || 0;
+    const totalSubscriptions = platformStats?.totalSubscriptions || promotersWithPlans; // Fallback to promoters with plans
+    const totalDownloads = platformStats?.totalDownloads || 0;
+    const totalViews = platformStats?.totalViews || 0;
 
-                const searchLower = searchTerm.toLowerCase();
-                if (!userInfo.toLowerCase().includes(searchLower) &&
-                    !withdrawal.amount?.toString().toLowerCase().includes(searchLower) &&
-                    !withdrawal.paymentMethod?.toLowerCase().includes(searchLower)) {
-                    return false;
-                }
-            }
-
-            // Status filter
-            if (filters.status && withdrawal.status !== filters.status) {
-                return false;
-            }
-
-            // Payment method filter
-            if (filters.paymentMethod && withdrawal.paymentMethod !== filters.paymentMethod) {
-                return false;
-            }
-
-            return true;
-        });
-    }, [withdrawalsData?.withdrawals, searchTerm, filters]);
-
-    // Get unique payment methods for filter
-    const paymentMethods = useMemo(() => {
-        if (!withdrawalsData?.withdrawals) return [];
-        const methods = new Set();
-        withdrawalsData.withdrawals.forEach(w => {
-            if (w.paymentMethod) methods.add(w.paymentMethod);
-        });
-        return Array.from(methods).map(method => ({
-            value: method,
-            label: method
-        }));
-    }, [withdrawalsData?.withdrawals]);
-
-    // Filter configuration
-    const filterConfig = [
-        {
-            key: 'status',
-            label: t('adminAnalytics.status'),
-            allLabel: t('searchFilter.all'),
-            options: [
-                { value: 'pending', label: t('adminAnalytics.pending') },
-                { value: 'approved', label: t('adminAnalytics.approved') },
-                { value: 'rejected', label: t('adminAnalytics.rejected') }
-            ]
-        },
-        ...(paymentMethods.length > 0 ? [{
-            key: 'paymentMethod',
-            label: t('adminAnalytics.paymentMethod'),
-            allLabel: t('searchFilter.all'),
-            options: paymentMethods
-        }] : [])
-    ];
 
     return (
         <div className="admin-analytics-page">
@@ -151,7 +125,7 @@ export default function Analasys() {
                 {/* Stats Grid */}
                 {isLoading ? (
                     <div className="admin-analytics-skeleton">
-                        {[...Array(6)].map((_, i) => (
+                        {[...Array(13)].map((_, i) => (
                             <div key={i} className="skeleton-card"></div>
                         ))}
                     </div>
@@ -168,130 +142,104 @@ export default function Analasys() {
                             icon={<FaUsers />}
                             color="#6366f1"
                             index={0}
+                            onClick={() => navigate('/Owner/Users')}
+                        />
+                        <StatCard
+                            label={t('adminAnalytics.newUsers')}
+                            value={newUsers}
+                            icon={<FaUserPlus />}
+                            color="#06b6d4"
+                            index={1}
+                            onClick={() => navigate('/Owner/Users')}
                         />
                         <StatCard
                             label={t('adminAnalytics.totalPromoters')}
                             value={totalPromoters}
                             icon={<FaUsers />}
                             color="#10b981"
-                            index={1}
+                            index={2}
+                            onClick={() => navigate('/Owner/AllPromoters')}
                         />
                         <StatCard
                             label={t('adminAnalytics.promotersWithPlans')}
                             value={promotersWithPlans}
                             icon={<FaUsers />}
                             color="#f59e0b"
-                            index={2}
+                            index={3}
+                            onClick={() => navigate('/Owner/Subscriptions')}
+                        />
+                        <StatCard
+                            label={t('adminAnalytics.totalStorage')}
+                            value={`${totalStorage} GB`}
+                            icon={<FaHdd />}
+                            color="#3b82f6"
+                            index={4}
+                            onClick={() => navigate('/Owner/Storage')}
+                        />
+                        <StatCard
+                            label={t('adminAnalytics.totalPayments')}
+                            value={totalPayments}
+                            icon={<FaCreditCard />}
+                            color="#8b5cf6"
+                            index={5}
+                            onClick={() => navigate('/Owner/Payments')}
+                        />
+                        <StatCard
+                            label={t('adminAnalytics.totalSubscriptions')}
+                            value={totalSubscriptions}
+                            icon={<FaCrown />}
+                            color="#f59e0b"
+                            index={6}
+                            onClick={() => navigate('/Owner/Subscriptions')}
+                        />
+                        <StatCard
+                            label={t('adminAnalytics.totalDownloads')}
+                            value={totalDownloads}
+                            icon={<FaDownload />}
+                            color="#10b981"
+                            index={7}
+                            onClick={() => navigate('/Owner/DownloadsViews')}
+                        />
+                        <StatCard
+                            label={t('adminAnalytics.totalViews')}
+                            value={totalViews}
+                            icon={<FaEye />}
+                            color="#ef4444"
+                            index={8}
+                            onClick={() => navigate('/Owner/DownloadsViews')}
                         />
                         <StatCard
                             label={t('adminAnalytics.totalWithdrawals')}
                             value={totalWithdrawals}
                             icon={<FaMoneyBillWave />}
                             color="#ef4444"
-                            index={3}
+                            index={9}
+                            onClick={() => navigate('/Owner/Withdrawals')}
                         />
                         <StatCard
                             label={t('adminAnalytics.totalWithdrawalAmount')}
                             value={`${totalWithdrawalAmount.toFixed(2)} ${currency}`}
                             icon={<FaDollarSign />}
                             color="#8b5cf6"
-                            index={4}
+                            index={10}
+                            onClick={() => navigate('/Owner/Withdrawals')}
                         />
                         <StatCard
                             label={t('adminAnalytics.pendingWithdrawals')}
                             value={pendingWithdrawals}
                             icon={<FaChartLine />}
                             color="#f59e0b"
-                            index={5}
+                            index={11}
+                            onClick={() => navigate('/Owner/Withdrawals')}
                         />
                         <StatCard
                             label={t('adminAnalytics.approvedWithdrawals')}
                             value={approvedWithdrawals}
                             icon={<FaChartLine />}
                             color="#10b981"
-                            index={6}
+                            index={12}
+                            onClick={() => navigate('/Owner/Withdrawals')}
                         />
-                    </motion.div>
-                )}
-
-                {/* Withdrawals Summary */}
-                {!isLoading && withdrawalsData?.withdrawals?.length > 0 && (
-                    <motion.div
-                        className="admin-analytics-withdrawals"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}
-                    >
-                        <div className="admin-analytics-withdrawals__header">
-                            <h2 className="admin-analytics-withdrawals__title">{t('adminAnalytics.recentWithdrawals')}</h2>
-                            <p className="admin-analytics-withdrawals__count">
-                                {filteredWithdrawals.length} {t('adminAnalytics.of')} {withdrawalsData.withdrawals.length}
-                            </p>
-                        </div>
-
-                        <SearchFilter
-                            searchPlaceholder={t('adminAnalytics.searchWithdrawals')}
-                            filters={filterConfig}
-                            onSearchChange={setSearchTerm}
-                            onFilterChange={setFilters}
-                        />
-
-                        <div className="admin-analytics-withdrawals__table">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>{t('adminAnalytics.user')}</th>
-                                        <th>{t('adminAnalytics.amount')}</th>
-                                        <th>{t('adminAnalytics.paymentMethod')}</th>
-                                        <th>{t('adminAnalytics.status')}</th>
-                                        <th>{t('adminAnalytics.date')}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredWithdrawals.length > 0 ? (
-                                        filteredWithdrawals.slice(0, 10).map((withdrawal, index) => (
-                                            <motion.tr
-                                                key={index}
-                                                initial={{ opacity: 0, x: -20 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: index * 0.05 }}
-                                            >
-                                                <td>
-                                                    {typeof withdrawal.userId === 'object' && withdrawal.userId !== null
-                                                        ? (withdrawal.userId.username || withdrawal.userId.email || withdrawal.userId._id || '-')
-                                                        : (withdrawal.userId || withdrawal.username || '-')
-                                                    }
-                                                </td>
-                                                <td>{withdrawal.amount} {withdrawal.currency || currency}</td>
-                                                <td>{withdrawal.paymentMethod || '-'}</td>
-                                                <td>
-                                                    <span className={`status-badge status-${withdrawal.status || 'pending'}`}>
-                                                        {withdrawal.status === 'approved'
-                                                            ? t('adminAnalytics.approved')
-                                                            : withdrawal.status === 'pending'
-                                                                ? t('adminAnalytics.pending')
-                                                                : withdrawal.status === 'rejected'
-                                                                    ? t('adminAnalytics.rejected')
-                                                                    : withdrawal.status || t('adminAnalytics.pending')}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    {withdrawal.createdAt
-                                                        ? new Date(withdrawal.createdAt).toLocaleDateString()
-                                                        : '-'}
-                                                </td>
-                                            </motion.tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="5" className="text-center py-8 text-gray-500">
-                                                {t('adminAnalytics.noWithdrawalsFound')}
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
                     </motion.div>
                 )}
             </div>

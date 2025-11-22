@@ -9,84 +9,6 @@ import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
 import './Notifications.scss';
 
-// Mock data for UI display
-const MOCK_NOTIFICATIONS = [
-    {
-        _id: '1',
-        id: '1',
-        title: 'Withdrawal Approved',
-        message: 'Your withdrawal request of $500.00 has been approved and processed.',
-        content: 'Your withdrawal request of $500.00 has been approved and processed.',
-        read: false,
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-    },
-    {
-        _id: '2',
-        id: '2',
-        title: 'New Referral',
-        message: 'john_doe has signed up using your referral link!',
-        content: 'john_doe has signed up using your referral link!',
-        read: false,
-        createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
-    },
-    {
-        _id: '3',
-        id: '3',
-        title: 'Earnings Update',
-        message: 'You have earned $45.75 from your shared content today.',
-        content: 'You have earned $45.75 from your shared content today.',
-        read: true,
-        createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-        _id: '4',
-        id: '4',
-        title: 'Payment Received',
-        message: 'Your payment of $250.50 has been successfully transferred to your account.',
-        content: 'Your payment of $250.50 has been successfully transferred to your account.',
-        read: true,
-        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-        _id: '5',
-        id: '5',
-        title: 'Account Verified',
-        message: 'Your account has been successfully verified. You can now access all features.',
-        content: 'Your account has been successfully verified. You can now access all features.',
-        read: true,
-        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-        _id: '6',
-        id: '6',
-        title: 'New Feature Available',
-        message: 'Check out our new analytics dashboard with enhanced insights!',
-        content: 'Check out our new analytics dashboard with enhanced insights!',
-        read: false,
-        createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-        _id: '7',
-        id: '7',
-        title: 'Referral Bonus',
-        message: 'You received a bonus of $12.50 for referring a new user.',
-        content: 'You received a bonus of $12.50 for referring a new user.',
-        read: true,
-        createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-        _id: '8',
-        id: '8',
-        title: 'Weekly Summary',
-        message: 'Your weekly earnings summary: $325.80 total revenue.',
-        content: 'Your weekly earnings summary: $325.80 total revenue.',
-        read: true,
-        createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-    }
-];
-
-const USE_MOCK_DATA = true; // Set to false to use real API data
-
 export default function Notifications() {
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
@@ -96,21 +18,14 @@ export default function Notifications() {
     // Fetch notifications
     const { data: notificationsData, isLoading } = useQuery(
         ['userNotifications'],
-        async () => {
-            if (USE_MOCK_DATA) {
-                // Simulate API delay
-                await new Promise(resolve => setTimeout(resolve, 500));
-                return { notifications: MOCK_NOTIFICATIONS, data: MOCK_NOTIFICATIONS };
-            }
-            return notificationService.getUserNotifications(token);
-        },
+        () => notificationService.getUserNotifications(token),
         {
-            enabled: USE_MOCK_DATA || !!token,
-            refetchInterval: USE_MOCK_DATA ? false : 30000 // Refetch every 30 seconds
+            enabled: !!token,
+            refetchInterval: 30000 // Refetch every 30 seconds
         }
     );
 
-    const notifications = notificationsData?.notifications || notificationsData?.data || MOCK_NOTIFICATIONS;
+    const notifications = notificationsData?.notifications || notificationsData?.data || [];
 
     // Mark all as read mutation
     const markAllAsReadMutation = useMutation(
@@ -145,9 +60,11 @@ export default function Notifications() {
                                 <FaBell className="text-indigo-600 text-2xl" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold text-indigo-900">Notifications</h1>
+                                <h1 className="text-2xl font-bold text-indigo-900">{t('notifications.title')}</h1>
                                 <p className="text-gray-600">
-                                    {unreadCount > 0 ? `${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}` : 'All caught up!'}
+                                    {unreadCount > 0 
+                                        ? `${unreadCount} ${unreadCount > 1 ? t('notifications.unreadCountPlural') : t('notifications.unreadCount')}` 
+                                        : t('notifications.allCaughtUp')}
                                 </p>
                             </div>
                         </div>
@@ -160,7 +77,7 @@ export default function Notifications() {
                                 whileTap={{ scale: 0.95 }}
                             >
                                 <FaCheckDouble />
-                                <span>Mark all as read</span>
+                                <span>{t('notifications.markAllAsRead')}</span>
                             </motion.button>
                         )}
                     </div>
@@ -176,7 +93,7 @@ export default function Notifications() {
                         >
                             <FaBell className="text-4xl text-indigo-600" />
                         </motion.div>
-                        <p className="mt-4 text-gray-600">Loading notifications...</p>
+                        <p className="mt-4 text-gray-600">{t('notifications.loading')}</p>
                     </div>
                 ) : notifications.length === 0 ? (
                     <motion.div
@@ -186,8 +103,8 @@ export default function Notifications() {
                         transition={{ duration: 0.5 }}
                     >
                         <FaBell className="text-6xl text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold text-gray-700 mb-2">No notifications</h3>
-                        <p className="text-gray-500">You're all caught up! Check back later for updates.</p>
+                        <h3 className="text-xl font-semibold text-gray-700 mb-2">{t('notifications.noNotifications')}</h3>
+                        <p className="text-gray-500">{t('notifications.noNotificationsMessage')}</p>
                     </motion.div>
                 ) : (
                     <motion.div
@@ -224,16 +141,16 @@ export default function Notifications() {
                                                 <div className="flex-1">
                                                     <h3 className={`font-semibold mb-1 ${notification.read ? 'text-gray-700' : 'text-indigo-900'
                                                         }`}>
-                                                        {notification.title || 'Notification'}
+                                                        {notification.title || t('notifications.notification')}
                                                     </h3>
                                                     <p className={`text-sm ${notification.read ? 'text-gray-600' : 'text-gray-800'
                                                         }`}>
-                                                        {notification.message || notification.content || 'No message'}
+                                                        {notification.message || notification.content || t('notifications.noMessage')}
                                                     </p>
                                                     <p className="text-xs text-gray-500 mt-2">
                                                         {notification.createdAt
                                                             ? new Date(notification.createdAt).toLocaleString()
-                                                            : 'Recently'
+                                                            : t('notifications.recently')
                                                         }
                                                     </p>
                                                 </div>

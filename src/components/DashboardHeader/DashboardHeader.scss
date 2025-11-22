@@ -1,0 +1,375 @@
+@use '../../helpers/_mixins.scss' as mix;
+@use '../../pages/Files/AllFiles/Files.scss' as *;
+
+// Ensure profile menu has the highest z-index on all pages
+.files-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 9999999 !important; // Highest z-index for the entire header
+  width: 100% !important;
+
+  // Responsive container adjustments
+  &__container {
+    position: relative !important;
+    
+    // Extra small screens (< 640px)
+    @media (max-width: 639px) {
+      padding: 0 1rem !important;
+    }
+
+    @include mix.media-breakpoint-up(sm) {
+      padding: 0 0.75rem !important;
+    }
+
+    @include mix.media-breakpoint-up(md) {
+      padding: 0 1.5rem !important;
+    }
+
+    @include mix.media-breakpoint-up(lg) {
+      padding: 0 2rem !important;
+    }
+  }
+
+  // Responsive content layout
+  &__content {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    
+    // Mobile: keep row layout but adjust padding
+    @media (max-width: 639px) {
+      padding: 0.625rem 0 !important;
+      gap: 0.625rem !important;
+    }
+
+    // Desktop: row layout
+    @include mix.media-breakpoint-up(sm) {
+      padding: 1rem 0 !important;
+      gap: 1rem !important;
+    }
+
+    @include mix.media-breakpoint-up(md) {
+      padding: 1.25rem 0 !important;
+      gap: 1.25rem !important;
+    }
+
+    @include mix.media-breakpoint-up(lg) {
+      padding: 1.5rem 0 !important;
+      gap: 1.5rem !important;
+    }
+  }
+
+  // Responsive left section (logo + title)
+  &__left {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    
+    // Extra small screens (< 640px)
+    @media (max-width: 639px) {
+      gap: 0.375rem !important;
+    }
+
+    @include mix.media-breakpoint-up(sm) {
+      width: auto !important;
+      gap: 0.625rem !important;
+    }
+
+    @include mix.media-breakpoint-up(md) {
+      gap: 0.75rem !important;
+    }
+  }
+
+  // Responsive logo icon
+  &__icon {
+    // Extra small screens (< 640px)
+    @media (max-width: 639px) {
+      width: 1.5rem !important;
+      height: 1.5rem !important;
+    }
+
+    @include mix.media-breakpoint-up(sm) {
+      width: 1.75rem !important;
+      height: 1.75rem !important;
+    }
+
+    @include mix.media-breakpoint-up(md) {
+      width: 2rem !important;
+      height: 2rem !important;
+    }
+
+    @include mix.media-breakpoint-up(lg) {
+      width: 2.25rem !important;
+      height: 2.25rem !important;
+    }
+  }
+
+  // Responsive title
+  &__title {
+    // Extra small screens (< 640px)
+    @media (max-width: 639px) {
+      font-size: 0.9375rem !important;
+    }
+
+    @include mix.media-breakpoint-up(sm) {
+      font-size: 1.125rem !important;
+    }
+
+    @include mix.media-breakpoint-up(md) {
+      font-size: 1.25rem !important;
+    }
+
+    @include mix.media-breakpoint-up(lg) {
+      font-size: 1.375rem !important;
+    }
+  }
+
+  // Responsive actions section
+  &__actions {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: row !important; // Override column from Files.scss
+    align-items: center !important;
+    flex-shrink: 0 !important;
+    width: auto !important; // Override 100% from Files.scss
+    justify-content: flex-end !important;
+    gap: 0.5rem !important;
+    
+    // Extra small screens (< 640px)
+    @media (max-width: 639px) {
+      gap: 0.375rem !important;
+      justify-content: flex-end !important;
+      flex-direction: row !important; // Keep row even on mobile
+      width: auto !important;
+      align-items: center !important; // Override stretch from Files.scss
+    }
+
+    @include mix.media-breakpoint-up(sm) {
+      width: auto !important;
+      gap: 0.5rem !important;
+      flex-direction: row !important;
+      align-items: center !important;
+    }
+
+    @include mix.media-breakpoint-up(md) {
+      gap: 0.625rem !important;
+      flex-direction: row !important;
+      align-items: center !important;
+    }
+  }
+
+  // Responsive profile button
+  &__profile-button {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    
+    // Extra small screens (< 640px)
+    @media (max-width: 639px) {
+      width: 2rem !important;
+      height: 2rem !important;
+    }
+
+    @include mix.media-breakpoint-up(sm) {
+      width: 2.5rem !important;
+      height: 2.5rem !important;
+    }
+
+    @include mix.media-breakpoint-up(md) {
+      width: 2.75rem !important;
+      height: 2.75rem !important;
+    }
+
+    @include mix.media-breakpoint-up(lg) {
+      width: 3rem !important;
+      height: 3rem !important;
+    }
+  }
+
+  &__profile-image {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    flex-shrink: 0 !important;
+    border-radius: 50% !important;
+  }
+
+  &__profile-placeholder {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    flex-shrink: 0 !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  &__profile-menu {
+    position: relative !important;
+    z-index: 9999999 !important; // Highest z-index to appear above everything
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  &__profile-backdrop {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999998 !important; // Just below dropdown
+    pointer-events: auto !important;
+  }
+
+  &__profile-dropdown {
+    position: fixed !important;
+    z-index: 9999999 !important; // Highest z-index to appear above everything
+    isolation: isolate !important;
+    transform: translateZ(0); // Force hardware acceleration
+    pointer-events: auto !important;
+
+    // Responsive dropdown sizing
+    // Extra small screens (< 640px)
+    @media (max-width: 639px) {
+      min-width: 160px !important;
+      max-width: calc(100vw - 1rem) !important;
+      font-size: 0.8125rem !important;
+    }
+
+    @include mix.media-breakpoint-up(sm) {
+      min-width: 180px !important;
+      max-width: calc(100vw - 2rem) !important;
+    }
+
+    @include mix.media-breakpoint-up(md) {
+      min-width: 200px !important;
+    }
+
+    @include mix.media-breakpoint-up(lg) {
+      min-width: 220px !important;
+    }
+  }
+
+  // Responsive profile dropdown items
+  &__profile-item {
+    // Extra small screens (< 640px)
+    @media (max-width: 639px) {
+      padding: 0.75rem 0.875rem !important;
+      font-size: 0.8125rem !important;
+      min-height: 40px !important;
+    }
+
+    @include mix.media-breakpoint-up(sm) {
+      padding: 0.875rem 1rem !important;
+      font-size: 0.875rem !important;
+      min-height: 44px !important;
+    }
+  }
+
+  &__profile-item-icon {
+    // Extra small screens (< 640px)
+    @media (max-width: 639px) {
+      width: 1rem !important;
+      height: 1rem !important;
+    }
+
+    @include mix.media-breakpoint-up(sm) {
+      width: 1.125rem !important;
+      height: 1.125rem !important;
+    }
+  }
+}
+
+// Global override to ensure profile dropdown is always on top of everything
+body {
+  .files-header {
+    z-index: 9999999 !important;
+    position: sticky !important;
+    top: 0 !important;
+  }
+
+  // Profile menu should stay relative to header (not fixed)
+  .files-header__profile-menu {
+    position: relative !important;
+    z-index: 9999999 !important;
+  }
+
+  // Only backdrop and dropdown should be fixed
+  .files-header__profile-backdrop,
+  .files-header__profile-dropdown {
+    z-index: 9999999 !important;
+    position: fixed !important;
+  }
+
+  // Ensure all page content is below the profile menu
+  .revenue-referral-section,
+  .revenue-referral-section__content,
+  .revenue-referral-section__button,
+  .revenue-data-page,
+  .revenue-data-page__wrapper {
+    position: relative;
+    z-index: 1 !important;
+  }
+}
+
+// Extra small screens (phones in portrait < 360px)
+@media (max-width: 360px) {
+  .files-header {
+    &__container {
+      padding: 0 0.25rem !important;
+    }
+
+    &__content {
+      padding: 0.5rem 0 !important;
+      gap: 0.5rem !important;
+      flex-direction: row !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+    }
+
+    &__left {
+      width: 100% !important;
+    }
+
+    &__actions {
+      width: 100% !important;
+      justify-content: flex-end !important;
+    }
+
+    &__icon {
+      width: 1.25rem !important;
+      height: 1.25rem !important;
+    }
+
+    &__title {
+      font-size: 0.875rem !important;
+    }
+
+    &__profile-button {
+      width: 1.75rem !important;
+      height: 1.75rem !important;
+    }
+
+    &__profile-dropdown {
+      min-width: 140px !important;
+      font-size: 0.75rem !important;
+    }
+
+    &__profile-item {
+      padding: 0.625rem 0.75rem !important;
+      font-size: 0.75rem !important;
+      min-height: 36px !important;
+    }
+  }
+}
+
+

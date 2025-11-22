@@ -4,17 +4,19 @@ import * as Yup from "yup";
 import { motion } from "framer-motion";
 import { RiEyeFill, RiEyeCloseLine } from "react-icons/ri";
 import GoogleLoginButton from './GoogleLoginButton';
+import { useLanguage } from '../../context/LanguageContext';
 // import { GoogleLogin } from '@react-oauth/google';
 import "./Auth.scss";
 
 
 const Login = ({ onSignup, onForgot, onSubmit, loading, error }) => {
+  const { t } = useLanguage();
   const [showPassword, setShowPassword] = useState(false);
   const initialValues = { email: "", password: "" };
 
   const validationSchema = Yup.object({
-    email: Yup.string().email("Invalid email").required("Required"),
-    password: Yup.string().required("Required"),
+    email: Yup.string().email(t('auth.invalidEmail')).required(t('auth.required')),
+    password: Yup.string().required(t('auth.required')),
   });
 
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
@@ -45,7 +47,7 @@ const Login = ({ onSignup, onForgot, onSubmit, loading, error }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          Login
+          {t('auth.login')}
         </motion.h2>
 
         {error && (
@@ -72,11 +74,11 @@ const Login = ({ onSignup, onForgot, onSubmit, loading, error }) => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <label htmlFor="email">Email</label>
+                <label htmlFor="email">{t('auth.email')}</label>
                 <Field
                   name="email"
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder={t('auth.emailPlaceholder')}
                 />
                 <ErrorMessage name="email" component="div" className="auth-error" />
               </motion.div>
@@ -87,11 +89,11 @@ const Login = ({ onSignup, onForgot, onSubmit, loading, error }) => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
-                <label htmlFor="password">Password</label>
+                <label htmlFor="password">{t('auth.password')}</label>
                 <Field
                   name="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
+                  placeholder={t('auth.passwordPlaceholder')}
                 />
                 <button
                   type="button"
@@ -115,22 +117,23 @@ const Login = ({ onSignup, onForgot, onSubmit, loading, error }) => {
                 </motion.div>
               )}
 
-              <motion.button
-                className="auth-btn auth-btn-primary"
-                type="submit"
-                disabled={isSubmitting || loading}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {loading ? 'Loading...' : 'Login'}
-              </motion.button>
+              <div className="auth-buttons-group">
+                <motion.button
+                  className="auth-btn auth-btn-primary"
+                  type="submit"
+                  disabled={isSubmitting || loading}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {loading ? t('auth.loading') : t('auth.login')}
+                </motion.button>
+
+                <GoogleLoginButton />
+              </div>
 
             </Form>
           )}
         </Formik>
-
-
-        <GoogleLoginButton />
 
 
         <motion.div
@@ -139,7 +142,7 @@ const Login = ({ onSignup, onForgot, onSubmit, loading, error }) => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.5 }}
         >
-          <span onClick={onSignup}>Sign up</span> | <span onClick={onForgot}>Forgot password?</span>
+          <span onClick={onSignup}>{t('auth.signUp')}</span> | <span onClick={onForgot}>{t('auth.forgotPassword')}</span>
         </motion.div>
       </motion.div>
     </div>

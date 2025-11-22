@@ -41,7 +41,9 @@ const Navbar = () => {
     // { label: 'Feedback', to: '/Feedback' },
   ]
 
-  const toggleLanguage = () => {
+  const toggleLanguage = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     const newLang = language === 'en' ? 'ar' : 'en';
     changeLanguage(newLang);
   }
@@ -128,9 +130,10 @@ const Navbar = () => {
           <div className="navbar__language-wrapper">
             <button 
               className="navbar__language-button" 
-              aria-label="Toggle language"
+              aria-label={t('navbar.language')}
               onClick={toggleLanguage}
-              title={language === 'en' ? 'Switch to Arabic' : 'Switch to English'}
+              title={language === 'en' ? t('navbar.switchToArabic') : t('navbar.switchToEnglish')}
+              type="button"
             >
               <FiGlobe size={24} />
               <span className="navbar__language-code">{language.toUpperCase()}</span>

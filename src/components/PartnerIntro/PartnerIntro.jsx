@@ -8,53 +8,57 @@ import { LuDownload } from "react-icons/lu";
 import { PiFileVideoBold } from "react-icons/pi";
 import { TbDeviceAnalytics } from "react-icons/tb";
 import { AiOutlineFileProtect } from "react-icons/ai";
-
-const Services = [
-    {
-        title: "Video Uploads",
-        desc: "Easily upload videos and get unique sharing links to increase the reach of your content.",
-        icon: <BsUpload className='text-primary-700 text-xl' />
-    },
-    {
-        title: "Specialized Video Player",
-        desc: "The Tera Shield app offers an exceptional and seamless viewing experience for all types of videos.",
-        icon: <MdVideoLibrary className='text-primary-700 text-xl' />
-    },
-    {
-        title: "Referrals and Downloads",
-        desc: "Earn money by referring new users to download the app via your sharing link.",
-        icon: <LuDownload className='text-primary-700 text-xl' />
-    },
-    {
-        title: "View Earnings",
-        desc: "Earn from every view your content receives through the app.",
-        icon: <PiFileVideoBold className='text-primary-700 text-xl' />
-    },
-    {
-        title: "Detailed Analytics",
-        desc: "Accurately track views, downloads, and earnings through an integrated dashboard.",
-        icon: <TbDeviceAnalytics className='text-primary-700 text-xl' />
-    },
-    {
-        title: "Content Protection",
-        desc: "Tera Shield protects your content and ensures it cannot be played outside the app.",
-        icon: <AiOutlineFileProtect className='text-primary-700 text-xl' />
-    }
-]
-
+import { useLanguage } from "../../context/LanguageContext";
+import abstractBg from '../../assets/Images/abstract bg.avif';
 
 export default function PartnerIntro() {
+    const { t } = useLanguage();
+
+    const Services = [
+        {
+            title: t('partners.services.videoUploads.title'),
+            desc: t('partners.services.videoUploads.desc'),
+            icon: <BsUpload />
+        },
+        {
+            title: t('partners.services.videoPlayer.title'),
+            desc: t('partners.services.videoPlayer.desc'),
+            icon: <MdVideoLibrary />
+        },
+        {
+            title: t('partners.services.referrals.title'),
+            desc: t('partners.services.referrals.desc'),
+            icon: <LuDownload />
+        },
+        {
+            title: t('partners.services.viewEarnings.title'),
+            desc: t('partners.services.viewEarnings.desc'),
+            icon: <PiFileVideoBold />
+        },
+        {
+            title: t('partners.services.analytics.title'),
+            desc: t('partners.services.analytics.desc'),
+            icon: <TbDeviceAnalytics />
+        },
+        {
+            title: t('partners.services.protection.title'),
+            desc: t('partners.services.protection.desc'),
+            icon: <AiOutlineFileProtect />
+        }
+    ]
+
     return (
-        <section className="bg-gray-50 py-16 px-6 md:px-16">
+        <section className="partner-intro" style={{ backgroundImage: `url(${abstractBg})` }}>
+            <div className="partner-intro__overlay"></div>
             <motion.h2
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="text-3xl md:text-4xl font-bold text-center mb-12 text-primary-700"
+                className="partner-intro__title"
             >
-                Our Services
+                {t('partners.title')}
             </motion.h2>
-            <div className="grid gap-4 md:grid-cols-3 container mx-auto">
+            <div className="partner-intro__grid">
                 {Services.map((ele, idx) => <PartnerCards index={idx} key={idx} desc={ele.desc} title={ele.title} icon={ele.icon} />)}
             </div>
         </section>

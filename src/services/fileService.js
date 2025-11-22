@@ -297,6 +297,30 @@ export const fileService = {
             toast.error(error.response?.data?.message || "Failed to disable file sharing", ToastOptions("error"));
             throw error.response?.data || error.message;
         }
+    },
+
+    // Get user storage usage
+    getUserStorageUsage: async (token) => {
+        try {
+            const { data } = await api.get('/auth/getUserStorageUsage', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Get shared file
+    getSharedFile: async (fileId) => {
+        try {
+            const { data } = await api.get(`/auth/getSharedFile/${fileId}`);
+            return data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
     }
 };
 

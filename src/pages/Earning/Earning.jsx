@@ -3,109 +3,14 @@ import './Earning.scss';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-    FaGlobe, FaTimes, FaEye, FaDownload, FaLink, FaMoneyBillWave, FaChartLine
-} from 'react-icons/fa';
-import { API_URL, userService } from '../../services/api';
+import { FaDollarSign, FaTimes } from 'react-icons/fa';
+import { HiArrowRight, HiChevronDown } from 'react-icons/hi2';
+import { promoterService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
+import { withdrawalService } from '../../services/withdrawalService';
+import { useMutation, useQueryClient } from 'react-query';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
-import SharedLinksTable from '../../components/SharedLinksTable/SharedLinksTable';
-
-const EARNINGS_URL = `${API_URL}/auth/getUserEarnings`;
-const ANALYTICS_URL = `${API_URL}/auth/getUserAnalytics`;
-const SHARE_LINK_ANALYTICS_URL = `${API_URL}/auth/getShareLinkAnalytics`;
-
-// Mock data for UI display
-const MOCK_EARNINGS_DATA = {
-    totalEarnings: '2,450.75',
-    withdrawable: '2,100.50',
-    estimatedIncome: '350.25',
-    actualIncome: '2,100.50',
-    pendingRewards: '350.25',
-    confirmedRewards: '2,100.50',
-    currency: 'USD'
-};
-
-const MOCK_ANALYTICS_DATA = {
-    totalAnalytics: {
-        totalViews: 15420,
-        totalDownloads: 8230
-    }
-};
-
-const MOCK_SHARE_LINKS_DATA = {
-    analytics: [
-        {
-            fileName: 'document.pdf',
-            views: 1250,
-            downloads: 680,
-            sharedUrl: 'https://example.com/share/abc123',
-            lastUpdated: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            viewsByCountry: [
-                { country: 'United States', views: 450 },
-                { country: 'United Kingdom', views: 320 },
-                { country: 'Canada', views: 280 },
-                { country: 'Australia', views: 200 }
-            ]
-        },
-        {
-            fileName: 'presentation.pptx',
-            views: 980,
-            downloads: 520,
-            sharedUrl: 'https://example.com/share/def456',
-            lastUpdated: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            viewsByCountry: [
-                { country: 'Germany', views: 280 },
-                { country: 'France', views: 250 },
-                { country: 'Spain', views: 200 },
-                { country: 'Italy', views: 150 },
-                { country: 'Netherlands', views: 100 }
-            ]
-        },
-        {
-            fileName: 'video.mp4',
-            views: 2150,
-            downloads: 1450,
-            sharedUrl: 'https://example.com/share/ghi789',
-            lastUpdated: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-            viewsByCountry: [
-                { country: 'India', views: 650 },
-                { country: 'China', views: 520 },
-                { country: 'Japan', views: 380 },
-                { country: 'South Korea', views: 300 },
-                { country: 'Singapore', views: 300 }
-            ]
-        },
-        {
-            fileName: 'image.jpg',
-            views: 750,
-            downloads: 420,
-            sharedUrl: 'https://example.com/share/jkl012',
-            lastUpdated: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-            viewsByCountry: [
-                { country: 'Brazil', views: 250 },
-                { country: 'Mexico', views: 200 },
-                { country: 'Argentina', views: 150 },
-                { country: 'Chile', views: 150 }
-            ]
-        }
-    ]
-};
-
-const USE_MOCK_DATA = true; // Set to false to use real API data
-
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.08,
-            delayChildren: 0.15,
-            ease: [0.25, 0.46, 0.45, 0.94]
-        }
-    }
-};
 
 const cardVariants = {
     hidden: {
@@ -127,588 +32,17 @@ const cardVariants = {
     }
 };
 
-const statsVariants = {
-    hidden: { opacity: 0, x: -30, scale: 0.9 },
-    visible: {
-        opacity: 1,
-        x: 0,
-        scale: 1,
-        transition: {
-            type: "spring",
-            stiffness: 100,
-            damping: 25,
-            mass: 0.8,
-            ease: [0.25, 0.46, 0.45, 0.94]
-        }
-    }
-};
-
-const modalVariants = {
-    hidden: {
-        opacity: 0,
-        scale: 0.8,
-        y: 60,
-        rotateX: -15
-    },
-    visible: {
-        opacity: 1,
-        scale: 1,
-        y: 0,
-        rotateX: 0,
-        transition: {
-            type: "spring",
-            stiffness: 200,
-            damping: 30,
-            mass: 1,
-            ease: [0.25, 0.46, 0.45, 0.94]
-        }
-    },
-    exit: {
-        opacity: 0,
-        scale: 0.8,
-        y: 60,
-        rotateX: 15,
-        transition: {
-            duration: 0.3,
-            ease: [0.25, 0.46, 0.45, 0.94]
-        }
-    }
-};
-
-function LoadingSkeleton() {
-    return (
-        <div className="loading-skeleton">
-            {[...Array(4)].map((_, i) => (
-                <motion.div
-                    key={i}
-                    className="skeleton-card"
-                    initial={{ opacity: 0.2, scale: 0.95 }}
-                    animate={{
-                        opacity: [0.2, 0.8, 0.2],
-                        scale: [0.95, 1, 0.95]
-                    }}
-                    transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        delay: i * 0.15,
-                        ease: [0.25, 0.46, 0.45, 0.94]
-                    }}
-                />
-            ))}
-        </div>
-    );
-}
-
-function StatCard({ label, value, icon, color, index, onClick }) {
-    const [isHovered, setIsHovered] = useState(false);
-
-    return (
-        <motion.div
-            className="earning-stat-card"
-            variants={statsVariants}
-            initial="hidden"
-            animate="visible"
-            whileHover={{
-                scale: 1.03,
-                y: -8,
-                boxShadow: `0 15px 35px ${color}25`,
-                transition: {
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 25,
-                    ease: [0.25, 0.46, 0.45, 0.94]
-                }
-            }}
-            whileTap={{
-                scale: 0.98,
-                transition: { duration: 0.1 }
-            }}
-            onHoverStart={() => setIsHovered(true)}
-            onHoverEnd={() => setIsHovered(false)}
-            onClick={onClick}
-            style={{
-                background: `linear-gradient(135deg, ${color}10, ${color}05)`,
-                borderLeft: `4px solid ${color}`,
-                cursor: onClick ? 'pointer' : 'default'
-            }}
-        >
-            <motion.div
-                className="icon"
-                style={{ color }}
-                animate={{
-                    rotate: isHovered ? 360 : 0,
-                    scale: isHovered ? 1.15 : 1
-                }}
-                transition={{
-                    duration: 0.8,
-                    ease: [0.25, 0.46, 0.45, 0.94],
-                    type: "spring",
-                    stiffness: 200
-                }}
-            >
-                {icon}
-            </motion.div>
-            <div className="info">
-                <motion.div
-                    className="label"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                        delay: index * 0.1 + 0.4,
-                        duration: 0.6,
-                        ease: [0.25, 0.46, 0.45, 0.94]
-                    }}
-                >
-                    {label}
-                </motion.div>
-                <motion.div
-                    className="value"
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{
-                        type: "spring",
-                        stiffness: 150,
-                        damping: 20,
-                        delay: index * 0.1 + 0.6,
-                        ease: [0.25, 0.46, 0.45, 0.94]
-                    }}
-                >
-                    {value}
-                </motion.div>
-            </div>
-        </motion.div>
-    );
-}
-
-function CountryModal({ file, isOpen, onClose, t }) {
-    if (!isOpen) return null;
-
-    return (
-        <motion.div
-            className="country-modal-backdrop"
-            onClick={onClose}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{
-                duration: 0.4,
-                ease: [0.25, 0.46, 0.45, 0.94]
-            }}
-        >
-            <motion.div
-                className="country-modal"
-                variants={modalVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <motion.div
-                    className="modal-header"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                        delay: 0.15,
-                        duration: 0.5,
-                        ease: [0.25, 0.46, 0.45, 0.94]
-                    }}
-                >
-                    <h3>
-                        <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{
-                                duration: 3,
-                                repeat: Infinity,
-                                ease: "linear"
-                            }}
-                        >
-                            <FaGlobe />
-                        </motion.div>
-                        {t('earning.countryAnalytics')}
-                    </h3>
-                    <motion.button
-                        className="close-btn"
-                        onClick={onClose}
-                        whileHover={{
-                            scale: 1.1,
-                            rotate: 90,
-                            transition: { duration: 0.3 }
-                        }}
-                        whileTap={{ scale: 0.9 }}
-                    >
-                        <FaTimes />
-                    </motion.button>
-                </motion.div>
-                <motion.div
-                    className="modal-content"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                        delay: 0.25,
-                        duration: 0.5,
-                        ease: [0.25, 0.46, 0.45, 0.94]
-                    }}
-                >
-                    <motion.div
-                        className="file-info-header"
-                        initial={{ x: -20, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        transition={{
-                            delay: 0.35,
-                            duration: 0.5,
-                            ease: [0.25, 0.46, 0.45, 0.94]
-                        }}
-                    >
-                        <h4>{file.fileName}</h4>
-                        <div className="total-views">
-                            <FaChartLine /> {file.views} {t('earning.totalViews')}
-                        </div>
-                    </motion.div>
-                    {file.viewsByCountry && file.viewsByCountry.length > 0 ? (
-                        <motion.ul
-                            className="country-list"
-                            variants={containerVariants}
-                            initial="hidden"
-                            animate="visible"
-                        >
-                            {file.viewsByCountry.map((c, index) => (
-                                <motion.li
-                                    key={c.country}
-                                    className="country-item"
-                                    variants={cardVariants}
-                                    whileHover={{
-                                        scale: 1.02,
-                                        backgroundColor: "#f8fafc",
-                                        transition: {
-                                            duration: 0.3,
-                                            ease: [0.25, 0.46, 0.45, 0.94]
-                                        }
-                                    }}
-                                >
-                                    <div className="country-info">
-                                        <span className="country-flag">🌍</span>
-                                        <span className="country-name">{c.country}</span>
-                                    </div>
-                                    <motion.div
-                                        className="country-views"
-                                        initial={{ scale: 0, opacity: 0 }}
-                                        animate={{ scale: 1, opacity: 1 }}
-                                        transition={{
-                                            delay: index * 0.1 + 0.5,
-                                            type: "spring",
-                                            stiffness: 200,
-                                            damping: 20
-                                        }}
-                                    >
-                                        <FaUsers /> {c.views}
-                                    </motion.div>
-                                </motion.li>
-                            ))}
-                        </motion.ul>
-                    ) : (
-                        <motion.p
-                            className="no-data"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                                delay: 0.4,
-                                duration: 0.5,
-                                ease: [0.25, 0.46, 0.45, 0.94]
-                            }}
-                        >
-                            <FaChartLine /> {t('earning.noCountryData')}
-                        </motion.p>
-                    )}
-                </motion.div>
-            </motion.div>
-        </motion.div>
-    );
-}
-
-function getFileIcon(name) {
-    const ext = name.split('.').pop().toLowerCase();
-    if (["png", "jpg", "jpeg", "gif", "bmp", "svg", "webp"].includes(ext)) return <FaFileImage />;
-    if (["mp4", "avi", "mov", "wmv", "flv", "mkv"].includes(ext)) return <FaFileVideo />;
-    if (["pdf"].includes(ext)) return <FaFilePdf />;
-    if (["doc", "docx"].includes(ext)) return <FaFileWord />;
-    return <FaFileAlt />;
-}
-
-function FileCard({ file, onShowCountries, index, t }) {
-    const [isHovered, setIsHovered] = useState(false);
-
-    return (
-        <motion.div
-            className="earning-file-card"
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-            whileHover={{
-                y: -6,
-                scale: 1.02,
-                boxShadow: "0 20px 40px rgba(99, 102, 241, 0.15)",
-                transition: {
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 25,
-                    ease: [0.25, 0.46, 0.45, 0.94]
-                }
-            }}
-            onHoverStart={() => setIsHovered(true)}
-            onHoverEnd={() => setIsHovered(false)}
-            layout
-            layoutTransition={{
-                type: "spring",
-                stiffness: 200,
-                damping: 25
-            }}
-        >
-            <div className="file-header">
-                <motion.div
-                    className="file-icon-bg"
-                    animate={{
-                        rotate: isHovered ? 8 : 0,
-                        scale: isHovered ? 1.08 : 1
-                    }}
-                    transition={{
-                        duration: 0.4,
-                        ease: [0.25, 0.46, 0.45, 0.94]
-                    }}
-                >
-                    {getFileIcon(file.fileName)}
-                </motion.div>
-                <div className="file-info">
-                    <motion.div
-                        className="file-name"
-                        title={file.fileName}
-                        initial={{ opacity: 0, x: -15 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{
-                            delay: index * 0.08 + 0.3,
-                            duration: 0.5,
-                            ease: [0.25, 0.46, 0.45, 0.94]
-                        }}
-                    >
-                        {file.fileName}
-                    </motion.div>
-                    <motion.div
-                        className="file-actions"
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{
-                            delay: index * 0.08 + 0.4,
-                            duration: 0.5,
-                            ease: [0.25, 0.46, 0.45, 0.94]
-                        }}
-                    >
-                        <motion.a
-                            className="file-link-btn"
-                            href={file.sharedUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            whileHover={{
-                                scale: 1.05,
-                                y: -2,
-                                transition: { duration: 0.2 }
-                            }}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            <FaRocket /> {t('earning.launch')}
-                        </motion.a>
-                        <motion.button
-                            className="countries-btn"
-                            onClick={() => onShowCountries(file)}
-                            whileHover={{
-                                scale: 1.05,
-                                y: -2,
-                                transition: { duration: 0.2 }
-                            }}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            <FaGlobe /> {t('earning.analytics')}
-                        </motion.button>
-                    </motion.div>
-                </div>
-            </div>
-
-            <motion.div
-                className="file-stats"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                    delay: index * 0.08 + 0.5,
-                    duration: 0.5,
-                    ease: [0.25, 0.46, 0.45, 0.94]
-                }}
-            >
-                <motion.div
-                    className="stat-item"
-                    whileHover={{
-                        scale: 1.08,
-                        transition: {
-                            type: "spring",
-                            stiffness: 400,
-                            damping: 25
-                        }
-                    }}
-                >
-                    <motion.div
-                        className="stat-icon"
-                        animate={{
-                            color: isHovered ? "#6366f1" : "#64748b"
-                        }}
-                        transition={{
-                            duration: 0.3,
-                            ease: [0.25, 0.46, 0.45, 0.94]
-                        }}
-                    >
-                        <FaEye />
-                    </motion.div>
-                    <span className="stat-value">{file.views}</span>
-                    <span className="stat-label">{t('earning.views')}</span>
-                </motion.div>
-                <motion.div
-                    className="stat-item"
-                    whileHover={{
-                        scale: 1.08,
-                        transition: {
-                            type: "spring",
-                            stiffness: 400,
-                            damping: 25
-                        }
-                    }}
-                >
-                    <motion.div
-                        className="stat-icon"
-                        animate={{
-                            color: isHovered ? "#4f46e5" : "#64748b"
-                        }}
-                        transition={{
-                            duration: 0.3,
-                            ease: [0.25, 0.46, 0.45, 0.94]
-                        }}
-                    >
-                        <FaDownload />
-                    </motion.div>
-                    <span className="stat-value">{file.downloads}</span>
-                    <span className="stat-label">{t('earning.downloads')}</span>
-                </motion.div>
-            </motion.div>
-
-            <motion.div
-                className="file-date"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{
-                    delay: index * 0.08 + 0.6,
-                    duration: 0.5,
-                    ease: [0.25, 0.46, 0.45, 0.94]
-                }}
-            >
-                {t('earning.lastActivity')}: {new Date(file.lastUpdated).toLocaleDateString()}
-            </motion.div>
-        </motion.div>
-    );
-}
-
-function StatDetailModal({ statType, isOpen, onClose, data, t }) {
-    if (!isOpen) return null;
-
-    const getModalContent = () => {
-        switch (statType) {
-            case 'totalEarnings':
-                return {
-                    title: t('earning.totalEarnings'),
-                    description: t('earning.withdrawableDescription'),
-                    value: data?.withdrawable || '0.00',
-                    currency: data?.currency || 'USD'
-                };
-            case 'views':
-                return {
-                    title: t('earning.totalViews'),
-                    description: t('earning.totalViewsDescription'),
-                    value: data?.totalViews || 0
-                };
-            case 'downloads':
-                return {
-                    title: t('earning.totalDownloads'),
-                    description: t('earning.totalDownloadsDescription'),
-                    value: data?.totalDownloads || 0
-                };
-            case 'links':
-                return {
-                    title: t('earning.totalLinks'),
-                    description: t('earning.totalLinksDescription'),
-                    value: data?.totalLinks || 0
-                };
-            default:
-                return null;
-        }
-    };
-
-    const content = getModalContent();
-    if (!content) return null;
-
-    return (
-        <motion.div
-            className="stat-modal-backdrop"
-            onClick={onClose}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-        >
-            <motion.div
-                className="stat-modal"
-                variants={modalVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div className="stat-modal-header">
-                    <h3>{content.title}</h3>
-                    <button onClick={onClose} className="close-btn">
-                        <FaTimes />
-                    </button>
-                </div>
-                <div className="stat-modal-content">
-                    <div className="stat-modal-value">
-                        {content.value} {content.currency && content.currency}
-                    </div>
-                    <p className="stat-modal-description">{content.description}</p>
-                </div>
-            </motion.div>
-        </motion.div>
-    );
-}
-
 export default function Earning() {
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [selectedStat, setSelectedStat] = useState(null);
     const { t } = useLanguage();
 
-    // Fetch total earnings (for content analytics - only totalEarnings is used here)
-    const { data: earningsData, isLoading: earningsLoading, error: earningsError } = useQuery(
+    // Fetch earnings data
+    const { data: earningsData, isLoading: earningsLoading } = useQuery(
         ['userEarnings'],
-        async () => {
-            if (USE_MOCK_DATA) {
-                // Simulate API delay
-                await new Promise(resolve => setTimeout(resolve, 500));
-                return MOCK_EARNINGS_DATA;
-            }
-            const res = await fetch(EARNINGS_URL, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}));
-                throw new Error(errorData.message || `Failed to fetch earnings: ${res.status}`);
-            }
-            return res.json();
-        },
+        () => promoterService.getUserEarnings(token),
         {
-            enabled: USE_MOCK_DATA || !!token,
+            enabled: !!token,
             retry: 2,
             onError: (error) => {
                 console.error('Error fetching earnings:', error);
@@ -716,79 +50,174 @@ export default function Earning() {
         }
     );
 
-    // Fetch total views/downloads (content analytics)
-    const { data: analyticsData, isLoading: analyticsLoading, error: analyticsError } = useQuery(
-        ['userAnalytics'],
+    const currency = earningsData?.currency || 'USD';
+    const amount = earningsData?.actualIncome || earningsData?.confirmedRewards || '';
+    const review = earningsData?.estimatedIncome || earningsData?.pendingRewards || '';
+    const withdrawn = earningsData?.withdrawn || '';
+
+    const [withdrawalAmount, setWithdrawalAmount] = useState('');
+    const [paymentMethod, setPaymentMethod] = useState('');
+    const [whatsappTelegram, setWhatsappTelegram] = useState('');
+    const [errors, setErrors] = useState({});
+    const [touched, setTouched] = useState({});
+    const [showRecordModal, setShowRecordModal] = useState(false);
+    const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
+    const queryClient = useQueryClient();
+
+    // Payment methods details
+    const paymentMethodsDetails = {
+        'USDT': {
+            min: 10,
+            fees: t('withdrawSection.free') || 'Free',
+            time: t('withdrawSection.within24Hours') || 'Within 24 hours'
+        },
+        'PayPal': {
+            min: 10,
+            fees: t('withdrawSection.free') || 'Free',
+            time: t('withdrawSection.within24Hours') || 'Within 24 hours'
+        },
+        'Payoneer': {
+            min: 10,
+            fees: t('withdrawSection.free') || 'Free',
+            time: t('withdrawSection.within24Hours') || 'Within 24 hours'
+        },
+        'Bank Transfer': {
+            min: 10,
+            fees: t('withdrawSection.free') || 'Free',
+            time: t('withdrawSection.threeToFiveDays') || '3-5 days'
+        }
+    };
+
+    const selectedPaymentDetails = paymentMethod ? paymentMethodsDetails[paymentMethod] : null;
+
+    // Fetch withdrawal history
+    const { data: withdrawalHistory, isLoading: withdrawalHistoryLoading } = useQuery(
+        ['withdrawalHistory'],
         async () => {
-            if (USE_MOCK_DATA) {
-                // Simulate API delay
-                await new Promise(resolve => setTimeout(resolve, 500));
-                return MOCK_ANALYTICS_DATA;
-            }
-            const res = await fetch(ANALYTICS_URL, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}));
-                throw new Error(errorData.message || `Failed to fetch analytics: ${res.status}`);
-            }
-            return res.json();
+            return withdrawalService.getWithdrawalHistory(token);
         },
         {
-            enabled: USE_MOCK_DATA || !!token,
-            retry: 2,
+            enabled: !!token && showRecordModal,
+            retry: false
+        }
+    );
+
+    // Request withdrawal mutation
+    const requestWithdrawalMutation = useMutation(
+        (formData) => withdrawalService.requestWithdrawal(
+            formData.amount,
+            formData.paymentMethod,
+            formData.whatsappNumber,
+            formData.details,
+            token
+        ),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries('withdrawalHistory');
+                queryClient.invalidateQueries('userEarnings');
+                setWithdrawalAmount('');
+                setPaymentMethod('');
+                setWhatsappTelegram('');
+                setErrors({});
+                setTouched({});
+                toast.success(t('withdrawSection.withdrawalRequested') || 'Withdrawal request submitted successfully!', ToastOptions("success"));
+            },
             onError: (error) => {
-                console.error('Error fetching analytics:', error);
+                toast.error(error?.response?.data?.message || t('withdrawSection.withdrawalError') || 'Failed to request withdrawal', ToastOptions("error"));
             }
         }
     );
 
-    // Fetch shared files analytics (for links count)
-    const { data: shareLinksData, isLoading: shareLinksLoading, error: shareLinksError } = useQuery(
-        ['shareLinkAnalytics'],
-        async () => {
-            if (USE_MOCK_DATA) {
-                // Simulate API delay
-                await new Promise(resolve => setTimeout(resolve, 500));
-                return MOCK_SHARE_LINKS_DATA;
-            }
-            const res = await fetch(SHARE_LINK_ANALYTICS_URL, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}));
-                throw new Error(errorData.message || `Failed to fetch share link analytics: ${res.status}`);
-            }
-            return res.json();
-        },
-        {
-            enabled: USE_MOCK_DATA || !!token,
-            retry: 2,
-            onError: (error) => {
-                console.error('Error fetching share link analytics:', error);
-            }
+    // Validation functions
+    const validateWithdrawalAmount = (value) => {
+        if (!value || value.trim() === '') {
+            return t('withdrawSection.amountRequired') || 'Withdrawal amount is required';
         }
-    );
+        const numValue = parseFloat(value);
+        if (isNaN(numValue) || numValue <= 0) {
+            return t('withdrawSection.amountInvalid') || 'Please enter a valid amount';
+        }
+        if (numValue < 10) {
+            return t('withdrawSection.amountMinimum') || 'Minimum withdrawal amount is 10 USD';
+        }
+        if (amount && numValue > parseFloat(amount)) {
+            return t('withdrawSection.amountExceeds') || 'Amount exceeds available balance';
+        }
+        return '';
+    };
 
-    const isLoading = earningsLoading || analyticsLoading || shareLinksLoading;
+    const validatePaymentMethod = (value) => {
+        if (!value || value.trim() === '') {
+            return t('withdrawSection.paymentMethodRequired') || 'Payment method is required';
+        }
+        return '';
+    };
 
-    const totalEarnings = earningsData?.totalEarnings || MOCK_EARNINGS_DATA.totalEarnings;
-    const withdrawable = earningsData?.withdrawable || earningsData?.totalEarnings || MOCK_EARNINGS_DATA.withdrawable;
-    const estimatedIncome = earningsData?.estimatedIncome || earningsData?.pendingRewards || MOCK_EARNINGS_DATA.estimatedIncome;
-    const actualIncome = earningsData?.actualIncome || earningsData?.confirmedRewards || earningsData?.totalEarnings || MOCK_EARNINGS_DATA.actualIncome;
-    const currency = earningsData?.currency || MOCK_EARNINGS_DATA.currency;
-    const totalViews = analyticsData?.totalAnalytics?.totalViews || MOCK_ANALYTICS_DATA.totalAnalytics.totalViews;
-    const totalDownloads = analyticsData?.totalAnalytics?.totalDownloads || MOCK_ANALYTICS_DATA.totalAnalytics.totalDownloads;
-    const files = shareLinksData?.analytics || MOCK_SHARE_LINKS_DATA.analytics;
-    const totalLinks = files.length;
+    const validateWhatsappTelegram = (value) => {
+        if (!value || value.trim() === '') {
+            return t('withdrawSection.accountRequired') || 'WhatsApp/Telegram account is required';
+        }
+        if (value.trim().length < 3) {
+            return t('withdrawSection.accountInvalid') || 'Please enter a valid account';
+        }
+        return '';
+    };
 
-    // Fetch user data to check if user has a plan
-    const { data: userData } = useQuery(
-        ['userAccount'],
-        () => userService.getUserInfo(token),
-        { enabled: !!token, retry: false }
-    );
+    const handleBlur = (field) => {
+        setTouched(prev => ({ ...prev, [field]: true }));
+        validateField(field);
+    };
 
+    const validateField = (field) => {
+        let error = '';
+        switch (field) {
+            case 'withdrawalAmount':
+                error = validateWithdrawalAmount(withdrawalAmount);
+                break;
+            case 'paymentMethod':
+                error = validatePaymentMethod(paymentMethod);
+                break;
+            case 'whatsappTelegram':
+                error = validateWhatsappTelegram(whatsappTelegram);
+                break;
+            default:
+                break;
+        }
+        setErrors(prev => ({ ...prev, [field]: error }));
+        return error === '';
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        
+        // Mark all fields as touched
+        setTouched({
+            withdrawalAmount: true,
+            paymentMethod: true,
+            whatsappTelegram: true
+        });
+
+        // Validate all fields
+        const isAmountValid = validateField('withdrawalAmount');
+        const isPaymentValid = validateField('paymentMethod');
+        const isAccountValid = validateField('whatsappTelegram');
+
+        if (isAmountValid && isPaymentValid && isAccountValid) {
+            // Form is valid, proceed with submission
+            const details = {
+                accountName: whatsappTelegram,
+                username: whatsappTelegram,
+                whatsappNumber: whatsappTelegram
+            };
+            
+            requestWithdrawalMutation.mutate({
+                amount: parseFloat(withdrawalAmount),
+                paymentMethod: paymentMethod,
+                whatsappNumber: whatsappTelegram,
+                details: details
+            });
+        }
+    };
 
     return (
         <motion.div
@@ -801,106 +230,301 @@ export default function Earning() {
                 ease: [0.25, 0.46, 0.45, 0.94]
             }}
         >
-            {/* Header */}
-            <motion.div
-                className="page-header"
-                initial={{ opacity: 0, y: -40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                    duration: 0.8,
-                    delay: 0.1,
-                    ease: [0.25, 0.46, 0.45, 0.94]
-                }}
-            >
-                <h1>{t('earning.analyticsDashboard')}</h1>
-                <p>{t('earning.trackPerformance')}</p>
-            </motion.div>
-
             <div className="earning-container__wrapper">
-                {/* Stats Dashboard */}
-                {isLoading ? (
-                    <LoadingSkeleton />
-                ) : (
+                {/* Account Summary Cards */}
+                <motion.div
+                    className="withdraw-summary-cards"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                >
                     <motion.div
-                        className="earning-stats"
-                        variants={containerVariants}
+                        className="withdraw-summary-card withdraw-summary-card--amount"
+                        variants={cardVariants}
                         initial="hidden"
                         animate="visible"
                     >
-                        <StatCard
-                            label={t('earning.totalViews')}
-                            value={totalViews}
-                            icon={<FaEye />}
-                            color="#6366f1"
-                            index={0}
-                            onClick={() => setSelectedStat('views')}
-                        />
-                        <StatCard
-                            label={t('earning.totalDownloads')}
-                            value={totalDownloads}
-                            icon={<FaDownload />}
-                            color="#6366f1"
-                            index={1}
-                            onClick={() => setSelectedStat('downloads')}
-                        />
-                        <StatCard
-                            label={t('earning.totalLinks')}
-                            value={totalLinks}
-                            icon={<FaLink />}
-                            color="#6366f1"
-                            index={2}
-                            onClick={() => setSelectedStat('links')}
-                        />
-                        <StatCard
-                            label={t('earning.totalEarnings')}
-                            value={`${totalEarnings} ${currency}`}
-                            icon={<FaMoneyBillWave />}
-                            color="#4f46e5"
-                            index={3}
-                            onClick={() => setSelectedStat('totalEarnings')}
-                        />
+                        <div className="withdraw-summary-card__icon withdraw-summary-card__icon--amount">
+                            <FaDollarSign />
+                        </div>
+                        <div className="withdraw-summary-card__content">
+                            <div className="withdraw-summary-card__label">{t('withdrawSection.amount') || 'Amount'}</div>
+                            <div className="withdraw-summary-card__value">
+                                {amount ? `${amount} ${currency}` : '-'}
+                            </div>
+                        </div>
                     </motion.div>
-                )}
 
-                {/* Shared Links Table */}
-                <SharedLinksTable
-                    files={files}
-                    isLoading={isLoading}
-                    t={t}
-                />
+                    <motion.div
+                        className="withdraw-summary-card withdraw-summary-card--review"
+                        variants={cardVariants}
+                        initial="hidden"
+                        animate="visible"
+                    >
+                        <div className="withdraw-summary-card__icon withdraw-summary-card__icon--review">
+                            <FaDollarSign />
+                        </div>
+                        <div className="withdraw-summary-card__content">
+                            <div className="withdraw-summary-card__label">{t('withdrawSection.review') || 'Review'}</div>
+                            <div className="withdraw-summary-card__value">
+                                {review ? `${review} ${currency}` : '-'}
+                            </div>
+                        </div>
+                    </motion.div>
 
+                    <motion.div
+                        className="withdraw-summary-card withdraw-summary-card--withdrawn"
+                        variants={cardVariants}
+                        initial="hidden"
+                        animate="visible"
+                    >
+                        <div className="withdraw-summary-card__icon withdraw-summary-card__icon--withdrawn">
+                            <FaDollarSign />
+                        </div>
+                        <div className="withdraw-summary-card__content">
+                            <div className="withdraw-summary-card__label">{t('withdrawSection.withdrawn') || 'Withdrawn'}</div>
+                            <div className="withdraw-summary-card__value">
+                                {withdrawn ? `${withdrawn} ${currency}` : '-'}
+                            </div>
+                        </div>
+                    </motion.div>
+                </motion.div>
+
+                {/* Apply Section */}
+                <motion.div
+                    className="withdraw-apply-section"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                >
+                    <div className="withdraw-apply-section__header">
+                        <h2 className="withdraw-apply-section__title">{t('withdrawSection.apply') || 'Apply'}</h2>
+                        <button 
+                            type="button"
+                            onClick={() => setShowRecordModal(true)}
+                            className="withdraw-apply-section__link"
+                        >
+                            {t('withdrawSection.record') || 'Record'} <HiArrowRight />
+                        </button>
+                    </div>
+
+                    <form className="withdraw-apply-form" onSubmit={handleSubmit} noValidate>
+                        <div className="withdraw-form-group">
+                            <label className="withdraw-form-label">
+                                * {t('withdrawSection.withdrawalAmount') || 'Withdrawal amount'}
+                            </label>
+                            <input
+                                type="text"
+                                className={`withdraw-form-input ${touched.withdrawalAmount && errors.withdrawalAmount ? 'withdraw-form-input--error' : ''}`}
+                                placeholder={t('withdrawSection.withdrawalAmountPlaceholder') || 'Please enter the requested cash withdrawal amount'}
+                                value={withdrawalAmount}
+                                onChange={(e) => {
+                                    setWithdrawalAmount(e.target.value);
+                                    if (touched.withdrawalAmount) {
+                                        validateField('withdrawalAmount');
+                                    }
+                                }}
+                                onBlur={() => handleBlur('withdrawalAmount')}
+                            />
+                            {touched.withdrawalAmount && errors.withdrawalAmount && (
+                                <span className="withdraw-form-error">{errors.withdrawalAmount}</span>
+                            )}
+                        </div>
+
+                        <div className="withdraw-form-group">
+                            <label className="withdraw-form-label">
+                                * {t('withdrawSection.paymentMethod') || 'Payment method'}
+                            </label>
+                            <div className="withdraw-form-input-wrapper withdraw-payment-dropdown-wrapper">
+                                <div
+                                    className={`withdraw-form-input withdraw-payment-dropdown ${touched.paymentMethod && errors.paymentMethod ? 'withdraw-form-input--error' : ''} ${showPaymentDropdown ? 'withdraw-payment-dropdown--open' : ''}`}
+                                    onClick={() => setShowPaymentDropdown(!showPaymentDropdown)}
+                                    onBlur={() => {
+                                        setTimeout(() => setShowPaymentDropdown(false), 200);
+                                        handleBlur('paymentMethod');
+                                    }}
+                                    tabIndex={0}
+                                >
+                                    <span className="withdraw-payment-dropdown__selected">
+                                        {paymentMethod 
+                                            ? (paymentMethodsDetails[paymentMethod] 
+                                                ? `${paymentMethod} | ${t('withdrawSection.minAmount') || 'Min'}: ${paymentMethodsDetails[paymentMethod].min} ${currency} | ${t('withdrawSection.fees') || 'Fees'}: ${paymentMethodsDetails[paymentMethod].fees} | ${t('withdrawSection.processingTime') || 'Time'}: ${paymentMethodsDetails[paymentMethod].time}`
+                                                : paymentMethod)
+                                            : (t('withdrawSection.paymentMethodPlaceholder') || 'Please enter the payment method')}
+                                    </span>
+                                    <HiChevronDown className={`withdraw-form-select-arrow ${showPaymentDropdown ? 'withdraw-form-select-arrow--open' : ''}`} />
+                                </div>
+                                {showPaymentDropdown && (
+                                    <div className="withdraw-payment-dropdown__menu">
+                                        {Object.keys(paymentMethodsDetails).map((method) => {
+                                            const details = paymentMethodsDetails[method];
+                                            const methodLabel = method === 'USDT' ? t('withdrawSection.usdt') || 'USDT' :
+                                                               method === 'PayPal' ? t('withdrawSection.paypal') || 'PayPal' :
+                                                               method === 'Payoneer' ? t('withdrawSection.payoneer') || 'Payoneer' :
+                                                               t('withdrawSection.bankTransfer') || 'Bank transfer (personal)';
+                                            return (
+                                                <div
+                                                    key={method}
+                                                    className={`withdraw-payment-dropdown__option ${paymentMethod === method ? 'withdraw-payment-dropdown__option--selected' : ''}`}
+                                                    onClick={() => {
+                                                        setPaymentMethod(method);
+                                                        setShowPaymentDropdown(false);
+                                                        if (touched.paymentMethod) {
+                                                            validateField('paymentMethod');
+                                                        }
+                                                    }}
+                                                >
+                                                    <div className="withdraw-payment-dropdown__option-header">
+                                                        <span className="withdraw-payment-dropdown__option-name">{methodLabel}</span>
+                                                    </div>
+                                                    <div className="withdraw-payment-dropdown__option-details">
+                                                        <span className="withdraw-payment-dropdown__option-detail">
+                                                            {t('withdrawSection.minAmount') || 'Min'}: <strong>{details.min} {currency}</strong>
+                                                        </span>
+                                                        <span className="withdraw-payment-dropdown__option-detail">
+                                                            {t('withdrawSection.fees') || 'Fees'}: <strong>{details.fees}</strong>
+                                                        </span>
+                                                        <span className="withdraw-payment-dropdown__option-detail">
+                                                            {t('withdrawSection.processingTime') || 'Time'}: <strong>{details.time}</strong>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                            {touched.paymentMethod && errors.paymentMethod && (
+                                <span className="withdraw-form-error">{errors.paymentMethod}</span>
+                            )}
+                        </div>
+
+                        <div className="withdraw-form-group">
+                            <label className="withdraw-form-label">
+                                * {t('withdrawSection.whatsappTelegram') || 'WhatsApp/Telegram accounts'}
+                            </label>
+                            <div className="withdraw-form-input-wrapper">
+                                <input
+                                    type="text"
+                                    className={`withdraw-form-input ${touched.whatsappTelegram && errors.whatsappTelegram ? 'withdraw-form-input--error' : ''}`}
+                                    placeholder={t('withdrawSection.whatsappTelegramPlaceholder') || 'Please enter the whatsapp/telegram accounts'}
+                                    value={whatsappTelegram}
+                                    onChange={(e) => {
+                                        setWhatsappTelegram(e.target.value);
+                                        if (touched.whatsappTelegram) {
+                                            validateField('whatsappTelegram');
+                                        }
+                                    }}
+                                    onBlur={() => handleBlur('whatsappTelegram')}
+                                    maxLength={50}
+                                />
+                                <span className="withdraw-form-char-count">{whatsappTelegram.length}/50</span>
+                            </div>
+                            {touched.whatsappTelegram && errors.whatsappTelegram && (
+                                <span className="withdraw-form-error">{errors.whatsappTelegram}</span>
+                            )}
+                        </div>
+
+                        <button 
+                            type="submit" 
+                            className="withdraw-submit-button"
+                            disabled={requestWithdrawalMutation.isLoading}
+                        >
+                            {requestWithdrawalMutation.isLoading 
+                                ? (t('withdrawSection.submitting') || 'Submitting...') 
+                                : (t('withdrawSection.withdraw') || 'Withdraw')}
+                        </button>
+                    </form>
+
+                    <div className="withdraw-notice">
+                        <div className="withdraw-notice__title">{t('withdrawSection.notice') || 'Notice:'}</div>
+                        <div className="withdraw-notice__text">{t('withdrawSection.noticeText') || 'The amount of cash withdrawal must be ≥ 10 US dollars If not please go ahead and share the link'}</div>
+                    </div>
+                </motion.div>
             </div>
 
-            {/* Stat Detail Modal */}
-            <AnimatePresence mode="wait">
-                {selectedStat && (
-                    <StatDetailModal
-                        statType={selectedStat}
-                        isOpen={!!selectedStat}
-                        onClose={() => setSelectedStat(null)}
-                        data={{
-                            withdrawable,
-                            estimatedIncome,
-                            actualIncome,
-                            currency,
-                            totalViews,
-                            totalDownloads,
-                            totalLinks
-                        }}
-                        t={t}
-                    />
-                )}
-            </AnimatePresence>
+            {/* Withdrawal Record Modal */}
+            <AnimatePresence>
+                {showRecordModal && (
+                    <motion.div
+                        className="withdraw-record-modal-backdrop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setShowRecordModal(false)}
+                    >
+                        <motion.div
+                            className="withdraw-record-modal"
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="withdraw-record-modal__header">
+                                <h3 className="withdraw-record-modal__title">
+                                    {t('withdrawSection.record') || 'Withdrawal Record'}
+                                </h3>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowRecordModal(false)}
+                                    className="withdraw-record-modal__close"
+                                >
+                                    <FaTimes />
+                                </button>
+                            </div>
 
-            {/* Country Modal */}
-            <AnimatePresence mode="wait">
-                {selectedFile && (
-                    <CountryModal
-                        file={selectedFile}
-                        isOpen={!!selectedFile}
-                        onClose={() => setSelectedFile(null)}
-                        t={t}
-                    />
+                            <div className="withdraw-record-modal__content">
+                                {withdrawalHistoryLoading ? (
+                                    <div className="withdraw-record-modal__loading">
+                                        <div className="withdraw-record-modal__spinner"></div>
+                                        <p>{t('withdrawSection.loadingHistory') || 'Loading withdrawal history...'}</p>
+                                    </div>
+                                ) : withdrawalHistory?.withdrawals?.length > 0 || withdrawalHistory?.data?.length > 0 ? (
+                                    <div className="withdraw-table-container">
+                                        <table className="withdraw-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>{t('withdrawSection.tableDate') || 'Date'}</th>
+                                                    <th>{t('withdrawSection.tableAmount') || 'Amount'}</th>
+                                                    <th>{t('withdrawSection.tableMethod') || 'Payment Method'}</th>
+                                                    <th>{t('withdrawSection.tableStatus') || 'Status'}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {(withdrawalHistory?.withdrawals || withdrawalHistory?.data || []).map((withdrawal, index) => (
+                                                    <tr key={withdrawal?._id || withdrawal?.id || index}>
+                                                        <td className="withdraw-date">
+                                                            {withdrawal?.createdAt 
+                                                                ? new Date(withdrawal.createdAt).toLocaleDateString()
+                                                                : withdrawal?.date || '-'}
+                                                        </td>
+                                                        <td className="withdraw-amount">
+                                                            {withdrawal?.amount || '-'} {withdrawal?.currency || currency}
+                                                        </td>
+                                                        <td className="withdraw-payment-method">
+                                                            {withdrawal?.paymentMethod || '-'}
+                                                        </td>
+                                                        <td>
+                                                            <span className={`withdraw-status withdraw-status--${(withdrawal?.status || 'pending').toLowerCase()}`}>
+                                                                {withdrawal?.status || 'Pending'}
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                ) : (
+                                    <div className="withdraw-table-empty">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        <p>{t('withdrawSection.noWithdrawalHistory') || 'No withdrawal history found'}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    </motion.div>
                 )}
             </AnimatePresence>
         </motion.div>
