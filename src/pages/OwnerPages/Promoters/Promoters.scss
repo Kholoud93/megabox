@@ -140,9 +140,15 @@
                 text-align: left;
                 font-size: 0.75rem;
                 text-transform: uppercase;
+                vertical-align: middle;
 
                 [dir="rtl"] & {
                     text-align: right;
+                }
+                
+                // Center align Actions header
+                &:last-child {
+                    text-align: center;
                 }
             }
         }
@@ -163,7 +169,8 @@
                 }
 
                 @include mix.media-breakpoint-down(md) {
-                    display: block;
+                    display: flex;
+                    flex-direction: column;
                     margin-bottom: 1rem;
                     border: 1px solid #e0e7ff;
                     border-radius: 0.5rem;
@@ -176,9 +183,17 @@
                     padding: 1rem;
                     color: #5b21b6;
                     text-align: left;
+                    vertical-align: middle;
 
                     [dir="rtl"] & {
                         text-align: right;
+                    }
+
+                    // Special alignment for Actions column
+                    &[data-label*="actions"],
+                    &[data-label*="الإجراءات"] {
+                        text-align: center;
+                        vertical-align: middle;
                     }
 
                     @include mix.media-breakpoint-down(md) {
@@ -198,9 +213,34 @@
                             padding-left: 0 !important;
                         }
 
-                        &:last-child {
-                            border-bottom: none !important;
+                        // Actions column should be last and full width
+                        &[data-label*="actions"],
+                        &[data-label*="الإجراءات"] {
+                            padding-left: 0 !important;
+                            padding-right: 0 !important;
                             padding-top: 1rem !important;
+                            border-bottom: none !important;
+                            order: 999; // Ensure it's last
+
+                            [dir="rtl"] & {
+                                padding-left: 0 !important;
+                                padding-right: 0 !important;
+                            }
+
+                            &::before {
+                                display: block;
+                                margin-bottom: 0.5rem;
+                                position: static;
+                                text-align: left;
+
+                                [dir="rtl"] & {
+                                    text-align: right;
+                                }
+                            }
+                        }
+
+                        &:last-child:not([data-label*="actions"]):not([data-label*="الإجراءات"]) {
+                            border-bottom: 1px solid #f3f4f6 !important;
                         }
 
                         &::before {
@@ -224,15 +264,8 @@
                             display: flex;
                             flex-wrap: wrap;
                             gap: 0.5rem;
-                            justify-content: flex-start;
-
-                            [dir="rtl"] & {
-                                justify-content: flex-end;
-                            }
-
-                            @include mix.media-breakpoint-down(md) {
-                                justify-content: center;
-                            }
+                            justify-content: center;
+                            width: 100%;
                         }
                     }
                 }

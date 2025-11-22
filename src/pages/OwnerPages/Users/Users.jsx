@@ -411,8 +411,8 @@ export default function Users() {
                                                     {ele.isBanned ? t("adminUsers.banned") : t("adminUsers.active")}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4" data-label={t("adminUsers.actions")}>
-                                                <div className="flex items-center gap-3">
+                                            <td data-label={t("adminUsers.actions")}>
+                                                <div className="action-buttons">
                                                     <button
                                                         onClick={() => handleNotifyUser(ele)}
                                                         className="text-indigo-600 hover:text-indigo-800 transition-colors"
