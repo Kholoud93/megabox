@@ -535,9 +535,22 @@
   "adminWithdrawals": {
     "title": "إدارة السحوبات",
     "subtitle": "عرض وإدارة جميع طلبات السحب",
-    "loading": "جاري تحميل السحوبات...",
-    "noWithdrawals": "لم يتم العثور على سحوبات",
-    "backToAnalytics": "العودة للتحليلات"
+    "loading": "جارٍ تحميل السحوبات...",
+    "noWithdrawals": "لا توجد سحوبات",
+    "backToAnalytics": "العودة للتحليلات",
+    "user": "المستخدم",
+    "amount": "المبلغ",
+    "paymentMethod": "طريقة الدفع",
+    "status": "الحالة",
+    "date": "التاريخ",
+    "actions": "الإجراءات",
+    "pending": "قيد الانتظار",
+    "approved": "موافق عليه",
+    "rejected": "مرفوض",
+    "approve": "موافقة",
+    "reject": "رفض",
+    "noAction": "لا يوجد إجراء متاح",
+    "noWithdrawalsFound": "لم يتم العثور على سحوبات تطابق معاييرك"
   },
   "adminUsers": {
     "title": "إدارة المستخدمين",

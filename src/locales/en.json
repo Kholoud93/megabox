@@ -537,7 +537,20 @@
     "subtitle": "View and manage all withdrawal requests",
     "loading": "Loading withdrawals...",
     "noWithdrawals": "No withdrawals found",
-    "backToAnalytics": "Back to Analytics"
+    "backToAnalytics": "Back to Analytics",
+    "user": "User",
+    "amount": "Amount",
+    "paymentMethod": "Payment Method",
+    "status": "Status",
+    "date": "Date",
+    "actions": "Actions",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "approve": "Approve",
+    "reject": "Reject",
+    "noAction": "No action available",
+    "noWithdrawalsFound": "No withdrawals found matching your criteria"
   },
   "adminUsers": {
     "title": "Users Management",

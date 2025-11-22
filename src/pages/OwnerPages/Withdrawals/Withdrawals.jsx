@@ -158,89 +158,88 @@ export default function Withdrawals() {
                             onFilterChange={setFilters}
                         />
 
-                        <div className="admin-withdrawals-table">
-                            <table>
-                                <thead>
+                        <div className="admin-withdrawals-table-wrapper">
+                            <table className="admin-users-table">
+                                <thead className="admin-users-table__header">
                                     <tr>
-                                        <th>{t('adminAnalytics.user')}</th>
-                                        <th>{t('adminAnalytics.amount')}</th>
-                                        <th>{t('adminAnalytics.paymentMethod')}</th>
-                                        <th>{t('adminAnalytics.status')}</th>
-                                        <th>{t('adminAnalytics.date')}</th>
-                                        <th>{t('adminAnalytics.actions')}</th>
+                                        <th scope="col">{t('adminWithdrawals.user')}</th>
+                                        <th scope="col">{t('adminWithdrawals.amount')}</th>
+                                        <th scope="col">{t('adminWithdrawals.paymentMethod')}</th>
+                                        <th scope="col">{t('adminWithdrawals.status')}</th>
+                                        <th scope="col">{t('adminWithdrawals.date')}</th>
+                                        <th scope="col">{t('adminWithdrawals.actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredWithdrawals.length > 0 ? (
                                         filteredWithdrawals.map((withdrawal, index) => (
-                                            <motion.tr
-                                                key={withdrawal._id || withdrawal.id || index}
-                                                initial={{ opacity: 0, x: -20 }}
-                                                animate={{ opacity: 1, x: 0 }}
-                                                transition={{ delay: index * 0.05 }}
-                                            >
-                                                <td>
+                                            <tr key={withdrawal._id || withdrawal.id || index}>
+                                                <td data-label={t('adminWithdrawals.user')}>
                                                     {typeof withdrawal.userId === 'object' && withdrawal.userId !== null
                                                         ? (withdrawal.userId.username || withdrawal.userId.email || withdrawal.userId._id || '-')
                                                         : (withdrawal.userId || withdrawal.username || '-')
                                                     }
                                                 </td>
-                                                <td>{withdrawal.amount} {withdrawal.currency || currency}</td>
-                                                <td>{withdrawal.paymentMethod || '-'}</td>
-                                                <td>
+                                                <td data-label={t('adminWithdrawals.amount')}>
+                                                    {withdrawal.amount} {withdrawal.currency || currency}
+                                                </td>
+                                                <td data-label={t('adminWithdrawals.paymentMethod')}>
+                                                    {withdrawal.paymentMethod || '-'}
+                                                </td>
+                                                <td data-label={t('adminWithdrawals.status')}>
                                                     <span className={`status-badge status-${withdrawal.status || 'pending'}`}>
                                                         {withdrawal.status === 'approved'
-                                                            ? t('adminAnalytics.approved')
+                                                            ? t('adminWithdrawals.approved')
                                                             : withdrawal.status === 'pending'
-                                                                ? t('adminAnalytics.pending')
+                                                                ? t('adminWithdrawals.pending')
                                                                 : withdrawal.status === 'rejected'
-                                                                    ? t('adminAnalytics.rejected')
-                                                                    : withdrawal.status || t('adminAnalytics.pending')}
+                                                                    ? t('adminWithdrawals.rejected')
+                                                                    : withdrawal.status || t('adminWithdrawals.pending')}
                                                     </span>
                                                 </td>
-                                                <td>
+                                                <td data-label={t('adminWithdrawals.date')}>
                                                     {withdrawal.createdAt
                                                         ? new Date(withdrawal.createdAt).toLocaleDateString()
                                                         : '-'}
                                                 </td>
-                                                <td>
-                                                    <div className="admin-analytics-actions">
+                                                <td data-label={t('adminWithdrawals.actions')}>
+                                                    <div className="action-buttons">
                                                         {withdrawal.status === 'pending' ? (
                                                             <>
                                                                 <motion.button
-                                                                    className="admin-analytics-actions__btn admin-analytics-actions__btn--approve"
+                                                                    className="admin-withdrawals-actions__btn admin-withdrawals-actions__btn--approve"
                                                                     onClick={() => handleApprove(withdrawal._id || withdrawal.id)}
                                                                     disabled={processingWithdrawals.has(withdrawal._id || withdrawal.id)}
                                                                     whileHover={{ scale: 1.05 }}
                                                                     whileTap={{ scale: 0.95 }}
-                                                                    title={t('adminAnalytics.approve')}
+                                                                    title={t('adminWithdrawals.approve')}
                                                                 >
-                                                                    <FaCheck />
+                                                                    <FaCheck size={18} />
                                                                 </motion.button>
                                                                 <motion.button
-                                                                    className="admin-analytics-actions__btn admin-analytics-actions__btn--reject"
+                                                                    className="admin-withdrawals-actions__btn admin-withdrawals-actions__btn--reject"
                                                                     onClick={() => handleReject(withdrawal._id || withdrawal.id)}
                                                                     disabled={processingWithdrawals.has(withdrawal._id || withdrawal.id)}
                                                                     whileHover={{ scale: 1.05 }}
                                                                     whileTap={{ scale: 0.95 }}
-                                                                    title={t('adminAnalytics.reject')}
+                                                                    title={t('adminWithdrawals.reject')}
                                                                 >
-                                                                    <FaTimes />
+                                                                    <FaTimes size={18} />
                                                                 </motion.button>
                                                             </>
                                                         ) : (
-                                                            <span className="admin-analytics-actions__no-action">
-                                                                {t('adminAnalytics.noAction')}
+                                                            <span className="admin-withdrawals-actions__no-action">
+                                                                {t('adminWithdrawals.noAction')}
                                                             </span>
                                                         )}
                                                     </div>
                                                 </td>
-                                            </motion.tr>
+                                            </tr>
                                         ))
                                     ) : (
                                         <tr>
                                             <td colSpan="6" className="text-center py-8 text-gray-500">
-                                                {t('adminAnalytics.noWithdrawalsFound')}
+                                                {t('adminWithdrawals.noWithdrawalsFound')}
                                             </td>
                                         </tr>
                                     )}
