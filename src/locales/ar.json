@@ -1143,7 +1143,10 @@
     "free": "مجاني",
     "processingTime": "الوقت",
     "within24Hours": "خلال 24 ساعة",
-    "threeToFiveDays": "3-5 أيام"
+    "threeToFiveDays": "3-5 أيام",
+    "submitting": "جارٍ الإرسال...",
+    "withdrawalRequested": "تم إرسال طلب السحب بنجاح!",
+    "withdrawalError": "فشل إرسال طلب السحب"
   },
   "adminPagination": {
     "page": "صفحة",

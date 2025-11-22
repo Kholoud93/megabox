@@ -1143,7 +1143,10 @@
     "free": "Free",
     "processingTime": "Time",
     "within24Hours": "Within 24 hours",
-    "threeToFiveDays": "3-5 days"
+    "threeToFiveDays": "3-5 days",
+    "submitting": "Submitting...",
+    "withdrawalRequested": "Withdrawal request submitted successfully!",
+    "withdrawalError": "Failed to request withdrawal"
   },
   "adminPagination": {
     "page": "Page",

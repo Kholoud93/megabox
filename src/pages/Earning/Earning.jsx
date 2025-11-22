@@ -8,6 +8,9 @@ import { HiArrowRight, HiChevronDown } from 'react-icons/hi2';
 import { promoterService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { withdrawalService } from '../../services/withdrawalService';
+import { useMutation, useQueryClient } from 'react-query';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../helpers/ToastOptions';
 
 const cardVariants = {
     hidden: {
@@ -59,6 +62,7 @@ export default function Earning() {
     const [touched, setTouched] = useState({});
     const [showRecordModal, setShowRecordModal] = useState(false);
     const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
+    const queryClient = useQueryClient();
 
     // Payment methods details
     const paymentMethodsDetails = {
@@ -95,6 +99,32 @@ export default function Earning() {
         {
             enabled: !!token && showRecordModal,
             retry: false
+        }
+    );
+
+    // Request withdrawal mutation
+    const requestWithdrawalMutation = useMutation(
+        (formData) => withdrawalService.requestWithdrawal(
+            formData.amount,
+            formData.paymentMethod,
+            formData.whatsappNumber,
+            formData.details,
+            token
+        ),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries('withdrawalHistory');
+                queryClient.invalidateQueries('userEarnings');
+                setWithdrawalAmount('');
+                setPaymentMethod('');
+                setWhatsappTelegram('');
+                setErrors({});
+                setTouched({});
+                toast.success(t('withdrawSection.withdrawalRequested') || 'Withdrawal request submitted successfully!', ToastOptions("success"));
+            },
+            onError: (error) => {
+                toast.error(error?.response?.data?.message || t('withdrawSection.withdrawalError') || 'Failed to request withdrawal', ToastOptions("error"));
+            }
         }
     );
 
@@ -174,12 +204,18 @@ export default function Earning() {
 
         if (isAmountValid && isPaymentValid && isAccountValid) {
             // Form is valid, proceed with submission
-            console.log('Form submitted:', {
-                withdrawalAmount,
-                paymentMethod,
-                whatsappTelegram
+            const details = {
+                accountName: whatsappTelegram,
+                username: whatsappTelegram,
+                whatsappNumber: whatsappTelegram
+            };
+            
+            requestWithdrawalMutation.mutate({
+                amount: parseFloat(withdrawalAmount),
+                paymentMethod: paymentMethod,
+                whatsappNumber: whatsappTelegram,
+                details: details
             });
-            // TODO: Add API call here
         }
     };
 
@@ -389,8 +425,14 @@ export default function Earning() {
                             )}
                         </div>
 
-                        <button type="submit" className="withdraw-submit-button">
-                            {t('withdrawSection.withdraw') || 'Withdraw'}
+                        <button 
+                            type="submit" 
+                            className="withdraw-submit-button"
+                            disabled={requestWithdrawalMutation.isLoading}
+                        >
+                            {requestWithdrawalMutation.isLoading 
+                                ? (t('withdrawSection.submitting') || 'Submitting...') 
+                                : (t('withdrawSection.withdraw') || 'Withdraw')}
                         </button>
                     </form>
 
