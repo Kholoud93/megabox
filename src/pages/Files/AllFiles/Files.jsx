@@ -753,6 +753,7 @@ export default function Files() {
                     onClose={ToggleUploadOptions}
                     onSelectDesktop={handleSelectDesktop}
                     onSelectMegaBox={handleSelectMegaBox}
+                    isPromoter={isPromoter}
                 />
             )}
             {AddFileShow && <UploadFile key="upload-file" ToggleUploadFile={ToggleShowAddFile} refetch={refetch} />}

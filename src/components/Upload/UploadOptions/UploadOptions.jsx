@@ -6,7 +6,7 @@ import { PreventFunction } from '../../../helpers/Prevent';
 import { useLanguage } from '../../../context/LanguageContext';
 import './UploadOptions.scss';
 
-export default function UploadOptions({ onClose, onSelectDesktop, onSelectMegaBox }) {
+export default function UploadOptions({ onClose, onSelectDesktop, onSelectMegaBox, isPromoter = false }) {
     const { t } = useLanguage();
 
     return (
@@ -53,21 +53,23 @@ export default function UploadOptions({ onClose, onSelectDesktop, onSelectMegaBo
                         </div>
                     </button>
 
-                    <button
-                        className="UploadOptions_option"
-                        onClick={() => {
-                            onSelectMegaBox();
-                            onClose();
-                        }}
-                    >
-                        <div className="UploadOptions_option_icon">
-                            <HiCloud />
-                        </div>
-                        <div className="UploadOptions_option_content">
-                            <h3 className="UploadOptions_option_title">{t("uploadOptions.fromMegaBox")}</h3>
-                            <p className="UploadOptions_option_desc">{t("uploadOptions.fromMegaBoxDesc")}</p>
-                        </div>
-                    </button>
+                    {isPromoter && (
+                        <button
+                            className="UploadOptions_option"
+                            onClick={() => {
+                                onSelectMegaBox();
+                                onClose();
+                            }}
+                        >
+                            <div className="UploadOptions_option_icon">
+                                <HiCloud />
+                            </div>
+                            <div className="UploadOptions_option_content">
+                                <h3 className="UploadOptions_option_title">{t("uploadOptions.fromMegaBox")}</h3>
+                                <p className="UploadOptions_option_desc">{t("uploadOptions.fromMegaBoxDesc")}</p>
+                            </div>
+                        </button>
+                    )}
                 </div>
             </motion.div>
         </motion.div>

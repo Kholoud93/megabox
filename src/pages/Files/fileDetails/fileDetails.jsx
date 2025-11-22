@@ -284,6 +284,7 @@ export default function fileDetails() {
                     onClose={ToggleUploadOptions}
                     onSelectDesktop={handleSelectDesktop}
                     onSelectMegaBox={handleSelectMegaBox}
+                    isPromoter={false}
                 />
             )}
             {AddFileShow && <UploadFile key="upload-file" ToggleUploadFile={ToggleShowAddFile} refetch={refetch} insideFile={true} id={fileId} />}

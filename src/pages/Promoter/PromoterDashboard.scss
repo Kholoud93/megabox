@@ -15,7 +15,7 @@
             padding: 0 1rem;
 
             @include mixins.media-breakpoint-down(md) {
-                padding: 0 1rem;
+                padding: 0 1.5rem;
             }
         }
     }

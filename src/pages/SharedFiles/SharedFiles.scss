@@ -43,7 +43,7 @@
         gap: 0;
 
         @include mix.media-breakpoint-down(md) {
-            padding: 0 1rem;
+            padding: 0 1.5rem;
         }
     }
 }

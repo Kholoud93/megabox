@@ -14,7 +14,7 @@
     
     // Extra small screens (< 640px)
     @media (max-width: 639px) {
-      padding: 0 0.375rem !important;
+      padding: 0 1rem !important;
     }
 
     @include mix.media-breakpoint-up(sm) {
