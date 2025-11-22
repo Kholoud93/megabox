@@ -7,7 +7,7 @@ import { LuFolderOpen } from "react-icons/lu";
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
 import { useCookies } from 'react-cookie';
-import { API_URL } from '../../../services/api';
+import { API_URL, fileService, userService } from '../../../services/api';
 import axios from 'axios';
 import { HiArrowPath } from "react-icons/hi2";
 import { HiTrash } from "react-icons/hi2";
@@ -98,7 +98,6 @@ export default function UploadFile({ ToggleUploadFile, refetch, insideFile, id }
         }
 
         setUploadLoading(true);
-        const userUrl = insideFile ? `user/createFile/${id}` : "auth/createFile";
         let successCount = 0;
         let failCount = 0;
 
@@ -109,16 +108,16 @@ export default function UploadFile({ ToggleUploadFile, refetch, insideFile, id }
             try {
                 setUploadProgress(prev => ({ ...prev, [i]: 'uploading' }));
 
-                const formData = new FormData();
-                formData.append("file", file);
+                let data;
+                if (insideFile) {
+                    // Upload file to folder
+                    data = await userService.createFileInFolder(id, file, Token.MegaBox);
+                } else {
+                    // Upload file to root
+                    data = await fileService.uploadFile(file, Token.MegaBox);
+                }
 
-                const { data } = await axios.post(`${API_URL}/${userUrl}`, formData, {
-                    headers: {
-                        Authorization: `Bearer ${Token.MegaBox}`
-                    }
-                });
-
-                if (data?.message === "✅ تم رفع الملف بنجاح") {
+                if (data === true || data?.message === "✅ تم رفع الملف بنجاح") {
                     setUploadProgress(prev => ({ ...prev, [i]: 'success' }));
                     successCount++;
                 } else {

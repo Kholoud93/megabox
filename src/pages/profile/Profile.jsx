@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { API_URL, userService } from '../../services/api';
+import { API_URL, userService, fileService } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaCamera, FaEdit, FaSave, FaTimes, FaCrown, FaUser, FaTrash } from 'react-icons/fa';
@@ -26,13 +26,8 @@ export default function Profile() {
     const premiumFileInputRef = useRef(null);
 
     const GetUserStorage = async () => {
-        const response = await axios.get(`${API_URL}/auth/getUserStorageUsage`, {
-            headers: {
-                Authorization: `Bearer ${Token.MegaBox}`
-            }
-        });
-
-        return response?.data
+        const response = await fileService.getUserStorageUsage(Token.MegaBox);
+        return response?.data || response;
     }
 
     const { data: userStorage, isLoading: StorageLoading } = useQuery("Get user storage", GetUserStorage, {

@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useCookies } from 'react-cookie';
 import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
-import { API_URL } from '../../../services/api';
+import { API_URL, userService, fileService } from '../../../services/api';
 import { getFileCategory } from '../../../helpers/MimeType';
 import File from '../../../components/File/File';
 import { AnimatePresence } from 'framer-motion';
@@ -32,18 +32,8 @@ export default function fileDetails() {
 
     const GetFiles = async ({ queryKey }) => {
         const [, filterKey] = queryKey;
-        const config = {
-            headers: {
-                Authorization: `Bearer ${Token.MegaBox}`,
-            },
-        };
-
-        if (filterKey.toLowerCase() !== 'all') {
-            config.params = { type: filterKey };
-        }
-
-        const { data } = await axios.get(`${API_URL}/user/getFolderFiles/${fileId}`, config);
-        return data;
+        const type = filterKey.toLowerCase() !== 'all' ? filterKey : null;
+        return await userService.getFolderFiles(fileId, type, Token.MegaBox);
     };
 
     const [AddFileShow, setAddFileShow] = useState(false);
@@ -105,15 +95,9 @@ export default function fileDetails() {
         try {
             if (isFolder) {
                 // Share folder
-                const response = await axios.post(`${API_URL}/user/generateFolderShareLink`, {
-                    folderId: id
-                }, {
-                    headers: {
-                        'Authorization': `Bearer ${Token.MegaBox}`
-                    }
-                });
+                const response = await userService.generateFolderShareLink(id, Token.MegaBox);
                 // Handle both shareUrl and shareLink properties
-                const link = response.data?.shareUrl || response.data?.shareLink;
+                const link = response?.shareUrl || response?.shareLink;
                 if (link) {
                     setShareUrl(link);
                     setShareTitle("Share Folder");
@@ -123,13 +107,7 @@ export default function fileDetails() {
                 }
             } else {
                 // Share file
-                const response = await axios.post(`${API_URL}/auth/generateShareLink`, {
-                    fileId: id
-                }, {
-                    headers: {
-                        'Authorization': `Bearer ${Token.MegaBox}`
-                    }
-                });
+                const response = await fileService.generateShareLink(id, Token.MegaBox);
                 // Handle both shareUrl and shareLink properties
                 const link = response.data?.shareUrl || response.data?.shareLink || response.data?.data?.shareLink || response.data?.data?.shareUrl;
                 if (link) {

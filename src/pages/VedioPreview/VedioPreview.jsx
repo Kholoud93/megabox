@@ -24,7 +24,7 @@ export default function VedioPreview() {
 
     const GetFileData = async (id) => {
         try {
-            const { data } = await axios.get(`${API_URL}/auth/getSharedFile/${id}`);
+            const data = await fileService.getSharedFile(id);
             console.log({
                 ...data?.file,
                 fileType: GetFileTypeByName(data?.file?.name)

@@ -204,14 +204,7 @@ export default function Files() {
     const { data, refetch, isLoading: filesLoading } = useQuery(["GetUserFiles", FilterKey], GetFiles);
 
     const Getfolders = async () => {
-        const config = {
-            headers: {
-                Authorization: `Bearer ${Token.MegaBox}`,
-            },
-        };
-
-        const { data } = await axios.get(`${API_URL}/user/getUserFolders`, config);
-        return data;
+        return await userService.getUserFolders(Token.MegaBox);
     };
 
     const { data: folders, refetch: refFolders, isLoading: foldersLoading } = useQuery("GetUserFolders", Getfolders);
@@ -255,15 +248,9 @@ export default function Files() {
 
     const DeleteFolder = async (folderId) => {
         try {
-            const response = await axios.delete(`${API_URL}/user/deleteFolder/${folderId}`, {
-                headers: {
-                    Authorization: `Bearer ${Token.MegaBox}`
-                }
-            });
-            if (response.status === 200 || response.data?.message?.includes('نجاح')) {
-                toast.success(t("files.folderDeletedSuccess"), ToastOptions("success"));
-                refFolders();
-            }
+            await userService.deleteFolder(folderId, Token.MegaBox);
+            toast.success(t("files.folderDeletedSuccess"), ToastOptions("success"));
+            refFolders();
         } catch (error) {
             toast.error(t("files.folderDeleteFailed"), ToastOptions("error"));
         }
@@ -282,14 +269,8 @@ export default function Files() {
     const ShareFile = async (id, isFolder = false) => {
         try {
             if (isFolder) {
-                const response = await axios.post(`${API_URL}/user/generateFolderShareLink`, {
-                    folderId: id
-                }, {
-                    headers: {
-                        'Authorization': `Bearer ${Token.MegaBox}`
-                    }
-                });
-                const link = response.data?.shareUrl || response.data?.shareLink;
+                const response = await userService.generateFolderShareLink(id, Token.MegaBox);
+                const link = response?.shareUrl || response?.shareLink;
                 if (link) {
                     setShareUrl(link);
                     setShareTitle("Share Folder");
@@ -298,13 +279,7 @@ export default function Files() {
                     toast.error("Failed to generate share link", ToastOptions("error"));
                 }
             } else {
-                const response = await axios.post(`${API_URL}/auth/generateShareLink`, {
-                    fileId: id
-                }, {
-                    headers: {
-                        'Authorization': `Bearer ${Token.MegaBox}`
-                    }
-                });
+                const response = await fileService.generateShareLink(id, Token.MegaBox);
                 const link = response.data?.shareUrl || response.data?.shareLink || response.data?.data?.shareLink || response.data?.data?.shareUrl;
                 if (link) {
                     setShareUrl(link);

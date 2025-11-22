@@ -6,7 +6,7 @@ import { PreventFunction } from '../../../helpers/Prevent';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useCookies } from 'react-cookie';
 import { useQuery } from 'react-query';
-import { fileService } from '../../../services/api';
+import { fileService, userService } from '../../../services/api';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
 import axios from 'axios';
@@ -80,7 +80,6 @@ export default function UploadFromMegaBox({ ToggleUploadFile, refetch, insideFil
         }
 
         setUploadLoading(true);
-        const userUrl = insideFile ? `user/createFile/${id}` : "auth/createFile";
         let successCount = 0;
         let failCount = 0;
 
@@ -93,21 +92,45 @@ export default function UploadFromMegaBox({ ToggleUploadFile, refetch, insideFil
                 setUploadProgress(prev => ({ ...prev, [i]: 'uploading' }));
 
                 // Copy file by creating a new file entry with the same URL
-                const { data } = await axios.post(
-                    `${API_URL}/${userUrl}`,
-                    {
-                        fileName: file.fileName || file.name,
-                        fileType: file.fileType,
-                        url: file.url || file.fileUrl,
-                        size: file.size
-                    },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${Token.MegaBox}`,
-                            'Content-Type': 'application/json'
+                let data;
+                if (insideFile) {
+                    // Upload file to folder - Note: This endpoint might need file object, check API
+                    // For now, using axios as the endpoint might expect different format
+                    const response = await axios.post(
+                        `${API_URL}/user/createFile/${id}`,
+                        {
+                            fileName: file.fileName || file.name,
+                            fileType: file.fileType,
+                            url: file.url || file.fileUrl,
+                            size: file.size
+                        },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${Token.MegaBox}`,
+                                'Content-Type': 'application/json'
+                            }
                         }
-                    }
-                );
+                    );
+                    data = response.data;
+                } else {
+                    // Upload file to root - Note: This endpoint might need file object, check API
+                    const response = await axios.post(
+                        `${API_URL}/auth/createFile`,
+                        {
+                            fileName: file.fileName || file.name,
+                            fileType: file.fileType,
+                            url: file.url || file.fileUrl,
+                            size: file.size
+                        },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${Token.MegaBox}`,
+                                'Content-Type': 'application/json'
+                            }
+                        }
+                    );
+                    data = response.data;
+                }
 
                 if (data?.message === "✅ تم رفع الملف بنجاح" || data?.success) {
                     setUploadProgress(prev => ({ ...prev, [i]: 'success' }));

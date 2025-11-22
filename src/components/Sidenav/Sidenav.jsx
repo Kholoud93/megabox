@@ -92,9 +92,7 @@ export default function Sidenav({ role }) {
     const GetFolders = async () => {
         if (!Token.MegaBox || role !== "User") return { folders: [] };
         try {
-            const { data } = await axios.get(`${API_URL}/user/getUserFolders`, {
-                headers: { Authorization: `Bearer ${Token.MegaBox}` }
-            });
+            const data = await userService.getUserFolders(Token.MegaBox);
             return data || { folders: [] };
         } catch (error) {
             return { folders: [] };
@@ -357,13 +355,8 @@ export default function Sidenav({ role }) {
                                                     
                                                     if (open) {
                                                         // Always refetch folder files when opening to get latest data
-                                                        axios.get(
-                                                            `${API_URL}/user/getFolderFiles/${folderId}`, 
-                                                            {
-                                                                headers: { Authorization: `Bearer ${Token.MegaBox}` }
-                                                            }
-                                                        )
-                                                        .then(({ data }) => {
+                                                        userService.getFolderFiles(folderId, null, Token.MegaBox)
+                                                        .then((data) => {
                                                             setFolderFiles(prev => ({
                                                                 ...prev,
                                                                 [folderId]: data?.files || []
