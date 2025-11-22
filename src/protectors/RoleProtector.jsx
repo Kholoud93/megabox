@@ -7,8 +7,8 @@ import Loading from '../components/Loading/Loading';
 
 // TESTING MODE: Set to true to allow access to Owner pages for testing
 // WARNING: Set this back to false before deploying to production!
-const TESTING_MODE = true;
-const ALLOW_OWNER_ACCESS_IN_TESTING = true; // Allow access to Owner pages in testing mode
+const TESTING_MODE = false; // Disabled for production - Owner pages are now protected
+const ALLOW_OWNER_ACCESS_IN_TESTING = false; // Disabled - Owner pages are now protected
 
 export default function RoleProtector({ children, requiredRole }) {
     // TESTING MODE: Completely bypass all checks for Owner pages

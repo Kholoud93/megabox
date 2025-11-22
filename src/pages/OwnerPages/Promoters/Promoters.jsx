@@ -1,20 +1,31 @@
-import React, { useRef, useState, useMemo } from 'react'
+import React, { useRef, useState, useMemo, useEffect } from 'react'
 import "./Promoters.scss"
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import axios from 'axios';
-import { motion, useInView } from 'framer-motion';
-import { API_URL } from '../../../services/api';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { API_URL, adminService } from '../../../services/api';
 import { Link, useNavigate } from 'react-router-dom';
 import { TbDeviceAnalytics } from "react-icons/tb";
 import { MdDelete } from "react-icons/md";
 import { MdAttachMoney } from "react-icons/md";
 import { useLanguage } from '../../../context/LanguageContext';
+import { useCookies } from 'react-cookie';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../../helpers/ToastOptions';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
+import Pagination from '../../../components/Pagination/Pagination';
 
 export default function Promoters() {
     const { t } = useLanguage();
     const [searchTerm, setSearchTerm] = useState('');
     const [filters, setFilters] = useState({});
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+    const [deleteConfirm, setDeleteConfirm] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [cookies] = useCookies(['MegaBox']);
+    const token = cookies.MegaBox;
+    const queryClient = useQueryClient();
 
     const animationRef = useRef();
     const animationInView = useInView(animationRef, { once: true });
@@ -74,6 +85,34 @@ export default function Promoters() {
         });
     }, [Promoters, searchTerm, filters]);
 
+    // Pagination logic
+    const totalPages = Math.ceil(filteredPromoters.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedPromoters = filteredPromoters.slice(startIndex, endIndex);
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, filters]);
+
+    // Handle delete promoter
+    const handleDeletePromoter = async () => {
+        if (!deleteConfirm) return;
+        
+        setIsDeleting(true);
+        try {
+            await adminService.deletePromoter(deleteConfirm._id || deleteConfirm.id, token);
+            toast.success(t("adminPromoters.promoterDeletedSuccess") || "Promoter deleted successfully", ToastOptions("success"));
+            queryClient.invalidateQueries("getAllPromoters");
+            setDeleteConfirm(null);
+        } catch (error) {
+            toast.error(error.response?.data?.message || t("adminPromoters.deletePromoterFailed") || "Failed to delete promoter", ToastOptions("error"));
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     // Filter configuration
     const filterConfig = [
         {
@@ -97,7 +136,8 @@ export default function Promoters() {
     ];
 
     return (
-        <>
+        <div className="admin-promoters-page">
+            <div className="admin-promoters-page__wrapper">
             <motion.div
                 layout
                 ref={animationRef}
@@ -114,15 +154,23 @@ export default function Promoters() {
                         onFilterChange={setFilters}
                     />
                     {Promoters && (
-                        <p className="text-sm text-gray-600 mt-2">
-                            {filteredPromoters.length} {t('adminPromoters.of')} {Promoters.length} {t('adminPromoters.promoters')}
+                        <p className="admin-users-count text-sm text-gray-600 mt-2">
+                            {paginatedPromoters.length > 0 ? (
+                                <>
+                                    {startIndex + 1}-{Math.min(endIndex, filteredPromoters.length)} {t('adminPromoters.of')} {filteredPromoters.length} {t('adminPromoters.promoters')}
+                                </>
+                            ) : (
+                                <>
+                                    0 {t('adminPromoters.of')} {filteredPromoters.length} {t('adminPromoters.promoters')}
+                                </>
+                            )}
                         </p>
                     )}
                 </div>
 
                 <div className="overflow-x-auto shadow-md sm:rounded-lg">
-                    <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                    <table className="admin-users-table">
+                        <thead className="admin-users-table__header">
                             <tr>
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.username")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.email")}</th>
@@ -132,14 +180,14 @@ export default function Promoters() {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredPromoters.length > 0 ? (
-                                filteredPromoters.map((ele, index) => {
+                            {paginatedPromoters.length > 0 ? (
+                                paginatedPromoters.map((ele, index) => {
                                     return (
-                                        <tr key={index} className="bg-white border-b hover:bg-gray-50">
-                                            <td className="px-6 py-4">{ele.username}</td>
-                                            <td className="px-6 py-4">{ele.email}</td>
+                                        <tr key={ele._id || ele.id || index}>
+                                            <td data-label={t("adminPromoters.username")}>{ele.username}</td>
+                                            <td data-label={t("adminPromoters.email")}>{ele.email}</td>
 
-                                            <td className="px-6 py-4">
+                                            <td data-label={t("adminPromoters.watchingPlan")}>
                                                 {ele?.watchingplan ? (
                                                     <span className='text-green-700'>{t("adminPromoters.subscribed")}</span>
                                                 ) : (
@@ -147,7 +195,7 @@ export default function Promoters() {
                                                 )}
                                             </td>
 
-                                            <td className="px-6 py-4">
+                                            <td data-label={t("adminPromoters.downloadsPlan")}>
                                                 {ele?.Downloadsplan ? (
                                                     <span className='text-green-700'>{t("adminPromoters.subscribed")}</span>
                                                 ) : (
@@ -155,24 +203,23 @@ export default function Promoters() {
                                                 )}
                                             </td>
 
-                                            <td className="px-6 py-4 svg-del">
-                                                <div className="w-full flex gap-2">
+                                            <td data-label={t("adminPromoters.actions")}>
+                                                <div className="action-buttons">
                                                     <Link
                                                         title={t("adminPromoters.viewEarnings")}
                                                         to={`/Owner/Promoter/${ele?._id}`}
-                                                        className="text-blue-600 hover:text-blue-800"
+                                                        className="text-indigo-600 hover:text-indigo-800 transition-colors"
                                                     >
-                                                        <MdAttachMoney className='Analysis' size={20} />
+                                                        <MdAttachMoney size={20} />
                                                     </Link>
                                                     <button
                                                         title={t("adminPromoters.delete")}
-                                                        onClick={() => { }}
-                                                        className="text-blue-600 hover:text-blue-800"
+                                                        onClick={() => setDeleteConfirm(ele)}
+                                                        className="text-red-600 hover:text-red-800 transition-colors"
                                                     >
-                                                        <MdDelete className='text-red-600 hover:text-red-800' size={20} />
+                                                        <MdDelete size={20} />
                                                     </button>
                                                 </div>
-
                                             </td>
                                         </tr>
                                     )
@@ -186,7 +233,61 @@ export default function Promoters() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Pagination */}
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    showCount={true}
+                    startIndex={startIndex}
+                    endIndex={Math.min(endIndex, filteredPromoters.length)}
+                    totalItems={filteredPromoters.length}
+                    itemsLabel={t('adminPromoters.promoters')}
+                />
             </motion.div>
-        </>
+            </div>
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {deleteConfirm && (
+                    <motion.div
+                        className="admin-delete-modal-backdrop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => !isDeleting && setDeleteConfirm(null)}
+                    >
+                        <motion.div
+                            className="admin-delete-modal"
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <h3>{t("adminPromoters.deletePromoter")}</h3>
+                            <p>{t("adminPromoters.deletePromoterConfirm") || `Are you sure you want to delete ${deleteConfirm.username || deleteConfirm.email}?`}</p>
+                            <p className="admin-delete-modal__warning">{t("adminPromoters.deletePromoterWarning") || "This action cannot be undone."}</p>
+                            <div className="admin-delete-modal__actions">
+                                <button
+                                    onClick={() => setDeleteConfirm(null)}
+                                    disabled={isDeleting}
+                                    className="admin-delete-modal__btn admin-delete-modal__btn--cancel"
+                                >
+                                    {t("adminUsers.cancel")}
+                                </button>
+                                <button
+                                    onClick={handleDeletePromoter}
+                                    disabled={isDeleting}
+                                    className="admin-delete-modal__btn admin-delete-modal__btn--delete"
+                                >
+                                    {isDeleting ? t("adminUsers.deleting") || "Deleting..." : t("adminUsers.delete")}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
     )
 }

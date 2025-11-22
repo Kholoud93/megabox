@@ -4,54 +4,19 @@ import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    FaTimes, FaHistory, FaMoneyBillWave, FaWallet
+    FaTimes, FaHistory, FaMoneyBillWave, FaWallet, FaShare, FaChartLine, FaDollarSign, FaDownload
 } from 'react-icons/fa';
 import { MdPendingActions } from "react-icons/md";
 import { MdOutlineAssuredWorkload } from "react-icons/md";
 import { GiTakeMyMoney } from "react-icons/gi";
-import { API_URL, withdrawalService, userService } from '../../services/api';
+import { withdrawalService, userService, promoterService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
+import EmptyState from '../../components/EmptyState/EmptyState';
+import { useNavigate } from 'react-router-dom';
 
-const EARNINGS_URL = `${API_URL}/auth/getUserEarnings`;
-
-// Mock data for UI display
-const MOCK_EARNINGS_DATA = {
-    totalEarnings: '1,250.50',
-    pendingRewards: '350.25',
-    confirmedRewards: '900.25',
-    withdrawable: '900.25',
-    currency: 'USD'
-};
-
-const MOCK_WITHDRAWAL_HISTORY = {
-    withdrawals: [
-        {
-            amount: '500.00',
-            currency: 'USD',
-            paymentMethod: 'Vodafone Cash',
-            status: 'approved',
-            createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            amount: '250.50',
-            currency: 'USD',
-            paymentMethod: 'Orange Money',
-            status: 'pending',
-            createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            amount: '150.75',
-            currency: 'USD',
-            paymentMethod: 'Bank Transfer',
-            status: 'approved',
-            createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
-        }
-    ]
-};
-
-const USE_MOCK_DATA = true; // Set to false to use real API data
+const USE_MOCK_DATA = false; // Use real API data
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -221,6 +186,7 @@ function StatCard({ label, value, icon, color, index, onClick }) {
 export default function PromoterDashboard() {
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
+    const navigate = useNavigate();
     const [showWithdrawalModal, setShowWithdrawalModal] = useState(false);
     const [withdrawalForm, setWithdrawalForm] = useState({
         amount: '',
@@ -238,40 +204,18 @@ export default function PromoterDashboard() {
     // Fetch promoter earnings (financial data: pending, confirmed, total earnings)
     const { data: earningsData, isLoading: earningsLoading, error: earningsError } = useQuery(
         ['promoterEarnings'],
-        async () => {
-            if (USE_MOCK_DATA) {
-                // Simulate API delay
-                await new Promise(resolve => setTimeout(resolve, 500));
-                return MOCK_EARNINGS_DATA;
-            }
-            const res = await fetch(EARNINGS_URL, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}));
-                throw new Error(errorData.message || `Failed to fetch promoter earnings: ${res.status}`);
-            }
-            return res.json();
-        },
+        () => promoterService.getUserEarnings(token),
         {
-            enabled: USE_MOCK_DATA || !!token,
+            enabled: !!token,
             retry: 2,
             onError: (error) => {
                 console.error('Error fetching promoter earnings:', error);
-                if (!USE_MOCK_DATA) {
-                    toast.error(error.message || t('promoterDashboard.fetchError') || 'Failed to fetch earnings', ToastOptions("error"));
-                }
+                toast.error(error.message || t('promoterDashboard.fetchError') || 'Failed to fetch earnings', ToastOptions("error"));
             }
         }
     );
 
     const isLoading = earningsLoading;
-
-    const totalEarnings = earningsData?.totalEarnings || MOCK_EARNINGS_DATA.totalEarnings;
-    const pendingEarnings = earningsData?.pendingRewards || MOCK_EARNINGS_DATA.pendingRewards;
-    const confirmedEarnings = earningsData?.confirmedRewards || MOCK_EARNINGS_DATA.confirmedRewards;
-    const withdrawable = earningsData?.withdrawable || earningsData?.totalEarnings || MOCK_EARNINGS_DATA.withdrawable;
-    const currency = earningsData?.currency || MOCK_EARNINGS_DATA.currency;
 
     // Fetch user data to check if user has a plan
     const { data: userData } = useQuery(
@@ -284,18 +228,39 @@ export default function PromoterDashboard() {
     const hasPlan = userData?.Downloadsplan === "true" || userData?.Downloadsplan === true ||
         userData?.watchingplan === "true" || userData?.watchingplan === true;
 
+    // Fetch share link analytics (contains revenue and link data)
+    const { data: shareLinkAnalyticsData, isLoading: shareLinkAnalyticsLoading, error: shareLinkAnalyticsError } = useQuery(
+        ['shareLinkAnalytics'],
+        () => promoterService.getShareLinkAnalytics(token),
+        {
+            enabled: !!token,
+            retry: 2,
+            onError: (error) => {
+                console.error('Error fetching share link analytics:', error);
+                toast.error(error.message || t('revenueData.fetchError'), ToastOptions("error"));
+            }
+        }
+    );
+
+    // Extract revenue data from share link analytics
+    const revenueList = shareLinkAnalyticsData?.analytics || shareLinkAnalyticsData?.data || shareLinkAnalyticsData?.links || shareLinkAnalyticsData?.revenue || [];
+    const currency = earningsData?.currency || 'USD';
+    const estimatedRevenue = shareLinkAnalyticsData?.estimatedRevenue || [];
+    const settledRevenue = shareLinkAnalyticsData?.settledRevenue || [];
+
+    // Extract earnings data
+    const totalEarnings = earningsData?.totalEarnings || '0';
+    const pendingEarnings = earningsData?.pendingRewards || '0';
+    const confirmedEarnings = earningsData?.confirmedRewards || '0';
+    const withdrawable = earningsData?.withdrawable || earningsData?.totalEarnings || '0';
+
     // Fetch withdrawal history
     const { data: withdrawalHistory, isLoading: withdrawalHistoryLoading } = useQuery(
         ['withdrawalHistory'],
         async () => {
-            if (USE_MOCK_DATA) {
-                // Simulate API delay
-                await new Promise(resolve => setTimeout(resolve, 500));
-                return MOCK_WITHDRAWAL_HISTORY;
-            }
             return withdrawalService.getWithdrawalHistory(token);
         },
-        { enabled: USE_MOCK_DATA || !!token }
+        { enabled: !!token }
     );
 
     // Request withdrawal mutation
@@ -345,7 +310,7 @@ export default function PromoterDashboard() {
 
     return (
         <motion.div
-            className="promoter-dashboard earning-container min-h-screen bg-indigo-50"
+            className="promoter-dashboard revenue-dashboard"
             style={{ fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -354,125 +319,133 @@ export default function PromoterDashboard() {
                 ease: [0.25, 0.46, 0.45, 0.94]
             }}
         >
-            {/* Header */}
-            <motion.div
-                className="page-header"
-                initial={{ opacity: 0, y: -40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                    duration: 0.8,
-                    delay: 0.1,
-                    ease: [0.25, 0.46, 0.45, 0.94]
-                }}
-            >
-                <h1>{t('promoterDashboard.title')}</h1>
-                <p>{t('promoterDashboard.subtitle')}</p>
-            </motion.div>
+            <div className="revenue-dashboard__wrapper">
+                {/* Header */}
+                <motion.div
+                    className="revenue-header"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                >
+                    <div className="revenue-header__content">
+                        <FaChartLine className="revenue-header__icon" />
+                        <div>
+                            <h1 className="revenue-header__title">{t('promoterDashboard.title') || 'Revenue'}</h1>
+                            <p className="revenue-header__subtitle">{t('promoterDashboard.subtitle') || 'Track your earnings and revenue'}</p>
+                        </div>
+                    </div>
+                </motion.div>
 
-            <div className="earning-container__wrapper">
-                {/* Stats Dashboard */}
-                {isLoading ? (
-                    <LoadingSkeleton />
-                ) : (
+                {/* Summary Cards */}
+                <div className="revenue-summary">
                     <motion.div
-                        className="earning-stats"
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="visible"
+                        className="revenue-summary__card"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 }}
                     >
-                        <StatCard
-                            label={t('promoterDashboard.pendingEarnings')}
-                            value={`${pendingEarnings} ${currency}`}
-                            icon={<MdPendingActions />}
-                            color="#f59e0b"
-                            index={0}
-                        />
-                        <StatCard
-                            label={t('promoterDashboard.confirmedEarnings')}
-                            value={`${confirmedEarnings} ${currency}`}
-                            icon={<MdOutlineAssuredWorkload />}
-                            color="#10b981"
-                            index={1}
-                        />
-                        <StatCard
-                            label={t('promoterDashboard.totalEarnings')}
-                            value={`${totalEarnings} ${currency}`}
-                            icon={<GiTakeMyMoney />}
-                            color="#6366f1"
-                            index={2}
-                        />
+                        <FaDollarSign className="revenue-summary__icon" />
+                        <div className="revenue-summary__content">
+                            <div className="revenue-summary__label">{t('revenueData.estimatedIncome') || 'Estimated income / USD'}</div>
+                            <div className="revenue-summary__value">{totalEarnings} {currency}</div>
+                        </div>
+                    </motion.div>
 
-                        {/* Withdrawal Button - Only show if user has a plan */}
-                        {hasPlan && (
-                            <motion.div
-                                className="earning-stat-card"
-                                variants={statsVariants}
-                                initial="hidden"
-                                animate="visible"
-                                style={{
-                                    background: 'linear-gradient(135deg, #10b98110, #10b98105)',
-                                    borderLeft: '4px solid #10b981',
-                                    cursor: 'pointer'
-                                }}
-                                whileHover={{ scale: 1.03, y: -8 }}
-                                onClick={() => setShowWithdrawalModal(true)}
-                            >
-                                <motion.div className="icon" style={{ color: '#10b981' }}>
-                                    <FaWallet />
-                                </motion.div>
-                                <div className="info">
-                                    <div className="label">{t('promoterDashboard.requestWithdrawal')}</div>
-                                    <div className="value">{t('promoterDashboard.withdraw')}</div>
-                                </div>
-                            </motion.div>
-                        )}
+                    <motion.div
+                        className="revenue-summary__card"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        <FaDollarSign className="revenue-summary__icon" />
+                        <div className="revenue-summary__content">
+                            <div className="revenue-summary__label">{t('revenueData.actualIncome') || 'Actual income / USD'}</div>
+                            <div className="revenue-summary__value">{confirmedEarnings} {currency}</div>
+                        </div>
+                    </motion.div>
+                </div>
+
+                {/* Congratulations Banner - Only show if there's actual data */}
+                {revenueList && revenueList.length > 0 && (
+                    <motion.div
+                        className="revenue-banner"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                    >
+                        <FaDollarSign className="revenue-banner__icon" />
+                        <span className="revenue-banner__text">
+                            {t('revenueData.congratulations') || 'Congratulations to user x***C for withdrawing 298.43 USD!'}
+                        </span>
                     </motion.div>
                 )}
 
-                {/* Withdrawal History Section */}
-                <motion.div
-                    className="withdrawal-section"
-                    initial={{ opacity: 0, y: 40 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.6 }}
-                >
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="section-title flex items-center gap-2">
-                            <FaHistory /> {t('promoterDashboard.withdrawalHistory')}
-                        </h2>
-                    </div>
-                    {withdrawalHistoryLoading ? (
-                        <div className="text-center py-8">{t('promoterDashboard.loadingHistory')}</div>
-                    ) : (withdrawalHistory?.withdrawals || MOCK_WITHDRAWAL_HISTORY.withdrawals)?.length > 0 ? (
-                        <div className="space-y-3">
-                            {(withdrawalHistory?.withdrawals || MOCK_WITHDRAWAL_HISTORY.withdrawals).map((withdrawal, index) => (
-                                <motion.div
-                                    key={index}
-                                    className="bg-white rounded-lg p-4 shadow-sm border border-indigo-100"
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: index * 0.1 }}
-                                >
-                                    <div className="flex justify-between items-center">
-                                        <div>
-                                            <p className="font-semibold text-indigo-900">{withdrawal.amount} {withdrawal.currency || currency}</p>
-                                            <p className="text-sm text-gray-600">{withdrawal.paymentMethod}</p>
-                                            <p className="text-xs text-gray-500">{new Date(withdrawal.createdAt).toLocaleDateString()}</p>
-                                        </div>
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${withdrawal.status === 'approved' ? 'bg-green-100 text-green-800' :
-                                            withdrawal.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                                'bg-red-100 text-red-800'
-                                            }`}>
-                                            {withdrawal.status || 'pending'}
-                                        </span>
-                                    </div>
-                                </motion.div>
+                {/* Revenue Table */}
+                {shareLinkAnalyticsLoading ? (
+                    <div className="revenue-table">
+                        <div className="revenue-table__skeleton">
+                            {[...Array(5)].map((_, i) => (
+                                <div key={i} className="skeleton-row">
+                                    <div className="skeleton-cell"></div>
+                                    <div className="skeleton-cell"></div>
+                                    <div className="skeleton-cell"></div>
+                                </div>
                             ))}
                         </div>
-                    ) : (
-                        <div className="text-center py-8 text-gray-500">{t('promoterDashboard.noWithdrawalHistory')}</div>
-                    )}
-                </motion.div>
+                    </div>
+                ) : shareLinkAnalyticsError ? (
+                    <EmptyState
+                        icon={FaChartLine}
+                        title={t('revenueData.errorTitle') || 'Error loading revenue data'}
+                        message={shareLinkAnalyticsError.message || t('revenueData.errorMessage') || 'Failed to load revenue data'}
+                    />
+                ) : (
+                    <motion.div
+                        className="revenue-table"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                    >
+                        <div className="revenue-table__container">
+                            <table className="revenue-table__table">
+                                <thead>
+                                    <tr>
+                                        <th>{t('revenueData.date') || 'Date (UTC)'}</th>
+                                        <th>{t('revenueData.total') || 'Total / USD'}</th>
+                                        <th>{t('revenueData.installRevenue') || 'Install revenue'}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {revenueList && revenueList.length > 0 ? (
+                                        revenueList.map((item, index) => (
+                                            <motion.tr
+                                                key={index}
+                                                className="revenue-table__row"
+                                                initial={{ opacity: 0, x: -20 }}
+                                                animate={{ opacity: 1, x: 0 }}
+                                                transition={{ delay: index * 0.05 }}
+                                            >
+                                                <td>
+                                                    {item.date || item.dateUTC
+                                                        ? new Date(item.date || item.dateUTC).toLocaleDateString()
+                                                        : '-'}
+                                                </td>
+                                                <td>{parseFloat(item.total || 0).toFixed(4)} {currency}</td>
+                                                <td>{parseFloat(item.installRevenue || 0).toFixed(4)} {currency}</td>
+                                            </motion.tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="3" style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
+                                                {t('revenueData.noDataMessage') || 'No data available'}
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </motion.div>
+                )}
             </div>
 
             {/* Withdrawal Modal */}

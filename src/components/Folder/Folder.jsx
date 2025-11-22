@@ -1,16 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FiMoreVertical, FiArchive } from 'react-icons/fi';
 import { HiTrash, HiPencil, HiShare } from "react-icons/hi2";
 import { LuFolder } from "react-icons/lu";
 import { useLanguage } from '../../context/LanguageContext';
 
-export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive }) => {
+export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isSelectionMode, isSelected, onToggleSelect }) => {
     const [open, setOpen] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef(null);
     const buttonRef = useRef(null);
     const { t } = useLanguage();
+    const { pathname } = useLocation();
+    
+    // Determine base path based on current location
+    const getBasePath = () => {
+        if (pathname.startsWith('/Promoter')) {
+            return '/Promoter/file';
+        } else if (pathname.startsWith('/dashboard')) {
+            return '/dashboard/file';
+        } else if (pathname.startsWith('/Owner')) {
+            return '/Owner/file';
+        }
+        return '/dashboard/file'; // Default fallback
+    };
+    
+    const folderPath = `${getBasePath()}/${encodeURIComponent(data?.name || name)}/${data?._id || data?.id}`;
 
     // Close menu when clicking outside
     useEffect(() => {
@@ -58,11 +73,36 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive }) =
     };
 
     return (
-        <div className="relative bg-gradient-to-br from-white to-indigo-50 rounded-lg border-2 border-indigo-200 shadow-md hover:shadow-xl transition-all duration-300 hover:border-indigo-400 hover:scale-[1.01] sm:hover:scale-[1.02]" style={{ zIndex: 1 }}>
-            <Link to={`file/${data?.name}/${data?._id}`} className="block">
+        <div className={`relative bg-gradient-to-br from-white to-indigo-50 rounded-lg border-2 ${isSelected ? 'border-indigo-600 bg-indigo-100' : 'border-indigo-200'} shadow-md hover:shadow-xl transition-all duration-300 hover:border-indigo-400 hover:scale-[1.01] sm:hover:scale-[1.02]`} style={{ zIndex: 1, position: 'relative', isolation: 'isolate' }}>
+            {isSelectionMode && (
+                <div className="absolute top-2 left-2 z-20">
+                    <input
+                        type="checkbox"
+                        checked={isSelected || false}
+                        onChange={(e) => {
+                            e.stopPropagation();
+                            if (onToggleSelect) {
+                                onToggleSelect(data?._id || data?.id, true);
+                            }
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-5 h-5 text-indigo-600 rounded border-indigo-300 focus:ring-indigo-500 cursor-pointer"
+                    />
+                </div>
+            )}
+            <Link to={folderPath} className="block" onClick={(e) => isSelectionMode && e.preventDefault()}>
                 <div
                     className="flex items-center p-3 sm:p-4 md:p-5 cursor-pointer group"
-                    onClick={() => setOpen(!open)}
+                    onClick={(e) => {
+                        if (isSelectionMode) {
+                            e.preventDefault();
+                            if (onToggleSelect) {
+                                onToggleSelect(data?._id || data?.id, true);
+                            }
+                        } else {
+                            setOpen(!open);
+                        }
+                    }}
                 >
                     <div className="flex-shrink-0 relative">
                         <div className="absolute inset-0 bg-indigo-100 rounded-lg blur-md opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
@@ -92,39 +132,39 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive }) =
             {showMenu && (
                 <div
                     ref={menuRef}
-                    className="absolute top-8 sm:top-10 right-1.5 sm:right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 sm:py-2 text-xs sm:text-sm min-w-[160px] sm:min-w-[180px]"
-                    style={{ zIndex: 50 }}
+                    className="absolute top-8 sm:top-10 right-1.5 sm:right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 text-xs min-w-[160px] max-h-[280px] overflow-y-auto file-dropdown-menu"
+                    style={{ zIndex: 10001 }}
                     onClick={(e) => e.stopPropagation()}
                 >
                     <button
                         onClick={(e) => handleAction('rename', e)}
-                        className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                     >
-                        <HiPencil className='w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0' />
+                        <HiPencil className='w-4 h-4 text-green-600 flex-shrink-0' />
                         <span className="font-medium">{t("folder.rename")}</span>
                     </button>
                     <button
                         onClick={(e) => handleAction('share', e)}
-                        className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                     >
-                        <HiShare className='w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0' />
+                        <HiShare className='w-4 h-4 text-blue-600 flex-shrink-0' />
                         <span className="font-medium">{t("folder.share")}</span>
                     </button>
                     {onArchive && (
                         <button
                             onClick={(e) => handleAction('archive', e)}
-                            className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                         >
-                            <FiArchive className='w-4 h-4 sm:w-5 sm:h-5 text-purple-600 flex-shrink-0' />
+                            <FiArchive className='w-4 h-4 text-purple-600 flex-shrink-0' />
                             <span className="font-medium">{t("folder.archive")}</span>
                         </button>
                     )}
-                    <div className="border-t border-gray-200 my-0.5 sm:my-1"></div>
+                    <div className="border-t border-gray-200 my-1"></div>
                     <button
                         onClick={(e) => handleAction('delete', e)}
-                        className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-red-50 w-full text-left transition-colors text-red-600"
+                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-red-50 w-full text-left transition-colors text-red-600"
                     >
-                        <HiTrash className='w-4 h-4 sm:w-5 sm:h-5 text-red-600 flex-shrink-0' />
+                        <HiTrash className='w-4 h-4 text-red-600 flex-shrink-0' />
                         <span className="font-medium">{t("folder.delete")}</span>
                     </button>
                 </div>

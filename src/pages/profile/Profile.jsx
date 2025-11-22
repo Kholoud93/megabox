@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
-import { API_URL, userService } from '../../services/api';
+import { API_URL, userService, fileService } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FaCamera, FaEdit, FaSave, FaTimes, FaCrown, FaUser, FaTrash } from 'react-icons/fa';
@@ -21,18 +21,13 @@ export default function Profile() {
     const fileInputRef = useRef(null);
     const queryClient = useQueryClient();
     const [Token] = useCookies(['MegaBox']);
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const navigate = useNavigate();
     const premiumFileInputRef = useRef(null);
 
     const GetUserStorage = async () => {
-        const response = await axios.get(`${API_URL}/auth/getUserStorageUsage`, {
-            headers: {
-                Authorization: `Bearer ${Token.MegaBox}`
-            }
-        });
-
-        return response?.data
+        const response = await fileService.getUserStorageUsage(Token.MegaBox);
+        return response?.data || response;
     }
 
     const { data: userStorage, isLoading: StorageLoading } = useQuery("Get user storage", GetUserStorage, {
@@ -162,47 +157,49 @@ export default function Profile() {
     }
 
     return (
-        <div className="Profile min-h-screen bg-indigo-50" style={{ fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+        <div className="Profile min-h-screen bg-indigo-50" dir={language === 'ar' ? 'rtl' : 'ltr'} style={{ fontFamily: "'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif" }}>
             <motion.div
                 className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
             >
-                <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border-2 border-indigo-100">
+                <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg border-2 border-indigo-100">
                     <div className="flex flex-col md:flex-row">
                         <motion.div
-                            className="md:flex-shrink-0 relative flex justify-center md:justify-start"
+                            className="md:flex-shrink-0 flex flex-col items-center md:items-start"
                             whileHover={{ scale: 1.02 }}
                             transition={{ duration: 0.2 }}
                         >
-                            {userData?.profilePic && typeof userData.profilePic === 'string' && userData.profilePic.trim() !== '' && !imageError ? (
-                                <img
-                                    key={userData.profilePic}
-                                    className="h-32 w-32 sm:h-40 sm:w-40 md:h-48 md:w-48 lg:h-56 lg:w-56 xl:h-64 xl:w-64 object-cover rounded-lg m-3 sm:m-4 md:m-5 lg:m-6 border-4 border-indigo-200 shadow-md"
-                                    src={userData.profilePic}
-                                    alt="Profile"
-                                    crossOrigin="anonymous"
-                                    referrerPolicy="no-referrer"
-                                    onError={(e) => {
-                                        // Silently handle image load errors and show fallback
-                                        setImageError(true);
-                                    }}
-                                    onLoad={() => {
-                                        setImageError(false);
-                                    }}
-                                />
-                            ) : (
-                                <div
-                                    className="flex h-32 w-32 sm:h-40 sm:w-40 md:h-48 md:w-48 lg:h-56 lg:w-56 xl:h-64 xl:w-64 items-center justify-center rounded-lg m-3 sm:m-4 md:m-5 lg:m-6 border-4 border-indigo-200 shadow-md bg-gradient-to-br from-indigo-100 to-indigo-200"
-                                >
-                                    <FaUser className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 text-indigo-600" />
-                                </div>
-                            )}
-                            <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 md:bottom-4 md:right-4 lg:bottom-6 lg:right-6 flex gap-2 z-10">
+                            <div className="relative flex justify-center md:justify-start">
+                                {userData?.profilePic && typeof userData.profilePic === 'string' && userData.profilePic.trim() !== '' && !imageError ? (
+                                    <img
+                                        key={userData.profilePic}
+                                        className="h-32 w-32 sm:h-40 sm:w-40 md:h-48 md:w-48 lg:h-56 lg:w-56 xl:h-64 xl:w-64 object-cover rounded-lg m-2 sm:m-3 md:m-4 lg:m-5 border-4 border-indigo-200 shadow-md"
+                                        src={userData.profilePic}
+                                        alt="Profile"
+                                        crossOrigin="anonymous"
+                                        referrerPolicy="no-referrer"
+                                        onError={(e) => {
+                                            // Silently handle image load errors and show fallback
+                                            setImageError(true);
+                                        }}
+                                        onLoad={() => {
+                                            setImageError(false);
+                                        }}
+                                    />
+                                ) : (
+                                    <div
+                                        className="flex h-32 w-32 sm:h-40 sm:w-40 md:h-48 md:w-48 lg:h-56 lg:w-56 xl:h-64 xl:w-64 items-center justify-center rounded-lg m-2 sm:m-3 md:m-4 lg:m-5 border-4 border-indigo-200 shadow-md bg-gradient-to-br from-indigo-100 to-indigo-200"
+                                    >
+                                        <FaUser className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 text-indigo-600" />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex gap-2 sm:gap-3 justify-center md:justify-start items-center w-full px-3 sm:px-4 md:px-5 lg:px-6 mt-2 mb-2">
                                 {userData?.profilePic && typeof userData.profilePic === 'string' && userData.profilePic.trim() !== '' && !imageError && (
                                     <motion.button
-                                        className="bg-red-500 hover:bg-red-600 text-white p-2 sm:p-2.5 md:p-3 rounded-full shadow-lg transition-all"
+                                        className="bg-red-500 hover:bg-red-600 text-white p-2 sm:p-2.5 md:p-3 rounded-full shadow-lg transition-all flex-shrink-0"
                                         whileHover={{ scale: 1.1 }}
                                         whileTap={{ scale: 0.95 }}
                                         onClick={() => setShowDeleteConfirm(true)}
@@ -217,7 +214,7 @@ export default function Profile() {
                                     </motion.button>
                                 )}
                                 <motion.button
-                                    className="bg-indigo-600 hover:bg-indigo-700 text-white p-2 sm:p-2.5 md:p-3 rounded-full shadow-lg transition-all"
+                                    className="bg-indigo-600 hover:bg-indigo-700 text-white p-2 sm:p-2.5 md:p-3 rounded-full shadow-lg transition-all flex-shrink-0"
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.95 }}
                                     onClick={() => fileInputRef.current?.click()}
@@ -360,12 +357,12 @@ export default function Profile() {
                                                 <motion.button
                                                     onClick={() => premiumFileInputRef.current?.click()}
                                                     disabled={subscribeToPremiumMutation.isLoading}
-                                                    className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-yellow-500 hover:bg-yellow-600 text-white rounded-md font-medium transition-colors flex items-center gap-1"
+                                                    className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs bg-yellow-500 hover:bg-yellow-600 text-white rounded-md font-medium transition-colors flex items-center gap-0.5 sm:gap-1 flex-shrink-0"
                                                     whileHover={{ scale: 1.05 }}
                                                     whileTap={{ scale: 0.95 }}
                                                 >
-                                                    <FaCrown className="w-3 h-3" />
-                                                    {subscribeToPremiumMutation.isLoading ? t('common.loading') || 'Loading...' : t('profile.upgradeToPremium') || 'Upgrade'}
+                                                    <FaCrown className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" />
+                                                    <span className="whitespace-normal">{subscribeToPremiumMutation.isLoading ? t('common.loading') || 'Loading...' : t('profile.upgradeToPremium') || 'Upgrade'}</span>
                                                 </motion.button>
                                             )}
                                         </div>
@@ -391,10 +388,11 @@ export default function Profile() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
             >
-                <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border-2 border-indigo-100">
+                <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg border-2 border-indigo-100">
                     <div className="p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8">
                         <motion.div
-                            className="uppercase tracking-wide text-xs sm:text-sm text-indigo-600 font-semibold flex items-center gap-2 mb-3 sm:mb-4 md:mb-5 lg:mb-6"
+                            className={`uppercase tracking-wide text-xs sm:text-sm text-indigo-600 font-semibold flex items-center gap-2 mt-4 sm:mt-5 md:mt-6 lg:mt-8 mb-3 sm:mb-4 md:mb-5 lg:mb-6 ${language === 'ar' ? 'justify-end' : 'justify-start'}`}
+                            style={{ textAlign: language === 'ar' ? 'right' : 'left' }}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.3 }}

@@ -9,33 +9,35 @@ import axios from "axios";
 import { API_URL } from "../../services/api";
 import { useCookies } from "react-cookie";
 import { ToastOptions } from "../../helpers/ToastOptions";
+import { useLanguage } from "../../context/LanguageContext";
+import './Feedback.scss';
 
 export default function Feedback() {
-
+    const { t, language } = useLanguage();
     const MAX_FILE_SIZE = 30 * 1024;
     const [MegaBox] = useCookies(['MegaBox'])
 
     const validation = Yup.object({
-        type: Yup.string().required("Required"),
-        copyrightUrl: Yup.string().url("Must be a valid URL").required("Required"),
-        copyrightOwnerName: Yup.string().required("Required"),
-        relationshipWithContent: Yup.string().required("Required"),
-        email: Yup.string().email("Invalid email").required("Required"),
-        phoneNumber: Yup.string().required("Required"),
-        country: Yup.string().required("Required"),
-        province: Yup.string().required("Required"),
-        streetAddress: Yup.string().required("Required"),
-        city: Yup.string().required("Required"),
-        postalCode: Yup.string().required("Required"),
-        signature: Yup.string().required("Required"),
-        agreement: Yup.bool().oneOf([true], "You must agree to continue"),
+        type: Yup.string().required(t('feedback.required')),
+        copyrightUrl: Yup.string().url(t('feedback.invalidUrl')).required(t('feedback.required')),
+        copyrightOwnerName: Yup.string().required(t('feedback.required')),
+        relationshipWithContent: Yup.string().required(t('feedback.required')),
+        email: Yup.string().email(t('feedback.invalidEmail')).required(t('feedback.required')),
+        phoneNumber: Yup.string().required(t('feedback.required')),
+        country: Yup.string().required(t('feedback.required')),
+        province: Yup.string().required(t('feedback.required')),
+        streetAddress: Yup.string().required(t('feedback.required')),
+        city: Yup.string().required(t('feedback.required')),
+        postalCode: Yup.string().required(t('feedback.required')),
+        signature: Yup.string().required(t('feedback.required')),
+        agreement: Yup.bool().oneOf([true], t('feedback.mustAgree')),
 
         file: Yup
             .mixed()
-            .required("File is required")
+            .required(t('feedback.fileRequired'))
             .test(
                 "fileSize",
-                "File size must be less than 30KB",
+                t('feedback.fileSizeError'),
                 value => value && value.size <= MAX_FILE_SIZE
             )
     });
@@ -45,7 +47,7 @@ export default function Feedback() {
     const SendComp = async (values) => {
         try {
 
-            if (!MegaBox.MegaBox) return toast.error("Please you should login first", ToastOptions("error"));
+            if (!MegaBox.MegaBox) return toast.error(t('feedback.loginRequired'), ToastOptions("error"));
 
             setSendDataLoading(true)
 
@@ -76,9 +78,9 @@ export default function Feedback() {
 
             if (data?.message === "✅ تم إرسال البلاغ وحفظ الملف بنجاح.") {
                 formik.resetForm();
-                toast.success("Your complaint has been sent", ToastOptions("success"));
+                toast.success(t('feedback.success'), ToastOptions("success"));
             } else {
-                toast.error("Ther is something wrong", ToastOptions("error"));
+                toast.error(t('feedback.error'), ToastOptions("error"));
             }
 
             setSendDataLoading(false)
@@ -120,26 +122,20 @@ export default function Feedback() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="Feedback" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+            <div className="feedback-container">
                 {/* Header Section */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-                    className="text-center mb-8"
+                    className="feedback-header"
                 >
-                    <div className="flex justify-center mb-4">
-                        <div className="p-3 bg-red-100 rounded-full">
-                            <FiAlertTriangle className="h-8 w-8 text-red-600" />
-                        </div>
+                    <div className="feedback-header__icon">
+                        <FiAlertTriangle />
                     </div>
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                        Copyright Infringement Report
-                    </h1>
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                        Report copyright violations and help us maintain a safe platform for all users
-                    </p>
+                    <h1>{t('feedback.title')}</h1>
+                    <p>{t('feedback.subtitle')}</p>
                 </motion.div>
 
                 {/* Main Form */}
@@ -147,41 +143,37 @@ export default function Feedback() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
-                    className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden"
+                    className="feedback-form"
                 >
-                    <div className="bg-gradient-to-r from-red-600 to-red-700 px-8 py-6">
-                        <div className="flex items-center space-x-4">
-                            <FiFileText className="h-6 w-6 text-white" />
-                            <div>
-                                <h2 className="text-xl font-semibold text-white">Report Form</h2>
-                                <p className="text-red-100 text-sm mt-1">
-                                    Please provide accurate information to help us process your report
-                                </p>
-                            </div>
+                    <div className="feedback-form__header">
+                        <FiFileText />
+                        <div>
+                            <h2>{t('feedback.formTitle')}</h2>
+                            <p>{t('feedback.formDesc')}</p>
                         </div>
                     </div>
 
                     <form onSubmit={formik.handleSubmit} className="p-8 space-y-6">
                         {/* Type of Infringement */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-gray-700 flex items-center">
+                            <label className="text-sm font-semibold text-gray-700 flex items-center">
                                 <FiAlertTriangle className="h-4 w-4 text-red-500 mr-2" />
-                                Select the Type of Infringement
+                                {t('feedback.typeLabel')}
                             </label>
                             <select
                                 name="type"
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 value={formik.values.type}
-                                className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formik.touched.type && formik.errors.type
+                                className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${formik.touched.type && formik.errors.type
                                         ? "border-red-500 bg-red-50"
                                         : "border-gray-300 hover:border-gray-400"
                                     }`}
                             >
-                                <option value="">Select infringement type...</option>
-                                <option value="Copyright">Copyright</option>
-                                <option value="Trademark">Trademark</option>
-                                <option value="Other">Other</option>
+                                <option value="">{t('feedback.typePlaceholder')}</option>
+                                <option value="Copyright">{t('feedback.copyright')}</option>
+                                <option value="Trademark">{t('feedback.trademark')}</option>
+                                <option value="Other">{t('feedback.other')}</option>
                             </select>
                             {formik.touched.type && formik.errors.type && (
                                 <p className="text-red-500 text-sm flex items-center">
@@ -194,7 +186,7 @@ export default function Feedback() {
                         {/* Copyright content URL */}
                         <div className="space-y-2">
                             <label className="block text-sm font-semibold text-gray-700">
-                                Copyright Content URL
+                                {t('feedback.urlLabel')}
                             </label>
                             <input
                                 type="url"
@@ -202,8 +194,8 @@ export default function Feedback() {
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 value={formik.values.copyrightUrl}
-                                placeholder="https://example.com/infringing-content"
-                                className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formik.touched.copyrightUrl && formik.errors.copyrightUrl
+                                placeholder={t('feedback.urlPlaceholder')}
+                                className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${formik.touched.copyrightUrl && formik.errors.copyrightUrl
                                         ? "border-red-500 bg-red-50"
                                         : "border-gray-300 hover:border-gray-400"
                                     }`}
@@ -218,24 +210,24 @@ export default function Feedback() {
 
                         {/* File Upload Section */}
                         <div className="space-y-4">
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                <p className="text-blue-800 text-sm mb-4">
-                                    Please download the template file first, fill in the infringing URLs you wish to remove, and then upload it.
+                            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                                <p className="text-indigo-800 text-sm mb-4">
+                                    {t('feedback.fileDesc')}
                                 </p>
 
                                 <div className="flex flex-col sm:flex-row gap-3">
                                     <button
                                         type="button"
                                         onClick={handleDownload}
-                                        className="flex items-center justify-center gap-2 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm font-medium"
+                                        className="feedback-download-btn"
                                     >
                                         <FiDownload className="h-4 w-4" />
-                                        Download Template File
+                                        {t('feedback.downloadTemplate')}
                                     </button>
 
-                                    <label className="flex items-center justify-center gap-2 border border-blue-600 text-blue-700 hover:bg-blue-50 transition-colors duration-200 rounded-lg py-2 px-4 cursor-pointer text-sm font-medium">
+                                    <label className="feedback-upload-btn">
                                         <FiUpload className="h-4 w-4" />
-                                        <span>Upload Completed File</span>
+                                        <span>{t('feedback.uploadFile')}</span>
                                         <input
                                             type="file"
                                             accept=".csv,text/csv"
@@ -258,9 +250,9 @@ export default function Feedback() {
                                             type="button"
                                             onClick={() => formik.setFieldValue("file", null)}
                                             className="text-red-500 hover:text-red-700 text-sm ml-auto"
-                                            title="Remove file"
+                                            title={t('feedback.removeFile')}
                                         >
-                                            Remove
+                                            {t('feedback.removeFile')}
                                         </button>
                                     </div>
                                 )}
@@ -269,9 +261,9 @@ export default function Feedback() {
 
                         {/* Owner/Agent Name */}
                         <div className="space-y-2">
-                            <label className="block text-sm font-semibold text-gray-700 flex items-center">
+                            <label className="text-sm font-semibold text-gray-700 flex items-center">
                                 <FiUser className="h-4 w-4 text-gray-500 mr-2" />
-                                Copyright Owner/Agent Name
+                                {t('feedback.ownerLabel')}
                             </label>
                             <input
                                 type="text"
@@ -279,8 +271,8 @@ export default function Feedback() {
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 value={formik.values.copyrightOwnerName}
-                                placeholder="Enter full name"
-                                className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formik.touched.copyrightOwnerName && formik.errors.copyrightOwnerName
+                                placeholder={t('feedback.ownerPlaceholder')}
+                                className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${formik.touched.copyrightOwnerName && formik.errors.copyrightOwnerName
                                         ? "border-red-500 bg-red-50"
                                         : "border-gray-300 hover:border-gray-400"
                                     }`}
@@ -296,7 +288,7 @@ export default function Feedback() {
                         {/* Relationship with Content */}
                         <div className="space-y-2">
                             <label className="block text-sm font-semibold text-gray-700">
-                                Relationship with Copyrighted Content
+                                {t('feedback.relationshipLabel')}
                             </label>
                             <input
                                 type="text"
@@ -304,8 +296,8 @@ export default function Feedback() {
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 value={formik.values.relationshipWithContent}
-                                placeholder="e.g., Copyright owner, Authorized agent"
-                                className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formik.touched.relationshipWithContent && formik.errors.relationshipWithContent
+                                placeholder={t('feedback.relationshipPlaceholder')}
+                                className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${formik.touched.relationshipWithContent && formik.errors.relationshipWithContent
                                         ? "border-red-500 bg-red-50"
                                         : "border-gray-300 hover:border-gray-400"
                                     }`}
@@ -321,9 +313,9 @@ export default function Feedback() {
                         {/* Contact Information */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <label className="block text-sm font-semibold text-gray-700 flex items-center">
+                                <label className="text-sm font-semibold text-gray-700 flex items-center">
                                     <FiMail className="h-4 w-4 text-gray-500 mr-2" />
-                                    Email
+                                    {t('feedback.emailLabel')}
                                 </label>
                                 <input
                                     type="email"
@@ -331,8 +323,8 @@ export default function Feedback() {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     value={formik.values.email}
-                                    placeholder="your@email.com"
-                                    className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formik.touched.email && formik.errors.email
+                                    placeholder={t('feedback.emailPlaceholder')}
+                                    className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${formik.touched.email && formik.errors.email
                                             ? "border-red-500 bg-red-50"
                                             : "border-gray-300 hover:border-gray-400"
                                         }`}
@@ -347,7 +339,7 @@ export default function Feedback() {
 
                             <div className="space-y-2">
                                 <label className="block text-sm font-semibold text-gray-700">
-                                    Phone Number
+                                    {t('feedback.phoneLabel')}
                                 </label>
                                 <input
                                     type="text"
@@ -355,8 +347,8 @@ export default function Feedback() {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     value={formik.values.phoneNumber}
-                                    placeholder="+1 (555) 123-4567"
-                                    className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formik.touched.phoneNumber && formik.errors.phoneNumber
+                                    placeholder={t('feedback.phonePlaceholder')}
+                                    className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${formik.touched.phoneNumber && formik.errors.phoneNumber
                                             ? "border-red-500 bg-red-50"
                                             : "border-gray-300 hover:border-gray-400"
                                         }`}
@@ -374,20 +366,20 @@ export default function Feedback() {
                         <div className="space-y-4">
                             <h3 className="text-lg font-semibold text-gray-900 flex items-center">
                                 <FiMapPin className="h-5 w-5 text-gray-500 mr-2" />
-                                Address Information
+                                {t('feedback.addressTitle')}
                             </h3>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="block text-sm font-semibold text-gray-700">Country</label>
+                                    <label className="block text-sm font-semibold text-gray-700">{t('feedback.countryLabel')}</label>
                                     <input
                                         type="text"
                                         name="country"
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         value={formik.values.country}
-                                        placeholder="United States"
-                                        className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formik.touched.country && formik.errors.country
+                                        placeholder={t('feedback.countryPlaceholder')}
+                                        className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${formik.touched.country && formik.errors.country
                                                 ? "border-red-500 bg-red-50"
                                                 : "border-gray-300 hover:border-gray-400"
                                             }`}
@@ -401,15 +393,15 @@ export default function Feedback() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="block text-sm font-semibold text-gray-700">Province/State</label>
+                                    <label className="block text-sm font-semibold text-gray-700">{t('feedback.provinceLabel')}</label>
                                     <input
                                         type="text"
                                         name="province"
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         value={formik.values.province}
-                                        placeholder="California"
-                                        className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formik.touched.province && formik.errors.province
+                                        placeholder={t('feedback.provincePlaceholder')}
+                                        className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${formik.touched.province && formik.errors.province
                                                 ? "border-red-500 bg-red-50"
                                                 : "border-gray-300 hover:border-gray-400"
                                             }`}
@@ -423,15 +415,15 @@ export default function Feedback() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="block text-sm font-semibold text-gray-700">Street Address</label>
+                                    <label className="block text-sm font-semibold text-gray-700">{t('feedback.streetLabel')}</label>
                                     <input
                                         type="text"
                                         name="streetAddress"
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         value={formik.values.streetAddress}
-                                        placeholder="123 Main Street"
-                                        className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formik.touched.streetAddress && formik.errors.streetAddress
+                                        placeholder={t('feedback.streetPlaceholder')}
+                                        className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${formik.touched.streetAddress && formik.errors.streetAddress
                                                 ? "border-red-500 bg-red-50"
                                                 : "border-gray-300 hover:border-gray-400"
                                             }`}
@@ -445,15 +437,15 @@ export default function Feedback() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="block text-sm font-semibold text-gray-700">City</label>
+                                    <label className="block text-sm font-semibold text-gray-700">{t('feedback.cityLabel')}</label>
                                     <input
                                         type="text"
                                         name="city"
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         value={formik.values.city}
-                                        placeholder="San Francisco"
-                                        className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formik.touched.city && formik.errors.city
+                                        placeholder={t('feedback.cityPlaceholder')}
+                                        className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${formik.touched.city && formik.errors.city
                                                 ? "border-red-500 bg-red-50"
                                                 : "border-gray-300 hover:border-gray-400"
                                             }`}
@@ -467,15 +459,15 @@ export default function Feedback() {
                                 </div>
 
                                 <div className="md:col-span-2 space-y-2">
-                                    <label className="block text-sm font-semibold text-gray-700">Postal Code</label>
+                                    <label className="block text-sm font-semibold text-gray-700">{t('feedback.postalLabel')}</label>
                                     <input
                                         type="text"
                                         name="postalCode"
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         value={formik.values.postalCode}
-                                        placeholder="94105 (or -- if not applicable)"
-                                        className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formik.touched.postalCode && formik.errors.postalCode
+                                        placeholder={t('feedback.postalPlaceholder')}
+                                        className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${formik.touched.postalCode && formik.errors.postalCode
                                                 ? "border-red-500 bg-red-50"
                                                 : "border-gray-300 hover:border-gray-400"
                                             }`}
@@ -493,7 +485,7 @@ export default function Feedback() {
                         {/* Signature */}
                         <div className="space-y-2">
                             <label className="block text-sm font-semibold text-gray-700">
-                                Signature
+                                {t('feedback.signatureLabel')}
                             </label>
                             <input
                                 type="text"
@@ -501,8 +493,8 @@ export default function Feedback() {
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 value={formik.values.signature}
-                                placeholder="Your full name as signature"
-                                className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent ${formik.touched.signature && formik.errors.signature
+                                placeholder={t('feedback.signaturePlaceholder')}
+                                className={`w-full border rounded-lg px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${formik.touched.signature && formik.errors.signature
                                         ? "border-red-500 bg-red-50"
                                         : "border-gray-300 hover:border-gray-400"
                                     }`}
@@ -525,10 +517,10 @@ export default function Feedback() {
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     checked={formik.values.agreement}
-                                    className="mt-1 h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                                    className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                                 />
                                 <label htmlFor="agreement" className="text-sm text-gray-700">
-                                    I have read and agree to the terms and conditions.
+                                    {t('feedback.agreementLabel')}
                                 </label>
                             </div>
                             {formik.touched.agreement && formik.errors.agreement && (
@@ -540,14 +532,10 @@ export default function Feedback() {
 
                             {/* Agreement Notice */}
                             <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                                <h4 className="font-semibold text-gray-900 mb-3">Agreement Notice:</h4>
+                                <h4 className="font-semibold text-gray-900 mb-3">{t('feedback.agreementTitle')}</h4>
                                 <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
-                                    <li>
-                                        The information in this form is accurate and I am the owner/agent of an exclusive right that is allegedly infringed. If there is perjury, I am willing to bear legal responsibility.
-                                    </li>
-                                    <li>
-                                        I have a belief that the use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law.
-                                    </li>
+                                    <li>{t('feedback.agreement1')}</li>
+                                    <li>{t('feedback.agreement2')}</li>
                                 </ol>
                             </div>
                         </div>
@@ -558,10 +546,10 @@ export default function Feedback() {
                             whileTap={{ scale: 0.98 }}
                             type="submit"
                             disabled={SendDataLoading}
-                            className="w-full flex items-center justify-center gap-2 bg-primary-600 text-white font-semibold py-4 rounded-lg hover:bg-primary-700 transition-colors duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="feedback-submit-btn"
                         >
                             <FiSend className="h-5 w-5" />
-                            {SendDataLoading ? "Submitting Report..." : "Submit Report"}
+                            {SendDataLoading ? t('feedback.submitting') : t('feedback.submit')}
                         </motion.button>
                     </form>
                 </motion.div>
@@ -575,9 +563,9 @@ export default function Feedback() {
                 >
                     <Link
                         to="/"
-                        className="inline-flex items-center gap-2 bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors duration-200"
+                        className="feedback-back-btn"
                     >
-                        ← Back to Main Page
+                        {t('feedback.backToHome')}
                     </Link>
                 </motion.div>
             </div>

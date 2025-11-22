@@ -1,24 +1,25 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import './PartnerCards.scss'
 
 export default function PartnerCards({ icon, title, desc, index }) {
     return <motion.div
-        initial={{ opacity: 0 }}
+        initial={{ opacity: 0, y: 20 }}
         transition={{ delay: 0.1 * index }}
-        whileInView={{ opacity: 1 }}
+        whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className='PartnerCards shadow-md rounded-xl'>
+        className='PartnerCards'>
 
-        <div className="">
-            <div className='w-[50px] h-[50px] flex bg-primary-50 justify-center items-center rounded-full'>
+        <div>
+            <div className='w-[50px] h-[50px] flex justify-center items-center rounded-full'>
                 {icon}
             </div>
         </div>
 
-        <div className="mt-5 mb-2">
-            <h1 className='text-xl font-bold'>{title}</h1>
+        <div>
+            <h1>{title}</h1>
         </div>
-        <div className="">
+        <div>
             <p>{desc}</p>
         </div>
     </motion.div>

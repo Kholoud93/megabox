@@ -1,315 +1,276 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../../context/LanguageContext';
+import { motion } from 'framer-motion';
+import { FaQuestionCircle, FaArrowUp, FaArrowDown, FaLink, FaEye, FaDownload } from 'react-icons/fa';
+import { HiArrowRight, HiShare } from 'react-icons/hi2';
+import { Link } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
-import { motion } from 'framer-motion';
-import { API_URL } from '../../services/api';
-import { useLanguage } from '../../context/LanguageContext';
-import EmptyState from '../../components/EmptyState/EmptyState';
-import { FaChartLine, FaDollarSign, FaDownload, FaUsers } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import { ToastOptions } from '../../helpers/ToastOptions';
+import { userService, promoterService } from '../../services/api';
 import './RevenueData.scss';
-
-const REVENUE_URL = `${API_URL}/auth/getUserRevenue`;
-
-// Mock data for UI display
-const MOCK_REVENUE_DATA = {
-    currency: 'USD',
-    revenue: [
-        {
-            date: new Date(Date.now() - 0 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 0 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 125.50,
-            installRevenue: 85.25
-        },
-        {
-            date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 98.75,
-            installRevenue: 65.50
-        },
-        {
-            date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 145.30,
-            installRevenue: 95.80
-        },
-        {
-            date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 112.40,
-            installRevenue: 72.15
-        },
-        {
-            date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 165.80,
-            installRevenue: 110.25
-        },
-        {
-            date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 88.90,
-            installRevenue: 58.60
-        },
-        {
-            date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 132.25,
-            installRevenue: 88.50
-        },
-        {
-            date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 156.60,
-            installRevenue: 102.40
-        }
-    ],
-    estimatedRevenue: [
-        {
-            date: new Date(Date.now() - 0 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 0 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 45.25,
-            installRevenue: 30.15
-        },
-        {
-            date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 38.50,
-            installRevenue: 25.80
-        },
-        {
-            date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 52.30,
-            installRevenue: 35.20
-        }
-    ],
-    settledRevenue: [
-        {
-            date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 112.40,
-            installRevenue: 72.15
-        },
-        {
-            date: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 165.80,
-            installRevenue: 110.25
-        },
-        {
-            date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 88.90,
-            installRevenue: 58.60
-        },
-        {
-            date: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 132.25,
-            installRevenue: 88.50
-        },
-        {
-            date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-            dateUTC: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-            total: 156.60,
-            installRevenue: 102.40
-        }
-    ]
-};
-
-const USE_MOCK_DATA = true; // Set to false to use real API data
 
 export default function RevenueData() {
     const { t } = useLanguage();
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
-    const [selectedTab, setSelectedTab] = useState('all'); // all, estimated, settled
 
-    // Fetch revenue data
-    const { data: revenueData, isLoading, error: revenueError } = useQuery(
-        ['userRevenue'],
-        async () => {
-            if (USE_MOCK_DATA) {
-                // Simulate API delay
-                await new Promise(resolve => setTimeout(resolve, 500));
-                return MOCK_REVENUE_DATA;
-            }
-            const res = await fetch(REVENUE_URL, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}));
-                throw new Error(errorData.message || `Failed to fetch revenue data: ${res.status}`);
-            }
-            return res.json();
-        },
+    // Fetch user data to get user ID
+    const { data: userData } = useQuery(
+        ['userAccount'],
+        () => userService.getUserInfo(token),
+        { enabled: !!token, retry: false }
+    );
+
+    const userId = userData?._id || userData?.id || '';
+
+    // Fetch earnings data
+    const { data: earningsData, isLoading: earningsLoading } = useQuery(
+        ['userEarnings'],
+        () => promoterService.getUserEarnings(token),
         {
-            enabled: USE_MOCK_DATA || !!token,
+            enabled: !!token,
             retry: 2,
-            onError: (error) => {
-                console.error('Error fetching revenue data:', error);
-                if (!USE_MOCK_DATA) {
-                    toast.error(error.message || t('revenueData.fetchError'), ToastOptions("error"));
-                }
-            }
+        }
+    );
+
+    // Fetch share link analytics (contains both revenue and link data)
+    const { data: shareLinkAnalyticsData, isLoading: shareLinkAnalyticsLoading } = useQuery(
+        ['shareLinkAnalytics'],
+        () => promoterService.getShareLinkAnalytics(token),
+        {
+            enabled: !!token,
+            retry: 2,
         }
     );
 
     // Extract data
-    const revenueList = revenueData?.revenue || revenueData?.data || MOCK_REVENUE_DATA.revenue;
-    const currency = revenueData?.currency || MOCK_REVENUE_DATA.currency;
-    const estimatedRevenue = revenueData?.estimatedRevenue || MOCK_REVENUE_DATA.estimatedRevenue;
-    const settledRevenue = revenueData?.settledRevenue || MOCK_REVENUE_DATA.settledRevenue;
-
-    // Filter data based on selected tab
-    const filteredData = selectedTab === 'estimated'
-        ? estimatedRevenue
-        : selectedTab === 'settled'
-            ? settledRevenue
-            : revenueList;
-
-    // Calculate totals
-    const totalRevenue = filteredData?.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0) || 0;
-    const totalInstallRevenue = filteredData?.reduce((sum, item) => sum + (parseFloat(item.installRevenue) || 0), 0) || 0;
+    const currency = earningsData?.currency || 'USD';
+    const withdrawable = earningsData?.withdrawable || earningsData?.totalEarnings || '0';
+    const estimatedIncome = earningsData?.totalEarnings || earningsData?.estimatedIncome || '0';
+    const actualIncome = earningsData?.confirmedRewards || earningsData?.actualIncome || '0';
+    
+    // Extract share link analytics data - this will be used for the table
+    const shareLinksAnalytics = shareLinkAnalyticsData?.analytics || shareLinkAnalyticsData?.data || shareLinkAnalyticsData?.links || shareLinkAnalyticsData?.revenue || [];
+    const totalLinks = shareLinksAnalytics.length;
+    const totalLinkViews = shareLinksAnalytics.reduce((sum, link) => sum + (link.views || link.totalViews || 0), 0);
+    const totalLinkDownloads = shareLinksAnalytics.reduce((sum, link) => sum + (link.downloads || link.totalDownloads || 0), 0);
+    
+    // Use shareLinksAnalytics as revenueList for the table
+    const revenueList = shareLinksAnalytics;
 
     return (
         <div className="revenue-data-page">
             <div className="revenue-data-page__wrapper">
-                {/* Header */}
+                {/* Referral Income Section */}
                 <motion.div
-                    className="revenue-data-header"
+                    className="revenue-referral-section"
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <div className="revenue-data-header__content">
-                        <FaChartLine className="revenue-data-header__icon" />
-                        <div>
-                            <h1 className="revenue-data-header__title">{t('revenueData.title')}</h1>
-                            <p className="revenue-data-header__subtitle">{t('revenueData.subtitle')}</p>
+                    <div className="revenue-referral-section__content">
+                        <div className="revenue-referral-section__text">
+                            <p className="revenue-referral-section__title">
+                                {t('revenueData.referralIncomeTitle') || '10% of referral income'}
+                            </p>
+                            <Link 
+                                to="/dashboard/referral"
+                                className="revenue-referral-section__button"
+                            >
+                                {t('referral.getReferralLink') || 'Get Referral Link'}
+                            </Link>
+                        </div>
+                        <div className="revenue-referral-section__decorations">
+                            <div className="revenue-referral-section__arrow"></div>
+                            <div className="revenue-referral-section__coins"></div>
                         </div>
                     </div>
                 </motion.div>
 
-                {/* Summary Cards */}
-                <div className="revenue-summary">
-                    <motion.div
-                        className="revenue-summary__card"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 }}
-                    >
-                        <FaDollarSign className="revenue-summary__icon" />
-                        <div className="revenue-summary__content">
-                            <div className="revenue-summary__label">{t('revenueData.totalRevenue')}</div>
-                            <div className="revenue-summary__value">{totalRevenue.toFixed(4)} {currency}</div>
-                        </div>
-                    </motion.div>
-
-                    <motion.div
-                        className="revenue-summary__card"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 }}
-                    >
-                        <FaDownload className="revenue-summary__icon" />
-                        <div className="revenue-summary__content">
-                            <div className="revenue-summary__label">{t('revenueData.totalInstallRevenue')}</div>
-                            <div className="revenue-summary__value">{totalInstallRevenue.toFixed(4)} {currency}</div>
-                        </div>
-                    </motion.div>
-                </div>
-
-                {/* Tabs */}
-                <div className="revenue-tabs">
-                    <button
-                        className={`revenue-tabs__tab ${selectedTab === 'all' ? 'active' : ''}`}
-                        onClick={() => setSelectedTab('all')}
-                    >
-                        {t('revenueData.all')}
-                    </button>
-                    <button
-                        className={`revenue-tabs__tab ${selectedTab === 'estimated' ? 'active' : ''}`}
-                        onClick={() => setSelectedTab('estimated')}
-                    >
-                        {t('revenueData.estimated')}
-                    </button>
-                    <button
-                        className={`revenue-tabs__tab ${selectedTab === 'settled' ? 'active' : ''}`}
-                        onClick={() => setSelectedTab('settled')}
-                    >
-                        {t('revenueData.settled')}
-                    </button>
-                </div>
-
-                {/* Revenue Table */}
-                {isLoading ? (
-                    <div className="revenue-table">
-                        <div className="revenue-table__skeleton">
-                            {[...Array(5)].map((_, i) => (
-                                <div key={i} className="skeleton-row">
-                                    <div className="skeleton-cell"></div>
-                                    <div className="skeleton-cell"></div>
-                                    <div className="skeleton-cell"></div>
+                {/* Earning Section */}
+                <motion.div
+                    className="revenue-earning-section"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                >
+                    <div className="revenue-earning-section__header">
+                        <h2 className="revenue-earning-section__title">{t('revenueData.earning') || 'Earning'}</h2>
+                        <span className="revenue-earning-section__id">{t('revenueData.id') || 'ID'}: {userId}</span>
+                    </div>
+                    
+                    <div className="revenue-earning-card">
+                        <div className="revenue-earning-card__top">
+                            <div className="revenue-earning-card__item">
+                                <div className="revenue-earning-card__label">
+                                    {t('revenueData.withdrawable') || 'Withdrawable'} / {currency}
+                                    <FaQuestionCircle className="revenue-earning-card__help-icon" />
                                 </div>
-                            ))}
+                                <div className="revenue-earning-card__value revenue-earning-card__value--large">
+                                    {earningsLoading ? '-' : parseFloat(withdrawable || 0).toFixed(4)}
+                                </div>
+                            </div>
+                            <Link 
+                                to="/dashboard/Earnings"
+                                className="revenue-earning-card__withdraw-button"
+                            >
+                                {t('revenueData.withdraw') || 'Withdraw'}
+                            </Link>
+                        </div>
+                        
+                        <div className="revenue-earning-card__bottom">
+                            <div className="revenue-earning-card__item">
+                                <div className="revenue-earning-card__label">
+                                    {t('revenueData.estimatedIncome') || 'Estimated income'} / {currency}
+                                    <FaQuestionCircle className="revenue-earning-card__help-icon" />
+                                </div>
+                                <div className="revenue-earning-card__value">
+                                    {earningsLoading ? '-' : parseFloat(estimatedIncome || 0).toFixed(4)}
+                                </div>
+                            </div>
+                            
+                            <div className="revenue-earning-card__item">
+                                <div className="revenue-earning-card__label">
+                                    {t('revenueData.actualIncome') || 'Actual income'} / {currency}
+                                    <FaQuestionCircle className="revenue-earning-card__help-icon" />
+                                </div>
+                                <div className="revenue-earning-card__value">
+                                    {earningsLoading ? '-' : parseFloat(actualIncome || 0).toFixed(4)}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="revenue-earning-card__background">
+                            <span className="revenue-earning-card__dollar-sign">$</span>
                         </div>
                     </div>
-                ) : revenueError ? (
-                    <EmptyState
-                        icon={FaChartLine}
-                        title={t('revenueData.errorTitle')}
-                        message={revenueError.message || t('revenueData.errorMessage')}
-                    />
-                ) : filteredData?.length === 0 ? (
-                    <EmptyState
-                        icon={FaChartLine}
-                        title={t('revenueData.noDataTitle')}
-                        message={t('revenueData.noDataMessage')}
-                    />
-                ) : (
-                    <motion.div
-                        className="revenue-table"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                    >
-                        <div className="revenue-table__container">
-                            <table className="revenue-table__table">
-                                <thead>
+                </motion.div>
+
+                {/* Revenue Table Section */}
+                <motion.div
+                    className="revenue-table-section"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                >
+                    <div className="revenue-table-container">
+                        <table className="revenue-table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <div className="table-header-sortable">
+                                            {t('revenueData.cpi') || 'cpi / USD'}
+                                            <div className="sort-icons">
+                                                <FaArrowUp className="sort-icon" />
+                                                <FaArrowDown className="sort-icon" />
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className="table-header-sortable">
+                                            {t('revenueData.date') || 'Date (UTC)'}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className="table-header-sortable">
+                                            {t('revenueData.total') || 'Total / USD'}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className="table-header-sortable">
+                                            {t('revenueData.install') || 'Install'}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className="table-header-sortable">
+                                            {t('revenueData.referralRevenue') || 'Referral revenue'}
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div className="table-header-sortable">
+                                            {t('revenueData.bonus') || 'Bonus'}
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {shareLinkAnalyticsLoading ? (
                                     <tr>
-                                        <th>{t('revenueData.date')}</th>
-                                        <th>{t('revenueData.total')}</th>
-                                        <th>{t('revenueData.installRevenue')}</th>
+                                        <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>
+                                            <p style={{ color: '#6b7280', margin: 0 }}>
+                                                {t('revenueData.loading') || 'Loading...'}
+                                            </p>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredData.map((item, index) => (
+                                ) : revenueList && revenueList.length > 0 ? (
+                                    revenueList.map((item, index) => (
                                         <motion.tr
-                                            key={index}
-                                            className="revenue-table__row"
+                                            key={item.fileId || item.id || index}
                                             initial={{ opacity: 0, x: -20 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: index * 0.05 }}
                                         >
                                             <td>
-                                                {item.date || item.dateUTC
-                                                    ? new Date(item.date || item.dateUTC).toLocaleDateString()
+                                                {/* CPI or Revenue per view/download */}
+                                                {item.cpi ? parseFloat(item.cpi || 0).toFixed(4) : 
+                                                 item.revenuePerView ? parseFloat(item.revenuePerView || 0).toFixed(4) :
+                                                 '-'} {currency}
+                                            </td>
+                                            <td>
+                                                {item.date || item.dateUTC || item.createdAt || item.lastUpdated
+                                                    ? new Date(item.date || item.dateUTC || item.createdAt || item.lastUpdated).toLocaleDateString()
                                                     : '-'}
                                             </td>
-                                            <td>{parseFloat(item.total || 0).toFixed(4)} {currency}</td>
-                                            <td>{parseFloat(item.installRevenue || 0).toFixed(4)} {currency}</td>
+                                            <td>
+                                                {/* Total revenue from this link */}
+                                                {item.totalRevenue ? parseFloat(item.totalRevenue || 0).toFixed(4) :
+                                                 item.total ? parseFloat(item.total || 0).toFixed(4) :
+                                                 item.earnings ? parseFloat(item.earnings || 0).toFixed(4) :
+                                                 '0.0000'} {currency}
+                                            </td>
+                                            <td>
+                                                {/* Install/Downloads count */}
+                                                {item.install || item.installRevenue || item.downloads || item.totalDownloads
+                                                    ? `${(item.install || item.installRevenue || item.downloads || item.totalDownloads || 0).toLocaleString()}`
+                                                    : '0'}
+                                            </td>
+                                            <td>
+                                                {/* Referral revenue or views */}
+                                                {item.referralRevenue ? parseFloat(item.referralRevenue || 0).toFixed(4) :
+                                                 item.views || item.totalViews ? (item.views || item.totalViews || 0).toLocaleString() :
+                                                 '0'} {item.referralRevenue ? currency : ''}
+                                            </td>
+                                            <td>
+                                                {/* Bonus or file name */}
+                                                {item.bonus ? parseFloat(item.bonus || 0).toFixed(4) :
+                                                 item.fileName || item.name ? (item.fileName || item.name).substring(0, 20) + (item.fileName && item.fileName.length > 20 ? '...' : '') :
+                                                 '-'} {item.bonus ? currency : ''}
+                                            </td>
                                         </motion.tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </motion.div>
-                )}
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                                                <p style={{ color: '#6b7280', margin: 0 }}>
+                                                    {t('revenueData.noDataMessage') || 'No data, make money by sharing videos'}
+                                                </p>
+                                                <Link 
+                                                    to="/dashboard/referral"
+                                                    className="revenue-earning-card__withdraw-button revenue-earning-card__share-button"
+                                                >
+                                                    <HiShare className="revenue-earning-card__share-icon" />
+                                                    {t('revenueData.toShare') || 'To share'}
+                                                </Link>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </motion.div>
             </div>
         </div>
     );
 }
-

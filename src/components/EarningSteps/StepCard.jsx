@@ -1,5 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
+import './StepCard.scss'
 
 export default function StepCard({ step, idx }) {
     return <motion.div
@@ -8,18 +9,16 @@ export default function StepCard({ step, idx }) {
         whileInView={{ y: 0, opacity: 1 }}
         viewport={{ once: true }}
         transition={{ delay: 0.1 * idx }}
-        className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 flex space-x-4 items-start"
+        className="step-card"
     >
-        <div className="flex-shrink-0">
-            <div className="w-12 h-12 flex items-center justify-center bg-primary-50 rounded-full">
-                {step.icon}
-            </div>
+        <div className="step-card__icon-wrapper">
+            {step.icon}
         </div>
-        <div>
-            <h3 className="text-xl font-semibold mb-2">
+        <div className="step-card__content">
+            <h3 className="step-card__title">
                 {idx + 1}. {step.title}
             </h3>
-            <p className="text-gray-600">{step.desc}</p>
+            <p className="step-card__desc">{step.desc}</p>
         </div>
     </motion.div>
 }

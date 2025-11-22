@@ -5,47 +5,62 @@ import { useCookies } from "react-cookie";
 import { FaCheckCircle } from "react-icons/fa";
 import api from "../../services/api";
 import Loading from "../Loading/Loading";
+import { useLanguage } from "../../context/LanguageContext";
+import TermsModal from "../TermsModal/TermsModal";
 import './PartnerCta.scss'
 
-const cards = [
-    {
-        title: "Views Plan",
-        features: [
-            "Pay per thousand views (CPM)",
-            "Competitive rates vary by country",
-            "Ability to display in-video ads",
-            "Detailed viewer analytics",
-            "Withdraw earnings upon reaching minimum threshold",
-            "24/7 technical support"
-        ],
-        smallDesc: "Ideal for content that gets a high number of views.",
-        planKey: "watchingplan"
-    },
-    {
-        title: "Downloads Plan",
-        features: [
-            "Pay per direct app install (CPI)",
-            "Competitive rates vary by country",
-            "Detailed conversion statistics",
-            "Unique referral links",
-            "Accurate tracking of downloads",
-            "24/7 technical support"
-        ],
-        smallDesc: "Ideal for reaching a new audience and expanding your user base.",
-        planKey: "Downloadsplan"
-    }
-];
 
-
-export default function PartnerCTA() {
+export default function PartnerCTA({ isModal = false, onClose }) {
     const [userData, setUserData] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showTermsModal, setShowTermsModal] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState(null);
     const navigate = useNavigate();
     const [cookies] = useCookies(["MegaBox"]);
+    const { t } = useLanguage();
+
+    const cards = [
+        {
+            title: t('partners.plans.viewsPlan.title'),
+            features: [
+                t('partners.plans.viewsPlan.feature1'),
+                t('partners.plans.viewsPlan.feature2'),
+                t('partners.plans.viewsPlan.feature3'),
+                t('partners.plans.viewsPlan.feature4'),
+                t('partners.plans.viewsPlan.feature5'),
+                t('partners.plans.viewsPlan.feature6')
+            ],
+            smallDesc: t('partners.plans.viewsPlan.desc'),
+            planKey: "watchingplan"
+        },
+        {
+            title: t('partners.plans.downloadsPlan.title'),
+            features: [
+                t('partners.plans.downloadsPlan.feature1'),
+                t('partners.plans.downloadsPlan.feature2'),
+                t('partners.plans.downloadsPlan.feature3'),
+                t('partners.plans.downloadsPlan.feature4'),
+                t('partners.plans.downloadsPlan.feature5'),
+                t('partners.plans.downloadsPlan.feature6')
+            ],
+            smallDesc: t('partners.plans.downloadsPlan.desc'),
+            planKey: "Downloadsplan"
+        }
+    ];
 
     useEffect(() => {
-        fetchUserData();
-    }, []);
+        if (!isModal) {
+            fetchUserData();
+        } else {
+            // For modal, fetch user data if token exists
+            if (cookies.MegaBox) {
+                fetchUserData();
+            } else {
+                setUserData(null);
+                setLoading(false);
+            }
+        }
+    }, [isModal, cookies.MegaBox]);
 
     const fetchUserData = async () => {
         try {
@@ -64,6 +79,22 @@ export default function PartnerCTA() {
 
     const handleSubscribe = async (planKey) => {
         if (!cookies.MegaBox) return navigate("/login");
+        
+        // Check if user has already accepted terms
+        const termsAccepted = localStorage.getItem('termsAccepted');
+        
+        if (!termsAccepted) {
+            // Show terms modal first
+            setSelectedPlan(planKey);
+            setShowTermsModal(true);
+            return;
+        }
+        
+        // If terms already accepted, proceed with subscription
+        await proceedWithSubscription(planKey);
+    };
+
+    const proceedWithSubscription = async (planKey) => {
         try {
             const updateData = {
                 isPromoter: "true",
@@ -75,32 +106,50 @@ export default function PartnerCTA() {
                 }
             });
             await fetchUserData(); // Refresh user data after update
+            if (isModal && onClose) {
+                onClose();
+            }
         } catch (error) {
             console.error('Error updating profile:', error);
         }
     };
 
-    if (loading) {
+    const handleTermsAccept = () => {
+        if (selectedPlan) {
+            proceedWithSubscription(selectedPlan);
+        }
+    };
+
+    if (loading && !isModal) {
         return <Loading />;
     }
 
-    const hasNoPlans = !userData?.watchingplan && !userData?.Downloadsplan;
+    const hasNoPlans = !userData || (!userData?.watchingplan && !userData?.Downloadsplan);
 
     return (
-        <section className="bg-gray-50 py-20 px-6 md:px-16 relative overflow-hidden">
-            <div className="container mx-auto">
+        <>
+            <TermsModal
+                isOpen={showTermsModal}
+                onClose={() => {
+                    setShowTermsModal(false);
+                    setSelectedPlan(null);
+                }}
+                onAccept={handleTermsAccept}
+            />
+            <section className={`partner-cta ${isModal ? 'partner-cta--modal' : ''}`}>
+                <div className="partner-cta__container">
                 <motion.h2
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.7, ease: "easeOut" }}
-                    className="text-4xl md:text-5xl font-bold text-center mb-10 text-primary-700"
+                    className="partner-cta__title"
                 >
-                    {hasNoPlans ? "Choose Your Subscription Plan" : "You’re Already Subscribed"}
+                    {hasNoPlans ? t('partners.selectPlan') : t('partners.alreadySubscribed')}
                 </motion.h2>
 
                 {hasNoPlans ? (
-                    <div className="grid md:grid-cols-2 gap-8">
+                    <div className="partner-cta__cards">
                         {cards.map((card, idx) => (
                             <motion.div
                                 key={idx}
@@ -108,29 +157,29 @@ export default function PartnerCTA() {
                                 whileInView={{ y: 0, opacity: 1 }}
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.5, delay: idx * 0.2 }}
-                                className="relative bg-white rounded-2xl shadow-xl overflow-hidden group hover:shadow-2xl transform hover:scale-[1.02] transition-all duration-300"
+                                className={`partner-cta__card partner-cta__card--${idx === 0 ? 'purple' : 'orange'}`}
                             >
-                                {/* Gradient Header */}
-                                <div className={`h-[95px] flex justify-center flex-col p-4 text-white CardNav`}>
-                                    <h3 className="text-2xl font-bold">{card.title}</h3>
-                                    <p>{card.smallDesc}</p>
+                                {/* Card Header */}
+                                <div className="partner-cta__card-header">
+                                    <h3 className="partner-cta__card-title">{card.title}</h3>
+                                    <p className="partner-cta__card-desc">{card.smallDesc}</p>
                                 </div>
 
                                 {/* Card Content */}
-                                <div className="p-8">
-                                    <ul className="space-y-3 mb-6">
+                                <div className="partner-cta__card-content">
+                                    <ul className="partner-cta__features">
                                         {card.features.map((feature, i) => (
-                                            <li key={i} className="flex items-center text-gray-700">
-                                                <FaCheckCircle className="text-primary-600 mr-2" />
+                                            <li key={i} className="partner-cta__feature">
+                                                <FaCheckCircle className="partner-cta__feature-icon" />
                                                 {feature}
                                             </li>
                                         ))}
                                     </ul>
                                     <button
                                         onClick={() => handleSubscribe(card.planKey)}
-                                        className="w-full bg-primary-600 text-white font-semibold py-3 rounded-lg hover:bg-primary-700 transition duration-200"
+                                        className={`partner-cta__button partner-cta__button--${idx === 0 ? 'purple' : 'orange'}`}
                                     >
-                                        Select {card.title}
+                                        {t('partners.choosePlan')}
                                     </button>
                                 </div>
                             </motion.div>
@@ -142,21 +191,21 @@ export default function PartnerCTA() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
-                        className="flex justify-center"
+                        className="partner-cta__subscribed"
                     >
                         <button
-                            onClick={() => navigate('/dashboard/Earnings')}
-                            className="bg-primary-700 text-white font-semibold px-8 py-4 rounded-xl shadow-md hover:bg-primary-500 transition"
+                            onClick={() => {
+                                if (onClose) onClose();
+                                navigate('/dashboard/Earnings');
+                            }}
+                            className="partner-cta__dashboard-button"
                         >
-                            See Your Dashboard
+                            {t('partners.seeDashboard')}
                         </button>
                     </motion.div>
                 )}
             </div>
-
-            {/* Decorative blurred circles */}
-            <div className="absolute -top-16 -left-16 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
-            <div className="absolute -bottom-16 -right-16 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
         </section>
+        </>
     );
 }

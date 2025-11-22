@@ -10,6 +10,7 @@ export { userService } from './userService';
 export { withdrawalService } from './withdrawalService';
 export { notificationService } from './notificationService';
 export { adminService } from './adminService';
+export { promoterService } from './promoterService';
 
 // Default export for backward compatibility
 import { api as defaultApi } from './apiConfig';

@@ -71,7 +71,7 @@ export default function SearchFilter({
     return (
         <div className={`search-filter ${className}`}>
             <div className="search-filter__container">
-                {/* Search Input */}
+                {/* Search Input with Filter Button */}
                 <div className="search-filter__search">
                     <FiSearch className="search-filter__search-icon" />
                     <input
@@ -90,23 +90,22 @@ export default function SearchFilter({
                             <FiX />
                         </button>
                     )}
+                    {/* Filter Toggle Button inside search */}
+                    {filters.length > 0 && (
+                        <button
+                            onClick={() => setShowFilters(!showFilters)}
+                            className={`search-filter__toggle-inline ${showFilters ? 'active' : ''} ${hasActiveFilters ? 'has-filters' : ''}`}
+                            title={t('searchFilter.toggleFilters')}
+                        >
+                            <FiFilter />
+                            {hasActiveFilters && (
+                                <span className="search-filter__badge">
+                                    {Object.keys(activeFilters).length}
+                                </span>
+                            )}
+                        </button>
+                    )}
                 </div>
-
-                {/* Filter Toggle Button */}
-                {filters.length > 0 && (
-                    <button
-                        onClick={() => setShowFilters(!showFilters)}
-                        className={`search-filter__toggle ${showFilters ? 'active' : ''} ${hasActiveFilters ? 'has-filters' : ''}`}
-                        title={t('searchFilter.toggleFilters')}
-                    >
-                        <FiFilter />
-                        {hasActiveFilters && (
-                            <span className="search-filter__badge">
-                                {Object.keys(activeFilters).length}
-                            </span>
-                        )}
-                    </button>
-                )}
             </div>
 
             {/* Filters Panel */}

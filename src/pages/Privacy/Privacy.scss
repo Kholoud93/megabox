@@ -1,0 +1,207 @@
+@use "../../helpers/functions" as *;
+@use "../../helpers/mixins" as *;
+
+.PrivacyPolicy {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f7f8fb 0%, #e8ecf1 100%);
+    padding: 160px 0 60px;
+
+    .privacy-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .privacy-header {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        padding: 40px;
+        border-radius: 16px;
+        margin-bottom: 32px;
+        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+        color: white;
+        text-align: center;
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 0 12px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .privacy-meta {
+            font-size: 14px;
+            opacity: 0.9;
+            margin: 8px 0;
+        }
+    }
+
+    .privacy-content {
+        background: white;
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        line-height: 1.8;
+        color: #374151;
+
+        p {
+            margin-bottom: 16px;
+            font-size: 20px;
+            line-height: 1.8;
+        }
+
+        h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #111827;
+            margin: 32px 0 16px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #6366f1;
+        }
+
+        h3 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 24px 0 12px;
+        }
+
+        ul, ol {
+            margin: 16px 0;
+            padding-left: 24px;
+            padding-right: 0;
+
+            [dir="rtl"] & {
+                padding-left: 0;
+                padding-right: 24px;
+            }
+
+            li {
+                margin-bottom: 12px;
+                line-height: 1.8;
+            }
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #e5e7eb;
+            margin: 32px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+            thead {
+                background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                color: white;
+
+                th {
+                    padding: 16px;
+                    text-align: start;
+                    font-weight: 600;
+                    font-size: 14px;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+
+                    [dir="rtl"] & {
+                        text-align: right;
+                    }
+                }
+            }
+
+            tbody {
+                tr {
+                    border-bottom: 1px solid #e5e7eb;
+                    transition: background-color 0.2s;
+
+                    &:hover {
+                        background-color: #f9fafb;
+                    }
+
+                    &:last-child {
+                        border-bottom: none;
+                    }
+                }
+
+                td {
+                    padding: 16px;
+                    vertical-align: top;
+                    font-size: 18px;
+                }
+            }
+        }
+
+        a {
+            color: #6366f1;
+            text-decoration: underline;
+            transition: color 0.2s;
+
+            &:hover {
+                color: #4f46e5;
+            }
+        }
+
+        .privacy-notice {
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            border-left: 4px solid #6366f1;
+            padding: 20px;
+            margin: 32px 0;
+            border-radius: 8px;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+    }
+
+    // Responsive
+    @include Breakpoints(mobile) {
+        padding: 140px 0 40px;
+
+        .privacy-header {
+            padding: 28px 20px;
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+
+        .privacy-content {
+            padding: 24px 20px;
+
+            h2 {
+                font-size: 28px;
+            }
+
+            h3 {
+                font-size: 22px;
+            }
+            
+            p {
+                font-size: 18px;
+            }
+
+            table {
+                font-size: 13px;
+
+                thead th,
+                tbody td {
+                    padding: 12px 8px;
+                }
+            }
+        }
+    }
+
+    @include Breakpoints(small) {
+        padding: 150px 0 50px;
+        
+        .privacy-content {
+            padding: 32px 24px;
+        }
+    }
+    
+    @include Breakpoints(medium) {
+        padding: 155px 0 55px;
+    }
+}
+

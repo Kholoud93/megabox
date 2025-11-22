@@ -1,88 +1,40 @@
 @use "./../../helpers/_functions.scss" as *;
 @use "./../../helpers/_variables.scss" as vars;
 
+// ===========================
+// MOBILE OVERLAY BACKDROP
+// ===========================
 .dropback {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+
     @include Breakpoints(mobile) {
-        background-color: #00000070;
+        display: block !important;
+        background-color: rgba(0, 0, 0, 0.7);
         width: 100%;
         height: 100%;
         position: fixed;
         top: 0;
         left: 0;
-        z-index: 8;
+        z-index: 9999;
         visibility: hidden;
         opacity: 0;
-        transition: 0.7s linear all;
-        -webkit-transition: 0.7s linear all;
-    }
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        pointer-events: none;
 
-    &.apper-dropback {
-        visibility: visible;
-        opacity: 1;
-        transition: 0.7s linear all;
-        -webkit-transition: 0.7s linear all;
-    }
-}
-
-.css-wx7wi4 {
-    color: white;
-}
-
-aside .main-side .ps-menu-button:hover {
-    background-color: rgba(255, 255, 255, 0.08) !important;
-    transform: translateX(4px);
-}
-
-[dir="rtl"] aside .main-side .ps-menu-button:hover {
-    transform: translateX(-4px);
-}
-
-.navbar__logo {
-    padding: 0 13px !important;
-    font-weight: bold;
-    color: #ffffff;
-    background: none;
-    text-decoration: none;
-
-
-    &.Open {
-        font-size: 2rem;
-    }
-
-    &.Close {
-        font-size: 1rem;
+        &.apper-dropback {
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
     }
 }
 
-
-
-.css-ewdv3l {
-    width: 100% !important;
-    display: block !important;
-}
-
-.css-1tqrhto>.ps-menu-button {
-    transition: all 0.2s ease-in-out;
-    border-radius: 0.75rem;
-    margin: 0.03125rem 0.5rem;
-
-    &:hover {
-        background-color: rgba(255, 255, 255, 0.08) !important;
-        transform: translateX(4px);
-    }
-}
-
-[dir="rtl"] .css-1tqrhto>.ps-menu-button {
-    &:hover {
-        transform: translateX(-4px);
-    }
-}
-
-.MainItem:hover {
-    background-color: rgba(255, 255, 255, 0.08) !important;
-    border-radius: 0.75rem;
-}
-
+// ===========================
+// HAMBURGER MENU BUTTON
+// ===========================
 .bars {
     font-size: 28px;
     padding: 14px;
@@ -90,78 +42,103 @@ aside .main-side .ps-menu-button:hover {
     background: linear-gradient(135deg, vars.$BaseColor, vars.$Secondcolor);
     position: fixed;
     border-radius: 50%;
-    right: 40px;
-    left: auto;
-    bottom: 30px;
-    opacity: 0;
-    z-index: 10;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     cursor: pointer;
+    opacity: 0;
+    z-index: 10000001;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
+    display: none;
+
+    @include Breakpoints(mobile) {
+        display: block;
+        right: 40px;
+        bottom: 90px;
+        opacity: 1;
+
+        &:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+    }
+
+    @include Breakpoints(small) {
+        bottom: 90px;
+    }
 
     [dir="rtl"] & {
         right: auto;
         left: 40px;
     }
-
-    &:hover {
-        transform: scale(1.1);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-    }
-
-    @include Breakpoints(mobile) {
-        opacity: 1;
-    }
 }
 
+// ===========================
+// NAV CONTAINER - FIXED VERSION
+// ===========================
 .allnav {
-    z-index: 10;
+    z-index: 800;
+    position: relative;
+    background: transparent !important;
+    width: auto;
+    height: auto;
 
-    .Active {
-        background: linear-gradient(90deg, var(--color-indigo-600), rgba(79, 70, 229, 0.8)) !important;
-        border-left: 3px solid white;
-        font-weight: 600;
+    // Desktop styles
+    @media (min-width: 768px) {
+        position: relative !important;
+        width: auto !important;
+        height: auto !important;
+        background: transparent !important;
+        pointer-events: auto !important;
+        z-index: 800 !important;
+    }
+
+    // MOBILE: Don't make the container fullscreen - only position it
+    @include Breakpoints(mobile) {
+        z-index: 10000000;
+        position: fixed;
+        top: 0;
+        left: 0;
+        // DON'T set width: 100% or height: 100vh here!
+        width: auto !important;
+        height: auto !important;
+        background: transparent !important;
+        pointer-events: none; // Allow clicks to pass through the container
+
+        // When sidebar is open, still don't block the whole screen
+        // The .main-side inside will have pointer-events: auto
     }
 
     [dir="rtl"] & {
-        .Active {
-            border-left: none;
-            border-right: 3px solid white;
-        }
-    }
-
-    @include Breakpoints(mobile) {
-        width: 250px;
-        transition: 0.7s linear all;
-        -webkit-transition: 0.7s linear all;
-    }
-
-    &.apper {
         @include Breakpoints(mobile) {
-            width: 250px;
-            transition: 0.7s linear all;
-            -webkit-transition: 0.7s linear all;
-            transform: translateX(-100%);
-            -webkit-transform: translateX(-100%);
-        }
-
-        [dir="rtl"] & {
-            @include Breakpoints(mobile) {
-                transform: translateX(100%);
-                -webkit-transform: translateX(100%);
-            }
+            left: auto;
+            right: 0;
         }
     }
 }
 
+// ===========================
+// SIDEBAR NAVIGATION - FIXED VERSION
+// ===========================
 aside {
     position: relative;
 
+    @media (min-width: 768px) {
+        position: relative !important;
+        width: auto !important;
+        height: auto !important;
+        background: transparent !important;
+        pointer-events: auto !important;
+    }
+
+    // MOBILE: Don't make aside fullscreen
     @include Breakpoints(mobile) {
         position: fixed;
-        left: 0;
-        right: auto;
         top: 0;
+        left: 0;
+        width: auto !important; // Don't stretch to full width
+        height: auto !important; // Don't stretch to full height
+        z-index: 10000000;
+        pointer-events: none; // Allow clicks through
+
     }
 
     [dir="rtl"] & {
@@ -171,99 +148,42 @@ aside {
         }
     }
 
-    .Remove_hover {
-        &:hover {
-            background-color: transparent !important;
-        }
-    }
-
-    .sidenav-bottom-actions {
-        margin-top: 0.5rem;
-        padding-top: 0.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.03125rem;
-    }
-
-    .LanguageToggle {
-        margin: 0.03125rem 0.5rem !important;
-        padding: 0.4rem 0.75rem !important;
-    }
-
-    .Logout {
-        margin: 0.03125rem 0.5rem !important;
-        padding: 0.4rem 0.75rem !important;
-    }
-
-    // Styles for collapsed sidebar
-    .main-side.collapsed {
-        .sidenav-bottom-actions {
-            margin-top: 0.5rem;
-            padding-top: 0.5rem;
-            gap: 0.25rem;
-            position: relative;
-            bottom: auto;
-        }
-
-        .LanguageToggle {
-            margin: 0.125rem 0.25rem !important;
-            padding: 0.5rem !important;
-            position: relative !important;
-            bottom: auto !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-        }
-
-        .Logout {
-            margin: 0.125rem 0.25rem !important;
-            padding: 0.5rem !important;
-            position: relative !important;
-            bottom: auto !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-        }
-    }
-
-
     .main-side {
-        &::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        /* Track */
-        &::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        /* Handle */
-        &::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-
-            &:hover {
-                background: rgba(255, 255, 255, 0.3);
-            }
-        }
-
         background: radial-gradient(circle at 20% 30%, var(--color-indigo-600) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, var(--color-indigo-500) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, var(--color-indigo-400) 0%, transparent 70%),
-        linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-indigo-600) 100%);
+            radial-gradient(circle at 80% 70%, var(--color-indigo-500) 0%, transparent 50%),
+            radial-gradient(circle at 50% 50%, var(--color-indigo-400) 0%, transparent 70%),
+            linear-gradient(135deg, var(--color-indigo-700) 0%, var(--color-indigo-600) 100%) !important;
         position: fixed;
         width: 250px;
-        height: 100%;
+        height: 100vh;
         top: 0;
         left: 0;
-        right: auto;
-        z-index: 999;
-        transition: 0.3s linear all;
-        -webkit-transition: 0.3s linear all;
-        overflow-y: auto !important;
+        z-index: 100;
+        transition: all 0.3s linear;
+        overflow-y: auto;
         overflow-x: hidden;
         box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
         padding-bottom: 100px;
+        pointer-events: auto; // Sidebar itself should receive clicks
+
+        .ps-sidebar-container {
+            background-color: transparent !important;
+            background: transparent !important;
+        }
+
+        &::-webkit-scrollbar {
+            width: 4px;
+        }
+        &::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        &::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            &:hover {
+                background: rgba(255, 255, 255, 0.5);
+            }
+        }
 
         [dir="rtl"] & {
             left: auto;
@@ -271,184 +191,82 @@ aside {
             box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
         }
 
+        // MOBILE: Hidden by default, slide in when shown
         @include Breakpoints(mobile) {
-            height: 100% !important;
-        }
-
-        &.collapsed {
-            width: 78px;
-            transition: 0.3s linear all;
-            -webkit-transition: 0.3s linear all;
-            overflow: visible !important;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translateX(-250px);
+            transition: transform 0.3s ease;
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+            pointer-events: auto; // Always allow clicks on sidebar when visible
 
             [dir="rtl"] & {
                 left: auto;
                 right: 0;
+                transform: translateX(250px);
             }
 
-            .ps-menu-button {
-                padding: 0.5rem !important;
-                margin: 0.125rem 0.25rem !important;
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                min-width: auto !important;
+            &.show {
+                transform: translateX(0) !important;
 
-                // Hide text label when collapsed
-                .ps-menu-label {
-                    display: none !important;
-                    width: 0 !important;
-                    overflow: hidden !important;
-                }
-
-                // Ensure icon wrapper is visible and centered
-                >*:first-child {
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    visibility: visible !important;
-                    opacity: 1 !important;
-                    margin: 0 auto !important;
-                }
-
-                // Show tooltip on hover when collapsed - appears inside the sidebar
-                &[title]:not([title=""]),
-                &[data-tooltip]:not([data-tooltip=""]) {
-                    position: relative;
-                    overflow: visible !important;
-
-                    &::after {
-                        content: attr(title) attr(data-tooltip);
-                        position: absolute;
-                        left: 45px;
-                        right: auto;
-                        top: 50%;
-                        transform: translateY(-50%);
-                        background-color: rgba(0, 0, 0, 0.95);
-                        color: white;
-                        padding: 0.4rem 0.6rem;
-                        border-radius: 0.5rem;
-                        font-size: 0.8rem;
-                        white-space: nowrap;
-                        opacity: 0;
-                        pointer-events: none;
-                        transition: opacity 0.2s ease-in-out;
-                        z-index: 10000;
-                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-                        max-width: 150px;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                    }
-
-                    [dir="rtl"] & {
-                        &::after {
-                            left: auto;
-                            right: 45px;
-                        }
-                    }
-
-                    &:hover::after {
-                        opacity: 1;
-                        pointer-events: auto;
-                    }
+                [dir="rtl"] & {
+                    transform: translateX(0) !important;
                 }
             }
 
-            .menu-items {
-                padding: 0.5rem !important;
-                justify-content: center !important;
-                gap: 0;
-                text-align: center;
+            &.hide {
+                transform: translateX(-250px) !important;
+                pointer-events: none; // When hidden, don't catch clicks
 
-                // Ensure icons are visible and centered
-                .icon,
-                svg,
-                [class*="icon"] {
-                    display: block !important;
-                    visibility: visible !important;
-                    opacity: 1 !important;
-                    width: 20px !important;
-                    height: 20px !important;
-                    min-width: 20px !important;
-                    margin: 0 auto !important;
-                    flex-shrink: 0 !important;
-                }
-            }
-
-            .close {
-                margin: 0.5rem auto !important;
-                padding: 0.5rem !important;
-                display: flex !important;
-                justify-content: center !important;
-                align-items: center !important;
-                width: auto !important;
-
-                >*:first-child {
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    margin: 0 auto !important;
-                }
-            }
-
-            // Language toggle and Logout tooltips when collapsed
-            .sidenav-bottom-actions {
-
-                .LanguageToggle,
-                .Logout {
-
-                    svg,
-                    .icon {
-                        margin: 0 auto !important;
-                        font-size: 20px;
-                        width: 20px;
-                        height: 20px;
-                        min-width: 20px;
-                    }
-
-                    // Tooltip when collapsed - appears inside the sidebar
-                    &[data-tooltip]:not([data-tooltip=""]) {
-                        overflow: visible !important;
-
-                        &::after {
-                            content: attr(data-tooltip);
-                            position: absolute;
-                            left: 45px;
-                            right: auto;
-                            top: 50%;
-                            transform: translateY(-50%);
-                            background-color: rgba(0, 0, 0, 0.95);
-                            color: white;
-                            padding: 0.4rem 0.6rem;
-                            border-radius: 0.5rem;
-                            font-size: 0.8rem;
-                            white-space: nowrap;
-                            opacity: 0;
-                            pointer-events: none;
-                            transition: opacity 0.2s ease-in-out;
-                            z-index: 10000;
-                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-                            max-width: 150px;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                        }
-
-                        [dir="rtl"] & {
-                            &::after {
-                                left: auto;
-                                right: 45px;
-                            }
-                        }
-
-                        &:hover::after {
-                            opacity: 1;
-                            pointer-events: auto;
-                        }
-                    }
+                [dir="rtl"] & {
+                    transform: translateX(250px) !important;
                 }
             }
         }
 
+        // COLLAPSED STATE
+        &.collapsed {
+            width: 78px;
+
+            @include Breakpoints(mobile) {
+                width: 250px;
+                transform: translateX(-250px);
+                pointer-events: none;
+
+                [dir="rtl"] & {
+                    transform: translateX(250px);
+                }
+            }
+
+            .ps-menu-button {
+                padding: 0.5rem;
+                margin: 0.125rem 0.25rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                .ps-menu-label {
+                    display: none;
+                }
+
+                >*:first-child {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    visibility: visible;
+                    opacity: 1;
+                    margin: 0 auto;
+                }
+
+                .ps-submenu-expand-icon {
+                    display: none;
+                }
+            }
+        }
+
+        // MENU ITEMS
         .ps-menu-button {
             font-size: 0.9375rem;
             font-weight: 500;
@@ -459,63 +277,43 @@ aside {
             position: relative;
 
             &:hover {
-                background-color: rgba(255, 255, 255, 0.08) !important;
-            }
+                background-color: rgba(255, 255, 255, 0.08);
+                transform: translateX(4px);
 
-            // Tooltip styling - only show when collapsed (handled in collapsed section)
+                [dir="rtl"] & {
+                    transform: translateX(-4px);
+                }
+            }
         }
 
         .menu-items {
             color: rgba(255, 255, 255, 0.95);
-            background-color: transparent;
             font-size: 0.9375rem;
             font-weight: 500;
-            letter-spacing: 0.01em;
             padding: 0.4rem 0.75rem;
             display: flex;
             align-items: center;
             gap: 0.75rem;
             transition: all 0.2s ease-in-out;
-            margin: 0;
         }
 
-        .Logo {
-            width: 48px;
-            height: 48px;
-            transition: 0.3s linear all;
-            -webkit-transition: 0.3s linear all;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-            flex-shrink: 0;
+        // ACTIVE STATE
+        .Active {
+            background: linear-gradient(90deg, var(--color-indigo-600), rgba(79, 70, 229, 0.8));
+            border-left: 3px solid white;
+            font-weight: 600;
+
+            [dir="rtl"] & {
+                border-left: none;
+                border-right: 3px solid white;
+            }
         }
 
-        .Logo-colaps {
-            width: 40px;
-            height: 40px;
-            border-radius: 5px;
-            padding: 2px;
-            transition: 0.3s linear all;
-            -webkit-transition: 0.3s linear all;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-            flex-shrink: 0;
-        }
-
-        .sidenav-logo-text {
-            color: white;
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: 0.02em;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
+        // LOGO
         .sidenav-logo-container {
-            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: row;
             gap: 0.75rem;
             margin: 0.5rem 0 0.75rem 0;
             padding: 0 0.5rem;
@@ -526,138 +324,221 @@ aside {
             }
         }
 
-        .sidenav-logo-link {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: row;
-            gap: 0.75rem;
-            text-decoration: none;
-            transition: all 0.3s ease;
-
-            .main-side.collapsed & {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
+        .sidenav-logo-text {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 700;
+            white-space: nowrap;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        .sidenav-notification-bell {
-            position: absolute;
-            top: 0;
-            right: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 36px;
-            height: 36px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-            z-index: 10;
-
-            &:hover {
-                background: rgba(255, 255, 255, 0.2);
-                transform: scale(1.1);
-                color: white;
-            }
-
-            .notification-icon {
-                font-size: 20px;
-                width: 20px;
-                height: 20px;
-            }
-
-            .notification-badge {
-                position: absolute;
-                top: -4px;
-                right: -4px;
-                background: #ef4444;
-                color: white;
-                font-size: 10px;
-                font-weight: 700;
-                border-radius: 50%;
-                min-width: 18px;
-                height: 18px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 0 4px;
-                border: 2px solid var(--color-indigo-700);
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            }
-
-            &[data-tooltip]:not([data-tooltip=""]) {
-                position: relative;
-                overflow: visible !important;
-
-                &::after {
-                    content: attr(data-tooltip);
-                    position: absolute;
-                    left: 45px;
-                    right: auto;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    background-color: rgba(0, 0, 0, 0.95);
-                    color: white;
-                    padding: 0.4rem 0.6rem;
-                    border-radius: 0.5rem;
-                    font-size: 0.8rem;
-                    white-space: nowrap;
-                    opacity: 0;
-                    pointer-events: none;
-                    transition: opacity 0.2s ease-in-out;
-                    z-index: 10000;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-                    max-width: 150px;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
-
-                [dir="rtl"] & {
-                    &::after {
-                        left: auto;
-                        right: 45px;
-                    }
-                }
-
-                &:hover::after {
-                    opacity: 1;
-                    pointer-events: auto;
-                }
-            }
+        .Logo {
+            width: 48px;
+            height: 48px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+            flex-shrink: 0;
         }
 
-        .main-side.collapsed {
-            .sidenav-logo-container {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .sidenav-notification-bell {
-                position: static;
-                margin-top: 0.5rem;
-                width: 40px;
-                height: 40px;
-            }
-        }
-
+        // ICON
         .icon {
             color: rgba(255, 255, 255, 0.9);
             font-size: 20px;
             width: 20px;
             height: 20px;
             min-width: 20px;
-            transition: all 0.2s ease-in-out;
             flex-shrink: 0;
-            display: inline-block;
+            transition: all 0.2s ease-in-out;
+
+            &.Active {
+                color: white;
+                transform: scale(1.1);
+            }
         }
 
-        .icon.Active {
+        // FILES & FOLDERS
+        .sidenav-files-tree-item {
+            padding: 0.375rem 0.5rem;
+            margin: 0.0625rem 0.375rem;
+            font-size: 0.8125rem;
             color: white;
-            transform: scale(1.1);
+            font-weight: 500;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: translateX(4px);
+
+                [dir="rtl"] & {
+                    transform: translateX(-4px);
+                }
+            }
+
+            &--file {
+                padding-left: 0.75rem; // Reduced from 2rem to align files properly
+            }
+
+            .ps-menu-label {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                color: white;
+            }
+        }
+        
+        // Make folder names (All Files, lolo, etc.) white
+        .sidenav-files-submenu,
+        .sidenav-folder-submenu {
+            .ps-menu-button {
+                .ps-menu-label {
+                    color: white !important;
+                }
+                
+                // Make expand arrow icon white
+                .ps-submenu-expand-icon {
+                    color: white !important;
+                    
+                    svg {
+                        color: white !important;
+                        fill: white !important;
+                    }
+                }
+            }
+        }
+        
+        // Also target the expand icon directly
+        .ps-submenu-expand-icon {
+            color: white !important;
+            
+            svg {
+                color: white !important;
+                fill: white !important;
+            }
+            
+            path {
+                fill: white !important;
+                stroke: white !important;
+            }
+        }
+
+        .sidenav-empty-folder {
+            padding: 0.5rem 0.75rem;
+            margin: 0.125rem 0.5rem;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.75);
+            font-style: italic;
+        }
+
+        // SUBMENU STYLES
+        .ps-submenu-root[aria-expanded="true"] > .ps-submenu-content,
+        .ps-submenu-root.ps-open > .ps-submenu-content {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            height: auto !important;
+            max-height: 300px !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            padding: 4px 0 !important;
+            position: relative !important;
+            background: transparent !important;
+            pointer-events: auto !important;
+        }
+        
+        // Make all submenu expand arrows white
+        .ps-submenu-root {
+            .ps-menu-button {
+                .ps-submenu-expand-icon {
+                    color: white !important;
+                    
+                    svg,
+                    svg * {
+                        color: white !important;
+                        fill: white !important;
+                        stroke: white !important;
+                    }
+                }
+            }
+        }
+
+        .ps-submenu-root:not([aria-expanded="true"]):not(.ps-open) > .ps-submenu-content {
+            display: none !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
+
+        // BOTTOM ACTIONS
+        .sidenav-bottom-actions {
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.03125rem;
+        }
+
+        .LanguageToggle,
+        .Logout {
+            margin: 0.03125rem 0.5rem;
+            padding: 0.4rem 0.75rem;
         }
     }
+}
+
+// ===========================
+// REMOVE HOVER EFFECT
+// ===========================
+.Remove_hover {
+    &:hover {
+        background-color: transparent !important;
+    }
+}
+
+// ===========================
+// PAGE CONTENT
+// ===========================
+.revenue-data-page {
+    position: relative;
+    z-index: 1;
+
+    @include Breakpoints(mobile) {
+        z-index: 1;
+        margin: 0;
+        width: 100%;
+        overflow: hidden;
+    }
+}
+
+// ===========================
+// OVERRIDE REACT-PRO-SIDEBAR
+// ===========================
+.ps-sidebar-container {
+    background-color: transparent !important;
+    background: transparent !important;
+    z-index: inherit !important;
+}
+
+.css-dip3t8,
+.ps-sidebar-container.css-dip3t8 {
+    background-color: transparent !important;
+    background: transparent !important;
+}
+
+// ===========================
+// UTILITY CLASSES
+// ===========================
+.css-wx7wi4 {
+    color: white;
+}
+
+.css-ewdv3l {
+    width: 100%;
+    display: block;
+}
+
+.MainItem:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 0.75rem;
 }

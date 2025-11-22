@@ -8,7 +8,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { PopupButton } from '../../../helpers/SubmitButton';
 import axios from 'axios';
-import { API_URL } from '../../../services/api';
+import { API_URL, userService } from '../../../services/api';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
 import { useCookies } from 'react-cookie';
@@ -18,25 +18,12 @@ export default function AddFolder({ ToggleUploadFile, refetch }) {
 
     const Addfolder = async (values) => {
         try {
-            const res = await axios.post(
-                `${API_URL}/user/createFolder`,
-                { name: values.fileName },
-                {
-                    headers: {
-                        Authorization: `Bearer ${cookies.MegaBox}`,
-                    },
-                }
-            );
-            if (res.status === 200 || res.status === 201) {
-                toast.success('Folder added successfully', ToastOptions('success'));
-                ToggleUploadFile();
-                refetch()
-            } else {
-                toast.error('Failed to create folder.', ToastOptions('error'));
-            }
+            await userService.createFolder(values.fileName, null, cookies.MegaBox);
+            toast.success('Folder added successfully', ToastOptions('success'));
+            ToggleUploadFile();
+            refetch()
         } catch (error) {
-      
-            toast.error('Something went wrong. Please try again.', ToastOptions('error'));
+            toast.error(error.response?.data?.message || 'Something went wrong. Please try again.', ToastOptions('error'));
         }
     };
 

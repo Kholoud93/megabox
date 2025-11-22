@@ -17,6 +17,52 @@
         }
     }
 
+    // Icon buttons container styling
+    .flex.gap-2,
+    .flex.gap-3 {
+        &[class*="justify-center"],
+        &[class*="justify-start"] {
+            padding: 0.5rem 0;
+            
+            button {
+                @include transition();
+                
+                &:focus {
+                    outline: 2px solid rgba(99, 102, 241, 0.5);
+                    outline-offset: 2px;
+                }
+            }
+        }
+    }
+
+    // Account type section - ensure upgrade button fits
+    .bg-indigo-50 {
+        &[class*="border"] {
+            .flex[class*="justify-between"] {
+                gap: 0.5rem;
+                flex-wrap: wrap;
+                
+                button {
+                    max-width: 100%;
+                    
+                    span {
+                        display: inline-block;
+                        white-space: normal;
+                        word-break: break-word;
+                    }
+                }
+            }
+        }
+    }
+
+    // Profile image container improvements
+    .relative[class*="flex"] {
+        img,
+        > div {
+            max-width: 100%;
+        }
+    }
+
     label,
     p {
         padding: 0 2px;
@@ -83,17 +129,138 @@
         }
     }
     
-    // Small screens (mobile landscape / small tablets)
+    // Small screens (tablets: 768px - 991px) - same as mobile
     @include Breakpoints(small) {
-        .md\:flex {
-            flex-direction: row;
+        // Same layout as mobile - column layout, centered
+        .md\:flex,
+        [class*="md:flex"] {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+        }
+
+        [class*="md:flex-row"] {
+            flex-direction: column !important;
+        }
+
+        [class*="md:items-start"] {
+            align-items: center !important;
+        }
+
+        [class*="md:justify-start"] {
+            justify-content: center !important;
+        }
+
+        .md\:flex-shrink-0,
+        [class*="md:flex-shrink-0"] {
+            margin-bottom: 1rem;
+        }
+        
+        // Container adjustments - same as mobile
+        .container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        // Profile image container - center like mobile
+        [class*="md:flex-shrink-0"],
+        [class*="flex-shrink-0"] {
+            align-items: center !important;
+        }
+
+        // Icon buttons container - centered like mobile
+        .flex.gap-2,
+        .flex.gap-3 {
+            width: 100%;
+            max-width: fit-content;
+            margin: 0 auto;
+            justify-content: center !important;
+            
+            button {
+                padding: 0.5rem !important;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                
+                svg {
+                    width: 1rem;
+                    height: 1rem;
+                }
+            }
+        }
+
+        // Personal link section - keep column layout like mobile
+        .flex-col[class*="sm:flex-row"],
+        [class*="sm:flex-row"] {
+            flex-direction: column !important;
+            align-items: stretch;
+            gap: 0.75rem;
+        }
+
+        // Modal/dialog adjustments for tablets
+        .fixed.inset-0 {
+            .max-w-md {
+                max-width: 85%;
+                width: 85%;
+                padding: 1.5rem;
+            }
         }
     }
     
-    // Medium screens and up (tablets)
-    @media (min-width: 768px) {
-        .md\:flex {
-            flex-direction: row;
+    // Medium screens (larger tablets: 992px - 1199px) - same as mobile
+    @include Breakpoints(medium) {
+        // Same layout as mobile - column layout, centered
+        .md\:flex,
+        [class*="md:flex"] {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+        }
+
+        [class*="md:flex-row"] {
+            flex-direction: column !important;
+        }
+
+        [class*="md:items-start"] {
+            align-items: center !important;
+        }
+
+        [class*="md:justify-start"] {
+            justify-content: center !important;
+        }
+
+        .md\:flex-shrink-0,
+        [class*="md:flex-shrink-0"] {
+            margin-bottom: 1rem;
+        }
+        
+        // Container adjustments - same as mobile
+        .container {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        // Profile image container - center like mobile
+        [class*="md:flex-shrink-0"],
+        [class*="flex-shrink-0"] {
+            align-items: center !important;
+        }
+
+        // Icon buttons container - centered like mobile
+        .flex.gap-2,
+        .flex.gap-3 {
+            width: 100%;
+            max-width: fit-content;
+            margin: 0 auto;
+            justify-content: center !important;
+        }
+
+        // Personal link section - keep column layout like mobile
+        .flex-col[class*="sm:flex-row"],
+        [class*="sm:flex-row"] {
+            flex-direction: column !important;
+            align-items: stretch;
+            gap: 0.75rem;
         }
     }
     
