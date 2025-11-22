@@ -19,6 +19,7 @@ import { toast } from 'react-toastify';
 import { useLanguage } from '../../../context/LanguageContext';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
 import NotificationModal from '../../../components/NotificationModal/NotificationModal';
+import Pagination from '../../../components/Pagination/Pagination';
 
 export default function Users() {
     const { t } = useLanguage();
@@ -458,27 +459,16 @@ export default function Users() {
                 </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && (
-                    <div className="admin-users-pagination">
-                        <button
-                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                            disabled={currentPage === 1}
-                            className="admin-users-pagination__btn admin-users-pagination__btn--prev"
-                        >
-                            {t("adminUsers.prev")}
-                        </button>
-                        <div className="admin-users-pagination__info">
-                            {t("adminUsers.page")} {currentPage} {t("adminUsers.of")} {totalPages}
-                        </div>
-                        <button
-                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                            disabled={currentPage === totalPages}
-                            className="admin-users-pagination__btn admin-users-pagination__btn--next"
-                        >
-                            {t("adminUsers.next")}
-                        </button>
-                    </div>
-                )}
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    showCount={true}
+                    startIndex={startIndex}
+                    endIndex={Math.min(endIndex, filteredUsers.length)}
+                    totalItems={filteredUsers.length}
+                    itemsLabel={t('adminUsers.users')}
+                />
             </motion.div>
 
             {/* Search User Modal */}

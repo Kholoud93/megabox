@@ -13,6 +13,7 @@ import { useCookies } from 'react-cookie';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
+import Pagination from '../../../components/Pagination/Pagination';
 
 export default function Promoters() {
     const { t } = useLanguage();
@@ -234,27 +235,16 @@ export default function Promoters() {
                 </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && (
-                    <div className="admin-users-pagination">
-                        <button
-                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                            disabled={currentPage === 1}
-                            className="admin-users-pagination__btn admin-users-pagination__btn--prev"
-                        >
-                            {t("adminPromoters.prev")}
-                        </button>
-                        <div className="admin-users-pagination__info">
-                            {t("adminPromoters.page")} {currentPage} {t("adminPromoters.of")} {totalPages}
-                        </div>
-                        <button
-                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                            disabled={currentPage === totalPages}
-                            className="admin-users-pagination__btn admin-users-pagination__btn--next"
-                        >
-                            {t("adminPromoters.next")}
-                        </button>
-                    </div>
-                )}
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    showCount={true}
+                    startIndex={startIndex}
+                    endIndex={Math.min(endIndex, filteredPromoters.length)}
+                    totalItems={filteredPromoters.length}
+                    itemsLabel={t('adminPromoters.promoters')}
+                />
             </motion.div>
             </div>
 

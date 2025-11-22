@@ -1084,5 +1084,11 @@
     "processingTime": "الوقت",
     "within24Hours": "خلال 24 ساعة",
     "threeToFiveDays": "3-5 أيام"
+  },
+  "adminPagination": {
+    "page": "صفحة",
+    "of": "من",
+    "prev": "السابق",
+    "next": "التالي"
   }
 }

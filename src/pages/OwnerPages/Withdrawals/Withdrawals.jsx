@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { withdrawalService } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
+import Pagination from '../../../components/Pagination/Pagination';
 import { FaMoneyBillWave, FaCheck, FaTimes, FaEye } from 'react-icons/fa';
 import { HiArrowRight, HiArrowLeft } from 'react-icons/hi2';
 import { toast } from 'react-toastify';
@@ -316,34 +317,16 @@ export default function Withdrawals() {
                         </div>
 
                         {/* Pagination */}
-                        {totalPages > 1 && (
-                            <div className="admin-users-pagination">
-                                <button
-                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                    disabled={currentPage === 1}
-                                    className="admin-users-pagination__btn admin-users-pagination__btn--prev"
-                                >
-                                    {t("adminWithdrawals.prev")}
-                                </button>
-                                <div className="admin-users-pagination__info">
-                                    {t("adminWithdrawals.page")} {currentPage} {t("adminWithdrawals.of")} {totalPages}
-                                </div>
-                                <button
-                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                    disabled={currentPage === totalPages}
-                                    className="admin-users-pagination__btn admin-users-pagination__btn--next"
-                                >
-                                    {t("adminWithdrawals.next")}
-                                </button>
-                            </div>
-                        )}
-
-                        {/* Count display */}
-                        {filteredWithdrawals.length > 0 && (
-                            <p className="admin-withdrawals-count">
-                                {startIndex + 1}-{Math.min(endIndex, filteredWithdrawals.length)} {t('adminWithdrawals.of')} {filteredWithdrawals.length} {t('adminWithdrawals.withdrawals')}
-                            </p>
-                        )}
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={setCurrentPage}
+                            showCount={true}
+                            startIndex={startIndex}
+                            endIndex={Math.min(endIndex, filteredWithdrawals.length)}
+                            totalItems={filteredWithdrawals.length}
+                            itemsLabel={t('adminWithdrawals.withdrawals')}
+                        />
                     </>
                 ) : (
                     <div className="admin-withdrawals-empty">

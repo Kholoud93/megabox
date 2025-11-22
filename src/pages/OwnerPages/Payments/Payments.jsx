@@ -6,6 +6,7 @@ import axios from 'axios';
 import { API_URL } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
+import Pagination from '../../../components/Pagination/Pagination';
 import { FaCreditCard, FaEye } from 'react-icons/fa';
 import { HiArrowRight, HiArrowLeft } from 'react-icons/hi2';
 import { format } from 'date-fns';
@@ -376,34 +377,16 @@ export default function Payments() {
                         </div>
 
                         {/* Pagination */}
-                        {totalPages > 1 && (
-                            <div className="admin-users-pagination">
-                                <button
-                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                    disabled={currentPage === 1}
-                                    className="admin-users-pagination__btn admin-users-pagination__btn--prev"
-                                >
-                                    {t("adminPayments.prev")}
-                                </button>
-                                <div className="admin-users-pagination__info">
-                                    {t("adminPayments.page")} {currentPage} {t("adminPayments.of")} {totalPages}
-                                </div>
-                                <button
-                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                    disabled={currentPage === totalPages}
-                                    className="admin-users-pagination__btn admin-users-pagination__btn--next"
-                                >
-                                    {t("adminPayments.next")}
-                                </button>
-                            </div>
-                        )}
-
-                        {/* Count display */}
-                        {filteredPayments.length > 0 && (
-                            <p className="admin-payments-count">
-                                {startIndex + 1}-{Math.min(endIndex, filteredPayments.length)} {t('adminPayments.of')} {filteredPayments.length} {t('adminPayments.payments')}
-                            </p>
-                        )}
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={setCurrentPage}
+                            showCount={true}
+                            startIndex={startIndex}
+                            endIndex={Math.min(endIndex, filteredPayments.length)}
+                            totalItems={filteredPayments.length}
+                            itemsLabel={t('adminPayments.payments')}
+                        />
                     </>
                 ) : (
                     <div className="admin-payments-empty">

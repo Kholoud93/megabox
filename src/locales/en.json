@@ -1084,5 +1084,11 @@
     "processingTime": "Time",
     "within24Hours": "Within 24 hours",
     "threeToFiveDays": "3-5 days"
+  },
+  "adminPagination": {
+    "page": "Page",
+    "of": "of",
+    "prev": "Previous",
+    "next": "Next"
   }
 }
