@@ -550,7 +550,20 @@
     "approve": "موافقة",
     "reject": "رفض",
     "noAction": "لا يوجد إجراء متاح",
-    "noWithdrawalsFound": "لم يتم العثور على سحوبات تطابق معاييرك"
+    "noWithdrawalsFound": "لم يتم العثور على سحوبات تطابق معاييرك",
+    "viewDetails": "عرض التفاصيل",
+    "withdrawalDetails": "تفاصيل السحب",
+    "whatsappNumber": "رقم الواتساب",
+    "details": "التفاصيل",
+    "approvedSuccess": "تم الموافقة على السحب بنجاح",
+    "rejectedSuccess": "تم رفض السحب بنجاح",
+    "approveFailed": "فشل في الموافقة على السحب",
+    "rejectFailed": "فشل في رفض السحب",
+    "page": "صفحة",
+    "prev": "السابق",
+    "next": "التالي",
+    "of": "من",
+    "withdrawals": "سحوبات"
   },
   "adminUsers": {
     "title": "إدارة المستخدمين",

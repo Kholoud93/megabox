@@ -550,7 +550,20 @@
     "approve": "Approve",
     "reject": "Reject",
     "noAction": "No action available",
-    "noWithdrawalsFound": "No withdrawals found matching your criteria"
+    "noWithdrawalsFound": "No withdrawals found matching your criteria",
+    "viewDetails": "View Details",
+    "withdrawalDetails": "Withdrawal Details",
+    "whatsappNumber": "WhatsApp Number",
+    "details": "Details",
+    "approvedSuccess": "Withdrawal approved successfully",
+    "rejectedSuccess": "Withdrawal rejected successfully",
+    "approveFailed": "Failed to approve withdrawal",
+    "rejectFailed": "Failed to reject withdrawal",
+    "page": "Page",
+    "prev": "Previous",
+    "next": "Next",
+    "of": "of",
+    "withdrawals": "withdrawals"
   },
   "adminUsers": {
     "title": "Users Management",

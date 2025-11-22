@@ -1,13 +1,16 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { withdrawalService } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
-import { FaMoneyBillWave, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaMoneyBillWave, FaCheck, FaTimes, FaEye } from 'react-icons/fa';
 import { HiArrowRight, HiArrowLeft } from 'react-icons/hi2';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../../helpers/ToastOptions';
+import { format } from 'date-fns';
 import './Withdrawals.scss';
 
 export default function Withdrawals() {
@@ -19,6 +22,9 @@ export default function Withdrawals() {
     const [filters, setFilters] = useState({});
     const queryClient = useQueryClient();
     const [processingWithdrawals, setProcessingWithdrawals] = useState(new Set());
+    const [selectedWithdrawal, setSelectedWithdrawal] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     // Fetch all withdrawals
     const { data: withdrawalsData, isLoading: withdrawalsLoading } = useQuery(
@@ -39,9 +45,12 @@ export default function Withdrawals() {
                     : `${withdrawal.userId || ''} ${withdrawal.username || ''}`;
 
                 const searchLower = searchTerm.toLowerCase();
+                const paymentMethodStr = typeof withdrawal.paymentMethod === 'object' && withdrawal.paymentMethod !== null
+                    ? (withdrawal.paymentMethod.name || withdrawal.paymentMethod.type || withdrawal.paymentMethod.walletId || '').toLowerCase()
+                    : (withdrawal.paymentMethod || '').toLowerCase();
                 if (!userInfo.toLowerCase().includes(searchLower) &&
                     !withdrawal.amount?.toString().toLowerCase().includes(searchLower) &&
-                    !withdrawal.paymentMethod?.toLowerCase().includes(searchLower)) {
+                    !paymentMethodStr.includes(searchLower)) {
                     return false;
                 }
             }
@@ -52,20 +61,41 @@ export default function Withdrawals() {
             }
 
             // Payment method filter
-            if (filters.paymentMethod && withdrawal.paymentMethod !== filters.paymentMethod) {
-                return false;
+            if (filters.paymentMethod) {
+                const withdrawalPaymentMethod = typeof withdrawal.paymentMethod === 'object' && withdrawal.paymentMethod !== null
+                    ? (withdrawal.paymentMethod.name || withdrawal.paymentMethod.type || withdrawal.paymentMethod.walletId || '')
+                    : (withdrawal.paymentMethod || '');
+                if (withdrawalPaymentMethod !== filters.paymentMethod) {
+                    return false;
+                }
             }
 
             return true;
         });
     }, [withdrawalsData?.withdrawals, searchTerm, filters]);
 
+    // Pagination logic
+    const totalPages = Math.ceil(filteredWithdrawals.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedWithdrawals = filteredWithdrawals.slice(startIndex, endIndex);
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, filters]);
+
     // Get unique payment methods for filter
     const paymentMethods = useMemo(() => {
         if (!withdrawalsData?.withdrawals) return [];
         const methods = new Set();
         withdrawalsData.withdrawals.forEach(w => {
-            if (w.paymentMethod) methods.add(w.paymentMethod);
+            if (w.paymentMethod) {
+                const methodValue = typeof w.paymentMethod === 'object' && w.paymentMethod !== null
+                    ? (w.paymentMethod.name || w.paymentMethod.type || w.paymentMethod.walletId || '')
+                    : (w.paymentMethod || '');
+                if (methodValue) methods.add(methodValue);
+            }
         });
         return Array.from(methods).map(method => ({
             value: method,
@@ -93,34 +123,64 @@ export default function Withdrawals() {
         }] : [])
     ];
 
-    // Handle approve withdrawal (placeholder - will be connected to API later)
+    // Handle approve withdrawal
     const handleApprove = async (withdrawalId) => {
         setProcessingWithdrawals(prev => new Set(prev).add(withdrawalId));
-        // TODO: Connect to API endpoint
-        // await withdrawalService.updateWithdrawalStatus(withdrawalId, 'approved', token);
-        // queryClient.invalidateQueries(['allWithdrawals']);
-        setTimeout(() => {
+        try {
+            await withdrawalService.updateWithdrawalStatus(withdrawalId, 'approved', token);
+            toast.success(t('adminWithdrawals.approvedSuccess') || 'Withdrawal approved successfully', ToastOptions("success"));
+            queryClient.invalidateQueries(['allWithdrawals']);
+            // Optimistic update
+            queryClient.setQueryData(['allWithdrawals'], (oldData) => {
+                if (!oldData?.withdrawals) return oldData;
+                return {
+                    ...oldData,
+                    withdrawals: oldData.withdrawals.map(w => 
+                        (w._id === withdrawalId || w.id === withdrawalId) 
+                            ? { ...w, status: 'approved' }
+                            : w
+                    )
+                };
+            });
+        } catch (error) {
+            toast.error(error.response?.data?.message || t('adminWithdrawals.approveFailed') || 'Failed to approve withdrawal', ToastOptions("error"));
+        } finally {
             setProcessingWithdrawals(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(withdrawalId);
                 return newSet;
             });
-        }, 1000);
+        }
     };
 
-    // Handle reject withdrawal (placeholder - will be connected to API later)
+    // Handle reject withdrawal
     const handleReject = async (withdrawalId) => {
         setProcessingWithdrawals(prev => new Set(prev).add(withdrawalId));
-        // TODO: Connect to API endpoint
-        // await withdrawalService.updateWithdrawalStatus(withdrawalId, 'rejected', token);
-        // queryClient.invalidateQueries(['allWithdrawals']);
-        setTimeout(() => {
+        try {
+            await withdrawalService.updateWithdrawalStatus(withdrawalId, 'rejected', token);
+            toast.success(t('adminWithdrawals.rejectedSuccess') || 'Withdrawal rejected successfully', ToastOptions("success"));
+            queryClient.invalidateQueries(['allWithdrawals']);
+            // Optimistic update
+            queryClient.setQueryData(['allWithdrawals'], (oldData) => {
+                if (!oldData?.withdrawals) return oldData;
+                return {
+                    ...oldData,
+                    withdrawals: oldData.withdrawals.map(w => 
+                        (w._id === withdrawalId || w.id === withdrawalId) 
+                            ? { ...w, status: 'rejected' }
+                            : w
+                    )
+                };
+            });
+        } catch (error) {
+            toast.error(error.response?.data?.message || t('adminWithdrawals.rejectFailed') || 'Failed to reject withdrawal', ToastOptions("error"));
+        } finally {
             setProcessingWithdrawals(prev => {
                 const newSet = new Set(prev);
                 newSet.delete(withdrawalId);
                 return newSet;
             });
-        }, 1000);
+        }
     };
 
     const currency = withdrawalsData?.withdrawals?.[0]?.currency || 'USD';
@@ -171,8 +231,8 @@ export default function Withdrawals() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredWithdrawals.length > 0 ? (
-                                        filteredWithdrawals.map((withdrawal, index) => (
+                                    {paginatedWithdrawals.length > 0 ? (
+                                        paginatedWithdrawals.map((withdrawal, index) => (
                                             <tr key={withdrawal._id || withdrawal.id || index}>
                                                 <td data-label={t('adminWithdrawals.user')}>
                                                     {typeof withdrawal.userId === 'object' && withdrawal.userId !== null
@@ -184,7 +244,10 @@ export default function Withdrawals() {
                                                     {withdrawal.amount} {withdrawal.currency || currency}
                                                 </td>
                                                 <td data-label={t('adminWithdrawals.paymentMethod')}>
-                                                    {withdrawal.paymentMethod || '-'}
+                                                    {typeof withdrawal.paymentMethod === 'object' && withdrawal.paymentMethod !== null
+                                                        ? (withdrawal.paymentMethod.name || withdrawal.paymentMethod.type || withdrawal.paymentMethod.walletId || JSON.stringify(withdrawal.paymentMethod))
+                                                        : (withdrawal.paymentMethod || '-')
+                                                    }
                                                 </td>
                                                 <td data-label={t('adminWithdrawals.status')}>
                                                     <span className={`status-badge status-${withdrawal.status || 'pending'}`}>
@@ -204,6 +267,15 @@ export default function Withdrawals() {
                                                 </td>
                                                 <td data-label={t('adminWithdrawals.actions')}>
                                                     <div className="action-buttons">
+                                                        <motion.button
+                                                            className="admin-withdrawals-actions__btn admin-withdrawals-actions__btn--view"
+                                                            onClick={() => setSelectedWithdrawal(withdrawal)}
+                                                            whileHover={{ scale: 1.05 }}
+                                                            whileTap={{ scale: 0.95 }}
+                                                            title={t('adminWithdrawals.viewDetails')}
+                                                        >
+                                                            <FaEye size={18} />
+                                                        </motion.button>
                                                         {withdrawal.status === 'pending' ? (
                                                             <>
                                                                 <motion.button
@@ -227,11 +299,7 @@ export default function Withdrawals() {
                                                                     <FaTimes size={18} />
                                                                 </motion.button>
                                                             </>
-                                                        ) : (
-                                                            <span className="admin-withdrawals-actions__no-action">
-                                                                {t('adminWithdrawals.noAction')}
-                                                            </span>
-                                                        )}
+                                                        ) : null}
                                                     </div>
                                                 </td>
                                             </tr>
@@ -246,6 +314,36 @@ export default function Withdrawals() {
                                 </tbody>
                             </table>
                         </div>
+
+                        {/* Pagination */}
+                        {totalPages > 1 && (
+                            <div className="admin-users-pagination">
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                    disabled={currentPage === 1}
+                                    className="admin-users-pagination__btn admin-users-pagination__btn--prev"
+                                >
+                                    {t("adminWithdrawals.prev")}
+                                </button>
+                                <div className="admin-users-pagination__info">
+                                    {t("adminWithdrawals.page")} {currentPage} {t("adminWithdrawals.of")} {totalPages}
+                                </div>
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="admin-users-pagination__btn admin-users-pagination__btn--next"
+                                >
+                                    {t("adminWithdrawals.next")}
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Count display */}
+                        {filteredWithdrawals.length > 0 && (
+                            <p className="admin-withdrawals-count">
+                                {startIndex + 1}-{Math.min(endIndex, filteredWithdrawals.length)} {t('adminWithdrawals.of')} {filteredWithdrawals.length} {t('adminWithdrawals.withdrawals')}
+                            </p>
+                        )}
                     </>
                 ) : (
                     <div className="admin-withdrawals-empty">
@@ -253,6 +351,142 @@ export default function Withdrawals() {
                     </div>
                 )}
             </div>
+
+            {/* Withdrawal Details Modal */}
+            {selectedWithdrawal && (
+                <div
+                    className="admin-withdrawal-modal-backdrop"
+                    onClick={() => setSelectedWithdrawal(null)}
+                >
+                    <div
+                        className="admin-withdrawal-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                            <div className="admin-withdrawal-modal__header">
+                                <h2>{t('adminWithdrawals.withdrawalDetails')}</h2>
+                                <button
+                                    onClick={() => setSelectedWithdrawal(null)}
+                                    className="admin-withdrawal-modal__close"
+                                    aria-label="Close"
+                                >
+                                    <FaTimes />
+                                </button>
+                            </div>
+
+                            <div className="admin-withdrawal-modal__body">
+                                <div className="admin-withdrawal-modal__row">
+                                    <strong>{t('adminWithdrawals.user')}:</strong>
+                                    <span>
+                                        {typeof selectedWithdrawal.userId === 'object' && selectedWithdrawal.userId !== null
+                                            ? (selectedWithdrawal.userId.username || selectedWithdrawal.userId.email || selectedWithdrawal.userId._id || '-')
+                                            : (selectedWithdrawal.userId || selectedWithdrawal.username || '-')
+                                        }
+                                    </span>
+                                </div>
+
+                                <div className="admin-withdrawal-modal__row">
+                                    <strong>{t('adminWithdrawals.amount')}:</strong>
+                                    <span>
+                                        {typeof selectedWithdrawal.amount === 'object' && selectedWithdrawal.amount !== null
+                                            ? JSON.stringify(selectedWithdrawal.amount)
+                                            : String(selectedWithdrawal.amount || '-')
+                                        } {typeof selectedWithdrawal.currency === 'object' && selectedWithdrawal.currency !== null
+                                            ? JSON.stringify(selectedWithdrawal.currency)
+                                            : (selectedWithdrawal.currency || currency)
+                                        }
+                                    </span>
+                                </div>
+
+                                <div className="admin-withdrawal-modal__row">
+                                    <strong>{t('adminWithdrawals.paymentMethod')}:</strong>
+                                    <span>
+                                        {typeof selectedWithdrawal.paymentMethod === 'object' && selectedWithdrawal.paymentMethod !== null
+                                            ? (selectedWithdrawal.paymentMethod.name || selectedWithdrawal.paymentMethod.type || selectedWithdrawal.paymentMethod.walletId || JSON.stringify(selectedWithdrawal.paymentMethod))
+                                            : (selectedWithdrawal.paymentMethod || '-')
+                                        }
+                                    </span>
+                                </div>
+
+                                <div className="admin-withdrawal-modal__row">
+                                    <strong>{t('adminWithdrawals.status')}:</strong>
+                                    <span className={`status-badge status-${selectedWithdrawal.status || 'pending'}`}>
+                                        {selectedWithdrawal.status === 'approved'
+                                            ? t('adminWithdrawals.approved')
+                                            : selectedWithdrawal.status === 'pending'
+                                                ? t('adminWithdrawals.pending')
+                                                : selectedWithdrawal.status === 'rejected'
+                                                    ? t('adminWithdrawals.rejected')
+                                                    : selectedWithdrawal.status || t('adminWithdrawals.pending')}
+                                    </span>
+                                </div>
+
+                                <div className="admin-withdrawal-modal__row">
+                                    <strong>{t('adminWithdrawals.date')}:</strong>
+                                    <span>
+                                        {selectedWithdrawal.createdAt
+                                            ? (typeof selectedWithdrawal.createdAt === 'string' || selectedWithdrawal.createdAt instanceof Date
+                                                ? format(new Date(selectedWithdrawal.createdAt), 'PPPpp')
+                                                : String(selectedWithdrawal.createdAt))
+                                            : '-'}
+                                    </span>
+                                </div>
+
+                                {selectedWithdrawal.whatsappNumber && (
+                                    <div className="admin-withdrawal-modal__row">
+                                        <strong>{t('adminWithdrawals.whatsappNumber')}:</strong>
+                                        <span>
+                                            {typeof selectedWithdrawal.whatsappNumber === 'object' && selectedWithdrawal.whatsappNumber !== null
+                                                ? JSON.stringify(selectedWithdrawal.whatsappNumber)
+                                                : String(selectedWithdrawal.whatsappNumber || '-')
+                                            }
+                                        </span>
+                                    </div>
+                                )}
+
+                                {selectedWithdrawal.details && (
+                                    <div className="admin-withdrawal-modal__row admin-withdrawal-modal__row--full">
+                                        <strong>{t('adminWithdrawals.details')}:</strong>
+                                        <p>
+                                            {typeof selectedWithdrawal.details === 'object' && selectedWithdrawal.details !== null
+                                                ? JSON.stringify(selectedWithdrawal.details)
+                                                : String(selectedWithdrawal.details || '-')
+                                            }
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {selectedWithdrawal.status === 'pending' && (
+                                <div className="admin-withdrawal-modal__actions">
+                                    <motion.button
+                                        className="admin-withdrawal-modal__btn admin-withdrawal-modal__btn--approve"
+                                        onClick={() => {
+                                            handleApprove(selectedWithdrawal._id || selectedWithdrawal.id);
+                                            setSelectedWithdrawal(null);
+                                        }}
+                                        disabled={processingWithdrawals.has(selectedWithdrawal._id || selectedWithdrawal.id)}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                    >
+                                        <FaCheck /> {t('adminWithdrawals.approve')}
+                                    </motion.button>
+                                    <motion.button
+                                        className="admin-withdrawal-modal__btn admin-withdrawal-modal__btn--reject"
+                                        onClick={() => {
+                                            handleReject(selectedWithdrawal._id || selectedWithdrawal.id);
+                                            setSelectedWithdrawal(null);
+                                        }}
+                                        disabled={processingWithdrawals.has(selectedWithdrawal._id || selectedWithdrawal.id)}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                    >
+                                        <FaTimes /> {t('adminWithdrawals.reject')}
+                                    </motion.button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
         </div>
     );
 }
