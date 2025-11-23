@@ -6,7 +6,6 @@ import { ToastOptions } from '../../helpers/ToastOptions';
 import './Auth.scss';
 import GoogleIcon from './GoogleIcon';
 import { API_URL, notificationService } from '../../services/api';
-import { authService } from '../../services/authService';
 import { getFCMToken } from '../../utils/fcmToken';
 
 // Google OAuth Client ID - can be moved to environment variable
@@ -25,11 +24,16 @@ const GoogleLoginButton = ({ SignUp }) => {
         setIsProcessing(true);
 
         try {
-            const data = await authService.loginWithGmail(accessToken);
-            if (data) {
-                // authService.loginWithGmail returns response.data, which already contains the nested structure
-                // So we access data.access_Token directly, not data.data.access_Token
-                setCookie('MegaBox', data?.access_Token, {
+            const res = await fetch(`${API_URL}/auth/loginWithGmail`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ accessToken }),
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                // Use 'Lax' instead of 'Strict' for better mobile compatibility
+                setCookie('MegaBox', data?.data?.access_Token, {
                     path: '/',
                     secure: window.location.protocol === 'https:',
                     sameSite: 'Lax',
@@ -39,9 +43,9 @@ const GoogleLoginButton = ({ SignUp }) => {
                 // Save FCM token for push notifications (if available)
                 try {
                     const fcmToken = await getFCMToken();
-                    if (fcmToken && data?.checkUser?._id) {
+                    if (fcmToken && data?.data?.checkUser?._id) {
                         await notificationService.saveFcmToken(
-                            data.checkUser._id,
+                            data.data.checkUser._id,
                             fcmToken
                         );
                     }
@@ -56,10 +60,12 @@ const GoogleLoginButton = ({ SignUp }) => {
                 setTimeout(() => {
                     navigate('/dashboard');
                 }, 100);
+            } else {
+                toast.error(data.message || "Failed to login with Google. Please try again.", ToastOptions("error"));
             }
         } catch (err) {
             console.error('Google login error:', err);
-            toast.error(err?.message || "An error occurred during Google login. Please try again.", ToastOptions("error"));
+            toast.error("An error occurred during Google login. Please try again.", ToastOptions("error"));
         } finally {
             setIsProcessing(false);
         }

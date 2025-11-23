@@ -102,6 +102,15 @@ export default function DashboardHeader() {
     
     const isPromoter = userData?.isPromoter === "true" || userData?.isPromoter === true;
     const isOwner = location.pathname.startsWith('/Owner');
+    // Check actual role from userData (role can be "User", "Promoter", or "Owner")
+    const userRole = userData?.role || null;
+    // Check if user has plans (Users with role "User" can have plans like promoters)
+    const hasWatchingPlan = userData?.watchingplan === "true" || userData?.watchingplan === true;
+    const hasDownloadsPlan = userData?.Downloadsplan === "true" || userData?.Downloadsplan === true;
+    const hasAnyPlan = hasWatchingPlan || hasDownloadsPlan;
+    // Users with role "User" who have plans should see promoter-like menu items
+    const isRegularUser = userRole === "User" && !isPromoter && !isOwner;
+    const isUserWithPlan = isRegularUser && hasAnyPlan;
     
     const Logout = async () => {
         // Keep FCM token on logout so users can still receive notifications
@@ -216,7 +225,7 @@ export default function DashboardHeader() {
                                             if (profileDropdownRef.current?.contains(e.target)) {
                                                 return;
                                             }
-                                            e.preventDefault();
+                                            // Don't use preventDefault on passive event listeners
                                             e.stopPropagation();
                                             setProfileMenuOpen(false);
                                         }}
@@ -237,7 +246,7 @@ export default function DashboardHeader() {
                                         onTouchEnd={(e) => e.stopPropagation()}
                                     >
                                         <Link
-                                            to={isPromoter ? '/Promoter/profile' : '/dashboard/profile'}
+                                            to={(isPromoter || isUserWithPlan) ? '/Promoter/profile' : '/dashboard/profile'}
                                             className="files-header__profile-item"
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -254,7 +263,7 @@ export default function DashboardHeader() {
                                         
                                         {!isOwner && (
                                             <Link
-                                                to={isPromoter ? '/Promoter/notifications' : '/dashboard/notifications'}
+                                                to={(isPromoter || isUserWithPlan) ? '/Promoter/notifications' : '/dashboard/notifications'}
                                                 className="files-header__profile-item"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
@@ -270,7 +279,8 @@ export default function DashboardHeader() {
                                             </Link>
                                         )}
                                         
-                                        {!isOwner && !isPromoter && (
+                                        {/* Channels - only for regular users without plans */}
+                                        {!isOwner && !isPromoter && !isUserWithPlan && (
                                             <Link
                                                 to="/dashboard/channels"
                                                 className="files-header__profile-item"
@@ -288,7 +298,8 @@ export default function DashboardHeader() {
                                             </Link>
                                         )}
                                         
-                                        {!isOwner && !isPromoter && (
+                                        {/* Partners - for regular users without plans */}
+                                        {!isOwner && !isPromoter && !isUserWithPlan && (
                                             <Link
                                                 to="/Partners"
                                                 className="files-header__profile-item"
@@ -306,9 +317,10 @@ export default function DashboardHeader() {
                                             </Link>
                                         )}
                                         
-                                        {!isOwner && !isPromoter && (
+                                        {/* Subscribe - for regular users without plans */}
+                                        {!isOwner && !isPromoter && !isUserWithPlan && (
                                             <Link
-                                                to={isPromoter ? '/Promoter/subscription-plans' : '/dashboard/subscription-plans'}
+                                                to="/dashboard/subscription-plans"
                                                 className="files-header__profile-item"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
@@ -324,7 +336,8 @@ export default function DashboardHeader() {
                                             </Link>
                                         )}
                                         
-                                        {!isOwner && isPromoter && (
+                                        {/* Partners Center - for promoters OR users with plans */}
+                                        {!isOwner && (isPromoter || isUserWithPlan) && (
                                             <Link
                                                 to="/Partners"
                                                 className="files-header__profile-item"
