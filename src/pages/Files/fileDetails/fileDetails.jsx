@@ -80,16 +80,6 @@ export default function fileDetails() {
     const handleSelectMegaBox = () => {
         setShowUploadFromMegaBox(true);
     };
-    
-    // Handle upload button click - show options for promoters, direct upload for regular users
-    const handleUploadClick = () => {
-        if (isPromoter) {
-            ToggleUploadOptions();
-        } else {
-            // Regular users go directly to desktop upload
-            handleSelectDesktop();
-        }
-    };
 
     const { data, refetch, isLoading: filesLoading } = useQuery([`GetUserFile-${fileId}`, FilterKey], GetFiles, {
         enabled: !!fileId && !!Token.MegaBox,
@@ -110,6 +100,17 @@ export default function fileDetails() {
     );
     
     const isPromoter = userData?.isPromoter === "true" || userData?.isPromoter === true;
+    
+    // Handle upload button click - show options for promoters, direct upload for regular users
+    // Defined after isPromoter to ensure it has the correct value
+    const handleUploadClick = () => {
+        if (isPromoter) {
+            ToggleUploadOptions();
+        } else {
+            // Regular users go directly to desktop upload
+            handleSelectDesktop();
+        }
+    };
 
     // Enhanced refetch function that also invalidates related queries
     const refetchFolderData = async () => {
@@ -166,17 +167,19 @@ export default function fileDetails() {
     const [ShowUpdateName, setupdateName] = useState(false);
     const [OldName, setOldName] = useState(null);
     const [FileId, setFileId] = useState(null);
+    const [IsFolder, setIsFolder] = useState(false);
     const [showShareModal, setShowShareModal] = useState(false);
     const [shareUrl, setShareUrl] = useState('');
     const [shareTitle, setShareTitle] = useState('');
 
-    const ToggleNameChange = (name, close, id) => {
+    const ToggleNameChange = (name, close, id, isFolder = false) => {
         if (close) {
             setupdateName(!ShowUpdateName);
             return;
         }
         setFileId(id)
         setOldName(name)
+        setIsFolder(isFolder)
         setupdateName(!ShowUpdateName);
     };
 
@@ -509,7 +512,7 @@ export default function fileDetails() {
                         />
                     )}
             {ShowRepresent && <Represents key="represents" path={Path} type={fileType} ToggleUploadFile={() => Representation("", "", true)} />}
-            {ShowUpdateName && <ChangeName key="change-name" oldFileName={OldName} Toggle={ToggleNameChange} refetch={refetch} FileId={FileId} />}
+            {ShowUpdateName && <ChangeName key="change-name" oldFileName={OldName} Toggle={ToggleNameChange} refetch={IsFolder ? refetchFolderData : refetch} FileId={FileId} isFolder={IsFolder} />}
             {showShareModal && (
                 <ShareLinkModal
                     key="share-link-modal"

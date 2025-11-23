@@ -133,16 +133,6 @@ export default function Files() {
     const handleSelectMegaBox = () => {
         setShowUploadFromMegaBox(true);
     };
-    
-    // Handle upload button click - show options for promoters, direct upload for regular users
-    const handleUploadClick = () => {
-        if (isPromoter) {
-            ToggleUploadOptions();
-        } else {
-            // Regular users go directly to desktop upload
-            handleSelectDesktop();
-        }
-    };
 
     const [FilterKey, setFilterKey] = useState('All');
     const queryClient = useQueryClient();
@@ -157,6 +147,17 @@ export default function Files() {
     );
     
     const isPromoter = userData?.isPromoter === "true" || userData?.isPromoter === true;
+    
+    // Handle upload button click - show options for promoters, direct upload for regular users
+    // Defined after isPromoter to ensure it has the correct value
+    const handleUploadClick = () => {
+        if (isPromoter) {
+            ToggleUploadOptions();
+        } else {
+            // Regular users go directly to desktop upload
+            handleSelectDesktop();
+        }
+    };
     
     const Logout = async () => {
         // Delete FCM token before logout
@@ -547,21 +548,38 @@ export default function Files() {
                                         </Link>
                                         
                                         {!isPromoter && (
-                                            <Link
-                                                to="/Partners"
-                                                className="files-header__profile-item"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setProfileMenuOpen(false);
-                                                }}
-                                                onTouchEnd={(e) => {
-                                                    e.stopPropagation();
-                                                    setProfileMenuOpen(false);
-                                                }}
-                                            >
-                                                <HiCurrencyDollar className="files-header__profile-item-icon" />
-                                                <span>{t("sidenav.subscribe") || "Subscribe"}</span>
-                                            </Link>
+                                            <>
+                                                <Link
+                                                    to="/Partners"
+                                                    className="files-header__profile-item"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setProfileMenuOpen(false);
+                                                    }}
+                                                    onTouchEnd={(e) => {
+                                                        e.stopPropagation();
+                                                        setProfileMenuOpen(false);
+                                                    }}
+                                                >
+                                                    <HiUserGroup className="files-header__profile-item-icon" />
+                                                    <span>{t("sidenav.partner") || "Partner"}</span>
+                                                </Link>
+                                                <Link
+                                                    to="/dashboard/subscription-plans"
+                                                    className="files-header__profile-item"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setProfileMenuOpen(false);
+                                                    }}
+                                                    onTouchEnd={(e) => {
+                                                        e.stopPropagation();
+                                                        setProfileMenuOpen(false);
+                                                    }}
+                                                >
+                                                    <HiCurrencyDollar className="files-header__profile-item-icon" />
+                                                    <span>{t("sidenav.subscribe") || "Subscribe"}</span>
+                                                </Link>
+                                            </>
                                         )}
                                         
                                         {isPromoter && (

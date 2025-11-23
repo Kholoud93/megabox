@@ -38,6 +38,7 @@ import PromoterWithPlanProtector from './protectors/PromoterWithPlanProtector'
 import Channels from './pages/Channels/Channels'
 import ChannelFiles from './pages/Channels/ChannelFiles'
 import PromoterChannels from './pages/Channels/PromoterChannels'
+import SubscriptionPlans from './pages/SubscriptionPlans/SubscriptionPlans'
 
 
 // Main Pages
@@ -350,6 +351,16 @@ const router = createBrowserRouter(
             </LoginProtector>
         },
         {
+          path: "subscription-plans", element:
+            <LoginProtector>
+              <RoleProtector requiredRole="User">
+                <Suspense fallback={<Loading />}>
+                  <SubscriptionPlans />
+                </Suspense>
+              </RoleProtector>
+            </LoginProtector>
+        },
+        {
           path: "channels", element:
             <LoginProtector>
               <RoleProtector requiredRole="User">
@@ -425,6 +436,14 @@ const router = createBrowserRouter(
             <LoginProtector>
               <PromoterProtector>
                 <ChannelFiles />
+              </PromoterProtector>
+            </LoginProtector>
+        },
+        {
+          path: "subscription-plans", element:
+            <LoginProtector>
+              <PromoterProtector>
+                <SubscriptionPlans />
               </PromoterProtector>
             </LoginProtector>
         }

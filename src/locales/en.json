@@ -224,6 +224,7 @@
     "promoterDashboard": "Promoter Dashboard",
     "notifications": "Notifications",
     "partners": "Partners",
+    "partner": "Partner",
     "reports": "Reports",
     "emptyFolder": "Empty folder",
     "menu": "Menu",
@@ -811,7 +812,7 @@
       },
       "videoPlayer": {
         "title": "Specialized Video Player",
-        "desc": "The Mega Shield app offers an exceptional and seamless viewing experience for all types of videos."
+        "desc": "The Megabox app offers an exceptional and seamless viewing experience for all types of videos."
       },
       "referrals": {
         "title": "Referrals and Downloads",
@@ -842,7 +843,7 @@
       },
       "step3": {
         "title": "Users Watch via the App",
-        "desc": "When users click your link, they will watch the videos through the Mega Shield app."
+        "desc": "When users click your link, they will watch the videos through the Megabox app."
       },
       "step4": {
         "title": "Earn Profits",
@@ -1259,5 +1260,28 @@
       "loading": "Loading channels...",
       "error": "Failed to load channels"
     }
+  },
+  "subscriptionPlans": {
+    "title": "My Subscription Plans",
+    "subtitle": "View and manage your active subscription plans",
+    "premiumPlan": "Premium Subscription",
+    "premium": "Premium",
+    "premiumPlanDescription": "Full access to all premium features",
+    "pending": "Pending",
+    "pendingApproval": "Pending Approval",
+    "pendingDescription": "Your premium subscription request is being reviewed",
+    "noPremiumPlan": "No premium subscription active",
+    "expiresOn": "Expires on",
+    "watchingPlan": "Watching Plan",
+    "downloadsPlan": "Downloads Plan",
+    "active": "Active",
+    "inactive": "Inactive",
+    "watchingPlanDescription": "Unlimited video watching access",
+    "downloadsPlanDescription": "Unlimited file downloads access",
+    "noWatchingPlan": "No watching plan active",
+    "noDownloadsPlan": "No downloads plan active",
+    "subscribeNow": "Subscribe Now",
+    "noPlans": "You don't have any active subscription plans",
+    "browsePlans": "Browse Available Plans"
   }
 }

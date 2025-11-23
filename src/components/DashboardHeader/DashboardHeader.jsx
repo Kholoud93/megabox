@@ -299,6 +299,24 @@ export default function DashboardHeader() {
                                                     setProfileMenuOpen(false);
                                                 }}
                                             >
+                                                <HiUserGroup className="files-header__profile-item-icon" />
+                                                <span>{t("sidenav.partner") || "Partner"}</span>
+                                            </Link>
+                                        )}
+                                        
+                                        {!isOwner && !isPromoter && (
+                                            <Link
+                                                to={isPromoter ? '/Promoter/subscription-plans' : '/dashboard/subscription-plans'}
+                                                className="files-header__profile-item"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setProfileMenuOpen(false);
+                                                }}
+                                                onTouchEnd={(e) => {
+                                                    e.stopPropagation();
+                                                    setProfileMenuOpen(false);
+                                                }}
+                                            >
                                                 <HiCurrencyDollar className="files-header__profile-item-icon" />
                                                 <span>{t("sidenav.subscribe") || "Subscribe"}</span>
                                             </Link>

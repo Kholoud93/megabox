@@ -54,7 +54,7 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isS
 
         switch (action) {
             case 'rename':
-                onRename(name, false, data?._id);
+                onRename(name, false, data?._id, true);
                 break;
             case 'delete':
                 onDelete(data?._id);
