@@ -171,7 +171,7 @@ export default function Earning() {
         if (numValue < 10) {
             return t('withdrawSection.amountMinimum') || 'Minimum withdrawal amount is 10 USD';
         }
-        if (amount && numValue > parseFloat(amount)) {
+        if (withdrawableAmount > 0 && numValue > withdrawableAmount) {
             return t('withdrawSection.amountExceeds') || 'Amount exceeds available balance';
         }
         return '';
@@ -279,9 +279,9 @@ export default function Earning() {
                             <FaDollarSign />
                         </div>
                         <div className="withdraw-summary-card__content">
-                            <div className="withdraw-summary-card__label">{t('withdrawSection.amount') || 'Amount'}</div>
+                            <div className="withdraw-summary-card__label">{t('withdrawSection.confirmedRewards') || 'Confirmed Rewards'}</div>
                             <div className="withdraw-summary-card__value">
-                                {amount ? `${amount} ${currency}` : '-'}
+                                {earningsLoading ? '-' : `${parseFloat(amount).toFixed(6)} ${currency}`}
                             </div>
                         </div>
                     </motion.div>
@@ -296,9 +296,9 @@ export default function Earning() {
                             <FaDollarSign />
                         </div>
                         <div className="withdraw-summary-card__content">
-                            <div className="withdraw-summary-card__label">{t('withdrawSection.review') || 'Review'}</div>
+                            <div className="withdraw-summary-card__label">{t('withdrawSection.pendingRewards') || 'Pending Rewards'}</div>
                             <div className="withdraw-summary-card__value">
-                                {review ? `${review} ${currency}` : '-'}
+                                {earningsLoading ? '-' : `${parseFloat(review).toFixed(6)} ${currency}`}
                             </div>
                         </div>
                     </motion.div>
@@ -313,9 +313,26 @@ export default function Earning() {
                             <FaDollarSign />
                         </div>
                         <div className="withdraw-summary-card__content">
-                            <div className="withdraw-summary-card__label">{t('withdrawSection.withdrawn') || 'Withdrawn'}</div>
+                            <div className="withdraw-summary-card__label">{t('withdrawSection.totalEarnings') || 'Total Earnings'}</div>
                             <div className="withdraw-summary-card__value">
-                                {withdrawn ? `${withdrawn} ${currency}` : '-'}
+                                {earningsLoading ? '-' : `${parseFloat(totalEarnings).toFixed(6)} ${currency}`}
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    <motion.div
+                        className="withdraw-summary-card withdraw-summary-card--withdrawable"
+                        variants={cardVariants}
+                        initial="hidden"
+                        animate="visible"
+                    >
+                        <div className="withdraw-summary-card__icon withdraw-summary-card__icon--withdrawable">
+                            <FaDollarSign />
+                        </div>
+                        <div className="withdraw-summary-card__content">
+                            <div className="withdraw-summary-card__label">{t('withdrawSection.withdrawable') || 'Withdrawable'}</div>
+                            <div className="withdraw-summary-card__value">
+                                {earningsLoading ? '-' : `${parseFloat(withdrawable).toFixed(6)} ${currency}`}
                             </div>
                         </div>
                     </motion.div>
@@ -331,7 +348,7 @@ export default function Earning() {
                     <div className="withdraw-apply-section__header">
                         <h2 className="withdraw-apply-section__title">{t('withdrawSection.apply') || 'Apply'}</h2>
                         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                            {!earningsLoading && withdrawableAmount >= 10 && (
+                            {!earningsLoading && (
                                 <button 
                                     type="button"
                                     onClick={() => withdrawEarningsMutation.mutate()}

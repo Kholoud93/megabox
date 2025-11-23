@@ -1166,7 +1166,11 @@
     "withdrawalError": "فشل إرسال طلب السحب",
     "quickWithdrawAll": "سحب سريع للكل",
     "withdrawing": "جارٍ السحب...",
-    "earningsWithdrawn": "تم سحب الأرباح بنجاح!"
+    "earningsWithdrawn": "تم سحب الأرباح بنجاح!",
+    "confirmedRewards": "الأرباح المؤكدة",
+    "pendingRewards": "الأرباح المعلقة",
+    "totalEarnings": "إجمالي الأرباح",
+    "withdrawable": "القابل للسحب"
   },
   "adminPagination": {
     "page": "صفحة",

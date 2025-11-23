@@ -1166,7 +1166,11 @@
     "withdrawalError": "Failed to request withdrawal",
     "quickWithdrawAll": "Quick Withdraw All",
     "withdrawing": "Withdrawing...",
-    "earningsWithdrawn": "Earnings withdrawn successfully!"
+    "earningsWithdrawn": "Earnings withdrawn successfully!",
+    "confirmedRewards": "Confirmed Rewards",
+    "pendingRewards": "Pending Rewards",
+    "totalEarnings": "Total Earnings",
+    "withdrawable": "Withdrawable"
   },
   "adminPagination": {
     "page": "Page",
