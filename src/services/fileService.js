@@ -5,8 +5,12 @@ import { api } from './apiConfig';
 export const fileService = {
     uploadFile: async (file, token) => {
         try {
-            const { data } = await api.post("/auth/createFile", file, {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const { data } = await api.post("/auth/createFile", formData, {
                 headers: {
+                    'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${token}`
                 }
             });
