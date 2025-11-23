@@ -256,9 +256,24 @@
     min-width: 0;
     width: 100%;
 
+    // Add padding in mobile view (left for LTR, right for RTL)
+    @include mixins.media-breakpoint-down(md) {
+      padding-left: 0.75rem;
+      
+      [dir="rtl"] & {
+        padding-left: 0;
+        padding-right: 0.75rem;
+      }
+    }
+
     @include mixins.media-breakpoint-up(sm) {
       gap: 0.625rem;
       width: auto;
+      padding-left: 0; // Reset padding on larger screens
+      
+      [dir="rtl"] & {
+        padding-right: 0;
+      }
     }
 
     @include mixins.media-breakpoint-up(md) {
@@ -407,9 +422,24 @@
     width: 2.5rem;
     height: 2.5rem;
 
+    // Add margin in mobile view (right for LTR, left for RTL)
+    @include mixins.media-breakpoint-down(md) {
+      margin-right: 0.75rem;
+      
+      [dir="rtl"] & {
+        margin-right: 0;
+        margin-left: 0.75rem;
+      }
+    }
+
     @include mixins.media-breakpoint-up(sm) {
       width: 2.75rem;
       height: 2.75rem;
+      margin-right: 0; // Reset margin on larger screens
+      
+      [dir="rtl"] & {
+        margin-left: 0;
+      }
     }
 
     @include mixins.media-breakpoint-up(md) {
