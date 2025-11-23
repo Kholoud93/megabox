@@ -73,7 +73,7 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isS
     };
 
     return (
-        <div className={`relative bg-gradient-to-br from-white to-indigo-50 rounded-lg border-2 ${isSelected ? 'border-indigo-600 bg-indigo-100' : 'border-indigo-200'} shadow-md hover:shadow-xl transition-all duration-300 hover:border-indigo-400 hover:scale-[1.01] sm:hover:scale-[1.02]`} style={{ zIndex: 1, position: 'relative', isolation: 'isolate' }}>
+        <div className={`relative bg-gradient-to-br from-white to-indigo-50 rounded-lg border-2 ${isSelected ? 'border-indigo-600 bg-indigo-100' : 'border-indigo-200'} shadow-md hover:shadow-xl transition-all duration-300 hover:border-indigo-400 hover:scale-[1.01] sm:hover:scale-[1.02] h-auto self-start`} style={{ zIndex: 1, position: 'relative', isolation: 'isolate' }}>
             {isSelectionMode && (
                 <div className="absolute top-2 left-2 z-20">
                     <input
