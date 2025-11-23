@@ -160,6 +160,98 @@ export default function Sidenav({ role }) {
         closeSidebar();
     };
 
+    // Recursive function to render folders and their subfolders
+    const renderFolder = (folder, level = 0) => {
+        const folderId = folder?._id || folder?.id;
+        const isExpanded = expandedFolders[folderId] === true;
+        const files = folderFiles[folderId] || [];
+        const subfolders = folder?.children || [];
+        
+        return (
+            <SubMenu
+                key={folderId}
+                label={
+                    <span 
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleFolderClick(folder, e);
+                        }}
+                        style={{ cursor: 'pointer', flex: 1 }}
+                    >
+                        {folder?.name}
+                    </span>
+                }
+                icon={
+                    <svg className="sidenav-files-tree-icon" width="18" height="18" viewBox="0 0 20 20" fill="none">
+                        <path d="M3 6C3 4.89543 3.89543 4 5 4H8.58579C8.851 4 9.10536 4.10536 9.29289 4.29289L10.7071 5.70711C10.8946 5.89464 11.149 6 11.4142 6H15C16.1046 6 17 6.89543 17 8V14C17 15.1046 16.1046 16 15 16H5C3.89543 16 3 15.1046 3 14V6Z" fill="#FCD34D" stroke="#F59E0B" strokeWidth="1.5" />
+                    </svg>
+                }
+                className="sidenav-folder-submenu"
+                open={isExpanded}
+                defaultOpen={false}
+                onOpenChange={(open) => {
+                    if (collapsed) {
+                        return;
+                    }
+                    
+                    setExpandedFolders(prev => ({
+                        ...prev,
+                        [folderId]: open
+                    }));
+                    
+                    if (open) {
+                        // Always refetch folder files when opening to get latest data
+                        userService.getFolderFiles(folderId, null, Token.MegaBox)
+                        .then((data) => {
+                            setFolderFiles(prev => ({
+                                ...prev,
+                                [folderId]: data?.files || []
+                            }));
+                        })
+                        .catch(() => {
+                            setFolderFiles(prev => ({
+                                ...prev,
+                                [folderId]: []
+                            }));
+                        });
+                        
+                        // Refetch folders and files to update sidebar
+                        queryClient.invalidateQueries(['userFolders']);
+                        queryClient.invalidateQueries(['userFiles']);
+                    }
+                }}
+            >
+                {/* Render subfolders first */}
+                {subfolders.length > 0 && subfolders.map((subfolder) => renderFolder(subfolder, level + 1))}
+                
+                {/* Then render files */}
+                {files.length > 0 ? (
+                    files.map((file) => (
+                        <MenuItem
+                            key={file?._id || file?.id}
+                            className="sidenav-files-tree-item sidenav-files-tree-item--file"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleFileClick(file);
+                            }}
+                            icon={
+                                <svg className="sidenav-files-tree-icon" width="18" height="18" viewBox="0 0 20 20" fill="none">
+                                    <path d="M4 4C4 2.89543 4.89543 2 6 2H10.5858C10.851 2 11.1054 2.10536 11.2929 2.29289L15.7071 6.70711C15.8946 6.89464 16 7.149 16 7.41421V16C16 17.1046 15.1046 18 14 18H6C4.89543 18 4 17.1046 4 16V4Z" fill="#93C5FD" stroke="#3B82F6" strokeWidth="1.5"/>
+                                </svg>
+                            }
+                        >
+                            {file?.fileName || file?.name}
+                        </MenuItem>
+                    ))
+                ) : isExpanded && folderFiles[folderId] && subfolders.length === 0 ? (
+                    <div className="sidenav-empty-folder">
+                        {t("sidenav.emptyFolder") || "Empty folder"}
+                    </div>
+                ) : null}
+            </SubMenu>
+        );
+    };
+
     // Filter files that are not in any folder
     const filesNotInFolders = filesData?.files?.filter(file => !file.folderId && !file.folder) || [];
 
@@ -348,92 +440,7 @@ export default function Sidenav({ role }) {
                                     }}
                                     defaultOpen={false}
                                 >
-                                    {foldersData?.folders?.map((folder) => {
-                                        const folderId = folder?._id || folder?.id;
-                                        const isExpanded = expandedFolders[folderId] === true;
-                                        const files = folderFiles[folderId] || [];
-                                        
-                                        return (
-                                            <SubMenu
-                                                key={folderId}
-                                                label={
-                                                    <span 
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleFolderClick(folder, e);
-                                                        }}
-                                                        style={{ cursor: 'pointer', flex: 1 }}
-                                                    >
-                                                        {folder?.name}
-                                                    </span>
-                                                }
-                                                icon={
-                                                    <svg className="sidenav-files-tree-icon" width="18" height="18" viewBox="0 0 20 20" fill="none">
-                                                        <path d="M3 6C3 4.89543 3.89543 4 5 4H8.58579C8.851 4 9.10536 4.10536 9.29289 4.29289L10.7071 5.70711C10.8946 5.89464 11.149 6 11.4142 6H15C16.1046 6 17 6.89543 17 8V14C17 15.1046 16.1046 16 15 16H5C3.89543 16 3 15.1046 3 14V6Z" fill="#FCD34D" stroke="#F59E0B" strokeWidth="1.5" />
-                                                    </svg>
-                                                }
-                                                className="sidenav-folder-submenu"
-                                                open={isExpanded}
-                                                defaultOpen={false}
-                                                onOpenChange={(open) => {
-                                                    if (collapsed) {
-                                                        return;
-                                                    }
-                                                    
-                                                    setExpandedFolders(prev => ({
-                                                        ...prev,
-                                                        [folderId]: open
-                                                    }));
-                                                    
-                                                    if (open) {
-                                                        // Always refetch folder files when opening to get latest data
-                                                        userService.getFolderFiles(folderId, null, Token.MegaBox)
-                                                        .then((data) => {
-                                                            setFolderFiles(prev => ({
-                                                                ...prev,
-                                                                [folderId]: data?.files || []
-                                                            }));
-                                                        })
-                                                        .catch(() => {
-                                                            setFolderFiles(prev => ({
-                                                                ...prev,
-                                                                [folderId]: []
-                                                            }));
-                                                        });
-                                                        
-                                                        // Refetch folders and files to update sidebar
-                                                        queryClient.invalidateQueries(['userFolders']);
-                                                        queryClient.invalidateQueries(['userFiles']);
-                                                    }
-                                                }}
-                                            >
-                                                {files.length > 0 ? (
-                                                    files.map((file) => (
-                                                        <MenuItem
-                                                            key={file?._id || file?.id}
-                                                            className="sidenav-files-tree-item sidenav-files-tree-item--file"
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handleFileClick(file);
-                                                            }}
-                                                            icon={
-                                                                <svg className="sidenav-files-tree-icon" width="18" height="18" viewBox="0 0 20 20" fill="none">
-                                                                    <path d="M4 4C4 2.89543 4.89543 2 6 2H10.5858C10.851 2 11.1054 2.10536 11.2929 2.29289L15.7071 6.70711C15.8946 6.89464 16 7.149 16 7.41421V16C16 17.1046 15.1046 18 14 18H6C4.89543 18 4 17.1046 4 16V4Z" fill="#93C5FD" stroke="#3B82F6" strokeWidth="1.5"/>
-                                                                </svg>
-                                                            }
-                                                        >
-                                                            {file?.fileName || file?.name}
-                                                        </MenuItem>
-                                                    ))
-                                                ) : isExpanded && folderFiles[folderId] ? (
-                                                    <div className="sidenav-empty-folder">
-                                                        {t("sidenav.emptyFolder") || "Empty folder"}
-                                                    </div>
-                                                ) : null}
-
-                                            </SubMenu>
-                                        );
-                                    })}
+                                    {foldersData?.folders?.map((folder) => renderFolder(folder))}
                                     
                                     {filesNotInFolders.slice(0, 50).map((file) => (
                                         <MenuItem
