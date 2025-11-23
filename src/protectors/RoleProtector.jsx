@@ -49,5 +49,19 @@ export default function RoleProtector({ children, requiredRole }) {
         return children;
     }
 
+    // Redirect to appropriate dashboard based on user's actual role
+    if (role === "Owner") {
+        return <Navigate to="/Owner/profile" replace />;
+    }
+    
+    if (role === "Advertiser") {
+        return <Navigate to="/Advertiser" replace />;
+    }
+    
+    if (role === "User") {
+        return <Navigate to="/dashboard" replace />;
+    }
+
+    // Default fallback
     return <Navigate to="/" replace />;
 }

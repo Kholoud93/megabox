@@ -51,13 +51,52 @@ export default function DashboardLayout({ role }) {
         }
 
         if (idTracker() && auth.getUserRole) {
-            auth.getUserRole(idTracker());
-            setRoleLoading(false)
+            // Get role from JWT token first for immediate check
+            let tokenRole = null;
+            try {
+                const decoded = jwtDecode(Token.MegaBox);
+                tokenRole = decoded?.role;
+            } catch (error) {
+                console.error('Error decoding token:', error);
+            }
+
+            // If user is Owner but on wrong route, redirect immediately
+            if (tokenRole === "Owner" && role !== "Owner") {
+                navigate("/Owner/profile", { replace: true });
+                return;
+            }
+
+            // If user is not Owner but on Owner route, redirect based on their actual role
+            if (tokenRole !== "Owner" && role === "Owner") {
+                if (tokenRole === "Advertiser") {
+                    navigate("/Advertiser", { replace: true });
+                } else {
+                    navigate("/dashboard", { replace: true });
+                }
+                return;
+            }
+
+            auth.getUserRole(idTracker()).then(fetchedRole => {
+                // Double-check with API role and redirect if mismatch
+                if (fetchedRole === "Owner" && role !== "Owner") {
+                    navigate("/Owner/profile", { replace: true });
+                    return;
+                }
+                if (fetchedRole !== "Owner" && role === "Owner") {
+                    if (fetchedRole === "Advertiser") {
+                        navigate("/Advertiser", { replace: true });
+                    } else {
+                        navigate("/dashboard", { replace: true });
+                    }
+                    return;
+                }
+                setRoleLoading(false);
+            });
         } else {
             navigate("/login")
         }
 
-    }, [auth, navigate]);
+    }, [auth, navigate, role, Token]);
 
     // Ensure /dashboard shows Files (via index route in App.jsx)
     // The index route already handles this correctly
