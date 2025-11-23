@@ -133,6 +133,16 @@ export default function Files() {
     const handleSelectMegaBox = () => {
         setShowUploadFromMegaBox(true);
     };
+    
+    // Handle upload button click - show options for promoters, direct upload for regular users
+    const handleUploadClick = () => {
+        if (isPromoter) {
+            ToggleUploadOptions();
+        } else {
+            // Regular users go directly to desktop upload
+            handleSelectDesktop();
+        }
+    };
 
     const [FilterKey, setFilterKey] = useState('All');
     const queryClient = useQueryClient();
@@ -430,7 +440,7 @@ export default function Files() {
                         <div className="files-header__actions">
                             <button
                                 className="files-header__button"
-                                onClick={ToggleUploadOptions}
+                                onClick={handleUploadClick}
                             >
                                 <HiArrowUp className="files-header__button-icon" />
                                 {t("files.uploadFile")}
@@ -778,7 +788,7 @@ export default function Files() {
                             {FilterKey === 'All' && (
                                 <div className="mt-4 sm:mt-6">
                                     <button
-                                        onClick={ToggleUploadOptions}
+                                        onClick={handleUploadClick}
                                         className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 border border-transparent shadow-sm text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
                                         style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                     >

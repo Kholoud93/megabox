@@ -80,12 +80,22 @@ export default function fileDetails() {
     const handleSelectMegaBox = () => {
         setShowUploadFromMegaBox(true);
     };
+    
+    // Handle upload button click - show options for promoters, direct upload for regular users
+    const handleUploadClick = () => {
+        if (isPromoter) {
+            ToggleUploadOptions();
+        } else {
+            // Regular users go directly to desktop upload
+            handleSelectDesktop();
+        }
+    };
 
     const { data, refetch, isLoading: filesLoading } = useQuery([`GetUserFile-${fileId}`, FilterKey], GetFiles, {
         enabled: !!fileId && !!Token.MegaBox,
     });
     
-    const { data: foldersData } = useQuery(['userFolders'], GetFolders, {
+    const { data: foldersData, refetch: refetchFolders } = useQuery(['userFolders'], GetFolders, {
         enabled: !!Token.MegaBox,
     });
     
@@ -103,14 +113,33 @@ export default function fileDetails() {
 
     // Enhanced refetch function that also invalidates related queries
     const refetchFolderData = async () => {
-        // Invalidate and refetch the current folder's files
-        await queryClient.invalidateQueries([`GetUserFile-${fileId}`, FilterKey]);
-        await refetch();
-        // Invalidate and refetch folders query to update sidebar immediately
-        await queryClient.invalidateQueries(['userFolders']);
-        await queryClient.invalidateQueries(['GetUserFolders']);
-        // Explicitly refetch to ensure sidenav updates immediately
-        await queryClient.refetchQueries(['userFolders']);
+        try {
+            // First, invalidate all folder-related queries (this marks them as stale)
+            queryClient.invalidateQueries(['userFolders']);
+            queryClient.invalidateQueries(['GetUserFolders']);
+            
+            // Refetch the local folders query first
+            await refetchFolders();
+            
+            // Refetch the current folder's files
+            await queryClient.invalidateQueries([`GetUserFile-${fileId}`, FilterKey]);
+            await refetch();
+            
+            // Force refetch all queries with 'userFolders' key (including sidenav)
+            // Using refetchQueries without active filter to refetch all matching queries
+            await queryClient.refetchQueries(['userFolders'], { 
+                exact: false,
+                type: 'active'
+            });
+            
+            // Also refetch GetUserFolders queries
+            await queryClient.refetchQueries(['GetUserFolders'], { 
+                exact: false,
+                type: 'active'
+            });
+        } catch (error) {
+            console.error('Error refetching folder data:', error);
+        }
     };
 
     const SelectFilter = async (type) => {
@@ -307,7 +336,7 @@ export default function fileDetails() {
                             {/* Upload and Create Folder Buttons - Always Visible */}
                             <div className="flex items-center gap-2 sm:gap-3">
                                 <button
-                                    onClick={ToggleUploadOptions}
+                                    onClick={handleUploadClick}
                                     className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 border border-transparent shadow-sm text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
                                     style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                 >
@@ -381,7 +410,7 @@ export default function fileDetails() {
                             {FilterKey === 'All' && (
                                 <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center">
                                     <button
-                                        onClick={ToggleUploadOptions}
+                                        onClick={handleUploadClick}
                                         className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 border border-transparent shadow-sm text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
                                         style={{ textShadow: '0 2px 8px rgba(255,255,255,0.3)' }}
                                     >

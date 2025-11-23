@@ -20,11 +20,12 @@ export default function AddFolder({ ToggleUploadFile, refetch, parentFolderId = 
         try {
             await userService.createFolder(values.fileName, parentFolderId, cookies.MegaBox);
             toast.success('Folder added successfully', ToastOptions('success'));
-            ToggleUploadFile();
-            // Wait for refetch to complete before closing
+            // Wait for refetch to complete before closing modal
             if (refetch) {
                 await refetch();
             }
+            // Close modal after refetch completes
+            ToggleUploadFile();
         } catch (error) {
             toast.error(error.response?.data?.message || 'Something went wrong. Please try again.', ToastOptions('error'));
         }

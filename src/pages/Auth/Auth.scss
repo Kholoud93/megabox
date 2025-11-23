@@ -216,16 +216,16 @@
 
 .auth-buttons-group {
   display: flex;
+  flex-direction: column;
   gap: 0.75rem;
   width: 100%;
 
   @include fn.Breakpoints(mobile) {
-    flex-direction: column;
     gap: 0.75rem;
   }
 
   .auth-btn {
-    flex: 1;
+    width: 100%;
   }
 }
 
