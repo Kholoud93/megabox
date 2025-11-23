@@ -54,10 +54,6 @@ export default function RoleProtector({ children, requiredRole }) {
         return <Navigate to="/Owner/profile" replace />;
     }
     
-    if (role === "Advertiser") {
-        return <Navigate to="/Advertiser" replace />;
-    }
-    
     if (role === "User") {
         return <Navigate to="/dashboard" replace />;
     }

@@ -31,13 +31,13 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
             if (isPromoter && (userData?.Downloadsplan === "true" || userData?.Downloadsplan === true || userData?.watchingplan === "true" || userData?.watchingplan === true)) {
                 return [
                     {
-                        path: '/dashboard/revenue-data',
+                        path: '/Promoter/revenue-data',
                         icon: HiChartBar,
                         label: t("sidenav.revenueData"),
                         key: 'revenue'
                     },
                     {
-                        path: '/dashboard/shared-files',
+                        path: '/Promoter/shared-files',
                         icon: HiShare,
                         label: t("sidenav.linkData"),
                         key: 'link-data'
@@ -55,13 +55,13 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                         key: 'channels'
                     },
                     {
-                        path: '/dashboard/Earnings',
+                        path: '/Promoter/Earnings',
                         icon: HiCurrencyDollar,
                         label: t("sidenav.withdraw"),
                         key: 'withdraw'
                     },
                     {
-                        path: '/dashboard/referral',
+                        path: '/Promoter/referral',
                         icon: HiUserGroup,
                         label: t("sidenav.referral"),
                         key: 'referral'
@@ -80,7 +80,7 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
 
             if (isPromoter && (userData?.Downloadsplan === "true" || userData?.Downloadsplan === true || userData?.watchingplan === "true" || userData?.watchingplan === true)) {
                 items.push({
-                    path: '/dashboard/shared-files',
+                    path: '/Promoter/shared-files',
                     icon: HiShare,
                     label: t("sidenav.sharedFiles"),
                     key: 'shared-files'
@@ -104,7 +104,7 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
 
             if (isPromoter && (userData?.Downloadsplan === "true" || userData?.Downloadsplan === true || userData?.watchingplan === "true" || userData?.watchingplan === true)) {
                 items.push({
-                    path: '/dashboard/revenue-data',
+                    path: '/Promoter/revenue-data',
                     icon: HiChartBar,
                     label: t("sidenav.revenueData"),
                     key: 'revenue'
@@ -113,19 +113,21 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
 
             if (isPromoter && (userData?.Downloadsplan === "true" || userData?.Downloadsplan === true || userData?.watchingplan === "true" || userData?.watchingplan === true)) {
                 items.push({
-                    path: '/dashboard/Earnings',
+                    path: '/Promoter/Earnings',
                     icon: HiChartBar,
                     label: t("sidenav.earnings"),
                     key: 'earnings'
                 });
             }
 
-            items.push({
-                path: '/dashboard/referral',
-                icon: HiUserGroup,
-                label: t("sidenav.referral"),
-                key: 'referral'
-            });
+            if (isPromoter) {
+                items.push({
+                    path: '/Promoter/referral',
+                    icon: HiUserGroup,
+                    label: t("sidenav.referral"),
+                    key: 'referral'
+                });
+            }
 
             items.push({
                 path: '/Partners',
@@ -146,10 +148,6 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                 { path: '/Owner/Subscriptions', icon: HiUserGroup, label: t("sidenav.subscriptions"), key: 'subscriptions' },
                 { path: '/Owner/Storage', icon: HiServer, label: t("sidenav.storage"), key: 'storage' },
                 { path: '/Owner/DownloadsViews', icon: HiArrowDownTray, label: t("sidenav.downloadsViews"), key: 'downloadsViews' }
-            ];
-        } else if (role === "Advertiser") {
-            return [
-                { path: '/Partners', icon: HiHandRaised, label: t("sidenav.partners"), key: 'partners' }
             ];
         }
         return [];

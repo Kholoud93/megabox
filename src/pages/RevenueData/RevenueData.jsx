@@ -74,7 +74,7 @@ export default function RevenueData() {
                                 {t('revenueData.referralIncomeTitle') || '10% of referral income'}
                             </p>
                             <Link 
-                                to="/dashboard/referral"
+                                to="/Promoter/referral"
                                 className="revenue-referral-section__button"
                             >
                                 {t('referral.getReferralLink') || 'Get Referral Link'}
@@ -111,7 +111,7 @@ export default function RevenueData() {
                                 </div>
                             </div>
                             <Link 
-                                to="/dashboard/Earnings"
+                                to="/Promoter/Earnings"
                                 className="revenue-earning-card__withdraw-button"
                             >
                                 {t('revenueData.withdraw') || 'Withdraw'}
@@ -256,7 +256,7 @@ export default function RevenueData() {
                                                     {t('revenueData.noDataMessage') || 'No data, make money by sharing videos'}
                                                 </p>
                                                 <Link 
-                                                    to="/dashboard/referral"
+                                                    to="/Promoter/referral"
                                                     className="revenue-earning-card__withdraw-button revenue-earning-card__share-button"
                                                 >
                                                     <HiShare className="revenue-earning-card__share-icon" />

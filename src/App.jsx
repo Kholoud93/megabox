@@ -129,9 +129,6 @@ const router = createBrowserRouter(
                     case 'Owner':
                       navigate('/Owner/profile');
                       break;
-                    case 'Advertiser':
-                      navigate('/Advertiser');
-                      break;
                     default:
                       navigate('/dashboard');
                   }
@@ -305,48 +302,10 @@ const router = createBrowserRouter(
             </LoginProtector>
         },
         {
-          path: "Earnings", element:
-            <LoginProtector>
-              <RoleProtector requiredRole="User">
-                <PromoterWithPlanProtector>
-                  <Earning />
-                </PromoterWithPlanProtector>
-              </RoleProtector>
-            </LoginProtector>
-        },
-        {
           path: "notifications", element:
             <LoginProtector>
               <RoleProtector requiredRole="User">
                 <Notifications />
-              </RoleProtector>
-            </LoginProtector>
-        },
-        {
-          path: "shared-files", element:
-            <LoginProtector>
-              <RoleProtector requiredRole="User">
-                <PromoterWithPlanProtector>
-                  <SharedFiles />
-                </PromoterWithPlanProtector>
-              </RoleProtector>
-            </LoginProtector>
-        },
-        {
-          path: "revenue-data", element:
-            <LoginProtector>
-              <RoleProtector requiredRole="User">
-                <PromoterWithPlanProtector>
-                  <RevenueData />
-                </PromoterWithPlanProtector>
-              </RoleProtector>
-            </LoginProtector>
-        },
-        {
-          path: "referral", element:
-            <LoginProtector>
-              <RoleProtector requiredRole="User">
-                <Referral />
               </RoleProtector>
             </LoginProtector>
         },
@@ -446,6 +405,44 @@ const router = createBrowserRouter(
                 <SubscriptionPlans />
               </PromoterProtector>
             </LoginProtector>
+        },
+        {
+          path: "revenue-data", element:
+            <LoginProtector>
+              <PromoterProtector>
+                <PromoterWithPlanProtector>
+                  <RevenueData />
+                </PromoterWithPlanProtector>
+              </PromoterProtector>
+            </LoginProtector>
+        },
+        {
+          path: "shared-files", element:
+            <LoginProtector>
+              <PromoterProtector>
+                <PromoterWithPlanProtector>
+                  <SharedFiles />
+                </PromoterWithPlanProtector>
+              </PromoterProtector>
+            </LoginProtector>
+        },
+        {
+          path: "Earnings", element:
+            <LoginProtector>
+              <PromoterProtector>
+                <PromoterWithPlanProtector>
+                  <Earning />
+                </PromoterWithPlanProtector>
+              </PromoterProtector>
+            </LoginProtector>
+        },
+        {
+          path: "referral", element:
+            <LoginProtector>
+              <PromoterProtector>
+                <Referral />
+              </PromoterProtector>
+            </LoginProtector>
         }
       ]
     },
@@ -525,36 +522,6 @@ const router = createBrowserRouter(
               <Withdrawals />
             </RoleProtector>
           </LoginProtector>
-        }
-      ]
-    },
-
-    // Advertiser /////////////
-    {
-      path: "/Advertiser", element: <LoginProtector><DashboardLayout role={"Advertiser"} /> </LoginProtector>, children: [
-        {
-          index: true, element:
-            <LoginProtector>
-              <RoleProtector requiredRole="Advertiser">
-                <Files />
-              </RoleProtector >
-            </LoginProtector>
-        },
-        {
-          path: "file/:fileName/:fileId", element:
-            <RoleProtector requiredRole="Advertiser">
-              <LoginProtector>
-                <UploadFiles />
-              </LoginProtector>
-            </RoleProtector>
-        },
-        {
-          path: "profile", element:
-            <LoginProtector>
-              <RoleProtector requiredRole="Advertiser">
-                <Profile />
-              </RoleProtector>
-            </LoginProtector>
         }
       ]
     }

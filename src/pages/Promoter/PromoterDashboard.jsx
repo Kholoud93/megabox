@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './PromoterDashboard.scss';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
@@ -253,6 +253,18 @@ export default function PromoterDashboard() {
     const pendingEarnings = earningsData?.pendingRewards || '0';
     const confirmedEarnings = earningsData?.confirmedRewards || '0';
     const withdrawable = earningsData?.withdrawable || earningsData?.totalEarnings || '0';
+    const withdrawableAmount = parseFloat(withdrawable) || 0;
+
+    // Debug logging
+    useEffect(() => {
+        console.log('PromoterDashboard - Earnings Data:', {
+            earningsData,
+            earningsLoading,
+            withdrawable,
+            withdrawableAmount,
+            canShowQuickWithdraw: !earningsLoading && withdrawableAmount >= 10
+        });
+    }, [earningsData, earningsLoading, withdrawable, withdrawableAmount]);
 
     // Fetch withdrawal history
     const { data: withdrawalHistory, isLoading: withdrawalHistoryLoading } = useQuery(
@@ -295,13 +307,28 @@ export default function PromoterDashboard() {
         }
     );
 
+    // Quick withdraw earnings mutation (deprecated endpoint)
+    const withdrawEarningsMutation = useMutation(
+        () => withdrawalService.withdrawEarnings(token),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries('withdrawalHistory');
+                queryClient.invalidateQueries('promoterEarnings');
+                toast.success(t('withdrawSection.earningsWithdrawn') || 'Earnings withdrawn successfully!', ToastOptions("success"));
+            },
+            onError: (error) => {
+                toast.error(error?.response?.data?.message || t('withdrawSection.withdrawalError') || 'Failed to withdraw earnings', ToastOptions("error"));
+            }
+        }
+    );
+
     const handleWithdrawalSubmit = (e) => {
         e.preventDefault();
         if (!withdrawalForm.amount || parseFloat(withdrawalForm.amount) <= 0) {
             toast.error(t('promoterDashboard.invalidAmount'), ToastOptions("error"));
             return;
         }
-        if (parseFloat(withdrawalForm.amount) > parseFloat(withdrawable)) {
+        if (parseFloat(withdrawalForm.amount) > withdrawableAmount) {
             toast.error(t('promoterDashboard.amountExceeds'), ToastOptions("error"));
             return;
         }
@@ -363,7 +390,54 @@ export default function PromoterDashboard() {
                             <div className="revenue-summary__value">{confirmedEarnings} {currency}</div>
                         </div>
                     </motion.div>
+
+                    <motion.div
+                        className="revenue-summary__card"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.3 }}
+                    >
+                        <FaWallet className="revenue-summary__icon" />
+                        <div className="revenue-summary__content">
+                            <div className="revenue-summary__label">{t('revenueData.withdrawable') || 'Withdrawable / USD'}</div>
+                            <div className="revenue-summary__value">{withdrawable} {currency}</div>
+                        </div>
+                    </motion.div>
                 </div>
+
+                {/* Withdrawal Actions */}
+                {!earningsLoading && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.25 }}
+                        className="promoter-withdrawal-actions"
+                    >
+                        {withdrawableAmount >= 10 && (
+                            <motion.button
+                                onClick={() => withdrawEarningsMutation.mutate()}
+                                disabled={withdrawEarningsMutation.isLoading}
+                                className="promoter-quick-withdraw-btn"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <FaWallet />
+                                {withdrawEarningsMutation.isLoading 
+                                    ? (t('withdrawSection.withdrawing') || 'Withdrawing...')
+                                    : (t('withdrawSection.quickWithdrawAll') || 'Quick Withdraw All')}
+                            </motion.button>
+                        )}
+                        <motion.button
+                            onClick={() => setShowWithdrawalModal(true)}
+                            className="promoter-request-withdraw-btn"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                        >
+                            <FaMoneyBillWave />
+                            {t('promoterDashboard.requestWithdrawal') || 'Request Withdrawal'}
+                        </motion.button>
+                    </motion.div>
+                )}
 
                 {/* Congratulations Banner - Only show if there's actual data */}
                 {revenueList && revenueList.length > 0 && (

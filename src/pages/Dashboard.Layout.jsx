@@ -68,11 +68,7 @@ export default function DashboardLayout({ role }) {
 
             // If user is not Owner but on Owner route, redirect based on their actual role
             if (tokenRole !== "Owner" && role === "Owner") {
-                if (tokenRole === "Advertiser") {
-                    navigate("/Advertiser", { replace: true });
-                } else {
-                    navigate("/dashboard", { replace: true });
-                }
+                navigate("/dashboard", { replace: true });
                 return;
             }
 
@@ -83,11 +79,7 @@ export default function DashboardLayout({ role }) {
                     return;
                 }
                 if (fetchedRole !== "Owner" && role === "Owner") {
-                    if (fetchedRole === "Advertiser") {
-                        navigate("/Advertiser", { replace: true });
-                    } else {
-                        navigate("/dashboard", { replace: true });
-                    }
+                    navigate("/dashboard", { replace: true });
                     return;
                 }
                 setRoleLoading(false);
@@ -125,11 +117,6 @@ export default function DashboardLayout({ role }) {
             />
         )}
         {role === "Owner" && (
-            <BottomNavigation 
-                role={role}
-            />
-        )}
-        {role === "Advertiser" && (
             <BottomNavigation 
                 role={role}
             />

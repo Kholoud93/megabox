@@ -65,6 +65,22 @@ export const withdrawalService = {
             toast.error(error.response?.data?.message || `Failed to ${status} withdrawal`, ToastOptions("error"));
             throw error.response?.data || error.message;
         }
+    },
+
+    // Withdraw earnings (deprecated endpoint - automatic withdrawal)
+    withdrawEarnings: async (token) => {
+        try {
+            const response = await api.get('/auth/withdrawEarnings', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success("Earnings withdrawn successfully!", ToastOptions("success"));
+            return response.data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to withdraw earnings", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
     }
 };
 

@@ -1163,7 +1163,10 @@
     "threeToFiveDays": "3-5 days",
     "submitting": "Submitting...",
     "withdrawalRequested": "Withdrawal request submitted successfully!",
-    "withdrawalError": "Failed to request withdrawal"
+    "withdrawalError": "Failed to request withdrawal",
+    "quickWithdrawAll": "Quick Withdraw All",
+    "withdrawing": "Withdrawing...",
+    "earningsWithdrawn": "Earnings withdrawn successfully!"
   },
   "adminPagination": {
     "page": "Page",

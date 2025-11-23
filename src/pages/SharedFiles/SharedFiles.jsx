@@ -201,7 +201,7 @@ export default function SharedFiles() {
                                     </div>
                                 </div>
                                 <Link 
-                                    to="/dashboard/Earnings"
+                                    to="/Promoter/Earnings"
                                     className="revenue-earning-card__withdraw-button"
                                 >
                                     {t('revenueData.withdraw')}

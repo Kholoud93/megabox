@@ -518,53 +518,6 @@ export default function Sidenav({ role }) {
 
                             </>
 
-                        ) : role === "Advertiser" ? (
-                            <>
-                                <MenuItem onClick={closeSidebar} className={pathname === "/dashboard/profile" ? 'menu-items Active' : 'menu-items'} component={<Link to='/dashboard/profile' className='Remove_hover transition ease-linear' />}
-                                    icon={<HiUserCircle className={pathname === "/dashboard/profile" ? 'icon transition ease-linear Active' : 'icon transition ease-linear'} />}>
-
-                                    {t("sidenav.profile")}
-
-                                </MenuItem>
-
-
-
-                                <div className="sidenav-bottom-actions">
-
-                                    <MenuItem
-
-                                        className="menu-items LanguageToggle"
-
-                                        icon={<FiGlobe className="icon" />}
-
-                                        onClick={toggleLanguage}
-
-                                    >
-
-                                        {!collapsed && (language === 'en' ? t("navbar.arabic") : t("navbar.english"))}
-
-                                    </MenuItem>
-
-
-
-                                    <MenuItem
-
-                                        className="menu-items Logout"
-
-                                        icon={<HiArrowRightOnRectangle className="icon" />}
-
-                                        onClick={Logout}
-
-                                    >
-
-                                        {!collapsed && t("sidenav.logout")}
-
-                                    </MenuItem>
-
-                                </div>
-
-                            </>
-
                         ) : null}
 
 

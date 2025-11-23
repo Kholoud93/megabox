@@ -196,7 +196,7 @@ export default function PartnerCTA({ isModal = false, onClose }) {
                         <button
                             onClick={() => {
                                 if (onClose) onClose();
-                                navigate('/dashboard/Earnings');
+                                navigate('/Promoter/Earnings');
                             }}
                             className="partner-cta__dashboard-button"
                         >

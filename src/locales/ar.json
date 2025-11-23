@@ -1163,7 +1163,10 @@
     "threeToFiveDays": "3-5 أيام",
     "submitting": "جارٍ الإرسال...",
     "withdrawalRequested": "تم إرسال طلب السحب بنجاح!",
-    "withdrawalError": "فشل إرسال طلب السحب"
+    "withdrawalError": "فشل إرسال طلب السحب",
+    "quickWithdrawAll": "سحب سريع للكل",
+    "withdrawing": "جارٍ السحب...",
+    "earningsWithdrawn": "تم سحب الأرباح بنجاح!"
   },
   "adminPagination": {
     "page": "صفحة",

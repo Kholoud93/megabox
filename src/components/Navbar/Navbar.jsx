@@ -55,8 +55,6 @@ const Navbar = () => {
   const DashboardTravel = () => {
     if (UserRole === "Owner") {
       navigate("/Owner")
-    } else if (UserRole === "Advertiser") {
-      navigate("/Advertiser")
     } else {
       navigate("/dashboard")
     }

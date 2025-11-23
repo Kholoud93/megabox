@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Earning.scss';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
@@ -51,9 +51,25 @@ export default function Earning() {
     );
 
     const currency = earningsData?.currency || 'USD';
-    const amount = earningsData?.actualIncome || earningsData?.confirmedRewards || '';
-    const review = earningsData?.estimatedIncome || earningsData?.pendingRewards || '';
-    const withdrawn = earningsData?.withdrawn || '';
+    // Match API response structure
+    const amount = earningsData?.confirmedRewards || earningsData?.actualIncome || '0.000000';
+    const review = earningsData?.pendingRewards || earningsData?.estimatedIncome || '0.000000';
+    const withdrawn = earningsData?.withdrawn || '0.000000';
+    const totalEarnings = earningsData?.totalEarnings || earningsData?.promoterEarnings || '0.000000';
+    const withdrawable = earningsData?.withdrawable || totalEarnings || '0.000000';
+    const withdrawableAmount = parseFloat(withdrawable) || 0;
+
+    // Debug logging
+    useEffect(() => {
+        console.log('Earning Page - Earnings Data:', {
+            earningsData,
+            earningsLoading,
+            amount,
+            withdrawable,
+            withdrawableAmount,
+            canShowQuickWithdraw: !earningsLoading && withdrawableAmount >= 10
+        });
+    }, [earningsData, earningsLoading, amount, withdrawable, withdrawableAmount]);
 
     const [withdrawalAmount, setWithdrawalAmount] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('');
@@ -124,6 +140,21 @@ export default function Earning() {
             },
             onError: (error) => {
                 toast.error(error?.response?.data?.message || t('withdrawSection.withdrawalError') || 'Failed to request withdrawal', ToastOptions("error"));
+            }
+        }
+    );
+
+    // Quick withdraw earnings mutation (deprecated endpoint)
+    const withdrawEarningsMutation = useMutation(
+        () => withdrawalService.withdrawEarnings(token),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries('withdrawalHistory');
+                queryClient.invalidateQueries('userEarnings');
+                toast.success(t('withdrawSection.earningsWithdrawn') || 'Earnings withdrawn successfully!', ToastOptions("success"));
+            },
+            onError: (error) => {
+                toast.error(error?.response?.data?.message || t('withdrawSection.withdrawalError') || 'Failed to withdraw earnings', ToastOptions("error"));
             }
         }
     );
@@ -299,13 +330,27 @@ export default function Earning() {
                 >
                     <div className="withdraw-apply-section__header">
                         <h2 className="withdraw-apply-section__title">{t('withdrawSection.apply') || 'Apply'}</h2>
-                        <button 
-                            type="button"
-                            onClick={() => setShowRecordModal(true)}
-                            className="withdraw-apply-section__link"
-                        >
-                            {t('withdrawSection.record') || 'Record'} {language === 'ar' ? <HiArrowLeft /> : <HiArrowRight />}
-                        </button>
+                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                            {!earningsLoading && withdrawableAmount >= 10 && (
+                                <button 
+                                    type="button"
+                                    onClick={() => withdrawEarningsMutation.mutate()}
+                                    disabled={withdrawEarningsMutation.isLoading}
+                                    className="withdraw-apply-section__quick-withdraw"
+                                >
+                                    {withdrawEarningsMutation.isLoading 
+                                        ? (t('withdrawSection.withdrawing') || 'Withdrawing...')
+                                        : (t('withdrawSection.quickWithdrawAll') || 'Quick Withdraw All')}
+                                </button>
+                            )}
+                            <button 
+                                type="button"
+                                onClick={() => setShowRecordModal(true)}
+                                className="withdraw-apply-section__link"
+                            >
+                                {t('withdrawSection.record') || 'Record'} {language === 'ar' ? <HiArrowLeft /> : <HiArrowRight />}
+                            </button>
+                        </div>
                     </div>
 
                     <form className="withdraw-apply-form" onSubmit={handleSubmit} noValidate>
