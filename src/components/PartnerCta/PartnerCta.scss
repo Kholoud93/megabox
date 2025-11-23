@@ -241,10 +241,18 @@
         letter-spacing: -0.02em;
         line-height: 1.2;
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
 
         @include mixins.media-breakpoint-down(md) {
             font-size: vars.$text-3xl;
             margin-bottom: 2rem;
+        }
+
+        @include mixins.media-breakpoint-down(sm) {
+            font-size: vars.$text-2xl;
+            margin-bottom: 1.5rem;
         }
     }
 
@@ -482,9 +490,20 @@
     }
 
     &__subscribed {
-        display: flex;
+        display: flex !important;
         justify-content: center;
         padding: 2rem 0;
+        visibility: visible !important;
+        opacity: 1 !important;
+        width: 100% !important;
+
+        @include mixins.media-breakpoint-down(md) {
+            padding: 1.5rem 0;
+        }
+
+        @include mixins.media-breakpoint-down(sm) {
+            padding: 1rem 0;
+        }
     }
 
     &__dashboard-button {
@@ -498,6 +517,19 @@
         cursor: pointer;
         transition: all 0.3s ease;
         box-shadow: 0 4px 12px rgba(var(--color-indigo-600-rgb), 0.3);
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+
+        @include mixins.media-breakpoint-down(md) {
+            padding: 0.875rem 1.75rem;
+            font-size: vars.$text-sm;
+        }
+
+        @include mixins.media-breakpoint-down(sm) {
+            padding: 0.75rem 1.5rem;
+            font-size: vars.$text-sm;
+        }
 
         &:hover {
             background: var(--color-indigo-700);

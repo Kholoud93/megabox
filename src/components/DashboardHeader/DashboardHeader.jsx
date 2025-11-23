@@ -209,11 +209,18 @@ export default function DashboardHeader() {
                                     <div 
                                         className="files-header__profile-backdrop"
                                         onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            setProfileMenuOpen(false);
+                                            // Only close if clicking directly on backdrop, not on dropdown
+                                            if (!profileDropdownRef.current?.contains(e.target)) {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                setProfileMenuOpen(false);
+                                            }
                                         }}
                                         onTouchStart={(e) => {
+                                            // Only close if not touching a menu item
+                                            if (profileDropdownRef.current?.contains(e.target)) {
+                                                return;
+                                            }
                                             e.preventDefault();
                                             e.stopPropagation();
                                             setProfileMenuOpen(false);
@@ -238,12 +245,19 @@ export default function DashboardHeader() {
                                             to={isPromoter ? '/Promoter/profile' : '/dashboard/profile'}
                                             className="files-header__profile-item"
                                             onClick={(e) => {
+                                                e.preventDefault();
                                                 e.stopPropagation();
                                                 setProfileMenuOpen(false);
+                                                navigate(isPromoter ? '/Promoter/profile' : '/dashboard/profile');
+                                            }}
+                                            onTouchStart={(e) => {
+                                                e.stopPropagation();
                                             }}
                                             onTouchEnd={(e) => {
+                                                e.preventDefault();
                                                 e.stopPropagation();
                                                 setProfileMenuOpen(false);
+                                                navigate(isPromoter ? '/Promoter/profile' : '/dashboard/profile');
                                             }}
                                         >
                                             <HiUserCircle className="files-header__profile-item-icon" />
@@ -255,12 +269,19 @@ export default function DashboardHeader() {
                                                 to={isPromoter ? '/Promoter/notifications' : '/dashboard/notifications'}
                                                 className="files-header__profile-item"
                                                 onClick={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
                                                     setProfileMenuOpen(false);
+                                                    navigate(isPromoter ? '/Promoter/notifications' : '/dashboard/notifications');
+                                                }}
+                                                onTouchStart={(e) => {
+                                                    e.stopPropagation();
                                                 }}
                                                 onTouchEnd={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
                                                     setProfileMenuOpen(false);
+                                                    navigate(isPromoter ? '/Promoter/notifications' : '/dashboard/notifications');
                                                 }}
                                             >
                                                 <HiBell className="files-header__profile-item-icon" />
@@ -273,12 +294,19 @@ export default function DashboardHeader() {
                                                 to="/dashboard/channels"
                                                 className="files-header__profile-item"
                                                 onClick={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
                                                     setProfileMenuOpen(false);
+                                                    navigate('/dashboard/channels');
+                                                }}
+                                                onTouchStart={(e) => {
+                                                    e.stopPropagation();
                                                 }}
                                                 onTouchEnd={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
                                                     setProfileMenuOpen(false);
+                                                    navigate('/dashboard/channels');
                                                 }}
                                             >
                                                 <HiTv className="files-header__profile-item-icon" />
@@ -291,12 +319,19 @@ export default function DashboardHeader() {
                                                 to="/Partners"
                                                 className="files-header__profile-item"
                                                 onClick={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
                                                     setProfileMenuOpen(false);
+                                                    navigate('/Partners');
+                                                }}
+                                                onTouchStart={(e) => {
+                                                    e.stopPropagation();
                                                 }}
                                                 onTouchEnd={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
                                                     setProfileMenuOpen(false);
+                                                    navigate('/Partners');
                                                 }}
                                             >
                                                 <HiUserGroup className="files-header__profile-item-icon" />
@@ -309,12 +344,19 @@ export default function DashboardHeader() {
                                                 to={isPromoter ? '/Promoter/subscription-plans' : '/dashboard/subscription-plans'}
                                                 className="files-header__profile-item"
                                                 onClick={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
                                                     setProfileMenuOpen(false);
+                                                    navigate(isPromoter ? '/Promoter/subscription-plans' : '/dashboard/subscription-plans');
+                                                }}
+                                                onTouchStart={(e) => {
+                                                    e.stopPropagation();
                                                 }}
                                                 onTouchEnd={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
                                                     setProfileMenuOpen(false);
+                                                    navigate(isPromoter ? '/Promoter/subscription-plans' : '/dashboard/subscription-plans');
                                                 }}
                                             >
                                                 <HiCurrencyDollar className="files-header__profile-item-icon" />
@@ -327,12 +369,19 @@ export default function DashboardHeader() {
                                                 to="/Partners"
                                                 className="files-header__profile-item"
                                                 onClick={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
                                                     setProfileMenuOpen(false);
+                                                    navigate('/Partners');
+                                                }}
+                                                onTouchStart={(e) => {
+                                                    e.stopPropagation();
                                                 }}
                                                 onTouchEnd={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
                                                     setProfileMenuOpen(false);
+                                                    navigate('/Partners');
                                                 }}
                                             >
                                                 <HiUserGroup className="files-header__profile-item-icon" />
