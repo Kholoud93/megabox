@@ -348,7 +348,7 @@ export default function Earning() {
                     <div className="withdraw-apply-section__header">
                         <h2 className="withdraw-apply-section__title">{t('withdrawSection.apply') || 'Apply'}</h2>
                         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                            {!earningsLoading && (
+                            {!earningsLoading && withdrawableAmount >= 10 && (
                                 <button 
                                     type="button"
                                     onClick={() => withdrawEarningsMutation.mutate()}

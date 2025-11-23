@@ -27,8 +27,9 @@ const GoogleLoginButton = ({ SignUp }) => {
         try {
             const data = await authService.loginWithGmail(accessToken);
             if (data) {
-                // Use 'Lax' instead of 'Strict' for better mobile compatibility
-                setCookie('MegaBox', data?.data?.access_Token, {
+                // authService.loginWithGmail returns response.data, which already contains the nested structure
+                // So we access data.access_Token directly, not data.data.access_Token
+                setCookie('MegaBox', data?.access_Token, {
                     path: '/',
                     secure: window.location.protocol === 'https:',
                     sameSite: 'Lax',
@@ -38,9 +39,9 @@ const GoogleLoginButton = ({ SignUp }) => {
                 // Save FCM token for push notifications (if available)
                 try {
                     const fcmToken = await getFCMToken();
-                    if (fcmToken && data?.data?.checkUser?._id) {
+                    if (fcmToken && data?.checkUser?._id) {
                         await notificationService.saveFcmToken(
-                            data.data.checkUser._id,
+                            data.checkUser._id,
                             fcmToken
                         );
                     }

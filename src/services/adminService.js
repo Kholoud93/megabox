@@ -35,82 +35,13 @@ export const adminService = {
         }
     },
 
-    // Search user by email or ID
-    searchUser: async (searchTerm, token) => {
-        try {
-            const response = await api.get(`/auth/searchUser/${searchTerm}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
-        } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to search user", ToastOptions("error"));
-            throw error.response?.data || error.message;
-        }
-    },
-
-    // Toggle user premium status
-    toggleUserPremium: async (userId, token) => {
-        try {
-            const response = await api.patch(`/auth/toggleUserPremium/${userId}`, {}, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            toast.success("User premium status updated successfully", ToastOptions("success"));
-            return response.data;
-        } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to update user premium status", ToastOptions("error"));
-            throw error.response?.data || error.message;
-        }
-    },
-
-    // Set user premium with expiration date
-    setUserPremium: async (userId, expirationDate, token) => {
-        try {
-            const response = await api.patch(`/auth/setUserPremium/${userId}`, {
-                expirationDate
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            toast.success("User premium status updated successfully", ToastOptions("success"));
-            return response.data;
-        } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to update user premium status", ToastOptions("error"));
-            throw error.response?.data || error.message;
-        }
-    },
-
-    // Delete complaint/report
-    deleteComplaint: async (complaintId, token) => {
-        try {
-            const response = await api.delete(`/auth/deleteCopyrightReport/${complaintId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
-        } catch (error) {
-            throw error.response?.data || error.message;
-        }
-    },
-
-    // Delete promoter
-    deletePromoter: async (promoterId, token) => {
-        try {
-            const response = await api.delete(`/auth/deletePromoter/${promoterId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
-        } catch (error) {
-            throw error.response?.data || error.message;
-        }
-    },
+    // NOTE: The following APIs are NOT in the backend documentation and need to be implemented:
+    // - /auth/searchUser/:searchTerm
+    // - /auth/toggleUserPremium/:userId
+    // - /auth/setUserPremium/:userId
+    // - /auth/deleteCopyrightReport/:complaintId
+    // - /auth/deletePromoter/:promoterId
+    // These methods have been removed until the backend implements them.
 
     // Withdrawal management endpoints (Admin)
     getAllWithdrawals: async (token) => {
@@ -126,102 +57,17 @@ export const adminService = {
         }
     },
 
-    updateWithdrawalStatus: async (withdrawalId, status, token) => {
-        try {
-            const response = await api.patch(`/auth/updateWithdrawalStatus/${withdrawalId}`, {
-                status
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            toast.success(`Withdrawal ${status} successfully`, ToastOptions("success"));
-            return response.data;
-        } catch (error) {
-            toast.error(error.response?.data?.message || `Failed to ${status} withdrawal`, ToastOptions("error"));
-            throw error.response?.data || error.message;
-        }
-    },
+    // NOTE: /auth/updateWithdrawalStatus/:withdrawalId is NOT in the backend documentation
+    // This method has been removed until the backend implements it.
+    // updateWithdrawalStatus: async (withdrawalId, status, token) => { ... }
 
-    // Get all downloads and views (admin)
-    // Note: This endpoint may not exist on the backend yet
-    getAllDownloadsViews: async (token) => {
-        try {
-            const response = await api.get('/auth/getAllDownloadsViews', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
-        } catch (error) {
-            // Endpoint may not exist (404) - return empty data instead of throwing
-            if (error.response?.status === 404) {
-                console.warn('getAllDownloadsViews endpoint not found - using mock data');
-                return { downloadsViews: [] };
-            }
-            throw error.response?.data || error.message;
-        }
-    },
-
-    // Get all payments (admin)
-    // Note: This endpoint may not exist on the backend yet
-    getAllPayments: async (token) => {
-        try {
-            const response = await api.get('/auth/getAllPayments', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
-        } catch (error) {
-            // Endpoint may not exist (404) - return empty data instead of throwing
-            if (error.response?.status === 404) {
-                console.warn('getAllPayments endpoint not found - using mock data');
-                return { payments: [] };
-            }
-            throw error.response?.data || error.message;
-        }
-    },
-
-    // Get all storage (admin)
-    // Note: This endpoint may not exist on the backend yet
-    getAllStorage: async (token) => {
-        try {
-            const response = await api.get('/auth/getAllStorage', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
-        } catch (error) {
-            // Endpoint may not exist (404) - return empty data instead of throwing
-            if (error.response?.status === 404) {
-                console.warn('getAllStorage endpoint not found - using mock data');
-                return { storage: [] };
-            }
-            throw error.response?.data || error.message;
-        }
-    },
-
-    // Get all subscriptions (admin)
-    // Note: This endpoint may not exist on the backend yet
-    getAllSubscriptions: async (token) => {
-        try {
-            const response = await api.get('/auth/getAllSubscriptions', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
-        } catch (error) {
-            // Endpoint may not exist (404) - return empty data instead of throwing
-            if (error.response?.status === 404) {
-                console.warn('getAllSubscriptions endpoint not found - using mock data');
-                return { subscriptions: [] };
-            }
-            throw error.response?.data || error.message;
-        }
-    },
+    // NOTE: The following APIs are NOT in the backend documentation:
+    // - /auth/getAllDownloadsViews
+    // - /auth/getAllPayments
+    // - /auth/getAllStorage
+    // - /auth/getAllSubscriptions
+    // These methods have been removed. The UI components already have mock data fallbacks.
+    // getAllDownloadsViews, getAllPayments, getAllStorage, getAllSubscriptions methods removed
 
     // Get all users (admin)
     getAllUsers: async (token) => {
