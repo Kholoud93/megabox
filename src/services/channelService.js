@@ -16,7 +16,7 @@ export const channelService = {
                 formData.append('description', description);
             }
             
-            const response = await api.post('/auth/createChannel', formData, {
+            const response = await api.post('/createChannel', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${token}`

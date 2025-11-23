@@ -1,7 +1,7 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react'
 import "./Promoters.scss"
 import { useQuery, useQueryClient } from 'react-query';
-import { useInView, AnimatePresence } from 'framer-motion';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { API_URL, adminService, promoterService } from '../../../services/api';
 import { Link, useNavigate } from 'react-router-dom';
 import { TbDeviceAnalytics } from "react-icons/tb";

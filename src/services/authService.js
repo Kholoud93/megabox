@@ -152,6 +152,18 @@ export const authService = {
         } catch (error) {
             throw error.response?.data || error.message;
         }
+    },
+
+    // Login with Gmail
+    loginWithGmail: async (accessToken) => {
+        try {
+            const response = await api.post('/auth/loginWithGmail', {
+                accessToken
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
     }
 };
 

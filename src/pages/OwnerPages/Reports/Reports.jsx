@@ -1,23 +1,24 @@
 import React from 'react'
 import CopyrightCard from './ReportCard'
 import './Report.scss'
-import axios from 'axios'
-import { API_URL } from '../../../services/api'
+import { adminService } from '../../../services/adminService'
 import { useQuery } from 'react-query'
 import Loading from '../../../components/Loading/Loading'
 import { useLanguage } from '../../../context/LanguageContext'
+import { useCookies } from 'react-cookie'
 
 export default function Reports() {
     const { t } = useLanguage();
+    const [cookies] = useCookies(['MegaBox']);
+    const token = cookies.MegaBox;
 
     const GetAllComplaints = async () => {
         try {
-            const { data } = await axios.get(`${API_URL}/auth/getAllCopyrightReports`);
-
-            return data?.data
+            const response = await adminService.getAllCopyrightReports(token);
+            return response?.data || response || [];
         } catch (err) {
             console.log(err);
-            return err;
+            return [];
         }
     }
 

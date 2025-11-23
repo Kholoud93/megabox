@@ -3,8 +3,8 @@ import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { API_URL, adminService } from '../../../services/api';
+import { adminService } from '../../../services/adminService';
+import { promoterService } from '../../../services/promoterService';
 import { useLanguage } from '../../../context/LanguageContext';
 import StatCard from '../../../components/StatCard/StatCard';
 import { FaUsers, FaFileAlt, FaDollarSign, FaChartLine, FaDownload, FaEye, FaLink, FaMoneyBillWave, FaHdd, FaUserPlus, FaCreditCard, FaCrown } from 'react-icons/fa';
@@ -20,8 +20,8 @@ export default function Analasys() {
     const { data: usersData, isLoading: usersLoading } = useQuery(
         ['allUsers'],
         async () => {
-            const res = await axios.get(`${API_URL}/user/getAllUsers`);
-            return res?.data?.message?.users || [];
+            const response = await adminService.getAllUsers(token);
+            return response?.message?.users || response?.data?.users || [];
         },
         { enabled: !!token }
     );
@@ -37,10 +37,8 @@ export default function Analasys() {
     const { data: promotersData, isLoading: promotersLoading } = useQuery(
         ['allPromoters'],
         async () => {
-            const res = await axios.get(`${API_URL}/auth/getAllPromoters`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            return res?.data?.promoters || [];
+            const response = await promoterService.getAllPromoters(token);
+            return response?.promoters || response?.data?.promoters || [];
         },
         { enabled: !!token }
     );

@@ -42,8 +42,8 @@ export default function Users() {
 
     // get Allusers 
     const Allusers = async () => {
-        let users = await axios.get(`${API_URL}/user/getAllUsers`)
-        return users?.data?.message?.users
+        const response = await adminService.getAllUsers(Token.MegaBox);
+        return response?.message?.users || response?.data?.users || [];
     }
     const { data: users } = useQuery("getAllusers", Allusers, {
         cacheTime: 300000,

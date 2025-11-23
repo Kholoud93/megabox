@@ -36,36 +36,6 @@ export const withdrawalService = {
         }
     },
 
-    getAllWithdrawals: async (token) => {
-        try {
-            const response = await api.get('/auth/getAllWithdrawals', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
-        } catch (error) {
-            throw error.response?.data || error.message;
-        }
-    },
-
-    // Update withdrawal status (approve/reject)
-    updateWithdrawalStatus: async (withdrawalId, status, token) => {
-        try {
-            const response = await api.patch(`/auth/updateWithdrawalStatus/${withdrawalId}`, {
-                status
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            toast.success(`Withdrawal ${status} successfully`, ToastOptions("success"));
-            return response.data;
-        } catch (error) {
-            toast.error(error.response?.data?.message || `Failed to ${status} withdrawal`, ToastOptions("error"));
-            throw error.response?.data || error.message;
-        }
-    },
 
     // Withdraw earnings (deprecated endpoint - automatic withdrawal)
     withdrawEarnings: async (token) => {

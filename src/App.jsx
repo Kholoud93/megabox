@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useMemo } from 'react'
 import { BrowserRouter as Router, Routes, Route, createBrowserRouter, RouterProvider, useNavigate, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import LandingPage from './pages/LandingPage'
@@ -64,10 +64,8 @@ const AuthWrapper = ({ children }) => {
   return children({ navigate, auth, Token });
 };
 
-
-const router = createBrowserRouter(
-
-  [
+const AppRouter = () => {
+  const router = useMemo(() => createBrowserRouter([
     {
       path: "/",
       element: <LandingLayout />,
@@ -527,13 +525,15 @@ const router = createBrowserRouter(
     }
     // Owner 
 
-  ]
-)
+  ]), []);
+
+  return <RouterProvider router={router} />;
+};
 
 function App() {
   return (
     <AuthProvider>
-      <RouterProvider router={router} />
+      <AppRouter />
     </AuthProvider>
   );
 }

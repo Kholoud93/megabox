@@ -6,6 +6,7 @@ import { ToastOptions } from '../../helpers/ToastOptions';
 import './Auth.scss';
 import GoogleIcon from './GoogleIcon';
 import { API_URL, notificationService } from '../../services/api';
+import { authService } from '../../services/authService';
 import { getFCMToken } from '../../utils/fcmToken';
 
 // Google OAuth Client ID - can be moved to environment variable
@@ -24,14 +25,8 @@ const GoogleLoginButton = ({ SignUp }) => {
         setIsProcessing(true);
 
         try {
-            const res = await fetch(`${API_URL}/auth/loginWithGmail`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ accessToken }),
-            });
-
-            const data = await res.json();
-            if (res.ok) {
+            const data = await authService.loginWithGmail(accessToken);
+            if (data) {
                 // Use 'Lax' instead of 'Strict' for better mobile compatibility
                 setCookie('MegaBox', data?.data?.access_Token, {
                     path: '/',
@@ -60,12 +55,10 @@ const GoogleLoginButton = ({ SignUp }) => {
                 setTimeout(() => {
                     navigate('/dashboard');
                 }, 100);
-            } else {
-                toast.error(data.message || "Failed to login with Google. Please try again.", ToastOptions("error"));
             }
         } catch (err) {
             console.error('Google login error:', err);
-            toast.error("An error occurred during Google login. Please try again.", ToastOptions("error"));
+            toast.error(err?.message || "An error occurred during Google login. Please try again.", ToastOptions("error"));
         } finally {
             setIsProcessing(false);
         }

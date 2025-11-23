@@ -2,8 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { API_URL } from '../../../services/api';
+import { adminService } from '../../../services/adminService';
 import { useLanguage } from '../../../context/LanguageContext';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
 import Pagination from '../../../components/Pagination/Pagination';
@@ -164,12 +163,7 @@ export default function Subscriptions() {
         ['allSubscriptions'],
         async () => {
             try {
-                const response = await axios.get(`${API_URL}/auth/getAllSubscriptions`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                return response.data;
+                return await adminService.getAllSubscriptions(token);
             } catch (error) {
                 console.error('Error fetching subscriptions:', error);
                 // Return mock data if API fails

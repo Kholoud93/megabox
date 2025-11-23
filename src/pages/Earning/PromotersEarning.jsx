@@ -7,7 +7,7 @@ import {
     FaEye, FaDownload, FaMoneyBillWave, FaFileAlt, FaFileImage, FaFileVideo, FaFilePdf, FaFileWord,
     FaLink, FaGlobe, FaTimes, FaChartLine, FaUsers, FaRocket
 } from 'react-icons/fa';
-import { API_URL, adminService } from '../../services/api';
+import { adminService } from '../../services/adminService';
 import { useParams } from 'react-router-dom';
 import { MdPendingActions } from "react-icons/md";
 import { GiTakeMyMoney } from "react-icons/gi";
@@ -568,13 +568,7 @@ export default function PromotersEarning() {
         ['userEarnings'],
         async () => {
             try {
-                const res = await fetch(`${API_URL}/auth/getUserEarningsadmin/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                if (!res.ok) {
-                    return mockEarningsData;
-                }
-                const data = await res.json();
+                const data = await adminService.getUserEarningsadmin(id, token);
                 return data || mockEarningsData;
             } catch (error) {
                 console.error('Error fetching earnings:', error);
@@ -597,13 +591,7 @@ export default function PromotersEarning() {
         ['userAnalytics'],
         async () => {
             try {
-                const res = await fetch(`${API_URL}/auth/getUserAnalyticsadmin/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                if (!res.ok) {
-                    return mockAnalyticsData;
-                }
-                const data = await res.json();
+                const data = await adminService.getUserAnalyticsadmin(id, token);
                 return data || mockAnalyticsData;
             } catch (error) {
                 console.error('Error fetching analytics:', error);
@@ -694,13 +682,7 @@ export default function PromotersEarning() {
         ['shareLinkAnalytics'],
         async () => {
             try {
-                const res = await fetch(`${API_URL}/auth/getShareLinkAnalyticsadmin/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                if (!res.ok) {
-                    return mockShareLinksData;
-                }
-                const data = await res.json();
+                const data = await adminService.getShareLinkAnalyticsadmin(id, token);
                 return data || mockShareLinksData;
             } catch (error) {
                 console.error('Error fetching share links:', error);
