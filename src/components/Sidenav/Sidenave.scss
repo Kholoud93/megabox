@@ -439,8 +439,8 @@ aside {
             visibility: visible !important;
             opacity: 1 !important;
             height: auto !important;
-            max-height: 300px !important;
-            overflow-y: auto !important;
+            max-height: none !important;
+            overflow-y: visible !important;
             overflow-x: hidden !important;
             padding: 4px 0 !important;
             position: relative !important;

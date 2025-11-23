@@ -339,8 +339,8 @@ export default function Sidenav({ role }) {
                         content.style.setProperty('visibility', 'visible', 'important');
                         content.style.setProperty('opacity', '1', 'important');
                         content.style.setProperty('height', 'auto', 'important');
-                        content.style.setProperty('max-height', '300px', 'important');
-                        content.style.setProperty('overflow-y', 'auto', 'important');
+                        content.style.setProperty('max-height', 'none', 'important');
+                        content.style.setProperty('overflow-y', 'visible', 'important');
                     }
                 }
             });

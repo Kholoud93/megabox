@@ -288,13 +288,13 @@ export default function fileDetails() {
                     >
                         {language === 'ar' ? (
                             <>
-                                <span className="mr-2">{parentFolder ? (t("fileDetails.backToFolder") || "Back") : (t("fileDetails.backToFiles") || "Back to Files")}</span>
+                                <span className="mr-2">{t("fileDetails.backToFolder") || "Back"}</span>
                                 <HiArrowRight className="h-4 w-4" />
                             </>
                         ) : (
                             <>
                                 <HiArrowLeft className="h-4 w-4 mr-2" />
-                                <span>{parentFolder ? (t("fileDetails.backToFolder") || "Back") : (t("fileDetails.backToFiles") || "Back to Files")}</span>
+                                <span>{t("fileDetails.backToFolder") || "Back"}</span>
                             </>
                         )}
                     </button>
