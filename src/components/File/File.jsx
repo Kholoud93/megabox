@@ -252,7 +252,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
     return (
         <motion.div
             className={`relative bg-white border rounded-lg ${viewMode === 'list' ? 'h-auto flex items-center gap-4 p-4' : 'h-[300px]'} ${isSelected ? 'border-indigo-600 bg-indigo-50' : ''} cursor-pointer hover:shadow-lg transition-shadow`}
-            style={{ zIndex: 1, position: 'relative' }}
+            style={{ zIndex: 1, position: 'relative', isolation: 'isolate' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -285,9 +285,10 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             )}
             <div
                 ref={buttonRef}
-                className="absolute top-2 right-2 z-50"
+                className="absolute top-2 right-2 z-10"
                 onClick={(e) => {
-                    e.stopPropagation(); // Prevent triggering file click
+                    e.preventDefault();
+                    e.stopPropagation();
                     setShowMenu(!showMenu);
                 }}
             >
@@ -295,21 +296,12 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             </div>
 
             {showMenu && (
-                <>
-                    {/* Backdrop to close menu on click outside */}
-                    <div
-                        className="fixed inset-0 z-[9999998]"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setShowMenu(false);
-                        }}
-                    />
-                    <div
-                        ref={menuRef}
-                        className="absolute top-10 right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 text-xs min-w-[160px] max-h-[280px] overflow-y-auto file-dropdown-menu"
-                        style={{ zIndex: 9999999 }}
-                        onClick={(e) => e.stopPropagation()}
-                    >
+                <div
+                    ref={menuRef}
+                    className="absolute top-10 right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 text-xs min-w-[160px] max-h-[280px] overflow-y-auto file-dropdown-menu"
+                    style={{ zIndex: 999999 }}
+                    onClick={(e) => e.stopPropagation()}
+                >
                     {(Type === 'image' || Type === 'zip' || Type === 'video' || Type === 'document') && (
                         <button
                             onClick={() => handleAction('open')}
@@ -366,8 +358,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                         <HiTrash className='w-4 h-4 text-red-600' />
                         <span className="font-medium">Delete</span>
                     </button>
-                    </div>
-                </>
+                </div>
             )}
 
             {viewMode === 'list' ? (

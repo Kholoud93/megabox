@@ -41,6 +41,13 @@ export default function Files() {
     const touchStartedRef = useRef(false);
     
     useEffect(() => {
+        // Add/remove class on body when profile menu is open
+        if (profileMenuOpen) {
+            document.body.classList.add('profile-menu-open');
+        } else {
+            document.body.classList.remove('profile-menu-open');
+        }
+
         if (!profileMenuOpen) {
             touchStartedRef.current = false;
             return;
@@ -104,6 +111,7 @@ export default function Files() {
         return () => {
             clearTimeout(positionTimer);
             document.removeEventListener('click', handleClickOutside, true);
+            document.body.classList.remove('profile-menu-open');
         };
     }, [profileMenuOpen, language]);
 

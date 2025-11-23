@@ -44,7 +44,7 @@
     border-radius: 50%;
     cursor: pointer;
     opacity: 0;
-    z-index: 10000001;
+    z-index: 9999997; // Lower than profile dropdown (9999999) and backdrop (9999998)
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
     display: none;
@@ -58,6 +58,15 @@
         &:hover {
             transform: scale(1.1);
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+    }
+
+    // Hide or disable when profile menu is open
+    @include Breakpoints(mobile) {
+        body.profile-menu-open & {
+            pointer-events: none !important;
+            opacity: 0.3 !important;
+            z-index: 1 !important; // Lower z-index when profile menu is open
         }
     }
 
