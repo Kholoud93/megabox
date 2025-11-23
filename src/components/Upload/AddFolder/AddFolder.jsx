@@ -13,15 +13,18 @@ import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
 import { useCookies } from 'react-cookie';
 
-export default function AddFolder({ ToggleUploadFile, refetch }) {
+export default function AddFolder({ ToggleUploadFile, refetch, parentFolderId = null }) {
     const [cookies] = useCookies(['MegaBox']);
 
     const Addfolder = async (values) => {
         try {
-            await userService.createFolder(values.fileName, null, cookies.MegaBox);
+            await userService.createFolder(values.fileName, parentFolderId, cookies.MegaBox);
             toast.success('Folder added successfully', ToastOptions('success'));
             ToggleUploadFile();
-            refetch()
+            // Wait for refetch to complete before closing
+            if (refetch) {
+                await refetch();
+            }
         } catch (error) {
             toast.error(error.response?.data?.message || 'Something went wrong. Please try again.', ToastOptions('error'));
         }

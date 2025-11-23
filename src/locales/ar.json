@@ -249,6 +249,8 @@
   },
   "fileDetails": {
     "backToFiles": "العودة إلى الملفات",
+    "backToFolder": "رجوع",
+    "items": "عناصر",
     "folderContents": "محتويات المجلد",
     "uploadFile": "رفع ملف",
     "filesInThisFolder": "الملفات في هذا المجلد",

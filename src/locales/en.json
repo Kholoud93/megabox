@@ -249,6 +249,8 @@
   },
   "fileDetails": {
     "backToFiles": "Back to Files",
+    "backToFolder": "Back",
+    "items": "Items",
     "folderContents": "Folder contents",
     "uploadFile": "Upload File",
     "filesInThisFolder": "Files in this folder",

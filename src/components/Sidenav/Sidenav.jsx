@@ -316,7 +316,20 @@ export default function Sidenav({ role }) {
                         {role === "User" ? (
                             <>
                                 <SubMenu
-                                    label={t("sidenav.allFiles")}
+                                    label={
+                                        <span 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (!isPromoter) {
+                                                    navigate('/dashboard/files');
+                                                    closeSidebar();
+                                                }
+                                            }}
+                                            style={{ cursor: 'pointer', flex: 1 }}
+                                        >
+                                            {t("sidenav.allFiles")}
+                                        </span>
+                                    }
                                     icon={<HiFolder className="icon transition ease-linear" />}
                                     className="sidenav-files-submenu"
                                     open={!collapsed && allFilesOpen}

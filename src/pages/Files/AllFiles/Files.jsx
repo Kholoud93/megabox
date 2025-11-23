@@ -216,6 +216,14 @@ export default function Files() {
     };
 
     const { data: folders, refetch: refFolders, isLoading: foldersLoading } = useQuery("GetUserFolders", Getfolders);
+    
+    // Enhanced refetch function that also invalidates sidenav query
+    const refetchFoldersWithSidenav = async () => {
+        await refFolders();
+        // Invalidate sidenav folders query to update sidebar immediately
+        queryClient.invalidateQueries(['userFolders']);
+        await queryClient.refetchQueries(['userFolders']);
+    };
 
     const SelectFilter = async (type) => {
         setFilterKey(type);
@@ -827,7 +835,7 @@ export default function Files() {
                     refetch={refetch} 
                 />
             )}
-            {AddFolderAdding && <AddFolder key="add-folder" ToggleUploadFile={ToggleFolderAdding} refetch={refFolders} />}
+            {AddFolderAdding && <AddFolder key="add-folder" ToggleUploadFile={ToggleFolderAdding} refetch={refetchFoldersWithSidenav} />}
             {ShowRepresent && <Represents key="represents" path={Path} type={fileType} ToggleUploadFile={() => Representation("", "", true)} />}
             {ShowUpdateName && (
                 <ChangeName
