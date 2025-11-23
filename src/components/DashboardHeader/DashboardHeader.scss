@@ -228,6 +228,12 @@
     bottom: 0;
     z-index: 9999998 !important; // Just below dropdown
     pointer-events: auto !important;
+    background: transparent !important;
+    
+    // Show overlay in mobile view
+    @include mix.media-breakpoint-down(md) {
+      background: rgba(0, 0, 0, 0.3) !important;
+    }
   }
 
   &__profile-dropdown {

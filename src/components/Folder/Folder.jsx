@@ -133,7 +133,7 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isS
                 <div
                     ref={menuRef}
                     className="absolute top-8 sm:top-10 right-1.5 sm:right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 text-xs min-w-[160px] max-h-[280px] overflow-y-auto file-dropdown-menu"
-                    style={{ zIndex: 10001 }}
+                    style={{ zIndex: 999999 }}
                     onClick={(e) => e.stopPropagation()}
                 >
                     <button

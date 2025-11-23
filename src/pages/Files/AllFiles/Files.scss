@@ -457,12 +457,15 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.3); // Darker backdrop for better visibility
-    z-index: 99998 !important;
+    background: transparent !important;
+    z-index: 9999998 !important;
     display: none;
+    pointer-events: auto !important;
     
+    // Show overlay in mobile view
     @include mixins.media-breakpoint-down(md) {
       display: block;
+      background: rgba(0, 0, 0, 0.3) !important;
     }
   }
 
@@ -475,7 +478,7 @@
     border-radius: 0.75rem;
     box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2), 0 4px 10px rgba(79, 70, 229, 0.1);
     min-width: 200px;
-    z-index: 100000 !important; // Higher than backdrop (99999) and folders/files
+    z-index: 9999999 !important; // Highest z-index to appear above everything
     isolation: isolate !important; // Create new stacking context
     overflow: hidden;
     border: 2px solid var(--color-indigo-200);
@@ -494,7 +497,7 @@
     @include mixins.media-breakpoint-down(md) {
       min-width: 180px;
       max-width: calc(100vw - 2rem);
-      z-index: 100000 !important; // Higher than backdrop (99999) and folders/files
+      z-index: 9999999 !important; // Highest z-index to appear above everything
       box-shadow: 0 20px 40px rgba(79, 70, 229, 0.3), 0 8px 16px rgba(79, 70, 229, 0.2);
       pointer-events: auto !important;
       touch-action: manipulation !important;
@@ -1102,10 +1105,14 @@
 
 // CRITICAL FIX: Force profile dropdown above all content
 body {
-  .files-header__profile-backdrop,
+  .files-header__profile-backdrop {
+    position: fixed !important;
+    z-index: 9999998 !important;
+  }
+  
   .files-header__profile-dropdown {
     position: fixed !important;
-    z-index: 999999 !important;
+    z-index: 9999999 !important;
   }
 }
 
