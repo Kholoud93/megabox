@@ -182,6 +182,12 @@
     }
 
     &__slide-wrapper {
+        [dir="rtl"] & {
+            order: 2;
+        }
+    }
+
+    &__slide-wrapper {
         position: relative;
         width: 100%;
         overflow: hidden;
