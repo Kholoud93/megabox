@@ -1,9 +1,8 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react'
 import "./Users.scss"
 import { useQuery } from 'react-query';
-import axios from 'axios';
 import { AnimatePresence, motion, useInView } from 'framer-motion';
-import { API_URL, adminService } from '../../../services/api';
+import { adminService } from '../../../services/adminService';
 import { useCookies } from 'react-cookie';
 import { useQueryClient } from 'react-query';
 // icons 
@@ -62,18 +61,18 @@ export default function Users() {
     }
 
     const sendUserNotification = async (values) => {
-
         try {
-            const res = await axios.post(`${API_URL}/user/sendnotification`, {
-                _id: selectedUser.id,
-                title: values.title,
-                body: values.body
-            });
-            notificationFormik.resetForm()
-            toast.success(`${t("adminUsers.notificationSent")} ${selectedUser.username}`, ToastOptions("success"));
+            await adminService.sendNotification(
+                selectedUser.id || selectedUser._id,
+                values.title,
+                values.body,
+                Token.MegaBox
+            );
+            notificationFormik.resetForm();
             closeNotificationPopup();
         } catch (err) {
-            toast.error(t("adminUsers.notificationFailed"), ToastOptions("error"));
+            // Error is already handled in the service with toast
+            console.error('Failed to send notification:', err);
         }
     };
 
@@ -93,13 +92,17 @@ export default function Users() {
 
     // Rest of your existing code for notifyAll...
     const notfiyAll = async (values) => {
-        await axios.post(`${API_URL}/user/notifyall`, { ...values })
-            .then((res) => {
-                closeNotifyAllModal()
-                toast.success(`${res?.data.message}`, ToastOptions("success"))
-            }).catch((err) => {
-                toast.error(`${err?.data.message}`, ToastOptions("error"))
-            })
+        try {
+            await adminService.notifyAll(
+                values.title,
+                values.body,
+                Token.MegaBox
+            );
+            closeNotifyAllModal();
+        } catch (err) {
+            // Error is already handled in the service with toast
+            console.error('Failed to notify all users:', err);
+        }
     }
     const Validation = Yup.object({
         title: Yup.string().required(t("adminUsers.titleRequired")),

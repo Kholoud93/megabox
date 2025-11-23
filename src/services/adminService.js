@@ -291,6 +291,64 @@ export const adminService = {
         } catch (error) {
             throw error.response?.data || error.message;
         }
+    },
+
+    // Send notification to specific user (admin)
+    sendNotification: async (userId, title, body, token) => {
+        try {
+            const response = await api.post('/user/sendnotification', {
+                _id: userId,
+                title,
+                body
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            console.log('sendNotification Response:', response.data);
+            toast.success("Notification sent successfully!", ToastOptions("success"));
+            return response.data;
+        } catch (error) {
+            console.error('sendNotification Error:', error.response?.data || error);
+            // Parse error message to provide better feedback
+            const errorMessage = error.response?.data?.message || error.message || "Failed to send notification";
+            
+            // Check if error is about missing FCM token (in Arabic or English)
+            const isMissingFCMToken = errorMessage.includes('FCM Token') || 
+                                     errorMessage.includes('fcmToken') ||
+                                     errorMessage.includes('FCM') ||
+                                     errorMessage.includes('لا يحتوي على FCM Token');
+            
+            if (isMissingFCMToken) {
+                // Provide a more helpful error message
+                // The error message will be shown, but we can add context
+                toast.error(errorMessage + " (User needs to log in to register FCM token)", ToastOptions("error"));
+            } else {
+                toast.error(errorMessage, ToastOptions("error"));
+            }
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Send notification to all users (admin)
+    notifyAll: async (title, body, token) => {
+        try {
+            const response = await api.post('/user/notifyall', {
+                title,
+                body
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success(response?.data?.message || "Notification sent to all users successfully!", ToastOptions("success"));
+            return response.data;
+        } catch (error) {
+            // Show the actual error message from backend
+            const errorMessage = error.response?.data?.message || error.message || "Failed to send notification to all users";
+            toast.error(errorMessage, ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
     }
 };
 

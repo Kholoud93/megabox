@@ -168,13 +168,8 @@ export default function Files() {
     };
     
     const Logout = async () => {
-        // Delete FCM token before logout
-        try {
-            await notificationService.deleteFcmToken(Token.MegaBox);
-        } catch (error) {
-            // Silently fail - token deletion is optional
-            console.warn('Failed to delete FCM token:', error);
-        }
+        // Keep FCM token on logout so users can still receive notifications
+        // Token will be updated/reused when they log back in
         
         removeToken("MegaBox", {
             path: '/',
