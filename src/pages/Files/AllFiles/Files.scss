@@ -396,11 +396,13 @@
     display: flex;
     align-items: center;
     z-index: 1001;
+    isolation: auto; // Don't create stacking context that could trap dropdown
     
     // Ensure it works on mobile/tablet - higher z-index to appear above folders/files
     @include mixins.media-breakpoint-down(md) {
       z-index: 99999 !important;
       position: relative;
+      isolation: auto !important; // Explicitly remove isolation on mobile
     }
     
     // Hide profile menu when image/video is being displayed
@@ -509,7 +511,7 @@
     box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2), 0 4px 10px rgba(79, 70, 229, 0.1);
     min-width: 200px;
     z-index: 9999999 !important; // Highest z-index to appear above everything
-    isolation: isolate !important; // Create new stacking context
+    // DO NOT use isolation: isolate here - it creates a stacking context that hides the menu on mobile
     overflow: hidden;
     border: 2px solid var(--color-indigo-200);
     margin-top: 0.5rem;
@@ -534,6 +536,7 @@
       position: fixed !important;
       transform: translateZ(0); // Force hardware acceleration
       -webkit-transform: translateZ(0);
+      isolation: auto !important; // Explicitly remove isolation on mobile
     }
     
     // Hide dropdown when image/video is being displayed
@@ -570,14 +573,19 @@
     cursor: pointer;
     pointer-events: auto !important;
     touch-action: manipulation !important;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
-    user-select: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1) !important;
+    -webkit-touch-callout: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
     
     // Ensure it's clickable on mobile
     @include mixins.media-breakpoint-down(md) {
-      min-height: 44px; // Minimum touch target size
-      padding: 1rem;
+      min-height: 44px !important; // Minimum touch target size
+      padding: 1rem !important;
+      pointer-events: auto !important;
+      touch-action: manipulation !important;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1) !important;
+      cursor: pointer !important;
     }
 
     [dir="rtl"] & {
@@ -1123,7 +1131,20 @@
 .file-dropdown-menu {
   position: absolute !important;
   z-index: 9999 !important;
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1) !important;
   // DO NOT use isolation: isolate here - it creates a stacking context that hides the menu
+  
+  // Ensure all buttons inside are clickable
+  button {
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1) !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+  }
   
   // Custom scrollbar styling
   &::-webkit-scrollbar {
@@ -1214,11 +1235,24 @@ div[style*="zIndex"] {
   }
 }
 
-// Global override to ensure dropdown menu is always visible
+// Global override to ensure dropdown menu is always visible and clickable
 .file-dropdown-menu {
   isolation: auto !important; // Remove isolation to prevent stacking context issues
   z-index: 9999 !important;
   position: absolute !important;
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+  
+  // Mobile-specific fixes
+  @media (max-width: 768px) {
+    z-index: 99999 !important; // Even higher on mobile
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1) !important;
+    -webkit-touch-callout: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+  }
 }
 
 // Ensure dropdown appears above all preview content (video, zip, etc.)
@@ -1227,14 +1261,27 @@ div[class*="relative"][class*="bg-white"] {
     z-index: 9999 !important;
     position: absolute !important;
     isolation: auto !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
   }
   
-  // Ensure preview content stays below dropdown
+  // Ensure preview content stays below dropdown and doesn't block clicks
   video,
   iframe,
   div[class*="w-full"][class*="h-full"] {
     z-index: 1 !important;
     position: relative !important;
+    pointer-events: auto !important; // Allow clicks to pass through to dropdown
+  }
+  
+  // Ensure the file card itself doesn't block dropdown clicks when menu is open
+  &:has(.file-dropdown-menu) {
+    pointer-events: auto !important;
+    
+    // But prevent card click when menu is open
+    .file-dropdown-menu {
+      pointer-events: auto !important;
+    }
   }
 }
 
@@ -1248,6 +1295,7 @@ body {
   .files-header__profile-dropdown {
     position: fixed !important;
     z-index: 9999999 !important;
+    isolation: auto !important; // Remove isolation to prevent stacking context issues on mobile
   }
 }
 

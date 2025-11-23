@@ -181,9 +181,13 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             }
         };
 
+        // Handle both mouse and touch events
         document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('touchstart', handleClickOutside, { passive: true });
+        
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchstart', handleClickOutside);
         };
     }, [showMenu]);
 
@@ -258,6 +262,10 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
             onClick={(e) => {
+                // Don't trigger if clicking on dropdown menu or button
+                if (menuRef.current?.contains(e.target) || buttonRef.current?.contains(e.target)) {
+                    return;
+                }
                 if (isSelectionMode) {
                     e.preventDefault();
                     if (onToggleSelect) {
@@ -292,6 +300,12 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                     e.stopPropagation();
                     setShowMenu(!showMenu);
                 }}
+                onTouchEnd={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowMenu(!showMenu);
+                }}
+                style={{ pointerEvents: 'auto', touchAction: 'manipulation' }}
             >
                 <FiMoreVertical className="w-5 h-5 text-indigo-600 cursor-pointer hover:text-indigo-800 transition-colors" />
             </div>
@@ -300,13 +314,25 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                 <div
                     ref={menuRef}
                     className="absolute top-10 right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 text-xs min-w-[160px] max-h-[280px] overflow-y-auto file-dropdown-menu"
-                    style={{ zIndex: 9999, position: 'absolute' }}
+                    style={{ zIndex: 9999, position: 'absolute', pointerEvents: 'auto', touchAction: 'manipulation' }}
                     onClick={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    onTouchEnd={(e) => e.stopPropagation()}
                 >
                     {(Type === 'image' || Type === 'zip' || Type === 'video' || Type === 'document') && (
                         <button
-                            onClick={() => handleAction('open')}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAction('open');
+                            }}
+                            onTouchEnd={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAction('open');
+                            }}
                             className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                            style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
                         >
                             {Type === 'zip' ? (
                                 <>
@@ -322,39 +348,89 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                         </button>
                     )}
                     <button
-                        onClick={() => handleAction('rename')}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleAction('rename');
+                        }}
+                        onTouchEnd={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleAction('rename');
+                        }}
                         className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                        style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
                     >
                         <HiPencil className='w-4 h-4 text-green-600' />
                         <span className="font-medium">Rename</span>
                     </button>
                     <button
-                        onClick={() => handleAction('share')}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleAction('share');
+                        }}
+                        onTouchEnd={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleAction('share');
+                        }}
                         className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                        style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
                     >
                         <HiShare className='w-4 h-4 text-blue-600' />
                         <span className="font-medium">Share</span>
                     </button>
                     {(data?.shareLink || data?.shareUrl || data?.isShared === true || data?.isShared === "true" || data?.shared === true || data?.shared === "true") && (
                         <button
-                            onClick={() => handleAction('disableShare')}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAction('disableShare');
+                            }}
+                            onTouchEnd={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAction('disableShare');
+                            }}
                             className="flex items-center gap-2 px-3 py-1.5 hover:bg-orange-50 w-full text-left transition-colors text-orange-600"
+                            style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
                         >
                             <HiShare className='w-4 h-4 text-orange-600 rotate-180' />
                             <span className="font-medium">Disable Share</span>
                         </button>
                     )}
                     <button
-                        onClick={() => handleAction('archive')}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleAction('archive');
+                        }}
+                        onTouchEnd={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleAction('archive');
+                        }}
                         className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                        style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
                     >
                         <FiArchive className='w-4 h-4 text-purple-600' />
                         <span className="font-medium">Archive</span>
                     </button>
                     <div className="border-t border-gray-200 my-1"></div>
                     <button
-                        onClick={() => handleAction('delete')}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleAction('delete');
+                        }}
+                        onTouchEnd={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleAction('delete');
+                        }}
                         className="flex items-center gap-2 px-3 py-1.5 hover:bg-red-50 w-full text-left transition-colors text-red-600"
+                        style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
                     >
                         <HiTrash className='w-4 h-4 text-red-600' />
                         <span className="font-medium">Delete</span>

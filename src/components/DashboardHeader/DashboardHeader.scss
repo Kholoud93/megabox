@@ -218,6 +218,7 @@
     z-index: 9999999 !important; // Highest z-index to appear above everything
     display: flex !important;
     align-items: center !important;
+    isolation: auto !important; // Don't create stacking context that could trap dropdown
   }
 
   &__profile-backdrop {
@@ -239,9 +240,14 @@
   &__profile-dropdown {
     position: fixed !important;
     z-index: 9999999 !important; // Highest z-index to appear above everything
-    isolation: isolate !important;
+    // DO NOT use isolation: isolate here - it creates a stacking context that hides the menu on mobile
     transform: translateZ(0); // Force hardware acceleration
     pointer-events: auto !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1) !important;
+    -webkit-touch-callout: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
 
     // Responsive dropdown sizing
     // Extra small screens (< 640px)
@@ -249,6 +255,9 @@
       min-width: 160px !important;
       max-width: calc(100vw - 1rem) !important;
       font-size: 0.8125rem !important;
+      isolation: auto !important; // Explicitly remove isolation on mobile
+      pointer-events: auto !important;
+      touch-action: manipulation !important;
     }
 
     @include mix.media-breakpoint-up(sm) {
@@ -262,6 +271,13 @@
 
     @include mix.media-breakpoint-up(lg) {
       min-width: 220px !important;
+    }
+    
+    // Mobile-specific fixes to ensure dropdown works
+    @include mix.media-breakpoint-down(md) {
+      isolation: auto !important; // Remove isolation on mobile to prevent stacking context issues
+      pointer-events: auto !important;
+      touch-action: manipulation !important;
     }
   }
 
@@ -311,6 +327,7 @@ body {
   .files-header__profile-menu {
     position: relative !important;
     z-index: 9999999 !important;
+    isolation: auto !important; // Don't create stacking context that could trap dropdown
   }
 
   // Only backdrop and dropdown should be fixed
@@ -318,6 +335,7 @@ body {
   .files-header__profile-dropdown {
     z-index: 9999999 !important;
     position: fixed !important;
+    isolation: auto !important; // Remove isolation to prevent stacking context issues on mobile
   }
 
   // Ensure all page content is below the profile menu
