@@ -845,10 +845,15 @@
     border-radius: 0.5rem;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     position: relative;
-    z-index: 1 !important; // Lower z-index than profile dropdown (100000)
-    isolation: isolate; // Create stacking context to prevent interference
+    z-index: 1 !important;
     border: 1px solid #e5e7eb;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    // Ensure dropdown menu appears above card content
+    .file-dropdown-menu {
+      z-index: 9999 !important;
+      position: absolute !important;
+    }
     
     &:hover {
       transform: translateY(-2px);
@@ -1116,6 +1121,10 @@
 
 // File dropdown menu styling
 .file-dropdown-menu {
+  position: absolute !important;
+  z-index: 9999 !important;
+  // DO NOT use isolation: isolate here - it creates a stacking context that hides the menu
+  
   // Custom scrollbar styling
   &::-webkit-scrollbar {
     width: 4px;
@@ -1130,6 +1139,102 @@
     &:hover {
       background: rgba(0, 0, 0, 0.3);
     }
+  }
+}
+
+// Ensure file card preview content doesn't interfere with dropdown
+// Target the file card container (motion.div from File component)
+div[style*="zIndex"] {
+  // Video elements should not create stacking context above dropdown
+  video {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  // Iframe elements (for PDFs) should not interfere
+  iframe {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  // Zip preview nested divs should not interfere
+  .w-full.h-full.relative,
+  div[class*="w-full"][class*="h-full"] {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  // Ensure dropdown button and menu are above preview content
+  .absolute.top-2.right-2,
+  .absolute.top-1\.5.right-1\.5 {
+    z-index: 50 !important;
+    position: absolute !important;
+  }
+  
+  .file-dropdown-menu {
+    z-index: 9999 !important;
+    position: absolute !important;
+    isolation: auto !important; // Override any isolation that might hide the menu
+  }
+}
+
+// Also target file cards specifically
+.file-card,
+.folder-card {
+  // Video elements should not create stacking context above dropdown
+  video {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  // Iframe elements (for PDFs) should not interfere
+  iframe {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  // Zip preview nested divs should not interfere
+  .w-full.h-full.relative,
+  div[class*="w-full"][class*="h-full"] {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  // Ensure dropdown button and menu are above preview content
+  .absolute.top-2.right-2,
+  .absolute.top-1\.5.right-1\.5 {
+    z-index: 50 !important;
+    position: absolute !important;
+  }
+  
+  .file-dropdown-menu {
+    z-index: 9999 !important;
+    position: absolute !important;
+    isolation: auto !important; // Override any isolation that might hide the menu
+  }
+}
+
+// Global override to ensure dropdown menu is always visible
+.file-dropdown-menu {
+  isolation: auto !important; // Remove isolation to prevent stacking context issues
+  z-index: 9999 !important;
+  position: absolute !important;
+}
+
+// Ensure dropdown appears above all preview content (video, zip, etc.)
+div[class*="relative"][class*="bg-white"] {
+  .file-dropdown-menu {
+    z-index: 9999 !important;
+    position: absolute !important;
+    isolation: auto !important;
+  }
+  
+  // Ensure preview content stays below dropdown
+  video,
+  iframe,
+  div[class*="w-full"][class*="h-full"] {
+    z-index: 1 !important;
+    position: relative !important;
   }
 }
 

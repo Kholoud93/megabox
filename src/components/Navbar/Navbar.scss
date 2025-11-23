@@ -364,8 +364,9 @@
 
     @include fn.Breakpoints(mobile) {
       font-size: vars.$text-lg;
-      overflow: hidden;
+      // overflow: hidden;
       text-overflow: ellipsis;
+      border-radius: 50%;
     }
 
     @media (max-width: 360px) {

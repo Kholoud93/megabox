@@ -45,15 +45,16 @@ const typeConfig = {
             justifyContent: 'center'
         }),
         previewComponent: (url) => (
-            <div className="w-full h-full relative bg-black flex items-center justify-center">
+            <div className="w-full h-full relative bg-black flex items-center justify-center" style={{ zIndex: 1, position: 'relative' }}>
                 <video
                     src={url}
                     className="w-full h-full object-cover"
                     muted
                     preload="metadata"
                     playsInline
+                    style={{ zIndex: 1, position: 'relative' }}
                 />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/10 transition-colors">
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/10 transition-colors" style={{ zIndex: 2, position: 'absolute' }}>
                     <div className="bg-white/20 backdrop-blur-sm rounded-full p-4 border-4 border-white/40 shadow-2xl transform hover:scale-110 transition-transform">
                         <FaPlay className="w-8 h-8 text-white ml-1" />
                     </div>
@@ -115,12 +116,12 @@ const typeConfig = {
             position: 'relative'
         }),
         previewComponent: (url) => (
-            <div className="w-full h-full relative bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 flex items-start justify-start p-3">
+            <div className="w-full h-full relative bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 flex items-start justify-start p-3" style={{ zIndex: 1, position: 'relative' }}>
                 {/* Folder tab */}
-                <div className="absolute top-2 left-3 w-12 h-2 bg-amber-400 rounded-t-sm"></div>
+                <div className="absolute top-2 left-3 w-12 h-2 bg-amber-400 rounded-t-sm" style={{ zIndex: 2, position: 'absolute' }}></div>
 
                 {/* Folder body with files */}
-                <div className="w-full h-full bg-gradient-to-br from-amber-100 to-amber-200 rounded-lg border-2 border-amber-300/50 shadow-inner mt-3 p-3 flex flex-col gap-2">
+                <div className="w-full h-full bg-gradient-to-br from-amber-100 to-amber-200 rounded-lg border-2 border-amber-300/50 shadow-inner mt-3 p-3 flex flex-col gap-2" style={{ zIndex: 1, position: 'relative' }}>
                     {/* File representations */}
                     <div className="flex items-center gap-2">
                         <div className="w-6 h-8 bg-blue-500/60 rounded-sm shadow-sm"></div>
@@ -252,7 +253,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
     return (
         <motion.div
             className={`relative bg-white border rounded-lg ${viewMode === 'list' ? 'h-auto flex items-center gap-4 p-4' : 'h-[300px]'} ${isSelected ? 'border-indigo-600 bg-indigo-50' : ''} cursor-pointer hover:shadow-lg transition-shadow`}
-            style={{ zIndex: 1, position: 'relative', isolation: 'isolate' }}
+            style={{ zIndex: 1, position: 'relative' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -268,7 +269,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             }}
         >
             {isSelectionMode && (
-                <div className="absolute top-2 left-2 z-20">
+                <div className="absolute top-2 left-2 z-50">
                     <input
                         type="checkbox"
                         checked={isSelected || false}
@@ -285,7 +286,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             )}
             <div
                 ref={buttonRef}
-                className="absolute top-2 right-2 z-10"
+                className="absolute top-2 right-2 z-50"
                 onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -299,7 +300,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                 <div
                     ref={menuRef}
                     className="absolute top-10 right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 text-xs min-w-[160px] max-h-[280px] overflow-y-auto file-dropdown-menu"
-                    style={{ zIndex: 999999 }}
+                    style={{ zIndex: 9999, position: 'absolute' }}
                     onClick={(e) => e.stopPropagation()}
                 >
                     {(Type === 'image' || Type === 'zip' || Type === 'video' || Type === 'document') && (
@@ -367,7 +368,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                         {config.icon}
                         <p className="truncate flex-1">{truncateString(fileName)}</p>
                     </div>
-                    <div className="w-32 h-24 flex-shrink-0 rounded overflow-hidden">
+                    <div className="w-32 h-24 flex-shrink-0 rounded overflow-hidden relative" style={{ zIndex: 1 }}>
                         {config.previewComponent ? (
                             config.previewComponent(url, fileName)
                         ) : (
@@ -384,7 +385,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                         {config.icon}
                         <p className="truncate">{truncateString(fileName)}</p>
                     </div>
-                    <div className="w-full h-[200px] overflow-hidden">
+                    <div className="w-full h-[200px] overflow-hidden relative" style={{ zIndex: 1 }}>
                         {config.previewComponent ? (
                             config.previewComponent(url, fileName)
                         ) : (
