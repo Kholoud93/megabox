@@ -11,6 +11,7 @@ import { useCookies } from 'react-cookie';
 import { StoragePrecentage } from '../../helpers/GetStoragePercentage';
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { useLanguage } from '../../context/LanguageContext';
+import { useLocation } from 'react-router-dom';
 
 export default function Profile() {
     const [isEditing, setIsEditing] = useState(false);
@@ -22,6 +23,8 @@ export default function Profile() {
     const [Token] = useCookies(['MegaBox']);
     const { t, language } = useLanguage();
     const premiumFileInputRef = useRef(null);
+    const location = useLocation();
+    const isOwner = location.pathname.startsWith('/Owner');
 
     const GetUserStorage = async () => {
         const response = await fileService.getUserStorageUsage(Token.MegaBox);
@@ -389,11 +392,12 @@ export default function Profile() {
 
                             <div className="mt-4 sm:mt-5 md:mt-6 lg:mt-8">
                                 <h2 className="text-sm sm:text-base md:text-lg font-semibold text-indigo-900 mb-3 sm:mb-4">{t('profile.accountDetails')}</h2>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 md:gap-4">
+                                <div className={`grid gap-2 sm:gap-3 md:gap-4 ${isOwner ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'}`}>
                                     <div className="bg-indigo-50 border-2 border-indigo-100 p-2.5 sm:p-3 md:p-4 rounded-lg">
                                         <p className="text-xs sm:text-sm text-indigo-600 font-medium">{t('profile.userId')}</p>
                                         <p className="text-xs sm:text-sm md:text-base text-indigo-900 font-semibold mt-1 break-all">{userData.userId}</p>
                                     </div>
+                                    {!isOwner && (
                                     <div className="bg-indigo-50 border-2 border-indigo-100 p-2.5 sm:p-3 md:p-4 rounded-lg">
                                         <p className="text-xs sm:text-sm text-indigo-600 font-medium">{t('profile.accountType')}</p>
                                         <div className="flex items-center justify-between mt-1">
@@ -439,6 +443,7 @@ export default function Profile() {
                                             )}
                                         </div>
                                     </div>
+                                    )}
                                     <input
                                         type="file"
                                         ref={premiumFileInputRef}
@@ -537,8 +542,8 @@ export default function Profile() {
                 </div>
             </motion.div>
 
-            {/* User Analytics Section - Only for Promoters */}
-            {(userData?.isPromoter === "true" || userData?.isPromoter === true) && (
+            {/* User Analytics Section - Only for Promoters (not Owners) */}
+            {(userData?.isPromoter === "true" || userData?.isPromoter === true) && !isOwner && (
             <motion.div
                 className="container mx-auto px-3 sm:px-4 md:px-5 lg:px-6 xl:px-8 py-3 sm:py-4 md:py-5 lg:py-6 xl:py-8 mb-20"
                 initial={{ opacity: 0, y: 20 }}
