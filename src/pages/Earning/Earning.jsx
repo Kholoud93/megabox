@@ -4,7 +4,7 @@ import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaDollarSign, FaTimes } from 'react-icons/fa';
-import { HiArrowRight, HiChevronDown } from 'react-icons/hi2';
+import { HiArrowRight, HiArrowLeft, HiChevronDown } from 'react-icons/hi2';
 import { promoterService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { withdrawalService } from '../../services/withdrawalService';
@@ -35,7 +35,7 @@ const cardVariants = {
 export default function Earning() {
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
 
     // Fetch earnings data
     const { data: earningsData, isLoading: earningsLoading } = useQuery(
@@ -304,7 +304,7 @@ export default function Earning() {
                             onClick={() => setShowRecordModal(true)}
                             className="withdraw-apply-section__link"
                         >
-                            {t('withdrawSection.record') || 'Record'} <HiArrowRight />
+                            {t('withdrawSection.record') || 'Record'} {language === 'ar' ? <HiArrowLeft /> : <HiArrowRight />}
                         </button>
                     </div>
 

@@ -291,8 +291,8 @@ export default function fileDetails() {
                     >
                         {language === 'ar' ? (
                             <>
-                                <span className="mr-2">{t("fileDetails.backToFolder") || "Back"}</span>
-                                <HiArrowRight className="h-4 w-4" />
+                                <span>{t("fileDetails.backToFolder") || "Back"}</span>
+                                <HiArrowRight className="h-4 w-4 mr-2" />
                             </>
                         ) : (
                             <>

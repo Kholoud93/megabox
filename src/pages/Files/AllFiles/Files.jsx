@@ -562,7 +562,7 @@ export default function Files() {
                                                     }}
                                                 >
                                                     <HiUserGroup className="files-header__profile-item-icon" />
-                                                    <span>{t("sidenav.partner") || "Partner"}</span>
+                                                    <span>{t("sidenav.partners") || "Partners"}</span>
                                                 </Link>
                                                 <Link
                                                     to="/dashboard/subscription-plans"

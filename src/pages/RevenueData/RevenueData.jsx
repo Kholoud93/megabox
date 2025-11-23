@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { motion } from 'framer-motion';
 import { FaQuestionCircle, FaArrowUp, FaArrowDown, FaLink, FaEye, FaDownload } from 'react-icons/fa';
-import { HiArrowRight, HiShare } from 'react-icons/hi2';
+import { HiShare } from 'react-icons/hi2';
 import { Link } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
