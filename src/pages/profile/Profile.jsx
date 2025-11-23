@@ -175,8 +175,14 @@ export default function Profile() {
 
     if (isLoading) {
         return (
-            <div className="Profile flex justify-center items-center min-h-[60vh] bg-indigo-50">
-                <div className="animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-t-4 border-indigo-600 border-r-4 border-r-transparent"></div>
+            <div className="Profile flex justify-center items-center min-h-[60vh] bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="relative">
+                        <div className="animate-spin rounded-full h-16 w-16 sm:h-20 sm:w-20 border-4 border-purple-200"></div>
+                        <div className="animate-spin rounded-full h-16 w-16 sm:h-20 sm:w-20 border-t-4 border-purple-600 border-r-4 border-r-transparent absolute top-0 left-0"></div>
+                    </div>
+                    <p className="text-sm sm:text-base text-purple-600 font-medium animate-pulse">{t('common.loading') || 'Loading...'}</p>
+                </div>
             </div>
         );
     }
@@ -248,7 +254,7 @@ export default function Profile() {
                                         title={t('profile.deleteImage')}
                                     >
                                         {deleteProfileImageMutation.isLoading ? (
-                                            <AiOutlineLoading3Quarters className='LoadingButton h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 animate-spin' />
+                                            <div className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                         ) : (
                                             <FaTrash className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                                         )}
@@ -262,7 +268,7 @@ export default function Profile() {
                                     disabled={updateProfileImageMutation.isLoading}
                                     title={t('profile.changeImage')}
                                 >
-                                    {updateProfileImageMutation.isLoading ? <AiOutlineLoading3Quarters className='LoadingButton h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 animate-spin' /> : <FaCamera className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />}
+                                    {updateProfileImageMutation.isLoading ? <div className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <FaCamera className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />}
                                 </motion.button>
                             </div>
                             <input
@@ -531,7 +537,8 @@ export default function Profile() {
                 </div>
             </motion.div>
 
-            {/* User Analytics Section */}
+            {/* User Analytics Section - Only for Promoters */}
+            {(userData?.isPromoter === "true" || userData?.isPromoter === true) && (
             <motion.div
                 className="container mx-auto px-3 sm:px-4 md:px-5 lg:px-6 xl:px-8 py-3 sm:py-4 md:py-5 lg:py-6 xl:py-8 mb-20"
                 initial={{ opacity: 0, y: 20 }}
@@ -555,9 +562,12 @@ export default function Profile() {
 
                         {analyticsLoading ? (
                             <div className="flex justify-center items-center py-12">
-                                <div className="flex flex-col items-center gap-3">
-                                    <AiOutlineLoading3Quarters className="animate-spin text-indigo-600 text-3xl" />
-                                    <p className="text-sm text-indigo-600">{t('profile.analytics.loading')}</p>
+                                <div className="flex flex-col items-center gap-4">
+                                    <div className="relative">
+                                        <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-200"></div>
+                                        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-purple-600 border-r-4 border-r-transparent absolute top-0 left-0"></div>
+                                    </div>
+                                    <p className="text-sm text-purple-600 font-medium animate-pulse">{t('profile.analytics.loading')}</p>
                                 </div>
                             </div>
                         ) : (
@@ -763,6 +773,7 @@ export default function Profile() {
                     </div>
                 </div>
             </motion.div>
+            )}
 
             {/* Delete Confirmation Modal */}
             <AnimatePresence>
@@ -814,7 +825,7 @@ export default function Profile() {
                                 >
                                     {deleteProfileImageMutation.isLoading ? (
                                         <>
-                                            <AiOutlineLoading3Quarters className="animate-spin h-4 w-4" />
+                                            <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                             {t('common.deleting') || 'Deleting...'}
                                         </>
                                     ) : (
