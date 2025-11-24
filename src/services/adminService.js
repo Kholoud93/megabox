@@ -156,22 +156,8 @@ export const adminService = {
             return response.data;
         } catch (error) {
             console.error('sendNotification Error:', error.response?.data || error);
-            // Parse error message to provide better feedback
             const errorMessage = error.response?.data?.message || error.message || "Failed to send notification";
-            
-            // Check if error is about missing FCM token (in Arabic or English)
-            const isMissingFCMToken = errorMessage.includes('FCM Token') || 
-                                     errorMessage.includes('fcmToken') ||
-                                     errorMessage.includes('FCM') ||
-                                     errorMessage.includes('لا يحتوي على FCM Token');
-            
-            if (isMissingFCMToken) {
-                // Provide a more helpful error message
-                // The error message will be shown, but we can add context
-                toast.error(errorMessage + " (User needs to log in to register FCM token)", ToastOptions("error"));
-            } else {
-                toast.error(errorMessage, ToastOptions("error"));
-            }
+            toast.error(errorMessage, ToastOptions("error"));
             throw error.response?.data || error.message;
         }
     },
