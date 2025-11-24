@@ -54,20 +54,25 @@ export default function Files() {
         }
 
         const handleClickOutside = (event) => {
-            if (touchStartedRef.current && event.type === 'click') {
-                touchStartedRef.current = false;
-                return;
-            }
-
+            // Don't close if clicking inside dropdown or its children
             if (
                 profileDropdownRef.current && 
-                !profileDropdownRef.current.contains(event.target) &&
-                profileButtonRef.current &&
-                !profileButtonRef.current.contains(event.target)
+                profileDropdownRef.current.contains(event.target)
             ) {
-                setProfileMenuOpen(false);
-                touchStartedRef.current = false;
+                return;
             }
+            
+            // Don't close if clicking the profile button
+            if (
+                profileButtonRef.current &&
+                profileButtonRef.current.contains(event.target)
+            ) {
+                return;
+            }
+            
+            // Close if clicking outside
+            setProfileMenuOpen(false);
+            touchStartedRef.current = false;
         };
 
         const positionTimer = setTimeout(() => {
@@ -106,11 +111,15 @@ export default function Files() {
             }
         }, 10);
 
-        document.addEventListener('click', handleClickOutside, true);
+        // CRITICAL: Don't use capture phase - it prevents child elements from handling clicks
+        // Use bubble phase instead
+        document.addEventListener('mousedown', handleClickOutside, false);
+        document.addEventListener('touchstart', handleClickOutside, false);
         
         return () => {
             clearTimeout(positionTimer);
-            document.removeEventListener('click', handleClickOutside, true);
+            document.removeEventListener('mousedown', handleClickOutside, false);
+            document.removeEventListener('touchstart', handleClickOutside, false);
             document.body.classList.remove('profile-menu-open');
         };
     }, [profileMenuOpen, language]);
@@ -493,45 +502,18 @@ export default function Files() {
                                     <>
                                         <div 
                                             className="files-header__profile-backdrop"
-                                            onClick={(e) => {
-                                                // Only close if clicking directly on backdrop, not on dropdown
-                                                if (profileDropdownRef.current && !profileDropdownRef.current.contains(e.target)) {
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
+                                            // SIMPLIFIED: Just close on backdrop click
+                                            onMouseDown={(e) => {
+                                                // Only close if clicking backdrop directly
+                                                if (e.target === e.currentTarget) {
                                                     setProfileMenuOpen(false);
                                                 }
                                             }}
                                             onTouchStart={(e) => {
-                                                // Check if touch is within dropdown bounds
-                                                if (profileDropdownRef.current) {
-                                                    const dropdownRect = profileDropdownRef.current.getBoundingClientRect();
-                                                    const touch = e.touches[0];
-                                                    
-                                                    if (touch) {
-                                                        const touchX = touch.clientX;
-                                                        const touchY = touch.clientY;
-                                                        
-                                                        // If touch is within dropdown area, don't handle it - let dropdown handle it
-                                                        if (
-                                                            touchX >= dropdownRect.left &&
-                                                            touchX <= dropdownRect.right &&
-                                                            touchY >= dropdownRect.top &&
-                                                            touchY <= dropdownRect.bottom
-                                                        ) {
-                                                            // Touch is on dropdown, don't close
-                                                            return;
-                                                        }
-                                                    }
-                                                    
-                                                    // Also check if target is within dropdown
-                                                    if (profileDropdownRef.current.contains(e.target)) {
-                                                        return;
-                                                    }
+                                                // Only close if touching backdrop directly
+                                                if (e.target === e.currentTarget) {
+                                                    setProfileMenuOpen(false);
                                                 }
-                                                
-                                                // Only close if touching backdrop area
-                                                e.stopPropagation();
-                                                setProfileMenuOpen(false);
                                             }}
                                         />
                                         <div 
@@ -545,30 +527,14 @@ export default function Files() {
                                                     : { right: `${dropdownPosition.right}px`, left: 'auto' }
                                                 ),
                                             }}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
-                                            }}
-                                            onTouchStart={(e) => {
-                                                e.stopPropagation();
-                                                // Don't prevent default to allow normal touch behavior
-                                            }}
-                                            onTouchEnd={(e) => {
-                                                e.stopPropagation();
-                                                // Don't prevent default to allow clicks to work
-                                            }}
+                                            // CRITICAL: Don't stop propagation or prevent default here
+                                            // Let child elements handle their own events
                                         >
                                         <Link
                                             to={isPromoter ? '/Promoter/profile' : '/dashboard/profile'}
                                             className="files-header__profile-item"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setProfileMenuOpen(false);
-                                            }}
-                                            onTouchEnd={(e) => {
-                                                e.stopPropagation();
-                                                setProfileMenuOpen(false);
-                                            }}
+                                            // SIMPLIFIED click handler
+                                            onClick={() => setProfileMenuOpen(false)}
                                         >
                                             <HiUserCircle className="files-header__profile-item-icon" />
                                             <span>{t("sidenav.profile")}</span>
@@ -577,14 +543,7 @@ export default function Files() {
                                         <Link
                                             to={isPromoter ? '/Promoter/notifications' : '/dashboard/notifications'}
                                             className="files-header__profile-item"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setProfileMenuOpen(false);
-                                            }}
-                                            onTouchEnd={(e) => {
-                                                e.stopPropagation();
-                                                setProfileMenuOpen(false);
-                                            }}
+                                            onClick={() => setProfileMenuOpen(false)}
                                         >
                                             <HiBell className="files-header__profile-item-icon" />
                                             <span>{t("sidenav.notifications")}</span>
@@ -595,14 +554,7 @@ export default function Files() {
                                                 <Link
                                                     to="/Partners"
                                                     className="files-header__profile-item"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setProfileMenuOpen(false);
-                                                    }}
-                                                    onTouchEnd={(e) => {
-                                                        e.stopPropagation();
-                                                        setProfileMenuOpen(false);
-                                                    }}
+                                                    onClick={() => setProfileMenuOpen(false)}
                                                 >
                                                     <HiUserGroup className="files-header__profile-item-icon" />
                                                     <span>{t("sidenav.partners") || "Partners"}</span>
@@ -610,14 +562,7 @@ export default function Files() {
                                                 <Link
                                                     to="/dashboard/subscription-plans"
                                                     className="files-header__profile-item"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setProfileMenuOpen(false);
-                                                    }}
-                                                    onTouchEnd={(e) => {
-                                                        e.stopPropagation();
-                                                        setProfileMenuOpen(false);
-                                                    }}
+                                                    onClick={() => setProfileMenuOpen(false)}
                                                 >
                                                     <HiCurrencyDollar className="files-header__profile-item-icon" />
                                                     <span>{t("sidenav.subscribe") || "Subscribe"}</span>
@@ -629,14 +574,7 @@ export default function Files() {
                                             <Link
                                                 to="/Partners"
                                                 className="files-header__profile-item"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setProfileMenuOpen(false);
-                                                }}
-                                                onTouchEnd={(e) => {
-                                                    e.stopPropagation();
-                                                    setProfileMenuOpen(false);
-                                                }}
+                                                onClick={() => setProfileMenuOpen(false)}
                                             >
                                                 <HiUserGroup className="files-header__profile-item-icon" />
                                                 <span>{t("sidenav.partners") || "Partners Center"}</span>
@@ -647,14 +585,6 @@ export default function Files() {
                                             type="button"
                                             className="files-header__profile-item"
                                             onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                toggleLanguage(e);
-                                                setProfileMenuOpen(false);
-                                            }}
-                                            onTouchEnd={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
                                                 toggleLanguage(e);
                                                 setProfileMenuOpen(false);
                                             }}
@@ -666,15 +596,7 @@ export default function Files() {
                                         <button
                                             type="button"
                                             className="files-header__profile-item"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                Logout();
-                                                setProfileMenuOpen(false);
-                                            }}
-                                            onTouchEnd={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
+                                            onClick={() => {
                                                 Logout();
                                                 setProfileMenuOpen(false);
                                             }}

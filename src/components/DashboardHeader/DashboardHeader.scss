@@ -7,6 +7,13 @@
   top: 0 !important;
   z-index: 9999999 !important; // Highest z-index for the entire header
   width: 100% !important;
+  // CRITICAL: Don't create stacking context that blocks dropdown on mobile
+  isolation: auto !important;
+  
+  @media (max-width: 768px) {
+    isolation: auto !important;
+    pointer-events: auto !important;
+  }
 
   // Responsive container adjustments
   &__container {
@@ -230,8 +237,6 @@
     z-index: 9999998 !important; // Just below dropdown
     pointer-events: auto !important;
     background: transparent !important;
-    // Ensure backdrop doesn't interfere with dropdown clicks
-    // The dropdown (z-index: 9999999) will be above this backdrop
     // CRITICAL: Don't create stacking context that blocks dropdown
     isolation: auto !important;
     // CRITICAL: Ensure backdrop doesn't block events to dropdown
@@ -241,8 +246,10 @@
     // Show overlay in mobile view
     @include mix.media-breakpoint-down(md) {
       background: rgba(0, 0, 0, 0.3) !important;
-      // On mobile, backdrop should not block dropdown
+      // CRITICAL: On mobile, backdrop should not block dropdown
+      // Dropdown's higher z-index ensures it receives events first
       // JavaScript will handle checking if touch is on dropdown
+      pointer-events: auto !important;
     }
   }
 
@@ -399,90 +406,210 @@
   }
 }
 
-// Global override to ensure profile dropdown is always on top of everything
-body {
-  .files-header {
-    z-index: 9999999 !important;
-    position: sticky !important;
-    top: 0 !important;
-    pointer-events: auto !important; // Ensure header doesn't block events
-  }
+// CRITICAL FIX: Profile dropdown mobile interaction issues
+// This fixes the non-responsive dropdown clicks on mobile devices
 
-  // Profile menu should stay relative to header (not fixed)
-  .files-header__profile-menu {
-    position: relative !important;
-    z-index: 9999999 !important;
-    isolation: auto !important; // Don't create stacking context that could trap dropdown
-    pointer-events: auto !important; // Ensure menu container doesn't block events
+// 1. MOST IMPORTANT: Fix the backdrop to NOT block dropdown clicks
+.files-header__profile-backdrop {
+  // The backdrop should be BEHIND the dropdown, not blocking it
+  pointer-events: none !important; // Don't capture any clicks
+  
+  @media (max-width: 768px) {
+    // On mobile, only show visual overlay but don't block clicks
+    pointer-events: none !important; // Let clicks pass through to dropdown
+  }
+}
+
+// 2. Remove all isolation contexts that create stacking issues
+.files-header {
+  isolation: auto !important; // Don't create stacking context
+  
+  &__actions {
+    isolation: auto !important;
+    position: relative;
+    z-index: auto; // Let children manage their own z-index
   }
   
-  // Ensure parent containers don't block dropdown
-  .files-header__actions {
+  &__profile-menu {
+    isolation: auto !important; // Critical: don't trap dropdown
+    position: relative;
+    z-index: auto; // Let dropdown manage its own z-index
+  }
+}
+
+// 2. Fix backdrop to not interfere with dropdown clicks
+.files-header__profile-backdrop {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9998 !important; // Below dropdown
+  isolation: auto !important;
+  pointer-events: none !important; // CRITICAL: Don't block clicks
+  
+  @media (max-width: 768px) {
+    background: rgba(0, 0, 0, 0.3) !important;
+    pointer-events: none !important; // Let clicks pass through
+  }
+}
+
+// 3. Ensure dropdown is always on top and clickable
+.files-header__profile-dropdown {
+  position: fixed !important;
+  z-index: 9999 !important; // Above backdrop
+  isolation: auto !important; // CRITICAL: Don't create stacking context
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+  
+  // Force hardware acceleration for better mobile performance
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
+  
+  // Ensure all children receive pointer events
+  * {
     pointer-events: auto !important;
+    touch-action: manipulation !important;
+  }
+  
+  // Make all interactive elements fully clickable
+  a, 
+  button, 
+  [role="button"],
+  [href] {
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    cursor: pointer !important;
+    display: flex !important;
+    width: 100% !important;
+    position: relative !important;
+    z-index: 1 !important;
+    
+    // Better touch feedback
+    -webkit-tap-highlight-color: rgba(99, 102, 241, 0.2) !important;
+    -webkit-touch-callout: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+  }
+  
+  // Mobile-specific overrides
+  @media (max-width: 768px) {
+    z-index: 9999 !important;
+    isolation: auto !important; // Explicitly remove on mobile
+    
+    // Ensure minimum touch target size
+    a, button {
+      min-height: 44px !important;
+      padding: 1rem !important;
+    }
+  }
+}
+
+// 4. Fix dropdown items to be fully interactive
+.files-header__profile-item {
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+  cursor: pointer !important;
+  position: relative !important;
+  z-index: 1 !important;
+  
+  // Remove any properties that might block clicks
+  -webkit-tap-highlight-color: rgba(99, 102, 241, 0.2) !important;
+  -webkit-touch-callout: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  
+  // Ensure link/button behavior
+  display: flex !important;
+  width: 100% !important;
+  
+  @media (max-width: 768px) {
+    min-height: 44px !important;
+    padding: 1rem !important;
+  }
+}
+
+// 5. Ensure content doesn't block dropdown
+.files-content,
+.files-content * {
+  // Content should be below dropdown
+  position: relative;
+  z-index: auto;
+  
+  @media (max-width: 768px) {
+    // Ensure content doesn't create stacking context
     isolation: auto !important;
   }
+}
 
-  // Only backdrop and dropdown should be fixed
-  .files-header__profile-backdrop {
-    z-index: 9999998 !important;
-    position: fixed !important;
-    isolation: auto !important; // Remove isolation to prevent stacking context issues
-    pointer-events: auto !important;
-    touch-action: manipulation !important;
-    // CRITICAL: Backdrop should not create stacking context that blocks dropdown
-    // Dropdown's higher z-index ensures it receives events first
+// 6. Fix any grid/container stacking issues
+.grid,
+.files-grid,
+[class*="grid"] {
+  isolation: auto !important;
+  
+  @media (max-width: 768px) {
+    // Remove any z-index that might interfere
+    z-index: auto !important;
+  }
+}
+
+// 7. Prevent file cards from blocking dropdown
+.file-card,
+.folder-card {
+  z-index: 1 !important; // Keep low
+  
+  // Ensure dropdown menu inside cards is above card content
+  .file-dropdown-menu {
+    z-index: 50 !important; // Local stacking within card
+  }
+}
+
+// 8. Global body fix when dropdown is open
+body.profile-menu-open {
+  // Prevent scrolling when menu is open on mobile
+  @media (max-width: 768px) {
+    overflow: hidden;
   }
   
+  // Ensure dropdown is always on top
   .files-header__profile-dropdown {
-    z-index: 9999999 !important; // Higher than backdrop
-    position: fixed !important;
-    isolation: auto !important; // Remove isolation to prevent stacking context issues on mobile
-    pointer-events: auto !important;
-    touch-action: manipulation !important;
+    z-index: 9999 !important;
+    isolation: auto !important;
+  }
+}
+
+// 9. Fix for React Router Link components
+.files-header__profile-dropdown {
+  // Target Link components specifically
+  a[href] {
+    // Ensure React Router Links work
+    text-decoration: none !important;
+    color: inherit !important;
     
-    // Ensure all children are clickable
-    * {
-      pointer-events: auto !important;
-      touch-action: manipulation !important;
-    }
-    
-    // Mobile-specific overrides
-    @media (max-width: 768px) {
-      z-index: 9999999 !important;
-      pointer-events: auto !important;
-      touch-action: manipulation !important;
-      isolation: auto !important;
-      // CRITICAL: Ensure dropdown can receive all touch events
-      -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1) !important;
-      
-      a, button, [role="button"] {
-        pointer-events: auto !important;
-        touch-action: manipulation !important;
-        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1) !important;
-        cursor: pointer !important;
-        position: relative !important;
-        z-index: 1 !important;
-        // Ensure links and buttons can receive clicks
-        display: flex !important;
-        width: 100% !important;
-      }
-      
-      // Ensure all interactive children are clickable
-      * {
-        pointer-events: auto !important;
-        touch-action: manipulation !important;
-      }
+    // Make entire link area clickable
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: -1;
     }
   }
+}
 
-  // Ensure all page content is below the profile menu
-  .revenue-referral-section,
-  .revenue-referral-section__content,
-  .revenue-referral-section__button,
-  .revenue-data-page,
-  .revenue-data-page__wrapper {
+// 10. Remove any competing z-index contexts
+.min-h-screen,
+.revenue-referral-section,
+.revenue-data-page {
+  z-index: auto !important;
+  isolation: auto !important;
+  
+  @media (max-width: 768px) {
     position: relative;
-    z-index: 1 !important;
   }
 }
 
