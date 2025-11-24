@@ -8,6 +8,8 @@ import { userService, notificationService } from '../../services/api';
 import { HiUserCircle, HiArrowRightOnRectangle, HiUserGroup, HiCurrencyDollar, HiBell, HiTv } from 'react-icons/hi2';
 import { FiGlobe } from 'react-icons/fi';
 import { FaUser } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../helpers/ToastOptions';
 import './DashboardHeader.scss';
 
 export default function DashboardHeader() {
@@ -116,6 +118,7 @@ export default function DashboardHeader() {
         // Keep FCM token on logout so users can still receive notifications
         // Token will be updated/reused when they log back in
         
+        toast.success(t('common.logoutSuccess') || 'Logged out successfully', ToastOptions('success'));
         removeToken("MegaBox", {
             path: '/',
         });
@@ -214,18 +217,41 @@ export default function DashboardHeader() {
                                         className="files-header__profile-backdrop"
                                         onClick={(e) => {
                                             // Only close if clicking directly on backdrop, not on dropdown
-                                            if (!profileDropdownRef.current?.contains(e.target)) {
+                                            if (profileDropdownRef.current && !profileDropdownRef.current.contains(e.target)) {
                                                 e.preventDefault();
                                                 e.stopPropagation();
                                                 setProfileMenuOpen(false);
                                             }
                                         }}
                                         onTouchStart={(e) => {
-                                            // Only close if not touching a menu item
-                                            if (profileDropdownRef.current?.contains(e.target)) {
-                                                return;
+                                            // Check if touch is within dropdown bounds
+                                            if (profileDropdownRef.current) {
+                                                const dropdownRect = profileDropdownRef.current.getBoundingClientRect();
+                                                const touch = e.touches[0];
+                                                
+                                                if (touch) {
+                                                    const touchX = touch.clientX;
+                                                    const touchY = touch.clientY;
+                                                    
+                                                    // If touch is within dropdown area, don't handle it - let dropdown handle it
+                                                    if (
+                                                        touchX >= dropdownRect.left &&
+                                                        touchX <= dropdownRect.right &&
+                                                        touchY >= dropdownRect.top &&
+                                                        touchY <= dropdownRect.bottom
+                                                    ) {
+                                                        // Touch is on dropdown, don't close
+                                                        return;
+                                                    }
+                                                }
+                                                
+                                                // Also check if target is within dropdown
+                                                if (profileDropdownRef.current.contains(e.target)) {
+                                                    return;
+                                                }
                                             }
-                                            // Don't use preventDefault on passive event listeners
+                                            
+                                            // Only close if touching backdrop area
                                             e.stopPropagation();
                                             setProfileMenuOpen(false);
                                         }}
@@ -241,9 +267,18 @@ export default function DashboardHeader() {
                                                 : { right: `${dropdownPosition.right}px`, left: 'auto' }
                                             ),
                                         }}
-                                        onClick={(e) => e.stopPropagation()}
-                                        onTouchStart={(e) => e.stopPropagation()}
-                                        onTouchEnd={(e) => e.stopPropagation()}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            e.preventDefault();
+                                        }}
+                                        onTouchStart={(e) => {
+                                            e.stopPropagation();
+                                            // Don't prevent default to allow normal touch behavior
+                                        }}
+                                        onTouchEnd={(e) => {
+                                            e.stopPropagation();
+                                            // Don't prevent default to allow clicks to work
+                                        }}
                                     >
                                         <Link
                                             to={(isPromoter || isUserWithPlan) ? '/Promoter/profile' : '/dashboard/profile'}

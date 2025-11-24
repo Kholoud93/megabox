@@ -15,7 +15,7 @@ import SearchFilter from '../../../components/SearchFilter/SearchFilter';
 import Pagination from '../../../components/Pagination/Pagination';
 
 export default function Promoters() {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const [searchTerm, setSearchTerm] = useState('');
     const [filters, setFilters] = useState({});
     const [currentPage, setCurrentPage] = useState(1);

@@ -232,10 +232,17 @@
     background: transparent !important;
     // Ensure backdrop doesn't interfere with dropdown clicks
     // The dropdown (z-index: 9999999) will be above this backdrop
+    // CRITICAL: Don't create stacking context that blocks dropdown
+    isolation: auto !important;
+    // CRITICAL: Ensure backdrop doesn't block events to dropdown
+    // The dropdown's higher z-index should allow it to receive events first
+    touch-action: manipulation !important;
     
     // Show overlay in mobile view
     @include mix.media-breakpoint-down(md) {
       background: rgba(0, 0, 0, 0.3) !important;
+      // On mobile, backdrop should not block dropdown
+      // JavaScript will handle checking if touch is on dropdown
     }
   }
 
@@ -250,18 +257,25 @@
     -webkit-touch-callout: none !important;
     user-select: none !important;
     -webkit-user-select: none !important;
+    isolation: auto !important; // CRITICAL: Don't create stacking context
+    will-change: transform; // Optimize for transforms
     
     // Ensure all child elements (links, buttons) are clickable
     * {
       pointer-events: auto !important;
+      touch-action: manipulation !important;
     }
     
     // Specifically ensure links are clickable
-    a {
+    a, button {
       pointer-events: auto !important;
       cursor: pointer !important;
       display: flex !important;
       width: 100% !important;
+      touch-action: manipulation !important;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1) !important;
+      position: relative !important;
+      z-index: 1 !important;
     }
 
     // Responsive dropdown sizing
@@ -273,6 +287,15 @@
       isolation: auto !important; // Explicitly remove isolation on mobile
       pointer-events: auto !important;
       touch-action: manipulation !important;
+      // CRITICAL: Ensure dropdown is above everything on mobile
+      z-index: 9999999 !important;
+      position: fixed !important;
+      
+      // Ensure all children are clickable
+      * {
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+      }
     }
 
     @include mix.media-breakpoint-up(sm) {
@@ -293,6 +316,18 @@
       isolation: auto !important; // Remove isolation on mobile to prevent stacking context issues
       pointer-events: auto !important;
       touch-action: manipulation !important;
+      z-index: 9999999 !important; // Ensure highest z-index on mobile
+      position: fixed !important;
+      
+      // Force all interactive elements to be clickable
+      a, button, [role="button"] {
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1) !important;
+        cursor: pointer !important;
+        position: relative !important;
+        z-index: 2 !important;
+      }
     }
   }
 
@@ -370,6 +405,7 @@ body {
     z-index: 9999999 !important;
     position: sticky !important;
     top: 0 !important;
+    pointer-events: auto !important; // Ensure header doesn't block events
   }
 
   // Profile menu should stay relative to header (not fixed)
@@ -377,14 +413,66 @@ body {
     position: relative !important;
     z-index: 9999999 !important;
     isolation: auto !important; // Don't create stacking context that could trap dropdown
+    pointer-events: auto !important; // Ensure menu container doesn't block events
+  }
+  
+  // Ensure parent containers don't block dropdown
+  .files-header__actions {
+    pointer-events: auto !important;
+    isolation: auto !important;
   }
 
   // Only backdrop and dropdown should be fixed
-  .files-header__profile-backdrop,
+  .files-header__profile-backdrop {
+    z-index: 9999998 !important;
+    position: fixed !important;
+    isolation: auto !important; // Remove isolation to prevent stacking context issues
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    // CRITICAL: Backdrop should not create stacking context that blocks dropdown
+    // Dropdown's higher z-index ensures it receives events first
+  }
+  
   .files-header__profile-dropdown {
-    z-index: 9999999 !important;
+    z-index: 9999999 !important; // Higher than backdrop
     position: fixed !important;
     isolation: auto !important; // Remove isolation to prevent stacking context issues on mobile
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    
+    // Ensure all children are clickable
+    * {
+      pointer-events: auto !important;
+      touch-action: manipulation !important;
+    }
+    
+    // Mobile-specific overrides
+    @media (max-width: 768px) {
+      z-index: 9999999 !important;
+      pointer-events: auto !important;
+      touch-action: manipulation !important;
+      isolation: auto !important;
+      // CRITICAL: Ensure dropdown can receive all touch events
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1) !important;
+      
+      a, button, [role="button"] {
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1) !important;
+        cursor: pointer !important;
+        position: relative !important;
+        z-index: 1 !important;
+        // Ensure links and buttons can receive clicks
+        display: flex !important;
+        width: 100% !important;
+      }
+      
+      // Ensure all interactive children are clickable
+      * {
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+      }
+    }
   }
 
   // Ensure all page content is below the profile menu

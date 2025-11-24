@@ -50,8 +50,9 @@ export default function Earning() {
         }
     );
 
+    // API Response structure: { "pendingRewards", "confirmedRewards", "totalEarnings", "currency" }
     const currency = earningsData?.currency || 'USD';
-    // Match API response structure
+    // Match API response structure - prioritize exact API fields
     const amount = earningsData?.confirmedRewards || earningsData?.actualIncome || '0.000000';
     const review = earningsData?.pendingRewards || earningsData?.estimatedIncome || '0.000000';
     const withdrawn = earningsData?.withdrawn || '0.000000';

@@ -6,6 +6,8 @@ import './Navbar.scss'
 import { useCookies } from 'react-cookie'
 import { useAuth } from '../../context/AuthContext'
 import { useLanguage } from '../../context/LanguageContext'
+import { toast } from 'react-toastify'
+import { ToastOptions } from '../../helpers/ToastOptions'
 
 const Navbar = () => {
 
@@ -61,6 +63,7 @@ const Navbar = () => {
   }
 
   const handleLogout = () => {
+    toast.success(t('common.logoutSuccess') || 'Logged out successfully', ToastOptions('success'));
     removeToken("MegaBox", {
       path: '/',
     })

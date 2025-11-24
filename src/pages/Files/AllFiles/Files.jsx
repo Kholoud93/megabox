@@ -171,6 +171,7 @@ export default function Files() {
         // Keep FCM token on logout so users can still receive notifications
         // Token will be updated/reused when they log back in
         
+        toast.success(t('common.logoutSuccess') || 'Logged out successfully', ToastOptions('success'));
         removeToken("MegaBox", {
             path: '/',
         });
@@ -493,12 +494,42 @@ export default function Files() {
                                         <div 
                                             className="files-header__profile-backdrop"
                                             onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                setProfileMenuOpen(false);
+                                                // Only close if clicking directly on backdrop, not on dropdown
+                                                if (profileDropdownRef.current && !profileDropdownRef.current.contains(e.target)) {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setProfileMenuOpen(false);
+                                                }
                                             }}
                                             onTouchStart={(e) => {
-                                                e.preventDefault();
+                                                // Check if touch is within dropdown bounds
+                                                if (profileDropdownRef.current) {
+                                                    const dropdownRect = profileDropdownRef.current.getBoundingClientRect();
+                                                    const touch = e.touches[0];
+                                                    
+                                                    if (touch) {
+                                                        const touchX = touch.clientX;
+                                                        const touchY = touch.clientY;
+                                                        
+                                                        // If touch is within dropdown area, don't handle it - let dropdown handle it
+                                                        if (
+                                                            touchX >= dropdownRect.left &&
+                                                            touchX <= dropdownRect.right &&
+                                                            touchY >= dropdownRect.top &&
+                                                            touchY <= dropdownRect.bottom
+                                                        ) {
+                                                            // Touch is on dropdown, don't close
+                                                            return;
+                                                        }
+                                                    }
+                                                    
+                                                    // Also check if target is within dropdown
+                                                    if (profileDropdownRef.current.contains(e.target)) {
+                                                        return;
+                                                    }
+                                                }
+                                                
+                                                // Only close if touching backdrop area
                                                 e.stopPropagation();
                                                 setProfileMenuOpen(false);
                                             }}
@@ -514,9 +545,18 @@ export default function Files() {
                                                     : { right: `${dropdownPosition.right}px`, left: 'auto' }
                                                 ),
                                             }}
-                                            onClick={(e) => e.stopPropagation()}
-                                            onTouchStart={(e) => e.stopPropagation()}
-                                            onTouchEnd={(e) => e.stopPropagation()}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                            }}
+                                            onTouchStart={(e) => {
+                                                e.stopPropagation();
+                                                // Don't prevent default to allow normal touch behavior
+                                            }}
+                                            onTouchEnd={(e) => {
+                                                e.stopPropagation();
+                                                // Don't prevent default to allow clicks to work
+                                            }}
                                         >
                                         <Link
                                             to={isPromoter ? '/Promoter/profile' : '/dashboard/profile'}

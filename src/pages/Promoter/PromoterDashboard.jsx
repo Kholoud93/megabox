@@ -243,12 +243,14 @@ export default function PromoterDashboard() {
     );
 
     // Extract revenue data from share link analytics
+    // API Response structure: { "analytics": [{ "fileId", "fileName", "sharedUrl", "downloads", "views", "lastUpdated", "viewsByCountry" }] }
     const revenueList = shareLinkAnalyticsData?.analytics || shareLinkAnalyticsData?.data || shareLinkAnalyticsData?.links || shareLinkAnalyticsData?.revenue || [];
+    // API Response structure: { "pendingRewards", "confirmedRewards", "totalEarnings", "currency" }
     const currency = earningsData?.currency || 'USD';
     const estimatedRevenue = shareLinkAnalyticsData?.estimatedRevenue || [];
     const settledRevenue = shareLinkAnalyticsData?.settledRevenue || [];
 
-    // Extract earnings data
+    // Extract earnings data - prioritize exact API response fields
     const totalEarnings = earningsData?.totalEarnings || '0';
     const pendingEarnings = earningsData?.pendingRewards || '0';
     const confirmedEarnings = earningsData?.confirmedRewards || '0';

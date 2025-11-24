@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Earning.scss';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
@@ -7,8 +7,9 @@ import {
     FaEye, FaDownload, FaMoneyBillWave, FaFileAlt, FaFileImage, FaFileVideo, FaFilePdf, FaFileWord,
     FaLink, FaGlobe, FaTimes, FaChartLine, FaUsers, FaRocket
 } from 'react-icons/fa';
+import { HiArrowLeft, HiArrowRight } from 'react-icons/hi2';
 import { adminService } from '../../services/adminService';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { MdPendingActions } from "react-icons/md";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { MdOutlineAssuredWorkload } from "react-icons/md";
@@ -278,10 +279,30 @@ function CountryModal({ file, isOpen, onClose, t }) {
                             ease: [0.25, 0.46, 0.45, 0.94]
                         }}
                     >
-                        <h4>{file.fileName}</h4>
+                        <h4>{file.fileName || file.name || 'Unknown File'}</h4>
                         <div className="total-views">
-                            <FaChartLine /> {file.views} {t('earning.totalViews')}
+                            <FaChartLine /> {file.views || 0} {t('earning.totalViews')}
                         </div>
+                        {file.fileId && (
+                            <div className="file-id-info">
+                                <FaFileAlt /> <span className="file-id-label">File ID:</span>
+                                <span className="file-id-value">{file.fileId}</span>
+                            </div>
+                        )}
+                        {file.sharedUrl && (
+                            <div className="file-url-info">
+                                <FaLink /> <span className="file-url-label">Share URL:</span>
+                                <a 
+                                    href={file.sharedUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="file-url-link"
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    {file.sharedUrl}
+                                </a>
+                            </div>
+                        )}
                     </motion.div>
                     {file.viewsByCountry && file.viewsByCountry.length > 0 ? (
                         <motion.ul
@@ -394,12 +415,12 @@ function FileCard({ file, onShowCountries, index, t }) {
                         ease: [0.25, 0.46, 0.45, 0.94]
                     }}
                 >
-                    {getFileIcon(file.fileName)}
+                    {getFileIcon(file.fileName || file.name || '')}
                 </motion.div>
                 <div className="file-info">
                     <motion.div
                         className="file-name"
-                        title={file.fileName}
+                        title={file.fileName || file.name || 'Unknown File'}
                         initial={{ opacity: 0, x: -15 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{
@@ -408,7 +429,7 @@ function FileCard({ file, onShowCountries, index, t }) {
                             ease: [0.25, 0.46, 0.45, 0.94]
                         }}
                     >
-                        {file.fileName}
+                        {file.fileName || file.name || 'Unknown File'}
                     </motion.div>
                     <motion.div
                         className="file-actions"
@@ -422,9 +443,14 @@ function FileCard({ file, onShowCountries, index, t }) {
                     >
                         <motion.a
                             className="file-link-btn"
-                            href={file.sharedUrl}
+                            href={file.sharedUrl || file.shareUrl || file.fileUrl || file.link || '#'}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={(e) => {
+                                if (!file.sharedUrl && !file.shareUrl && !file.fileUrl && !file.link) {
+                                    e.preventDefault();
+                                }
+                            }}
                             whileHover={{
                                 scale: 1.05,
                                 y: -2,
@@ -531,7 +557,8 @@ function FileCard({ file, onShowCountries, index, t }) {
 }
 
 export default function PromotersEarning() {
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
+    const navigate = useNavigate();
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
     const [selectedFile, setSelectedFile] = useState(null);
@@ -555,153 +582,79 @@ export default function PromotersEarning() {
 
     const username = userData?.username || userData?.email || userData?.name || '';
 
-    // Mock earnings data
-    const mockEarningsData = {
-        totalEarnings: '1250.50',
-        pendingRewards: '450.25',
-        confirmedRewards: '800.25',
-        currency: 'USD'
-    };
-
     // Fetch total earnings
-    const { data: earningsData, isLoading: earningsLoading } = useQuery(
-        ['userEarnings'],
-        async () => {
-            try {
-                const data = await adminService.getUserEarningsadmin(id, token);
-                return data || mockEarningsData;
-            } catch (error) {
+    // API Response structure: { "message", "userId", "pendingRewards", "confirmedRewards", "totalEarnings", "currency" }
+    const { data: earningsData, isLoading: earningsLoading, error: earningsError } = useQuery(
+        ['userEarnings', id],
+        () => adminService.getUserEarningsadmin(id, token),
+        {
+            enabled: !!token && !!id,
+            retry: 2,
+            onError: (error) => {
                 console.error('Error fetching earnings:', error);
-                return mockEarningsData;
             }
-        },
-        { enabled: !!token }
-    );
-
-    // Mock analytics data
-    const mockAnalyticsData = {
-        totalAnalytics: {
-            totalViews: 1250,
-            totalDownloads: 450
         }
-    };
+    );
 
     // Fetch total views/downloads
-    const { data: analyticsData, isLoading: analyticsLoading } = useQuery(
-        ['userAnalytics'],
-        async () => {
-            try {
-                const data = await adminService.getUserAnalyticsadmin(id, token);
-                return data || mockAnalyticsData;
-            } catch (error) {
+    // API Response structure: { "message", "userId", "totalAnalytics": { "totalDownloads", "totalViews" } }
+    const { data: analyticsData, isLoading: analyticsLoading, error: analyticsError } = useQuery(
+        ['userAnalytics', id],
+        () => adminService.getUserAnalyticsadmin(id, token),
+        {
+            enabled: !!token && !!id,
+            retry: 2,
+            onError: (error) => {
                 console.error('Error fetching analytics:', error);
-                return mockAnalyticsData;
             }
-        },
-        { enabled: !!token }
+        }
     );
 
-    // Mock shared files data
-    const mockShareLinksData = {
-        analytics: [
-            {
-                fileId: 'file1',
-                fileName: 'document.pdf',
-                fileUrl: 'https://example.com/document.pdf',
-                views: 125,
-                downloads: 45,
-                countries: [
-                    { country: 'United States', views: 45, flag: '🇺🇸' },
-                    { country: 'Egypt', views: 35, flag: '🇪🇬' },
-                    { country: 'Saudi Arabia', views: 25, flag: '🇸🇦' },
-                    { country: 'UAE', views: 20, flag: '🇦🇪' }
-                ],
-                lastUpdated: new Date('2024-01-20').toISOString()
-            },
-            {
-                fileId: 'file2',
-                fileName: 'presentation.pptx',
-                fileUrl: 'https://example.com/presentation.pptx',
-                views: 89,
-                downloads: 32,
-                countries: [
-                    { country: 'United States', views: 30, flag: '🇺🇸' },
-                    { country: 'Egypt', views: 25, flag: '🇪🇬' },
-                    { country: 'Jordan', views: 20, flag: '🇯🇴' },
-                    { country: 'Lebanon', views: 14, flag: '🇱🇧' }
-                ],
-                lastUpdated: new Date('2024-01-19').toISOString()
-            },
-            {
-                fileId: 'file3',
-                fileName: 'video_tutorial.mp4',
-                fileUrl: 'https://example.com/video_tutorial.mp4',
-                views: 256,
-                downloads: 78,
-                countries: [
-                    { country: 'United States', views: 80, flag: '🇺🇸' },
-                    { country: 'Egypt', views: 65, flag: '🇪🇬' },
-                    { country: 'Saudi Arabia', views: 45, flag: '🇸🇦' },
-                    { country: 'UAE', views: 35, flag: '🇦🇪' },
-                    { country: 'Kuwait', views: 31, flag: '🇰🇼' }
-                ],
-                lastUpdated: new Date('2024-01-18').toISOString()
-            },
-            {
-                fileId: 'file4',
-                fileName: 'image_gallery.zip',
-                fileUrl: 'https://example.com/image_gallery.zip',
-                views: 67,
-                downloads: 23,
-                countries: [
-                    { country: 'Egypt', views: 25, flag: '🇪🇬' },
-                    { country: 'Saudi Arabia', views: 20, flag: '🇸🇦' },
-                    { country: 'UAE', views: 22, flag: '🇦🇪' }
-                ],
-                lastUpdated: new Date('2024-01-17').toISOString()
-            },
-            {
-                fileId: 'file5',
-                fileName: 'spreadsheet_data.xlsx',
-                fileUrl: 'https://example.com/spreadsheet_data.xlsx',
-                views: 145,
-                downloads: 56,
-                countries: [
-                    { country: 'United States', views: 50, flag: '🇺🇸' },
-                    { country: 'Egypt', views: 40, flag: '🇪🇬' },
-                    { country: 'Saudi Arabia', views: 30, flag: '🇸🇦' },
-                    { country: 'UAE', views: 25, flag: '🇦🇪' }
-                ],
-                lastUpdated: new Date('2024-01-16').toISOString()
-            }
-        ]
-    };
-
     // Fetch shared files analytics
-    const { data: shareLinksData, isLoading: shareLinksLoading } = useQuery(
-        ['shareLinkAnalytics'],
-        async () => {
-            try {
-                const data = await adminService.getShareLinkAnalyticsadmin(id, token);
-                return data || mockShareLinksData;
-            } catch (error) {
+    // API Response structure: { "message", "analytics": [{ "fileId", "fileName", "sharedUrl", "downloads", "views", "lastUpdated", "viewsByCountry" }] }
+    const { data: shareLinksData, isLoading: shareLinksLoading, error: shareLinksError } = useQuery(
+        ['shareLinkAnalytics', id],
+        () => adminService.getShareLinkAnalyticsadmin(id, token),
+        {
+            enabled: !!token && !!id,
+            retry: 2,
+            onError: (error) => {
                 console.error('Error fetching share links:', error);
-                return mockShareLinksData;
             }
-        },
-        { enabled: !!token }
+        }
     );
 
     const isLoading = earningsLoading || analyticsLoading || shareLinksLoading;
+    const hasError = earningsError || analyticsError || shareLinksError;
 
-    const totalEarnings = earningsData?.totalEarnings || '0.00';
-    const PendingEarnings = earningsData?.pendingRewards || '0.00';
-    const ConfirmedEarnings = earningsData?.confirmedRewards || '0.00';
+    // Extract data from API responses
+    // API Response structure: { "message", "userId", "pendingRewards", "confirmedRewards", "totalEarnings", "currency" }
+    const totalEarnings = earningsData?.totalEarnings || '0.000000';
+    const PendingEarnings = earningsData?.pendingRewards || '0.000000';
+    const ConfirmedEarnings = earningsData?.confirmedRewards || '0.000000';
     const currency = earningsData?.currency || 'USD';
+    
+    // API Response structure: { "message", "userId", "totalAnalytics": { "totalDownloads", "totalViews" } }
     const totalViews = analyticsData?.totalAnalytics?.totalViews || 0;
     const totalDownloads = analyticsData?.totalAnalytics?.totalDownloads || 0;
+    
+    // API Response structure: { "message", "analytics": [{ "fileId", "fileName", "sharedUrl", "downloads", "views", "lastUpdated", "viewsByCountry" }] }
     const files = shareLinksData?.analytics || [];
     const totalLinks = files.length;
+    
+    // Debug: Log the files data to verify API response
+    useEffect(() => {
+        if (shareLinksData) {
+            console.log('Share Links Data:', shareLinksData);
+            console.log('Files Array:', files);
+            if (files.length > 0) {
+                console.log('First File:', files[0]);
+                console.log('First File fileName:', files[0]?.fileName);
+                console.log('First File sharedUrl:', files[0]?.sharedUrl);
+                console.log('First File fileId:', files[0]?.fileId);
+            }
+        }
+    }, [shareLinksData, files]);
 
     return (
         <motion.div
@@ -713,34 +666,59 @@ export default function PromotersEarning() {
                 ease: [0.25, 0.46, 0.45, 0.94]
             }}
         >
-            {/* Header */}
-            <motion.div
-                className="page-header"
-                initial={{ opacity: 0, y: -40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                    duration: 0.8,
-                    delay: 0.1,
-                    ease: [0.25, 0.46, 0.45, 0.94]
-                }}
-            >
-                <h1>
-                    {username 
-                        ? `${t('earning.analyticsDashboard')} - ${username}`
-                        : t('earning.analyticsDashboard')
-                    }
-                </h1>
-                <p>
-                    {username 
-                        ? t('earning.trackPerformanceWithUser').replace('{{username}}', username)
-                        : t('earning.trackPerformance')
-                    }
-                </p>
-            </motion.div>
+            <div className="earning-container__wrapper">
+                {/* Header with Back Button */}
+                <motion.div
+                    className="page-header-with-back"
+                    initial={{ opacity: 0, y: -40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                        duration: 0.8,
+                        delay: 0.1,
+                        ease: [0.25, 0.46, 0.45, 0.94]
+                    }}
+                >
+                    <button
+                        onClick={() => navigate('/Owner/AllPromoters')}
+                        className="back-btn"
+                        type="button"
+                    >
+                        {language === 'ar' ? <HiArrowRight /> : <HiArrowLeft />}
+                        <span>{t('common.back')}</span>
+                    </button>
+                    <div className="page-header">
+                        <h1>
+                            {username 
+                                ? `${t('earning.analyticsDashboard')} - ${username}`
+                                : t('earning.analyticsDashboard')
+                            }
+                        </h1>
+                        <p>
+                            {username 
+                                ? t('earning.trackPerformanceWithUser').replace('{{username}}', username)
+                                : t('earning.trackPerformance')
+                            }
+                        </p>
+                    </div>
+                </motion.div>
 
             {/* Stats Dashboard */}
             {isLoading ? (
                 <LoadingSkeleton />
+            ) : (totalViews === 0 && totalDownloads === 0 && totalLinks === 0) ? (
+                <motion.div
+                    className="no-analytics-message"
+                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{
+                        duration: 0.8,
+                        ease: [0.25, 0.46, 0.45, 0.94]
+                    }}
+                >
+                    <FaChartLine />
+                    <h3>{t('earning.noAnalyticsData') || 'No Analytics Data Available'}</h3>
+                    <p>{t('earning.noAnalyticsMessage') || 'This promoter has not shared any content yet. Analytics will appear here once they start sharing files.'}</p>
+                </motion.div>
             ) : (
                 <motion.div
                     className="earning-stats"
@@ -778,7 +756,7 @@ export default function PromotersEarning() {
                         ease: [0.25, 0.46, 0.45, 0.94]
                     }}
                 >
-                    {t('earning.contentPerformance')}
+                    {username || t('earning.contentPerformance')}
                 </motion.h2>
 
                 <motion.div
@@ -809,6 +787,20 @@ export default function PromotersEarning() {
                             </motion.div>
                             {t('earning.loadingAnalytics')}
                         </motion.div>
+                    ) : hasError ? (
+                        <motion.div
+                            className="no-files-message"
+                            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            transition={{
+                                duration: 0.8,
+                                ease: [0.25, 0.46, 0.45, 0.94]
+                            }}
+                        >
+                            <FaChartLine />
+                            <h3>{username ? t('earning.noSharedLinksForUser').replace('{{username}}', username) : t('earning.noSharedLinks')}</h3>
+                            <p>{username ? t('earning.noSharedLinksForUserMessage').replace('{{username}}', username) : t('earning.noSharedLinksMessage')}</p>
+                        </motion.div>
                     ) : files.length === 0 ? (
                         <motion.div
                             className="no-files-message"
@@ -820,19 +812,33 @@ export default function PromotersEarning() {
                             }}
                         >
                             <FaChartLine />
-                            <h3>{t('earning.noContentShared')}</h3>
-                            <p>{t('earning.startSharing')}</p>
+                            <h3>{t('earning.noSharedLinks') || 'No Shared Links Available'}</h3>
+                            <p>{t('earning.noSharedLinksMessage') || 'This promoter has not created any shared links yet. Shared link analytics will appear here once they start sharing files.'}</p>
                         </motion.div>
                     ) : (
-                        files.map((file, index) => (
-                            <FileCard
-                                key={file.fileId}
-                                file={file}
-                                onShowCountries={setSelectedFile}
-                                index={index}
-                                t={t}
-                            />
-                        ))
+                        files.map((file, index) => {
+                            // Ensure file has required fields from API response
+                            // API Response: { "fileId", "fileName", "sharedUrl", "downloads", "views", "lastUpdated", "viewsByCountry" }
+                            const fileData = {
+                                fileId: file.fileId || file.id || file._id || `file-${index}`,
+                                fileName: file.fileName || file.name || 'Unknown File',
+                                sharedUrl: file.sharedUrl || file.shareUrl || file.fileUrl || file.link || '',
+                                downloads: file.downloads || file.totalDownloads || 0,
+                                views: file.views || file.totalViews || 0,
+                                lastUpdated: file.lastUpdated || file.createdAt || file.date || new Date().toISOString(),
+                                viewsByCountry: file.viewsByCountry || []
+                            };
+                            
+                            return (
+                                <FileCard
+                                    key={fileData.fileId}
+                                    file={fileData}
+                                    onShowCountries={setSelectedFile}
+                                    index={index}
+                                    t={t}
+                                />
+                            );
+                        })
                     )}
                 </motion.div>
             </motion.div>
@@ -848,6 +854,7 @@ export default function PromotersEarning() {
                     />
                 )}
             </AnimatePresence>
+            </div>
         </motion.div>
     );
 }

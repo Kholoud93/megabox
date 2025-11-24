@@ -44,12 +44,14 @@ export default function RevenueData() {
     );
 
     // Extract data
+    // API Response structure: { "pendingRewards", "confirmedRewards", "totalEarnings", "currency" }
     const currency = earningsData?.currency || 'USD';
     const withdrawable = earningsData?.withdrawable || earningsData?.totalEarnings || '0';
     const estimatedIncome = earningsData?.totalEarnings || earningsData?.estimatedIncome || '0';
     const actualIncome = earningsData?.confirmedRewards || earningsData?.actualIncome || '0';
     
     // Extract share link analytics data - this will be used for the table
+    // API Response structure: { "analytics": [{ "fileId", "fileName", "sharedUrl", "downloads", "views", "lastUpdated", "viewsByCountry" }] }
     const shareLinksAnalytics = shareLinkAnalyticsData?.analytics || shareLinkAnalyticsData?.data || shareLinkAnalyticsData?.links || shareLinkAnalyticsData?.revenue || [];
     const totalLinks = shareLinksAnalytics.length;
     const totalLinkViews = shareLinksAnalytics.reduce((sum, link) => sum + (link.views || link.totalViews || 0), 0);

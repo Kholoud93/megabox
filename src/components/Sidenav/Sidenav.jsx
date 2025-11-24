@@ -28,6 +28,8 @@ import { notificationService, userService } from '../../services';
 import { fileService } from '../../services/api';
 import axios from 'axios';
 import { API_URL } from '../../services/api';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../helpers/ToastOptions';
 import { getFileCategory } from '../../helpers/MimeType';
 import Represents from '../Represents/Represents';
 
@@ -259,6 +261,7 @@ export default function Sidenav({ role }) {
         // Keep FCM token on logout so users can still receive notifications
         // Token will be updated/reused when they log back in
         
+        toast.success(t('common.logoutSuccess') || 'Logged out successfully', ToastOptions('success'));
         removeToken("MegaBox", {
             path: '/',
         })

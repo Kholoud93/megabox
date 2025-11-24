@@ -37,7 +37,7 @@ export default function SharedFiles() {
     );
 
     // Extract analytics data from getShareLinkAnalytics response
-    // Response structure: { analytics: [...] } or { data: [...] } or { links: [...] }
+    // API Response structure: { "analytics": [{ "fileId", "fileName", "sharedUrl", "downloads", "views", "lastUpdated", "viewsByCountry" }] }
     const analyticsList = shareLinkAnalyticsData?.analytics || shareLinkAnalyticsData?.data || shareLinkAnalyticsData?.links || [];
     
     // For backward compatibility with existing file grid/list view, convert analytics to files format
@@ -45,16 +45,17 @@ export default function SharedFiles() {
         files: analyticsList.map(link => ({
             _id: link.fileId || link.id || link._id,
             id: link.fileId || link.id || link._id,
-            shareLink: link.shareLink || link.fileUrl || link.link || link.shareUrl,
-            shareUrl: link.shareLink || link.fileUrl || link.link || link.shareUrl,
-            createdAt: link.createdAt || link.date || link.lastUpdated || link.uploadDate || new Date().toISOString(),
-            uploadDate: link.createdAt || link.date || link.lastUpdated || link.uploadDate || new Date().toISOString(),
+            shareLink: link.sharedUrl || link.shareLink || link.fileUrl || link.link || link.shareUrl,
+            shareUrl: link.sharedUrl || link.shareLink || link.fileUrl || link.link || link.shareUrl,
+            createdAt: link.lastUpdated || link.createdAt || link.date || link.uploadDate || new Date().toISOString(),
+            uploadDate: link.lastUpdated || link.createdAt || link.date || link.uploadDate || new Date().toISOString(),
             totalInstalls: link.downloads || link.totalDownloads || link.installs || 0,
             installs: link.downloads || link.totalDownloads || link.installs || 0,
             totalViews: link.views || link.totalViews || 0,
             views: link.views || link.totalViews || 0,
-            fileName: link.fileName || link.name || link.fileName || 'Unknown',
+            fileName: link.fileName || link.name || 'Unknown',
             fileType: link.fileType || link.mimeType || 'unknown',
+            viewsByCountry: link.viewsByCountry || [],
             isShared: true,
             shared: true
         }))
@@ -135,15 +136,15 @@ export default function SharedFiles() {
     const isWatchingPlan = hasWatchingPlan && !hasDownloadsPlan; // Only watching plan if no downloads plan
 
     // Get shared links data for table - use analytics data directly from getShareLinkAnalytics
-    // Response structure from getShareLinkAnalytics:
-    // { analytics: [{ fileId, fileName, fileUrl/shareLink, views/totalViews, downloads/totalDownloads, createdAt/date/lastUpdated }] }
+    // API Response structure: { "analytics": [{ "fileId", "fileName", "sharedUrl", "downloads", "views", "lastUpdated", "viewsByCountry" }] }
     const sharedLinksData = analyticsList.map(link => ({
         id: link.fileId || link.id || link._id,
-        creationTime: link.createdAt || link.date || link.lastUpdated || link.uploadDate || new Date().toISOString(),
-        link: link.shareLink || link.fileUrl || link.link || link.shareUrl || '',
+        creationTime: link.lastUpdated || link.createdAt || link.date || link.uploadDate || new Date().toISOString(),
+        link: link.sharedUrl || link.shareLink || link.fileUrl || link.link || link.shareUrl || '',
         totalInstall: link.downloads || link.totalDownloads || link.installs || 0,
         totalViews: link.views || link.totalViews || 0,
-        fileName: link.fileName || link.name || 'Unknown'
+        fileName: link.fileName || link.name || 'Unknown',
+        viewsByCountry: link.viewsByCountry || []
     }));
 
     // Sort by appropriate metric based on plan (descending) and take top 10
