@@ -446,11 +446,10 @@
   bottom: 0;
   z-index: 9998 !important; // Below dropdown
   isolation: auto !important;
-  pointer-events: none !important; // CRITICAL: Don't block clicks
+  pointer-events: auto !important;
   
   @media (max-width: 768px) {
     background: rgba(0, 0, 0, 0.3) !important;
-    pointer-events: none !important; // Let clicks pass through
   }
 }
 
@@ -580,13 +579,13 @@ body.profile-menu-open {
   }
 }
 
-// 9. Fix for React Router Link components
+// 9. Fix for React Router Link components and ensure consistent styling
 .files-header__profile-dropdown {
   // Target Link components specifically
   a[href] {
     // Ensure React Router Links work
     text-decoration: none !important;
-    color: inherit !important;
+    color: var(--color-indigo-700) !important;
     
     // Make entire link area clickable
     &::after {
@@ -598,6 +597,30 @@ body.profile-menu-open {
       bottom: 0;
       z-index: -1;
     }
+    
+    // Hover state
+    &:hover {
+      background: var(--color-indigo-100) !important;
+      color: var(--color-indigo-800) !important;
+    }
+  }
+}
+
+// 10a. Override any white color on links
+.files-header__profile-item {
+  color: var(--color-indigo-700) !important;
+  
+  &:hover {
+    color: var(--color-indigo-800) !important;
+  }
+  
+  // Ensure icon matches
+  .files-header__profile-item-icon {
+    color: var(--color-indigo-600) !important;
+  }
+  
+  &:hover .files-header__profile-item-icon {
+    color: var(--color-indigo-800) !important;
   }
 }
 
