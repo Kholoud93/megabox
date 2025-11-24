@@ -8,7 +8,7 @@ export default function Loading() {
             visible={true}
             height="80"
             width="80"
-            color="#003e4b"
+            color="#6366f1"
             ariaLabel="tail-spin-loading"
             radius="1"
             wrapperStyle={{}}
