@@ -1,196 +1,349 @@
-.subscription-plans {
+@use "../../helpers/_variables.scss" as vars;
+@use "../../helpers/_mixins.scss" as mix;
+
+.subscription-plans-page {
+    width: 100%;
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 2rem 1rem;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
 
-    &__container {
-        max-width: 1200px;
+    &__wrapper {
+        max-width: 1400px;
         margin: 0 auto;
+        padding: 0 1rem;
+
+        @include mix.media-breakpoint-down(md) {
+            padding: 0 0.75rem;
+        }
     }
+}
 
-    &__header {
-        text-align: center;
-        margin-bottom: 3rem;
-        color: white;
+.subscription-plans-header {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e7ff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
 
-        .subscription-plans__title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .subscription-plans__subtitle {
-            font-size: 1.125rem;
-            opacity: 0.9;
-        }
+    @include mix.media-breakpoint-down(md) {
+        padding: 1rem;
+        flex-direction: column;
+        align-items: flex-start;
     }
 
     &__content {
-        background: white;
-        border-radius: 16px;
-        padding: 2rem;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
     }
 
-    &__grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-        margin-bottom: 2rem;
-    }
-
-    &__card {
-        border: 2px solid #e5e7eb;
-        border-radius: 12px;
-        padding: 1.5rem;
-        transition: all 0.3s ease;
+    &__back {
+        background: var(--color-indigo-50);
+        border: 1px solid var(--color-indigo-200);
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        color: var(--color-indigo-600);
+        cursor: pointer;
+        transition: all 0.2s;
 
         &:hover {
-            border-color: #667eea;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+            background: var(--color-indigo-100);
         }
     }
 
-    &__card-header {
+    &__icon {
+        color: var(--color-yellow-500);
+        font-size: 1.5rem;
+    }
+
+    &__title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-gray-900);
+        margin: 0;
+    }
+
+    &__subtitle {
+        font-size: 0.875rem;
+        color: var(--color-gray-600);
+        margin: 0.25rem 0 0 0;
+    }
+
+    &__create-btn {
         display: flex;
-        justify-content: space-between;
         align-items: center;
+        gap: 0.5rem;
+        background: var(--color-indigo-600);
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+            background: var(--color-indigo-700);
+            transform: translateY(-1px);
+        }
+    }
+}
+
+.subscription-plans-loading,
+.subscription-plans-empty {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: white;
+    border-radius: 0.75rem;
+    color: var(--color-gray-600);
+}
+
+.subscription-plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+
+    @include mix.media-breakpoint-down(md) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.subscription-plan-card {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e7ff;
+    transition: all 0.2s;
+
+    &:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
         margin-bottom: 1rem;
         padding-bottom: 1rem;
         border-bottom: 1px solid #e5e7eb;
     }
 
-    &__card-title {
+    &__icon {
+        color: var(--color-yellow-500);
         font-size: 1.25rem;
-        font-weight: 600;
-        color: #1f2937;
+    }
+
+    &__name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--color-gray-900);
         margin: 0;
     }
 
-    &__badge {
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
+    &__body {
+        margin-bottom: 1rem;
+    }
+
+    &__detail {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+    }
+
+    &__label {
+        color: var(--color-gray-600);
         font-size: 0.875rem;
-        font-weight: 500;
-
-        &--active {
-            background-color: #10b981;
-            color: white;
-        }
-
-        &--pending {
-            background-color: #f59e0b;
-            color: white;
-        }
-
-        &--inactive {
-            background-color: #ef4444;
-            color: white;
-        }
     }
 
-    &__card-body {
-        min-height: 100px;
-    }
-
-    &__plan-details {
-        .subscription-plans__plan-name {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #667eea;
-            margin-bottom: 0.5rem;
-        }
-
-        .subscription-plans__plan-description {
-            color: #6b7280;
-            margin: 0 0 0.5rem 0;
-        }
-
-        .subscription-plans__expiration {
-            color: #9ca3af;
-            font-size: 0.875rem;
-            margin: 0.5rem 0 0 0;
-        }
-    }
-
-    &__no-plan {
-        text-align: center;
-        padding: 1rem 0;
-
-        p {
-            color: #6b7280;
-            margin-bottom: 1rem;
-        }
-    }
-
-    &__link {
-        display: inline-block;
-        color: #667eea;
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.2s;
-
-        &:hover {
-            color: #764ba2;
-            text-decoration: underline;
-        }
-    }
-
-    &__empty-state {
-        text-align: center;
-        padding: 3rem 2rem;
-        background: #f9fafb;
-        border-radius: 12px;
-        border: 2px dashed #d1d5db;
-    }
-
-    &__empty-text {
-        font-size: 1.125rem;
-        color: #6b7280;
-        margin-bottom: 1.5rem;
-    }
-
-    &__cta-button {
-        display: inline-block;
-        padding: 0.75rem 2rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        text-decoration: none;
-        border-radius: 8px;
+    &__value {
+        color: var(--color-gray-900);
         font-weight: 600;
-        transition: transform 0.2s, box-shadow 0.2s;
+    }
 
-        &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    &__actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    &__btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &--edit {
+            background: var(--color-blue-50);
+            color: var(--color-blue-700);
+
+            &:hover {
+                background: var(--color-blue-100);
+            }
+        }
+
+        &--delete {
+            background: var(--color-red-50);
+            color: var(--color-red-700);
+
+            &:hover {
+                background: var(--color-red-100);
+            }
         }
     }
 }
 
-@media (max-width: 768px) {
-    .subscription-plans {
-        padding: 1rem;
+.subscription-plan-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
 
-        &__header {
-            margin-bottom: 2rem;
+.subscription-plan-modal {
+    background: white;
+    border-radius: 0.75rem;
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 
-            .subscription-plans__title {
-                font-size: 2rem;
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e5e7eb;
+
+        h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-gray-900);
+        }
+    }
+
+    &__close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--color-gray-500);
+        cursor: pointer;
+        padding: 0;
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.25rem;
+
+        &:hover {
+            background: var(--color-gray-100);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    &__body {
+        padding: 1.5rem;
+
+        .form-group {
+            margin-bottom: 1.5rem;
+
+            label {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+                color: var(--color-gray-700);
             }
 
-            .subscription-plans__subtitle {
+            input,
+            select {
+                width: 100%;
+                padding: 0.75rem;
+                border: 1px solid #d1d5db;
+                border-radius: 0.5rem;
                 font-size: 1rem;
+                transition: all 0.2s;
+
+                &:focus {
+                    outline: none;
+                    border-color: var(--color-indigo-600);
+                    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+                }
+
+                &:disabled {
+                    background: var(--color-gray-100);
+                    cursor: not-allowed;
+                }
             }
         }
+    }
 
-        &__content {
-            padding: 1.5rem;
-        }
+    &__actions {
+        display: flex;
+        gap: 0.75rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e5e7eb;
 
-        &__grid {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
+        .btn {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+
+            &.btn-secondary {
+                background: var(--color-gray-100);
+                color: var(--color-gray-700);
+
+                &:hover:not(:disabled) {
+                    background: var(--color-gray-200);
+                }
+            }
+
+            &.btn-primary {
+                background: var(--color-indigo-600);
+                color: white;
+
+                &:hover:not(:disabled) {
+                    background: var(--color-indigo-700);
+                }
+            }
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
         }
     }
 }

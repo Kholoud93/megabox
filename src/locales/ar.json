@@ -609,7 +609,20 @@
     "subscriptions": "اشتراكات",
     "autoRenew": "تجديد تلقائي",
     "yes": "نعم",
-    "no": "لا"
+    "no": "لا",
+    "createSubscription": "إنشاء اشتراك",
+    "subscriberName": "اسم المشترك",
+    "phone": "رقم الهاتف",
+    "planName": "اسم الخطة",
+    "selectPlan": "اختر الخطة",
+    "durationDays": "المدة (بالأيام)",
+    "days": "أيام",
+    "invoice": "الفاتورة (اختياري)",
+    "cancel": "إلغاء",
+    "create": "إنشاء",
+    "creating": "جارٍ الإنشاء...",
+    "fillAllFields": "يرجى ملء جميع الحقول المطلوبة",
+    "createdAt": "تاريخ الإنشاء"
   },
   "adminStorage": {
     "title": "إدارة التخزين",

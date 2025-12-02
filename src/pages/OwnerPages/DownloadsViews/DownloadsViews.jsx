@@ -22,134 +22,24 @@ export default function DownloadsViews() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
-    // Mock data for downloads and views (will be replaced with API call later)
-    const mockDownloadsViews = [
-        {
-            _id: '1',
-            fileName: 'document.pdf',
-            userId: { username: 'ahmed_mohamed', email: 'ahmed@example.com', _id: 'user1_id' },
-            downloads: 45,
-            views: 120,
-            lastDownload: new Date('2024-01-20'),
-            lastView: new Date('2024-01-20')
-        },
-        {
-            _id: '2',
-            fileName: 'image.jpg',
-            userId: { username: 'sara_ali', email: 'sara@example.com', _id: 'user2_id' },
-            downloads: 32,
-            views: 89,
-            lastDownload: new Date('2024-01-19'),
-            lastView: new Date('2024-01-19')
-        },
-        {
-            _id: '3',
-            fileName: 'video.mp4',
-            userId: { username: 'mohamed_hassan', email: 'mohamed@example.com', _id: 'user3_id' },
-            downloads: 78,
-            views: 250,
-            lastDownload: new Date('2024-01-18'),
-            lastView: new Date('2024-01-18')
-        },
-        {
-            _id: '4',
-            fileName: 'presentation.pptx',
-            userId: { username: 'fatima_ibrahim', email: 'fatima@example.com', _id: 'user4_id' },
-            downloads: 12,
-            views: 56,
-            lastDownload: new Date('2024-01-17'),
-            lastView: new Date('2024-01-17')
-        },
-        {
-            _id: '5',
-            fileName: 'spreadsheet.xlsx',
-            userId: { username: 'ali_khalid', email: 'ali@example.com', _id: 'user5_id' },
-            downloads: 23,
-            views: 67,
-            lastDownload: new Date('2024-01-16'),
-            lastView: new Date('2024-01-16')
-        },
-        {
-            _id: '6',
-            fileName: 'archive.zip',
-            userId: { username: 'nour_ahmed', email: 'nour@example.com', _id: 'user6_id' },
-            downloads: 15,
-            views: 34,
-            lastDownload: new Date('2024-01-15'),
-            lastView: new Date('2024-01-15')
-        },
-        {
-            _id: '7',
-            fileName: 'audio.mp3',
-            userId: { username: 'omar_said', email: 'omar@example.com', _id: 'user7_id' },
-            downloads: 67,
-            views: 180,
-            lastDownload: new Date('2024-01-14'),
-            lastView: new Date('2024-01-14')
-        },
-        {
-            _id: '8',
-            fileName: 'text.txt',
-            userId: { username: 'layla_mahmoud', email: 'layla@example.com', _id: 'user8_id' },
-            downloads: 8,
-            views: 25,
-            lastDownload: new Date('2024-01-13'),
-            lastView: new Date('2024-01-13')
-        },
-        {
-            _id: '9',
-            fileName: 'code.js',
-            userId: { username: 'youssef_karim', email: 'youssef@example.com', _id: 'user9_id' },
-            downloads: 34,
-            views: 95,
-            lastDownload: new Date('2024-01-12'),
-            lastView: new Date('2024-01-12')
-        },
-        {
-            _id: '10',
-            fileName: 'design.psd',
-            userId: { username: 'mariam_fouad', email: 'mariam@example.com', _id: 'user10_id' },
-            downloads: 19,
-            views: 42,
-            lastDownload: new Date('2024-01-11'),
-            lastView: new Date('2024-01-11')
-        },
-        {
-            _id: '11',
-            fileName: 'database.sql',
-            userId: { username: 'khaled_omar', email: 'khaled@example.com', _id: 'user11_id' },
-            downloads: 5,
-            views: 18,
-            lastDownload: new Date('2024-01-10'),
-            lastView: new Date('2024-01-10')
-        },
-        {
-            _id: '12',
-            fileName: 'ebook.pdf',
-            userId: { username: 'dina_samir', email: 'dina@example.com', _id: 'user12_id' },
-            downloads: 92,
-            views: 320,
-            lastDownload: new Date('2024-01-09'),
-            lastView: new Date('2024-01-09')
-        }
-    ];
-
     // Fetch all downloads and views data
     const { data: downloadsViewsData, isLoading: downloadsViewsLoading } = useQuery(
         ['allDownloadsViews'],
         async () => {
             try {
-                return await adminService.getAllDownloadsViews(token);
-            } catch (error) {
-                console.error('Error fetching downloads and views:', error);
-                // Return mock data if API fails
-                return { downloadsViews: mockDownloadsViews };
+                const response = await adminService.getAllDownloadsViews(token);
+                // Handle different response structures
+                if (response.downloadsViews) return response;
+                if (Array.isArray(response)) return { downloadsViews: response };
+                if (response.data) return { downloadsViews: response.data };
+                return { downloadsViews: [] };
+            } catch {
+                // Return empty array on error
+                return { downloadsViews: [] };
             }
         },
         { 
-            enabled: !!token,
-            // Use mock data for now until API is ready
-            initialData: { downloadsViews: mockDownloadsViews }
+            enabled: !!token
         }
     );
 
@@ -175,7 +65,7 @@ export default function DownloadsViews() {
 
             return true;
         });
-    }, [downloadsViewsData?.downloadsViews, searchTerm, filters]);
+    }, [downloadsViewsData?.downloadsViews, searchTerm]);
 
     // Pagination logic
     const totalPages = Math.ceil(filteredDownloadsViews.length / itemsPerPage);

@@ -192,10 +192,12 @@ export default function Users() {
     }
 
     // Toggle user premium
-    const handleTogglePremium = async (userId) => {
+    const handleTogglePremium = async (userId, currentPremiumStatus) => {
         try {
-            await adminService.toggleUserPremium(userId, Token.MegaBox);
+            // Toggle: if currently premium, deactivate; if not premium, activate
+            await adminService.toggleBrimumeByOwner(userId, !currentPremiumStatus, undefined, Token.MegaBox);
             queryClient.invalidateQueries("getAllusers");
+            setPremiumModal(null);
             if (searchedUser && (searchedUser._id === userId || searchedUser.id === userId)) {
                 setSearchedUser(prev => ({ ...prev, isBrimume: !prev.isBrimume }));
             }
@@ -207,7 +209,17 @@ export default function Users() {
     // Set user premium with expiration date
     const handleSetPremium = async (userId, expirationDate) => {
         try {
-            await adminService.setUserPremium(userId, expirationDate, Token.MegaBox);
+            // Calculate duration in days from expiration date
+            const now = new Date();
+            const expiration = new Date(expirationDate);
+            const durationDays = Math.ceil((expiration - now) / (1000 * 60 * 60 * 24));
+            
+            if (durationDays <= 0) {
+                toast.error(t("adminUsers.expirationDateMustBeFuture") || "Expiration date must be in the future", ToastOptions("error"));
+                return;
+            }
+
+            await adminService.toggleBrimumeByOwner(userId, true, durationDays, Token.MegaBox);
             queryClient.invalidateQueries("getAllusers");
             setPremiumModal(null);
             if (searchedUser && (searchedUser._id === userId || searchedUser.id === userId)) {
@@ -629,7 +641,7 @@ export default function Users() {
                                             {t("adminUsers.cancel")}
                                         </button>
                                         <button
-                                            onClick={() => handleTogglePremium(premiumModal.id || premiumModal._id)}
+                                            onClick={() => handleTogglePremium(premiumModal.id || premiumModal._id, premiumModal.isBrimume)}
                                             className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                                         >
                                             {t("adminUsers.removePremium")}

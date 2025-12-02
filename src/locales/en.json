@@ -609,7 +609,20 @@
     "subscriptions": "subscriptions",
     "autoRenew": "Auto Renew",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "createSubscription": "Create Subscription",
+    "subscriberName": "Subscriber Name",
+    "phone": "Phone Number",
+    "planName": "Plan Name",
+    "selectPlan": "Select Plan",
+    "durationDays": "Duration (Days)",
+    "days": "days",
+    "invoice": "Invoice (Optional)",
+    "cancel": "Cancel",
+    "create": "Create",
+    "creating": "Creating...",
+    "fillAllFields": "Please fill all required fields",
+    "createdAt": "Created At"
   },
   "adminStorage": {
     "title": "Storage Management",

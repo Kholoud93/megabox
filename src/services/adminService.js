@@ -4,7 +4,7 @@ import { api } from './apiConfig';
 
 export const adminService = {
     // Toggle user ban
-    toggleUserBanByOwner: async (userId, token, isBanned = null) => {
+    toggleUserBanByOwner: async (userId, token) => {
         try {
             const response = await api.patch(`/auth/toggleUserBanByOwner/${userId}`, {}, {
                 headers: {
@@ -57,17 +57,161 @@ export const adminService = {
         }
     },
 
-    // NOTE: /auth/updateWithdrawalStatus/:withdrawalId is NOT in the backend documentation
-    // This method has been removed until the backend implements it.
-    // updateWithdrawalStatus: async (withdrawalId, status, token) => { ... }
+    // NOTE: The following APIs are NOT in the backend and need to be implemented:
+    // - /auth/updateWithdrawalStatus/:withdrawalId (PATCH) - Approve/reject withdrawals
+    // - /auth/getAllStorage (GET) - Get all user storage data
+    // - /auth/getAllPayments (GET) - Get all payment records
+    // - /auth/getAllDownloadsViews (GET) - Get all downloads and views data
+    // These methods return empty data until the backend implements them.
 
-    // NOTE: The following APIs are NOT in the backend documentation:
-    // - /auth/getAllDownloadsViews
-    // - /auth/getAllPayments
-    // - /auth/getAllStorage
-    // - /auth/getAllSubscriptions
-    // These methods have been removed. The UI components already have mock data fallbacks.
-    // getAllDownloadsViews, getAllPayments, getAllStorage, getAllSubscriptions methods removed
+    // Update withdrawal status (approve/reject) - NOT IMPLEMENTED IN BACKEND
+    updateWithdrawalStatus: async () => {
+        throw new Error("API not implemented: /auth/updateWithdrawalStatus/:withdrawalId");
+    },
+
+    // Get all storage (admin) - NOT IMPLEMENTED IN BACKEND
+    getAllStorage: async () => {
+        return { storage: [] };
+    },
+
+    // Get all payments (admin) - NOT IMPLEMENTED IN BACKEND
+    getAllPayments: async () => {
+        return { payments: [] };
+    },
+
+    // Get all downloads and views (admin) - NOT IMPLEMENTED IN BACKEND
+    getAllDownloadsViews: async () => {
+        return { downloadsViews: [] };
+    },
+
+    // Get all subscriptions (admin)
+    getAllSubscriptions: async (token) => {
+        try {
+            const response = await api.get('/auth/getAllSubscriptions', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Create subscription (admin)
+    createSubscription: async (invoiceFile, phone, subscriberName, durationDays, planName, token) => {
+        try {
+            const formData = new FormData();
+            if (invoiceFile) {
+                formData.append('invoice', invoiceFile);
+            }
+            formData.append('phone', phone);
+            formData.append('subscriberName', subscriberName);
+            formData.append('durationDays', durationDays);
+            formData.append('planName', planName);
+
+            const response = await api.post('/auth/createSubscription', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success("Subscription created successfully!", ToastOptions("success"));
+            return response.data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to create subscription", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Get all subscription plans
+    getPlans: async () => {
+        try {
+            const response = await api.get('/auth/getPlans');
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Create subscription plan (admin)
+    createPlan: async (days, price, name, token) => {
+        try {
+            const response = await api.post('/auth/createPlan', {
+                days,
+                price,
+                name
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success("Plan created successfully!", ToastOptions("success"));
+            return response.data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to create plan", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Update subscription plan (admin)
+    updatePlan: async (planId, days, price, name, token) => {
+        try {
+            const response = await api.patch(`/auth/deletePlan/${planId}`, {
+                days,
+                price,
+                name
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success("Plan updated successfully!", ToastOptions("success"));
+            return response.data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to update plan", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Delete subscription plan (admin)
+    deletePlan: async (planId, token) => {
+        try {
+            const response = await api.delete(`/auth/deletePlan/${planId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success("Plan deleted successfully!", ToastOptions("success"));
+            return response.data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to delete plan", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Toggle premium subscription for user (admin)
+    toggleBrimumeByOwner: async (userId, activate, durationDays, token) => {
+        try {
+            const body = { activate };
+            if (durationDays !== undefined) {
+                body.durationDays = durationDays;
+            }
+            const response = await api.patch(`/auth/toggleBrimumeByOwner/${userId}`, body, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success(
+                activate ? "Premium subscription activated successfully!" : "Premium subscription deactivated successfully!",
+                ToastOptions("success")
+            );
+            return response.data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to toggle premium subscription", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
+    },
 
     // Get all users (admin)
     getAllUsers: async (token) => {

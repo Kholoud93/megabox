@@ -43,23 +43,20 @@ export default function Analasys() {
         { enabled: !!token }
     );
 
-    // Fetch platform statistics (placeholder - will be connected to API later)
+    // Fetch platform statistics
     const { data: platformStats, isLoading: platformStatsLoading } = useQuery(
         ['platformStats'],
         async () => {
-            // TODO: Connect to API endpoint
-            // const res = await axios.get(`${API_URL}/admin/getPlatformStats`, {
-            //     headers: { Authorization: `Bearer ${token}` }
-            // });
-            // return res?.data;
-            return {
-                totalStorage: 0, // GB
-                newUsers: 0, // Last 30 days
-                totalPayments: 0,
-                totalSubscriptions: 0,
-                totalDownloads: 0,
-                totalViews: 0
-            };
+            try {
+                // TODO: Connect to API endpoint when available
+                // const res = await axios.get(`${API_URL}/admin/getPlatformStats`, {
+                //     headers: { Authorization: `Bearer ${token}` }
+                // });
+                // return res?.data;
+                return null;
+            } catch {
+                return null;
+            }
         },
         { enabled: !!token }
     );

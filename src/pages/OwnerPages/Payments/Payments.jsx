@@ -22,147 +22,24 @@ export default function Payments() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
-    // Mock data for payments (will be replaced with API call later)
-    // These payments are created when withdrawals are approved
-    const mockPayments = [
-        {
-            _id: '1',
-            userId: { username: 'ahmed_mohamed', email: 'ahmed@example.com', _id: 'user1_id' },
-            amount: 500,
-            currency: 'USD',
-            paymentMethod: 'PayPal',
-            status: 'success',
-            createdAt: new Date('2024-01-20'),
-            transactionId: 'TXN123456'
-        },
-        {
-            _id: '2',
-            userId: { username: 'sara_ali', email: 'sara@example.com', _id: 'user2_id' },
-            amount: 750,
-            currency: 'USD',
-            paymentMethod: 'USDT',
-            status: 'success',
-            createdAt: new Date('2024-01-19'),
-            transactionId: 'TXN123457'
-        },
-        {
-            _id: '3',
-            userId: { username: 'mohamed_hassan', email: 'mohamed@example.com', _id: 'user3_id' },
-            amount: 300,
-            currency: 'USD',
-            paymentMethod: 'Bank Transfer',
-            status: 'success',
-            createdAt: new Date('2024-01-18'),
-            transactionId: 'TXN123458'
-        },
-        {
-            _id: '4',
-            userId: { username: 'fatima_ibrahim', email: 'fatima@example.com', _id: 'user4_id' },
-            amount: 1000,
-            currency: 'USD',
-            paymentMethod: 'Payoneer',
-            status: 'success',
-            createdAt: new Date('2024-01-17'),
-            transactionId: 'TXN123459'
-        },
-        {
-            _id: '5',
-            userId: { username: 'ali_khalid', email: 'ali@example.com', _id: 'user5_id' },
-            amount: 450,
-            currency: 'USD',
-            paymentMethod: 'PayPal',
-            status: 'success',
-            createdAt: new Date('2024-01-16'),
-            transactionId: 'TXN123460'
-        },
-        {
-            _id: '6',
-            userId: { username: 'nour_ahmed', email: 'nour@example.com', _id: 'user6_id' },
-            amount: 200,
-            currency: 'USD',
-            paymentMethod: 'USDT',
-            status: 'success',
-            createdAt: new Date('2024-01-15'),
-            transactionId: 'TXN123461'
-        },
-        {
-            _id: '7',
-            userId: { username: 'omar_said', email: 'omar@example.com', _id: 'user7_id' },
-            amount: 600,
-            currency: 'USD',
-            paymentMethod: 'Bank Transfer',
-            status: 'success',
-            createdAt: new Date('2024-01-14'),
-            transactionId: 'TXN123462'
-        },
-        {
-            _id: '8',
-            userId: { username: 'layla_mahmoud', email: 'layla@example.com', _id: 'user8_id' },
-            amount: 350,
-            currency: 'USD',
-            paymentMethod: 'PayPal',
-            status: 'success',
-            createdAt: new Date('2024-01-13'),
-            transactionId: 'TXN123463'
-        },
-        {
-            _id: '9',
-            userId: { username: 'youssef_karim', email: 'youssef@example.com', _id: 'user9_id' },
-            amount: 800,
-            currency: 'USD',
-            paymentMethod: 'Payoneer',
-            status: 'success',
-            createdAt: new Date('2024-01-12'),
-            transactionId: 'TXN123464'
-        },
-        {
-            _id: '10',
-            userId: { username: 'mariam_fouad', email: 'mariam@example.com', _id: 'user10_id' },
-            amount: 250,
-            currency: 'USD',
-            paymentMethod: 'USDT',
-            status: 'success',
-            createdAt: new Date('2024-01-11'),
-            transactionId: 'TXN123465'
-        },
-        {
-            _id: '11',
-            userId: { username: 'khaled_omar', email: 'khaled@example.com', _id: 'user11_id' },
-            amount: 1200,
-            currency: 'USD',
-            paymentMethod: 'Bank Transfer',
-            status: 'success',
-            createdAt: new Date('2024-01-10'),
-            transactionId: 'TXN123466'
-        },
-        {
-            _id: '12',
-            userId: { username: 'dina_samir', email: 'dina@example.com', _id: 'user12_id' },
-            amount: 400,
-            currency: 'USD',
-            paymentMethod: 'PayPal',
-            status: 'success',
-            createdAt: new Date('2024-01-09'),
-            transactionId: 'TXN123467'
-        }
-    ];
-
     // Fetch all payments
     const { data: paymentsData, isLoading: paymentsLoading } = useQuery(
         ['allPayments'],
         async () => {
             try {
-                return await adminService.getAllPayments(token);
-            } catch (error) {
-                console.error('Error fetching payments:', error);
-                // Return mock data if API fails
-                return { payments: mockPayments };
+                const response = await adminService.getAllPayments(token);
+                // Handle different response structures
+                if (response.payments) return response;
+                if (Array.isArray(response)) return { payments: response };
+                if (response.data) return { payments: response.data };
+                return { payments: [] };
+            } catch {
+                // Return empty array on error
+                return { payments: [] };
             }
         },
         { 
-            enabled: !!token,
-            // Use mock data for now
-            initialData: { payments: mockPayments }
+            enabled: !!token
         }
     );
 

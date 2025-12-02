@@ -31,110 +31,24 @@ export default function Storage() {
         return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
     };
 
-    // Mock data for storage (will be replaced with API call later)
-    const mockStorage = [
-        {
-            _id: '1',
-            userId: { username: 'ahmed_mohamed', email: 'ahmed@example.com', _id: 'user1_id' },
-            usedStorage: 50 * 1024 * 1024 * 1024, // 50 GB
-            totalStorage: 1024 * 1024 * 1024 * 1024, // 1 TB
-            lastUpdated: new Date('2024-01-20')
-        },
-        {
-            _id: '2',
-            userId: { username: 'sara_ali', email: 'sara@example.com', _id: 'user2_id' },
-            usedStorage: 120 * 1024 * 1024 * 1024, // 120 GB
-            totalStorage: 1024 * 1024 * 1024 * 1024, // 1 TB
-            lastUpdated: new Date('2024-01-19')
-        },
-        {
-            _id: '3',
-            userId: { username: 'mohamed_hassan', email: 'mohamed@example.com', _id: 'user3_id' },
-            usedStorage: 25 * 1024 * 1024 * 1024, // 25 GB
-            totalStorage: 1024 * 1024 * 1024 * 1024, // 1 TB
-            lastUpdated: new Date('2024-01-18')
-        },
-        {
-            _id: '4',
-            userId: { username: 'fatima_ibrahim', email: 'fatima@example.com', _id: 'user4_id' },
-            usedStorage: 200 * 1024 * 1024 * 1024, // 200 GB
-            totalStorage: 1024 * 1024 * 1024 * 1024, // 1 TB
-            lastUpdated: new Date('2024-01-17')
-        },
-        {
-            _id: '5',
-            userId: { username: 'ali_khalid', email: 'ali@example.com', _id: 'user5_id' },
-            usedStorage: 75 * 1024 * 1024 * 1024, // 75 GB
-            totalStorage: 1024 * 1024 * 1024 * 1024, // 1 TB
-            lastUpdated: new Date('2024-01-16')
-        },
-        {
-            _id: '6',
-            userId: { username: 'nour_ahmed', email: 'nour@example.com', _id: 'user6_id' },
-            usedStorage: 300 * 1024 * 1024 * 1024, // 300 GB
-            totalStorage: 1024 * 1024 * 1024 * 1024, // 1 TB
-            lastUpdated: new Date('2024-01-15')
-        },
-        {
-            _id: '7',
-            userId: { username: 'omar_said', email: 'omar@example.com', _id: 'user7_id' },
-            usedStorage: 15 * 1024 * 1024 * 1024, // 15 GB
-            totalStorage: 1024 * 1024 * 1024 * 1024, // 1 TB
-            lastUpdated: new Date('2024-01-14')
-        },
-        {
-            _id: '8',
-            userId: { username: 'layla_mahmoud', email: 'layla@example.com', _id: 'user8_id' },
-            usedStorage: 450 * 1024 * 1024 * 1024, // 450 GB
-            totalStorage: 1024 * 1024 * 1024 * 1024, // 1 TB
-            lastUpdated: new Date('2024-01-13')
-        },
-        {
-            _id: '9',
-            userId: { username: 'youssef_karim', email: 'youssef@example.com', _id: 'user9_id' },
-            usedStorage: 80 * 1024 * 1024 * 1024, // 80 GB
-            totalStorage: 1024 * 1024 * 1024 * 1024, // 1 TB
-            lastUpdated: new Date('2024-01-12')
-        },
-        {
-            _id: '10',
-            userId: { username: 'mariam_fouad', email: 'mariam@example.com', _id: 'user10_id' },
-            usedStorage: 180 * 1024 * 1024 * 1024, // 180 GB
-            totalStorage: 1024 * 1024 * 1024 * 1024, // 1 TB
-            lastUpdated: new Date('2024-01-11')
-        },
-        {
-            _id: '11',
-            userId: { username: 'khaled_omar', email: 'khaled@example.com', _id: 'user11_id' },
-            usedStorage: 250 * 1024 * 1024 * 1024, // 250 GB
-            totalStorage: 1024 * 1024 * 1024 * 1024, // 1 TB
-            lastUpdated: new Date('2024-01-10')
-        },
-        {
-            _id: '12',
-            userId: { username: 'dina_samir', email: 'dina@example.com', _id: 'user12_id' },
-            usedStorage: 95 * 1024 * 1024 * 1024, // 95 GB
-            totalStorage: 1024 * 1024 * 1024 * 1024, // 1 TB
-            lastUpdated: new Date('2024-01-09')
-        }
-    ];
-
     // Fetch all storage data
     const { data: storageData, isLoading: storageLoading } = useQuery(
         ['allStorage'],
         async () => {
             try {
-                return await adminService.getAllStorage(token);
-            } catch (error) {
-                console.error('Error fetching storage:', error);
-                // Return mock data if API fails
-                return { storage: mockStorage };
+                const response = await adminService.getAllStorage(token);
+                // Handle different response structures
+                if (response.storage) return response;
+                if (Array.isArray(response)) return { storage: response };
+                if (response.data) return { storage: response.data };
+                return { storage: [] };
+            } catch {
+                // Return empty array on error
+                return { storage: [] };
             }
         },
         { 
-            enabled: !!token,
-            // Use mock data for now until API is ready
-            initialData: { storage: mockStorage }
+            enabled: !!token
         }
     );
 
