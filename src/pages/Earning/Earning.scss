@@ -2255,6 +2255,63 @@
       }
     }
 
+    .withdraw-payment-dropdown {
+      background: rgba(15, 23, 42, 0.6) !important;
+      border-color: rgba(99, 102, 241, 0.3) !important;
+      color: #f1f5f9 !important;
+
+      &--open {
+        border-color: var(--color-indigo-500) !important;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+      }
+
+      &__selected {
+        color: #f1f5f9 !important;
+      }
+
+      &__menu {
+        background: rgba(30, 41, 59, 0.95) !important;
+        border-color: rgba(99, 102, 241, 0.4) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+      }
+
+      &__option {
+        background: rgba(30, 41, 59, 0.6) !important;
+        border-color: rgba(99, 102, 241, 0.2) !important;
+        color: #cbd5e1 !important;
+
+        &:hover {
+          background: rgba(30, 41, 59, 0.8) !important;
+        }
+
+        &--selected {
+          background: rgba(99, 102, 241, 0.3) !important;
+          border-left-color: var(--color-indigo-500) !important;
+
+          [dir="rtl"] & {
+            border-left-color: transparent !important;
+            border-right-color: var(--color-indigo-500) !important;
+          }
+        }
+      }
+
+      &__option-name {
+        color: #f1f5f9 !important;
+      }
+
+      &__option-detail {
+        color: #cbd5e1 !important;
+
+        strong {
+          color: var(--color-indigo-300) !important;
+        }
+      }
+    }
+
+    .withdraw-form-select-arrow {
+      color: var(--color-indigo-400) !important;
+    }
+
     .withdraw-payment-method-card {
       background: rgba(30, 41, 59, 0.6) !important;
       border-color: rgba(99, 102, 241, 0.3) !important;
@@ -2280,6 +2337,34 @@
       }
     }
 
+    .withdraw-apply-section {
+      &__quick-withdraw {
+        background: linear-gradient(135deg, #10b981, #059669) !important;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3) !important;
+
+        &:hover:not(:disabled) {
+          background: linear-gradient(135deg, #059669, #047857) !important;
+          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4) !important;
+        }
+
+        &:disabled {
+          opacity: 0.6 !important;
+        }
+      }
+
+      &__link {
+        background: rgba(30, 41, 59, 0.6) !important;
+        color: var(--color-indigo-300) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+
+        &:hover {
+          background: rgba(30, 41, 59, 0.8) !important;
+          color: var(--color-indigo-400) !important;
+          border-color: rgba(99, 102, 241, 0.5) !important;
+        }
+      }
+    }
+
     .withdraw-submit-button {
       background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
       box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4) !important;
@@ -2287,6 +2372,24 @@
       &:hover:not(:disabled) {
         background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
         box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5) !important;
+      }
+    }
+
+    .withdraw-notice {
+      background: rgba(30, 41, 59, 0.6) !important;
+      border-color: rgba(99, 102, 241, 0.4) !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+
+      [dir="rtl"] & {
+        border-right-color: rgba(99, 102, 241, 0.4) !important;
+      }
+
+      &__title {
+        color: var(--color-indigo-300) !important;
+      }
+
+      &__text {
+        color: #cbd5e1 !important;
       }
     }
   }

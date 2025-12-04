@@ -431,3 +431,164 @@
         }
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .admin-downloads-views-page {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+    }
+
+    .admin-downloads-views-header {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+        &__back {
+            background: rgba(30, 41, 59, 0.6) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+            color: var(--color-indigo-300) !important;
+
+            &:hover {
+                background: rgba(30, 41, 59, 0.8) !important;
+                border-color: rgba(99, 102, 241, 0.5) !important;
+            }
+        }
+
+        &__icon {
+            color: var(--color-indigo-400) !important;
+        }
+
+        &__title {
+            color: #f1f5f9 !important;
+        }
+
+        &__subtitle {
+            color: var(--color-indigo-300) !important;
+        }
+    }
+
+    .admin-downloads-views-loading,
+    .admin-downloads-views-empty {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        color: var(--color-indigo-300) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .admin-downloads-views-table-wrapper {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+        .admin-users-table {
+            &__header {
+                background: rgba(30, 41, 59, 0.6) !important;
+                border-color: rgba(99, 102, 241, 0.3) !important;
+
+                th {
+                    color: #f1f5f9 !important;
+                    border-color: rgba(99, 102, 241, 0.3) !important;
+                }
+            }
+
+            tbody {
+                tr {
+                    border-color: rgba(99, 102, 241, 0.2) !important;
+                    background: rgba(30, 41, 59, 0.4) !important;
+
+                    &:hover {
+                        background: rgba(30, 41, 59, 0.6) !important;
+                    }
+
+                    td {
+                        color: #cbd5e1 !important;
+                        border-color: rgba(99, 102, 241, 0.1) !important;
+
+                        &::before {
+                            color: var(--color-indigo-300) !important;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .file-name-badge {
+        background: rgba(30, 41, 59, 0.6) !important;
+        color: var(--color-indigo-300) !important;
+        border: 1px solid rgba(99, 102, 241, 0.3) !important;
+    }
+
+    .downloads-views-count {
+        &.downloads {
+            background: rgba(59, 130, 246, 0.2) !important;
+            color: #93c5fd !important;
+            filter: brightness(0.85) saturate(1.1) !important;
+        }
+
+        &.views {
+            background: rgba(244, 114, 182, 0.2) !important;
+            color: #f9a8d4 !important;
+            filter: brightness(0.85) saturate(1.1) !important;
+        }
+    }
+
+    .admin-downloads-views-actions {
+        &__btn {
+            &--view {
+                background: linear-gradient(135deg, rgba(147, 51, 234, 0.8), rgba(124, 58, 237, 0.8)) !important;
+                filter: brightness(0.85) saturate(1.1) !important;
+
+                &:hover:not(:disabled) {
+                    background: linear-gradient(135deg, rgba(124, 58, 237, 0.9), rgba(109, 40, 217, 0.9)) !important;
+                    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.4) !important;
+                }
+            }
+        }
+    }
+
+    .admin-downloads-views-modal-backdrop {
+        background: rgba(0, 0, 0, 0.8) !important;
+    }
+
+    .admin-downloads-views-modal {
+        background: rgba(30, 41, 59, 0.95) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid rgba(99, 102, 241, 0.3) !important;
+
+        &__header {
+            border-color: rgba(99, 102, 241, 0.3) !important;
+            background: rgba(30, 41, 59, 0.8) !important;
+
+            h2 {
+                color: #f1f5f9 !important;
+            }
+        }
+
+        &__close {
+            color: #cbd5e1 !important;
+            background: rgba(30, 41, 59, 0.6) !important;
+
+            &:hover {
+                background: rgba(30, 41, 59, 0.8) !important;
+                color: #f1f5f9 !important;
+            }
+        }
+
+        &__body {
+            background: rgba(30, 41, 59, 0.95) !important;
+        }
+
+        &__row {
+            border-color: rgba(99, 102, 241, 0.2) !important;
+
+            strong {
+                color: var(--color-indigo-300) !important;
+            }
+
+            span, p {
+                color: #cbd5e1 !important;
+            }
+        }
+    }
+}

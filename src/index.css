@@ -74,6 +74,31 @@ html {
   --text-secondary: #cbd5e1;
 }
 
+/* Global dark mode rule for colored cards - keep colors but darker shades */
+.dark {
+  /* Cards with gradients - make them darker but keep the color */
+  [class*="card"]:not([class*="earning-card"]):not([class*="revenue-card"]),
+  .card:not(.revenue-earning-card):not(.withdraw-summary-card),
+  [class*="Card"] {
+    &[style*="gradient"],
+    &[class*="gradient"],
+    &[style*="background"] {
+      filter: brightness(0.75) saturate(1.1) !important;
+    }
+  }
+
+  /* Specific colored cards - keep their colors but darker */
+  [class*="indigo"],
+  [class*="purple"],
+  [class*="blue"],
+  [class*="gradient"] {
+    &[class*="card"],
+    &.card {
+      filter: brightness(0.7) saturate(1.15) !important;
+    }
+  }
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",

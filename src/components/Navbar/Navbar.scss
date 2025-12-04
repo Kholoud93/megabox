@@ -648,3 +648,69 @@
   background: vars.$transparent-white-10 !important;
   color: vars.$white !important;
 }
+
+// Dark Mode Styles for Navbar
+.dark {
+  .navbar {
+    background: linear-gradient(135deg, rgba(55, 48, 163, 0.95) 0%, rgba(67, 56, 202, 0.95) 100%, rgba(79, 70, 229, 0.95) 100%) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5) !important;
+
+    &__language-menu {
+      background: rgba(30, 41, 59, 0.95) !important;
+      border: 1px solid rgba(99, 102, 241, 0.3) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    &__language-option {
+      color: #cbd5e1 !important;
+
+      &:hover {
+        background: rgba(30, 41, 59, 0.8) !important;
+        color: #f1f5f9 !important;
+      }
+
+      &.active {
+        background: rgba(99, 102, 241, 0.3) !important;
+        color: var(--color-indigo-300) !important;
+      }
+    }
+
+    &__login-button {
+      background: rgba(241, 245, 249, 0.95) !important;
+      color: var(--color-indigo-800) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+
+      &:hover {
+        background: rgba(241, 245, 249, 1) !important;
+        color: var(--color-indigo-900) !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+      }
+    }
+
+    &__mobile-menu {
+      background: rgba(55, 48, 163, 0.95) !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+      border: 1px solid rgba(99, 102, 241, 0.3) !important;
+
+      .navbar__item {
+        border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+
+        &:hover,
+        &:focus {
+          background: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        &:active {
+          background: rgba(255, 255, 255, 0.15) !important;
+        }
+      }
+    }
+  }
+
+  .bars {
+    background: linear-gradient(135deg, rgba(55, 48, 163, 0.95), rgba(67, 56, 202, 0.95)) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  }
+}

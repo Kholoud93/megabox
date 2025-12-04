@@ -449,3 +449,120 @@
         }
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .admin-analytics-page {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+    }
+
+    .admin-analytics-header {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+
+        &__icon {
+            color: var(--color-indigo-400) !important;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(79, 70, 229, 0.2) 100%) !important;
+            filter: brightness(0.85) saturate(1.1) !important;
+        }
+
+        &__title {
+            background: linear-gradient(135deg, var(--color-indigo-400) 0%, var(--color-indigo-500) 100%) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+        }
+
+        &__subtitle {
+            color: #cbd5e1 !important;
+        }
+    }
+
+    .admin-analytics-skeleton {
+        .skeleton-card {
+            background: linear-gradient(90deg, rgba(30, 41, 59, 0.6) 25%, rgba(30, 41, 59, 0.8) 50%, rgba(30, 41, 59, 0.6) 75%) !important;
+        }
+    }
+
+    .admin-analytics-withdrawals {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+
+        &::after {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.6) 0%, rgba(79, 70, 229, 0.6) 50%, rgba(99, 102, 241, 0.6) 100%) !important;
+            filter: brightness(0.85) saturate(1.1) !important;
+        }
+
+        &__header {
+            border-color: rgba(99, 102, 241, 0.2) !important;
+        }
+
+        &__title {
+            color: #f1f5f9 !important;
+        }
+
+        &__count {
+            color: #cbd5e1 !important;
+            background: rgba(30, 41, 59, 0.6) !important;
+        }
+
+        &__table {
+            table {
+                thead {
+                    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%) !important;
+
+                    th {
+                        color: #f1f5f9 !important;
+                        border-color: rgba(99, 102, 241, 0.3) !important;
+                    }
+                }
+
+                tbody {
+                    tr {
+                        border-color: rgba(99, 102, 241, 0.2) !important;
+                        background: rgba(30, 41, 59, 0.4) !important;
+
+                        &::before {
+                            background: linear-gradient(135deg, rgba(99, 102, 241, 0.6) 0%, rgba(79, 70, 229, 0.6) 100%) !important;
+                            filter: brightness(0.85) saturate(1.1) !important;
+                        }
+
+                        &:hover {
+                            background: rgba(30, 41, 59, 0.6) !important;
+                            border-left-color: var(--color-indigo-500) !important;
+                        }
+
+                        td {
+                            color: #cbd5e1 !important;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .status-badge {
+        &.status-pending {
+            background: linear-gradient(135deg, rgba(254, 243, 199, 0.3) 0%, rgba(253, 230, 138, 0.3) 100%) !important;
+            color: #fbbf24 !important;
+            filter: brightness(0.85) saturate(1.1) !important;
+            box-shadow: 0 4px 8px rgba(146, 64, 14, 0.3) !important;
+        }
+
+        &.status-approved {
+            background: linear-gradient(135deg, rgba(209, 250, 229, 0.3) 0%, rgba(167, 243, 208, 0.3) 100%) !important;
+            color: #10b981 !important;
+            filter: brightness(0.85) saturate(1.1) !important;
+            box-shadow: 0 4px 8px rgba(6, 95, 70, 0.3) !important;
+        }
+
+        &.status-rejected {
+            background: linear-gradient(135deg, rgba(254, 226, 226, 0.3) 0%, rgba(254, 202, 202, 0.3) 100%) !important;
+            color: #ef4444 !important;
+            filter: brightness(0.85) saturate(1.1) !important;
+            box-shadow: 0 4px 8px rgba(153, 27, 27, 0.3) !important;
+        }
+    }
+}

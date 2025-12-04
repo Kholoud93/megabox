@@ -481,3 +481,162 @@
         }
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .admin-reports-page {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+    }
+
+    .admin-reports-header {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+        &__title {
+            color: #f1f5f9 !important;
+        }
+
+        &__subtitle {
+            color: #cbd5e1 !important;
+        }
+
+        &__count {
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.8), rgba(124, 58, 237, 0.8)) !important;
+            filter: brightness(0.85) saturate(1.1) !important;
+            color: white !important;
+        }
+    }
+
+    .admin-reports-loading,
+    .admin-reports-empty {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+        p {
+            color: #cbd5e1 !important;
+        }
+
+        h3 {
+            color: #f1f5f9 !important;
+        }
+    }
+
+    .copyright-card {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+
+        &:hover {
+            border-color: rgba(99, 102, 241, 0.5) !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .card-header {
+            border-color: rgba(99, 102, 241, 0.2) !important;
+
+            .icon {
+                color: var(--color-indigo-400) !important;
+                background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(79, 70, 229, 0.2) 100%) !important;
+                filter: brightness(0.85) saturate(1.1) !important;
+            }
+
+            h2 {
+                background: linear-gradient(135deg, var(--color-indigo-400) 0%, var(--color-indigo-500) 100%) !important;
+                -webkit-background-clip: text !important;
+                -webkit-text-fill-color: transparent !important;
+                background-clip: text !important;
+            }
+
+            span {
+                color: #cbd5e1 !important;
+            }
+        }
+
+        .card-body {
+            .info-row {
+                border-color: rgba(99, 102, 241, 0.1) !important;
+
+                &:hover {
+                    background: rgba(30, 41, 59, 0.6) !important;
+                }
+
+                strong {
+                    color: var(--color-indigo-300) !important;
+                }
+
+                &:not(strong) {
+                    color: #cbd5e1 !important;
+                }
+            }
+        }
+
+        .card-footer {
+            border-color: rgba(99, 102, 241, 0.2) !important;
+
+            .download-btn {
+                background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(79, 70, 229, 0.8)) !important;
+                filter: brightness(0.85) saturate(1.1) !important;
+                box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4) !important;
+
+                &:hover {
+                    background: linear-gradient(135deg, rgba(79, 70, 229, 0.9), rgba(99, 102, 241, 0.9)) !important;
+                    box-shadow: 0 10px 20px -1px rgba(99, 102, 241, 0.6) !important;
+                }
+            }
+        }
+
+        .admin-reports-delete-btn {
+            color: #fca5a5 !important;
+
+            &:hover {
+                color: #f87171 !important;
+                background: rgba(220, 38, 38, 0.2) !important;
+            }
+        }
+    }
+
+    .admin-delete-modal-backdrop {
+        background: rgba(0, 0, 0, 0.8) !important;
+    }
+
+    .admin-delete-modal {
+        background: rgba(30, 41, 59, 0.95) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid rgba(99, 102, 241, 0.3) !important;
+
+        h3 {
+            color: #f1f5f9 !important;
+        }
+
+        p {
+            color: #cbd5e1 !important;
+        }
+
+        &__warning {
+            color: #fca5a5 !important;
+        }
+
+        &__btn {
+            &--cancel {
+                background: rgba(30, 41, 59, 0.6) !important;
+                color: #cbd5e1 !important;
+
+                &:hover:not(:disabled) {
+                    background: rgba(30, 41, 59, 0.8) !important;
+                }
+            }
+
+            &--delete {
+                background: linear-gradient(135deg, rgba(220, 38, 38, 0.8), rgba(185, 28, 28, 0.8)) !important;
+                filter: brightness(0.85) saturate(1.1) !important;
+
+                &:hover:not(:disabled) {
+                    background: linear-gradient(135deg, rgba(185, 28, 28, 0.9), rgba(153, 27, 27, 0.9)) !important;
+                    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4) !important;
+                }
+            }
+        }
+    }
+}
