@@ -487,3 +487,184 @@
         }
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .admin-payments-page {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    }
+
+    .admin-payments-header {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__subtitle {
+            color: var(--color-indigo-300);
+        }
+
+        &__back {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: var(--color-indigo-300);
+
+            &:hover {
+                background: rgba(30, 41, 59, 0.8);
+                border-color: rgba(99, 102, 241, 0.5);
+            }
+        }
+
+        &__icon {
+            color: var(--color-indigo-400);
+        }
+    }
+
+    .admin-payments-loading,
+    .admin-payments-empty {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+        color: var(--color-indigo-300);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .admin-payments-table-wrapper {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+        .admin-users-table {
+            color: #cbd5e1 !important;
+            border-collapse: collapse !important;
+
+            &__header {
+                background: rgba(30, 41, 59, 0.9) !important;
+
+                th {
+                    background: rgba(30, 41, 59, 0.9) !important;
+                    color: #f1f5f9 !important;
+                    border-bottom: 2px solid rgba(99, 102, 241, 0.4) !important;
+                    border-color: rgba(99, 102, 241, 0.3) !important;
+                }
+            }
+
+            tbody {
+                tr {
+                    background: rgba(30, 41, 59, 0.5) !important;
+                    border-bottom: 1px solid rgba(99, 102, 241, 0.2) !important;
+                    border-color: rgba(99, 102, 241, 0.2) !important;
+
+                    &:hover {
+                        background: rgba(30, 41, 59, 0.7) !important;
+                    }
+
+                    td {
+                        color: #cbd5e1 !important;
+                        border-color: rgba(99, 102, 241, 0.1) !important;
+                    }
+                }
+            }
+        }
+    }
+
+    .admin-users-pagination {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+        &__btn {
+            background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+
+            &:hover:not(:disabled) {
+                background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+            }
+        }
+
+        &__info {
+            color: var(--color-indigo-300) !important;
+        }
+    }
+
+    .admin-payments-count {
+        background: rgba(30, 41, 59, 0.6) !important;
+        color: var(--color-indigo-300) !important;
+    }
+
+    .status-badge {
+        &.status-success {
+            background: rgba(209, 250, 229, 0.2) !important;
+            color: #10b981 !important;
+        }
+
+        &.status-pending {
+            background: rgba(254, 243, 199, 0.2) !important;
+            color: #fbbf24 !important;
+        }
+
+        &.status-failed {
+            background: rgba(254, 226, 226, 0.2) !important;
+            color: #ef4444 !important;
+        }
+    }
+
+    .admin-payments-actions {
+        &__btn {
+            &--view {
+                background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+
+                &:hover:not(:disabled) {
+                    background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+                }
+            }
+        }
+    }
+
+    .admin-payment-modal-backdrop {
+        background: rgba(0, 0, 0, 0.7) !important;
+    }
+
+    .admin-payment-modal {
+        background: rgba(30, 41, 59, 0.95) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid rgba(99, 102, 241, 0.3) !important;
+
+        &__header {
+            border-color: rgba(99, 102, 241, 0.3) !important;
+            background: rgba(30, 41, 59, 0.8) !important;
+
+            h2 {
+                color: #f1f5f9 !important;
+            }
+        }
+
+        &__close {
+            color: #cbd5e1 !important;
+            background: rgba(30, 41, 59, 0.6) !important;
+
+            &:hover {
+                background: rgba(30, 41, 59, 0.8) !important;
+                color: #f1f5f9 !important;
+            }
+        }
+
+        &__body {
+            background: rgba(30, 41, 59, 0.95) !important;
+        }
+
+        &__row {
+            border-color: rgba(99, 102, 241, 0.2) !important;
+
+            strong {
+                color: var(--color-indigo-300) !important;
+            }
+
+            span,
+            p {
+                color: #cbd5e1 !important;
+            }
+        }
+    }
+}

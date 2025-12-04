@@ -735,5 +735,240 @@
     .admin-subscriptions-header {
         background: rgba(30, 41, 59, 0.8);
         border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__subtitle {
+            color: var(--color-indigo-300);
+        }
+
+        &__back {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: var(--color-indigo-300);
+
+            &:hover {
+                background: rgba(30, 41, 59, 0.8);
+                border-color: rgba(99, 102, 241, 0.5);
+            }
+        }
+
+        &__icon {
+            color: var(--color-indigo-400);
+        }
+
+        &__create-btn {
+            background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+
+            &:hover {
+                background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+            }
+        }
+    }
+
+    .admin-subscriptions-loading,
+    .admin-subscriptions-empty {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+        color: var(--color-indigo-300);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .admin-subscriptions-table-wrapper {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+        .admin-users-table {
+            &__header {
+                background: rgba(30, 41, 59, 0.9) !important;
+                border-color: rgba(99, 102, 241, 0.4) !important;
+
+                th {
+                    background: rgba(30, 41, 59, 0.9) !important;
+                    color: #f1f5f9 !important;
+                    border-color: rgba(99, 102, 241, 0.4) !important;
+                }
+            }
+
+            tbody {
+                tr {
+                    background: rgba(30, 41, 59, 0.5) !important;
+                    border-color: rgba(99, 102, 241, 0.2) !important;
+
+                    &:hover {
+                        background: rgba(30, 41, 59, 0.7) !important;
+                    }
+
+                    @include mix.media-breakpoint-down(md) {
+                        background: rgba(30, 41, 59, 0.6) !important;
+                        border-color: rgba(99, 102, 241, 0.3) !important;
+                    }
+
+                    td {
+                        color: #cbd5e1 !important;
+                        border-color: rgba(99, 102, 241, 0.1) !important;
+
+                        &::before {
+                            color: var(--color-indigo-300) !important;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .subscription-plan-badge {
+        background: linear-gradient(135deg, rgba(254, 243, 199, 0.3), rgba(253, 230, 138, 0.3)) !important;
+        color: #fbbf24 !important;
+    }
+
+    .status-badge {
+        &.status-active {
+            background: rgba(209, 250, 229, 0.2) !important;
+            color: #10b981 !important;
+        }
+
+        &.status-expired {
+            background: rgba(254, 226, 226, 0.2) !important;
+            color: #ef4444 !important;
+        }
+    }
+
+    .admin-subscriptions-actions {
+        &__btn {
+            &--view {
+                background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+
+                &:hover:not(:disabled) {
+                    background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+                }
+            }
+        }
+    }
+
+    .admin-subscription-modal-backdrop {
+        background: rgba(0, 0, 0, 0.8) !important;
+    }
+
+    .admin-subscription-modal {
+        background: rgba(30, 41, 59, 0.95) !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid rgba(99, 102, 241, 0.3) !important;
+
+        &__header {
+            background: rgba(30, 41, 59, 0.8) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+
+            h2 {
+                color: #f1f5f9 !important;
+            }
+        }
+
+        &__close {
+            color: #cbd5e1 !important;
+            background: rgba(30, 41, 59, 0.6) !important;
+
+            &:hover {
+                background: rgba(30, 41, 59, 0.8) !important;
+                color: #f1f5f9 !important;
+            }
+        }
+
+        &__body {
+            background: rgba(30, 41, 59, 0.95) !important;
+
+            .form-group {
+                label {
+                    color: #f1f5f9 !important;
+                }
+
+                input[type="text"],
+                input[type="tel"],
+                input[type="number"],
+                input[type="file"],
+                select {
+                    background: rgba(15, 23, 42, 0.6) !important;
+                    border-color: rgba(99, 102, 241, 0.3) !important;
+                    color: #f1f5f9 !important;
+
+                    &:hover:not(:disabled) {
+                        border-color: rgba(99, 102, 241, 0.5) !important;
+                        background: rgba(15, 23, 42, 0.7) !important;
+                    }
+
+                    &:focus {
+                        border-color: var(--color-indigo-500) !important;
+                        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2) !important;
+                        background: rgba(15, 23, 42, 0.8) !important;
+                    }
+
+                    &::placeholder {
+                        color: #94a3b8 !important;
+                    }
+                }
+
+                input[type="file"] {
+                    border-color: rgba(99, 102, 241, 0.3) !important;
+                    background: rgba(15, 23, 42, 0.4) !important;
+
+                    &:hover {
+                        border-color: var(--color-indigo-400) !important;
+                        background: rgba(15, 23, 42, 0.5) !important;
+                    }
+
+                    &::-webkit-file-upload-button {
+                        background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+
+                        &:hover {
+                            background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+                        }
+                    }
+                }
+            }
+        }
+
+        &__actions {
+            background: rgba(30, 41, 59, 0.8) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+
+            .btn {
+                &.btn-secondary {
+                    background: rgba(30, 41, 59, 0.6) !important;
+                    color: #cbd5e1 !important;
+                    border-color: rgba(99, 102, 241, 0.3) !important;
+
+                    &:hover:not(:disabled) {
+                        background: rgba(30, 41, 59, 0.8) !important;
+                        color: #f1f5f9 !important;
+                        border-color: rgba(99, 102, 241, 0.5) !important;
+                    }
+                }
+
+                &.btn-primary {
+                    background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+
+                    &:hover:not(:disabled) {
+                        background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+                    }
+                }
+            }
+        }
+
+        &__row {
+            border-color: rgba(99, 102, 241, 0.2) !important;
+
+            strong {
+                color: var(--color-indigo-300) !important;
+            }
+
+            span,
+            p {
+                color: #cbd5e1 !important;
+            }
+        }
     }
 }

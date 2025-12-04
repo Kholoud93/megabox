@@ -454,11 +454,13 @@
             border-collapse: collapse;
 
             thead {
-                background: rgba(30, 41, 59, 0.8) !important;
-                border-bottom: 2px solid rgba(99, 102, 241, 0.3) !important;
+                background: rgba(30, 41, 59, 0.9) !important;
+                border-bottom: 2px solid rgba(99, 102, 241, 0.4) !important;
 
                 th {
+                    background: rgba(30, 41, 59, 0.9) !important;
                     color: #f1f5f9 !important;
+                    border-bottom: 2px solid rgba(99, 102, 241, 0.4) !important;
                     border-color: rgba(99, 102, 241, 0.3) !important;
                     font-weight: 600 !important;
                     padding: 1rem !important;
@@ -472,12 +474,13 @@
 
             tbody {
                 tr {
+                    background: rgba(30, 41, 59, 0.6) !important;
+                    border-bottom: 1px solid rgba(99, 102, 241, 0.2) !important;
                     border-color: rgba(99, 102, 241, 0.2) !important;
                     transition: background 0.2s ease !important;
-                    background: rgba(30, 41, 59, 0.6) !important;
 
                     &:hover {
-                        background: rgba(99, 102, 241, 0.15) !important;
+                        background: rgba(30, 41, 59, 0.8) !important;
                     }
 
                     &:last-child {

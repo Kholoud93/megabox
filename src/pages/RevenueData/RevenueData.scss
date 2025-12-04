@@ -604,21 +604,86 @@ a.revenue-earning-card__share-button.revenue-earning-card__withdraw-button,
     }
 
     .revenue-referral-section {
-        background: rgba(30, 41, 59, 0.6);
-        border-color: rgba(99, 102, 241, 0.3);
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.4) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
 
         &__title {
-            color: var(--color-indigo-300);
+            color: var(--color-indigo-300) !important;
+        }
+
+        &__button {
+            background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4) !important;
+
+            &:hover {
+                background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+                box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5) !important;
+            }
+        }
+
+        &__arrow {
+            background: var(--color-indigo-400) !important;
+        }
+
+        &__coins {
+            background: radial-gradient(circle, var(--color-indigo-500) 0%, transparent 70%) !important;
         }
     }
 
     .revenue-earning-section {
         &__title {
-            color: #f1f5f9;
+            color: #f1f5f9 !important;
         }
 
         &__id {
-            color: var(--color-indigo-300);
+            color: var(--color-indigo-300) !important;
+        }
+    }
+
+    .revenue-earning-card {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.9) 0%, rgba(79, 70, 229, 0.95) 100%) !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid rgba(99, 102, 241, 0.4) !important;
+
+        &__label {
+            color: rgba(255, 255, 255, 0.95) !important;
+        }
+
+        &__help-icon {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        &__value {
+            color: white !important;
+        }
+
+        &__withdraw-button {
+            background: rgba(241, 245, 249, 0.95) !important;
+            color: var(--color-indigo-700) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+
+            &:hover {
+                background: white !important;
+                color: var(--color-indigo-800) !important;
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+            }
+        }
+
+        &__share-button {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(79, 70, 229, 0.95)) !important;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4) !important;
+
+            &:hover {
+                background: linear-gradient(135deg, rgba(79, 70, 229, 0.95), rgba(67, 56, 202, 1)) !important;
+                box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5) !important;
+            }
+        }
+
+        &__background {
+            .revenue-earning-card__dollar-sign {
+                color: rgba(255, 255, 255, 0.1) !important;
+            }
         }
     }
 

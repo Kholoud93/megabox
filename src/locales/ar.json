@@ -11,7 +11,9 @@
     "switchToArabic": "التبديل إلى العربية",
     "switchToEnglish": "Switch to English",
     "arabic": "العربية",
-    "english": "English"
+    "english": "English",
+    "darkMode": "الوضع الداكن",
+    "lightMode": "الوضع الفاتح"
   },
   "landingOptions": {
     "title": "للشركات والأفراد",

@@ -688,16 +688,21 @@
 
         .revenue-summary {
             &__card {
-                background: rgba(30, 41, 59, 0.8);
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+                background: rgba(30, 41, 59, 0.8) !important;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+                border: 1px solid rgba(99, 102, 241, 0.3) !important;
+            }
+
+            &__icon {
+                color: var(--color-indigo-400) !important;
             }
 
             &__label {
-                color: #cbd5e1;
+                color: var(--color-indigo-300) !important;
             }
 
             &__value {
-                color: #f1f5f9;
+                color: #f1f5f9 !important;
             }
         }
 

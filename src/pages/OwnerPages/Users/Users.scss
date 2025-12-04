@@ -1251,3 +1251,372 @@
     background-color: rgba(0, 0, 0, 0.296);
     z-index: 1000;
 }
+
+// Dark Mode Styles
+.dark {
+    .admin-users-page {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    }
+
+    .admin-users-header {
+        &__notify-btn {
+            background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+
+            &:hover {
+                background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+            }
+        }
+    }
+
+    .admin-users-pagination {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+        &__btn {
+            background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+
+            &:hover:not(:disabled) {
+                background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+            }
+        }
+
+        &__info {
+            color: var(--color-indigo-300) !important;
+        }
+    }
+
+    .admin-notification-modal-backdrop {
+        background: rgba(0, 0, 0, 0.7) !important;
+    }
+
+    .admin-notification-modal {
+        background: rgba(30, 41, 59, 0.95) !important;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
+
+        &__header {
+            border-color: rgba(99, 102, 241, 0.3) !important;
+        }
+
+        &__title {
+            color: #f1f5f9 !important;
+        }
+
+        &__username {
+            color: var(--color-indigo-300) !important;
+        }
+
+        &__close {
+            color: #cbd5e1 !important;
+
+            &:hover {
+                color: #f1f5f9 !important;
+                background: rgba(30, 41, 59, 0.6) !important;
+            }
+        }
+
+        &__label {
+            color: #f1f5f9 !important;
+        }
+
+        &__input,
+        &__textarea {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+            color: #f1f5f9 !important;
+
+            &:focus {
+                border-color: var(--color-indigo-500) !important;
+                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+                background: rgba(15, 23, 42, 0.8) !important;
+            }
+
+            &::placeholder {
+                color: #94a3b8 !important;
+            }
+        }
+
+        &__btn {
+            &--cancel {
+                background: rgba(30, 41, 59, 0.6) !important;
+                color: #cbd5e1 !important;
+                border-color: rgba(99, 102, 241, 0.3) !important;
+
+                &:hover {
+                    background: rgba(30, 41, 59, 0.8) !important;
+                    color: #f1f5f9 !important;
+                }
+            }
+
+            &--submit {
+                background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+
+                &:hover {
+                    background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+                }
+            }
+        }
+    }
+
+    .addmoderator {
+        .addbody-for-lec,
+        .addbody {
+            background: rgba(30, 41, 59, 0.8) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+            button {
+                background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+
+                &:hover {
+                    background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+                }
+            }
+
+            .studentfield {
+                label {
+                    color: #f1f5f9 !important;
+                }
+
+                input,
+                select,
+                textarea {
+                    background: rgba(15, 23, 42, 0.6) !important;
+                    border-color: rgba(99, 102, 241, 0.3) !important;
+                    color: #f1f5f9 !important;
+
+                    &:focus {
+                        border-color: var(--color-indigo-500) !important;
+                        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+                        background: rgba(15, 23, 42, 0.8) !important;
+                    }
+
+                    &::placeholder {
+                        color: #94a3b8 !important;
+                    }
+                }
+            }
+        }
+    }
+
+    .main-Orders {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+        .svg-del svg {
+            color: var(--color-indigo-400) !important;
+        }
+
+        table {
+            th {
+                background: rgba(30, 41, 59, 0.9) !important;
+                color: #f1f5f9 !important;
+                border-color: rgba(99, 102, 241, 0.3) !important;
+            }
+        }
+
+        .admin-users-table {
+            color: #cbd5e1 !important;
+
+            &__header {
+                background: rgba(30, 41, 59, 0.9) !important;
+
+                th {
+                    background: rgba(30, 41, 59, 0.9) !important;
+                    color: #f1f5f9 !important;
+                    border-color: rgba(99, 102, 241, 0.4) !important;
+                }
+            }
+
+            tbody {
+                tr {
+                    background: rgba(30, 41, 59, 0.5) !important;
+                    border-color: rgba(99, 102, 241, 0.2) !important;
+
+                    &:hover {
+                        background: rgba(30, 41, 59, 0.7) !important;
+                    }
+
+                    @include mix.media-breakpoint-down(md) {
+                        background: rgba(30, 41, 59, 0.6) !important;
+                        border-color: rgba(99, 102, 241, 0.3) !important;
+                    }
+
+                    td {
+                        color: #cbd5e1 !important;
+                        border-color: rgba(99, 102, 241, 0.1) !important;
+
+                        &::before {
+                            color: var(--color-indigo-300) !important;
+                        }
+                    }
+                }
+            }
+        }
+
+        .action-buttons {
+            button,
+            a {
+                &:hover {
+                    background: rgba(99, 102, 241, 0.2) !important;
+                }
+
+                svg {
+                    color: var(--color-indigo-400) !important;
+                }
+            }
+        }
+    }
+
+    .add {
+        button {
+            background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+
+            &:hover {
+                background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+            }
+        }
+    }
+
+    .modal-overlay {
+        background: rgba(0, 0, 0, 0.7) !important;
+    }
+
+    .modal-content {
+        background: rgba(30, 41, 59, 0.95) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid rgba(99, 102, 241, 0.3) !important;
+
+        h2 {
+            color: #f1f5f9 !important;
+        }
+
+        .modal-actions {
+            button {
+                &.cancel-btn {
+                    background: rgba(30, 41, 59, 0.6) !important;
+                    color: #cbd5e1 !important;
+
+                    &:hover {
+                        background: rgba(30, 41, 59, 0.8) !important;
+                        color: #f1f5f9 !important;
+                    }
+                }
+
+                &.confirm-btn {
+                    background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+
+                    &:hover {
+                        background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+                    }
+                }
+            }
+        }
+    }
+
+    .premium-modal,
+    .search-user-modal {
+        .modal-content {
+            background: rgba(30, 41, 59, 0.95) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+
+            form {
+                .form-group {
+                    label {
+                        color: #f1f5f9 !important;
+                    }
+
+                    input {
+                        background: rgba(15, 23, 42, 0.6) !important;
+                        border-color: rgba(99, 102, 241, 0.3) !important;
+                        color: #f1f5f9 !important;
+
+                        &:focus {
+                            border-color: var(--color-indigo-500) !important;
+                            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+                            background: rgba(15, 23, 42, 0.8) !important;
+                        }
+                    }
+
+                    .error {
+                        color: #ef4444 !important;
+                    }
+                }
+
+                .form-actions {
+                    button {
+                        &.cancel-btn {
+                            background: rgba(30, 41, 59, 0.6) !important;
+                            color: #cbd5e1 !important;
+
+                            &:hover {
+                                background: rgba(30, 41, 59, 0.8) !important;
+                                color: #f1f5f9 !important;
+                            }
+                        }
+
+                        &.submit-btn {
+                            background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+
+                            &:hover {
+                                background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .search-form {
+                .search-input-group {
+                    input {
+                        background: rgba(15, 23, 42, 0.6) !important;
+                        border-color: rgba(99, 102, 241, 0.3) !important;
+                        color: #f1f5f9 !important;
+
+                        &:focus {
+                            border-color: var(--color-indigo-500) !important;
+                            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+                        }
+                    }
+
+                    button {
+                        background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+
+                        &:hover {
+                            background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+                        }
+                    }
+                }
+            }
+
+            .search-result {
+                background: rgba(30, 41, 59, 0.6) !important;
+                border-color: rgba(99, 102, 241, 0.3) !important;
+
+                .user-info {
+                    p {
+                        color: #cbd5e1 !important;
+
+                        &.user-id {
+                            color: #94a3b8 !important;
+                        }
+                    }
+                }
+
+                .user-actions {
+                    button {
+                        &.premium-btn {
+                            background: linear-gradient(135deg, #fbbf24, #f59e0b) !important;
+                            color: #1e293b !important;
+
+                            &:hover {
+                                background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
