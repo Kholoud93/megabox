@@ -63,3 +63,35 @@
         }
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .empty-state {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border: 1px solid rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+        &__icon {
+            color: var(--color-indigo-400) !important;
+        }
+
+        &__title {
+            color: #f1f5f9 !important;
+        }
+
+        &__message {
+            color: var(--color-indigo-300) !important;
+        }
+
+        &__button {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.9), rgba(67, 56, 202, 0.9)) !important;
+            filter: brightness(0.85) saturate(1.1) !important;
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.4) !important;
+
+            &:hover {
+                background: linear-gradient(135deg, rgba(67, 56, 202, 0.95), rgba(55, 48, 163, 0.95)) !important;
+                box-shadow: 0 4px 12px rgba(79, 70, 229, 0.5) !important;
+            }
+        }
+    }
+}

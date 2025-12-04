@@ -21,6 +21,22 @@ body {
   }
 }
 
+/* Dark Mode Scrollbar */
+.dark body {
+  &::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.8);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.7);
+    border-radius: 20px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: rgba(79, 70, 229, 0.9);
+  }
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -147,6 +163,57 @@ body {
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3) !important;
   display: flex !important;
   align-items: center !important;
+}
+
+/* Dark Mode Toast Styles - Keep colors but darker shades */
+.dark {
+  .ToastSuccess {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.9) 0%, rgba(67, 56, 202, 0.9) 100%) !important;
+    filter: brightness(0.85) saturate(1.1) !important;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4) !important;
+  }
+
+  .ToastError {
+    background: linear-gradient(135deg, rgba(67, 56, 202, 0.9) 0%, rgba(55, 48, 163, 0.9) 100%) !important;
+    filter: brightness(0.85) saturate(1.1) !important;
+    border-left-color: rgba(239, 68, 68, 0.8) !important;
+    box-shadow: 0 4px 12px rgba(67, 56, 202, 0.4) !important;
+  }
+
+  .ToastInfo {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.9) 0%, rgba(79, 70, 229, 0.9) 100%) !important;
+    filter: brightness(0.85) saturate(1.1) !important;
+    border-left-color: rgba(129, 140, 248, 0.8) !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4) !important;
+  }
+
+  .ToastWarning {
+    background: linear-gradient(135deg, rgba(129, 140, 248, 0.9) 0%, rgba(99, 102, 241, 0.9) 100%) !important;
+    filter: brightness(0.85) saturate(1.1) !important;
+    border-left-color: rgba(251, 191, 36, 0.8) !important;
+    box-shadow: 0 4px 12px rgba(129, 140, 248, 0.4) !important;
+  }
+
+  .ToastShare {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.9) 0%, rgba(79, 70, 229, 0.9) 100%) !important;
+    filter: brightness(0.85) saturate(1.1) !important;
+    border-left-color: rgba(129, 140, 248, 0.8) !important;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4) !important;
+  }
+
+  .ToastDefault {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.9) 0%, rgba(67, 56, 202, 0.9) 100%) !important;
+    filter: brightness(0.85) saturate(1.1) !important;
+    border-left-color: rgba(99, 102, 241, 0.8) !important;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4) !important;
+  }
+
+  .Toast {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.9) 0%, rgba(67, 56, 202, 0.9) 100%) !important;
+    filter: brightness(0.85) saturate(1.1) !important;
+    border-left-color: rgba(99, 102, 241, 0.8) !important;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4) !important;
+  }
 }
 
 @keyframes App-logo-spin {

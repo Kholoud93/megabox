@@ -57,3 +57,26 @@
         }
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .Represents_backDrob {
+        background-color: rgba(0, 0, 0, 0.9) !important;
+    }
+
+    .viewer-container {
+        background: rgba(30, 41, 59, 0.95) !important;
+        border: 1px solid rgba(99, 102, 241, 0.3) !important;
+    }
+
+    .toolbar {
+        .toolbar-btn {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.9), rgba(67, 56, 202, 0.9)) !important;
+            filter: brightness(0.85) saturate(1.1) !important;
+
+            &:hover {
+                background: linear-gradient(135deg, rgba(67, 56, 202, 0.95), rgba(55, 48, 163, 0.95)) !important;
+            }
+        }
+    }
+}

@@ -147,3 +147,83 @@
         background-position: 200% 0;
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .shared-links-table {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border: 1px solid rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+        &__header {
+            h3 {
+                color: #f1f5f9 !important;
+            }
+
+            p {
+                color: var(--color-indigo-300) !important;
+            }
+        }
+
+        &__table {
+            thead {
+                background: rgba(30, 41, 59, 0.6) !important;
+
+                th {
+                    color: #f1f5f9 !important;
+                    border-bottom-color: rgba(99, 102, 241, 0.3) !important;
+                }
+            }
+
+            tbody {
+                tr {
+                    border-bottom-color: rgba(99, 102, 241, 0.2) !important;
+
+                    &:hover {
+                        background: rgba(30, 41, 59, 0.6) !important;
+                    }
+
+                    td {
+                        color: #cbd5e1 !important;
+                    }
+                }
+            }
+        }
+
+        &__skeleton {
+            .skeleton-row {
+                border-bottom-color: rgba(99, 102, 241, 0.2) !important;
+
+                .skeleton-cell {
+                    background: linear-gradient(90deg, rgba(30, 41, 59, 0.6) 25%, rgba(30, 41, 59, 0.8) 50%, rgba(30, 41, 59, 0.6) 75%) !important;
+                }
+            }
+        }
+    }
+
+    .link-cell {
+        .link-icon {
+            color: var(--color-indigo-400) !important;
+        }
+
+        .link-text {
+            color: var(--color-indigo-300) !important;
+        }
+
+        .link-external {
+            color: var(--color-indigo-400) !important;
+
+            &:hover {
+                color: var(--color-indigo-300) !important;
+            }
+        }
+    }
+
+    .stat-cell {
+        color: var(--color-indigo-300) !important;
+
+        svg {
+            color: var(--color-indigo-400) !important;
+        }
+    }
+}

@@ -105,3 +105,22 @@
         }
     }
 }
+
+// Dark Mode Styles - Keep colors but darker shades
+.dark {
+    .earning-card {
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.85) 0%, rgba(67, 56, 202, 0.85) 100%) !important;
+        filter: brightness(0.8) saturate(1.15) !important;
+        box-shadow: 0 10px 30px rgba(79, 70, 229, 0.4) !important;
+
+        &__withdraw-btn {
+            background: rgba(241, 245, 249, 0.95) !important;
+            color: var(--color-indigo-800) !important;
+
+            &:hover {
+                background: rgba(241, 245, 249, 1) !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+            }
+        }
+    }
+}

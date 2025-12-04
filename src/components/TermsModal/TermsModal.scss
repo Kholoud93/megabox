@@ -184,3 +184,68 @@
     }
 }
 
+// Dark Mode Styles
+.dark {
+    .terms-modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.8) !important;
+    }
+
+    .terms-modal {
+        background: rgba(30, 41, 59, 0.95) !important;
+        border: 1px solid rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+
+        &__close {
+            color: #cbd5e1 !important;
+
+            &:hover {
+                background: rgba(30, 41, 59, 0.6) !important;
+                color: #f1f5f9 !important;
+            }
+        }
+
+        &__title {
+            color: #f1f5f9 !important;
+        }
+
+        &__description {
+            color: #cbd5e1 !important;
+        }
+
+        &__link-number {
+            color: #f1f5f9 !important;
+        }
+
+        &__link {
+            color: var(--color-indigo-400) !important;
+
+            &:hover {
+                color: var(--color-indigo-300) !important;
+            }
+        }
+
+        &__checkbox {
+            background: rgba(15, 23, 42, 0.6) !important;
+
+            label {
+                color: #cbd5e1 !important;
+            }
+        }
+
+        &__button {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.9), rgba(67, 56, 202, 0.9)) !important;
+            filter: brightness(0.85) saturate(1.1) !important;
+
+            &:hover:not(:disabled) {
+                background: linear-gradient(135deg, rgba(67, 56, 202, 0.95), rgba(55, 48, 163, 0.95)) !important;
+                box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4) !important;
+            }
+
+            &:disabled {
+                background: rgba(99, 102, 241, 0.3) !important;
+                color: #94a3b8 !important;
+            }
+        }
+    }
+}
+
