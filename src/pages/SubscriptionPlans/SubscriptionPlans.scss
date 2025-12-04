@@ -348,3 +348,119 @@
     }
 }
 
+// Dark Mode Styles
+.dark {
+    .subscription-plans-page {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    }
+
+    .subscription-plans-header {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__subtitle {
+            color: #cbd5e1;
+        }
+
+        &__back {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: var(--color-indigo-300);
+
+            &:hover {
+                background: rgba(30, 41, 59, 0.8);
+            }
+        }
+    }
+
+    .subscription-plans-loading,
+    .subscription-plans-empty {
+        background: rgba(30, 41, 59, 0.8);
+        color: #cbd5e1;
+    }
+
+    .subscription-plan-card {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+        &__header {
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        &__name {
+            color: #f1f5f9;
+        }
+
+        &__label {
+            color: #cbd5e1;
+        }
+
+        &__value {
+            color: #f1f5f9;
+        }
+
+        &__actions {
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+    }
+
+    .subscription-plan-modal {
+        background: rgba(30, 41, 59, 0.95);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+
+        &__header {
+            border-color: rgba(99, 102, 241, 0.3);
+
+            h2 {
+                color: #f1f5f9;
+            }
+        }
+
+        &__close {
+            color: #cbd5e1;
+
+            &:hover {
+                background: rgba(30, 41, 59, 0.6);
+            }
+        }
+
+        &__body {
+            .form-group {
+                label {
+                    color: #cbd5e1;
+                }
+
+                input,
+                select {
+                    background: rgba(15, 23, 42, 0.6);
+                    border-color: rgba(99, 102, 241, 0.3);
+                    color: #f1f5f9;
+
+                    &:focus {
+                        border-color: rgba(99, 102, 241, 0.5);
+                    }
+                }
+            }
+        }
+
+        &__actions {
+            border-color: rgba(99, 102, 241, 0.3);
+
+            .btn-secondary {
+                background: rgba(30, 41, 59, 0.6);
+                color: #cbd5e1;
+
+                &:hover:not(:disabled) {
+                    background: rgba(30, 41, 59, 0.8);
+                }
+            }
+        }
+    }
+}
+

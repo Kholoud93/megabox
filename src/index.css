@@ -44,6 +44,29 @@ html {
 }
 
 .dark {
+  /* Dark mode indigo colors - adjusted for better visibility */
+  --color-indigo-50: oklch(0.2 0.018 272.314);
+  --color-indigo-100: oklch(0.25 0.034 272.788);
+  --color-indigo-200: oklch(0.3 0.065 274.039);
+  --color-indigo-300: oklch(0.4 0.115 274.713);
+  --color-indigo-400: oklch(0.5 0.182 276.935);
+  --color-indigo-500: oklch(0.6 0.233 277.117);
+  --color-indigo-600: oklch(0.65 0.262 276.966);
+  --color-indigo-700: oklch(0.7 0.24 277.023);
+  --color-indigo-800: oklch(0.75 0.195 277.366);
+  --color-indigo-900: oklch(0.8 0.144 278.697);
+  --color-indigo-950: oklch(0.85 0.09 281.288);
+
+  /* RGBA versions for SCSS rgba() compatibility - darker shades */
+  --color-indigo-50-rgb: 30, 41, 59;
+  --color-indigo-100-rgb: 51, 65, 85;
+  --color-indigo-200-rgb: 71, 85, 105;
+  --color-indigo-300-rgb: 100, 116, 139;
+  --color-indigo-400-rgb: 129, 140, 248;
+  --color-indigo-500-rgb: 139, 92, 246;
+  --color-indigo-600-rgb: 165, 180, 252;
+  --color-indigo-700-rgb: 196, 181, 253;
+
   /* Dark mode background colors */
   --bg-primary: #0f172a;
   --bg-secondary: #1e293b;

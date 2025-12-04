@@ -385,3 +385,93 @@
         background-position: 200% 0;
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .referral-page {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    }
+
+    .referral-banner {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+        border-color: rgba(102, 126, 234, 0.5);
+    }
+
+    .referral-modal {
+        background: rgba(30, 41, 59, 0.95);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__rules {
+            color: #cbd5e1;
+
+            li {
+                color: #cbd5e1;
+            }
+        }
+    }
+
+    .referral-stats {
+        &__card {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__item {
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        &__label {
+            color: var(--color-indigo-300);
+        }
+
+        &__value {
+            color: #f1f5f9;
+        }
+    }
+
+    .refer-users-section {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+        &__title {
+            color: #f1f5f9;
+        }
+    }
+
+    .refer-users-table {
+        &__table {
+            thead {
+                background: rgba(30, 41, 59, 0.6);
+
+                th {
+                    color: #f1f5f9;
+                    border-color: rgba(99, 102, 241, 0.3);
+                }
+            }
+
+            tbody {
+                tr {
+                    border-color: rgba(99, 102, 241, 0.2);
+
+                    &:hover {
+                        background: rgba(30, 41, 59, 0.6);
+                    }
+
+                    td {
+                        color: #cbd5e1;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -596,3 +596,63 @@ a.revenue-earning-card__share-button.revenue-earning-card__withdraw-button,
         max-width: 100% !important;
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .revenue-data-page {
+        background: #1e293b;
+    }
+
+    .revenue-referral-section {
+        background: rgba(30, 41, 59, 0.6);
+        border-color: rgba(99, 102, 241, 0.3);
+
+        &__title {
+            color: var(--color-indigo-300);
+        }
+    }
+
+    .revenue-earning-section {
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__id {
+            color: var(--color-indigo-300);
+        }
+    }
+
+    .revenue-notification-section {
+        &__title {
+            color: #f1f5f9;
+        }
+    }
+
+    .revenue-table-container {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .revenue-table {
+        thead {
+            background: rgba(30, 41, 59, 0.6);
+        }
+
+        th {
+            color: #f1f5f9;
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        td {
+            color: #cbd5e1;
+            border-color: rgba(99, 102, 241, 0.2);
+        }
+
+        tbody tr {
+            &:hover {
+                background: rgba(30, 41, 59, 0.6);
+            }
+        }
+    }
+}

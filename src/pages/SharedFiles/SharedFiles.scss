@@ -476,3 +476,124 @@
         opacity: 0.5;
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .revenue-data-page {
+        background: #1e293b;
+    }
+
+    .shared-files-header {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__description {
+            color: #cbd5e1;
+        }
+
+        &__note {
+            color: var(--color-indigo-300);
+        }
+    }
+
+    .view-mode-toggle {
+        background: rgba(30, 41, 59, 0.8);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+        &__label {
+            color: #cbd5e1;
+        }
+
+        &__btn {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: #cbd5e1;
+
+            &:hover {
+                background: rgba(30, 41, 59, 0.8);
+            }
+
+            &.active {
+                background: var(--color-indigo-600);
+                border-color: var(--color-indigo-700);
+                color: white;
+            }
+        }
+    }
+
+    .shared-files-filters {
+        background: rgba(30, 41, 59, 0.8);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .filter-btn {
+        background: rgba(30, 41, 59, 0.6);
+        border-color: rgba(99, 102, 241, 0.3);
+        color: #cbd5e1;
+
+        &:hover {
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        &.active {
+            background: var(--color-indigo-600);
+            border-color: var(--color-indigo-700);
+            color: white;
+        }
+    }
+
+    .shared-folders-section {
+        background: rgba(30, 41, 59, 0.8);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+        &__title {
+            color: #f1f5f9;
+        }
+    }
+
+    .shared-folder-card {
+        background: rgba(30, 41, 59, 0.6);
+        border-color: rgba(99, 102, 241, 0.3);
+
+        &:hover {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        &__name {
+            color: #f1f5f9;
+        }
+
+        &__count {
+            color: var(--color-indigo-300);
+        }
+    }
+
+    .shared-links-header {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__description {
+            color: #cbd5e1;
+        }
+    }
+
+    .revenue-table-container {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    .shared-links-table-loading {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+    }
+}

@@ -96,3 +96,53 @@
         }
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .earnings-container {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+
+        .earnings-card {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: #cbd5e1;
+
+            .main-heading {
+                color: #f1f5f9;
+            }
+
+            .user-id {
+                color: var(--color-indigo-300);
+
+                span {
+                    color: #f1f5f9;
+                }
+            }
+
+            .earnings-grid {
+                .earning-item {
+                    background: rgba(30, 41, 59, 0.6);
+                    border-color: rgba(99, 102, 241, 0.2);
+
+                    &:hover {
+                        background: rgba(30, 41, 59, 0.8);
+                        border-color: rgba(99, 102, 241, 0.4);
+                    }
+
+                    &.total {
+                        background: rgba(99, 102, 241, 0.2);
+                        border-color: rgba(99, 102, 241, 0.4);
+                    }
+
+                    .label {
+                        color: var(--color-indigo-300);
+                    }
+
+                    .value {
+                        color: #f1f5f9;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -882,3 +882,16 @@
     color: #fbbf24;
     filter: drop-shadow(0 2px 4px rgba(251, 191, 36, 0.3));
 }
+
+// Dark Mode Styles
+.dark {
+    .admin-promoters-page {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    }
+
+    .Promoters {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    }
+}

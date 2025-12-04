@@ -15,7 +15,9 @@ import {
     HiHandRaised,
     HiBell,
     HiCurrencyDollar,
-    HiChevronDown
+    HiChevronDown,
+    HiSun,
+    HiMoon
 } from "react-icons/hi2";
 import { FiGlobe } from 'react-icons/fi';
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
