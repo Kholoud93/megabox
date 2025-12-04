@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { IoIosArrowUp } from "react-icons/io";
 import { FiHelpCircle, FiChevronDown } from "react-icons/fi";
 import { useLanguage } from "../../context/LanguageContext";
+import "./Faq.scss";
 
 const FAQSection = () => {
     const { t } = useLanguage();

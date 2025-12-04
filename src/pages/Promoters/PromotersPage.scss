@@ -360,14 +360,17 @@
         text-align: center;
         @include mixins.transition(all, 0.3s);
         border: 2px solid transparent;
-        min-width: 200px;
+        min-width: 300px;
+        max-width: 320px;
+        width: 100%;
         flex-shrink: 0;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         position: relative;
         overflow: hidden;
 
         @include mixins.media-breakpoint-down(sm) {
-            min-width: 180px;
+            min-width: 250px;
+            max-width: 280px;
             padding: 1rem 0.875rem;
         }
 
@@ -1291,18 +1294,70 @@
             color: #f1f5f9;
             border-color: rgba(99, 102, 241, 0.3);
 
-            &--indigo,
-            &--purple,
-            &--blue,
-            &--green,
-            &--orange,
-            &--red {
-                background: rgba(30, 41, 59, 0.9);
+            &--indigo {
+                border-top-color: rgba(99, 102, 241, 0.6);
+                background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(30, 41, 59, 0.9) 100%);
+                
+                &:hover {
+                    border-top-color: rgba(99, 102, 241, 0.8);
+                    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(30, 41, 59, 1) 100%);
+                    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+                }
             }
 
-            &:hover {
-                background: rgba(30, 41, 59, 1);
-                border-color: rgba(99, 102, 241, 0.5);
+            &--purple {
+                border-top-color: rgba(147, 51, 234, 0.6);
+                background: linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(30, 41, 59, 0.9) 100%);
+                
+                &:hover {
+                    border-top-color: rgba(147, 51, 234, 0.8);
+                    background: linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(30, 41, 59, 1) 100%);
+                    box-shadow: 0 8px 25px rgba(147, 51, 234, 0.3);
+                }
+            }
+
+            &--blue {
+                border-top-color: rgba(59, 130, 246, 0.6);
+                background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(30, 41, 59, 0.9) 100%);
+                
+                &:hover {
+                    border-top-color: rgba(59, 130, 246, 0.8);
+                    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(30, 41, 59, 1) 100%);
+                    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+                }
+            }
+
+            &--green {
+                border-top-color: rgba(16, 185, 129, 0.6);
+                background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(30, 41, 59, 0.9) 100%);
+                
+                &:hover {
+                    border-top-color: rgba(16, 185, 129, 0.8);
+                    background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(30, 41, 59, 1) 100%);
+                    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+                }
+            }
+
+            &--orange {
+                border-top-color: rgba(249, 115, 22, 0.6);
+                background: linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(30, 41, 59, 0.9) 100%);
+                
+                &:hover {
+                    border-top-color: rgba(249, 115, 22, 0.8);
+                    background: linear-gradient(135deg, rgba(249, 115, 22, 0.2) 0%, rgba(30, 41, 59, 1) 100%);
+                    box-shadow: 0 8px 25px rgba(249, 115, 22, 0.3);
+                }
+            }
+
+            &--red {
+                border-top-color: rgba(239, 68, 68, 0.6);
+                background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(30, 41, 59, 0.9) 100%);
+                
+                &:hover {
+                    border-top-color: rgba(239, 68, 68, 0.8);
+                    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(30, 41, 59, 1) 100%);
+                    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+                }
             }
         }
 

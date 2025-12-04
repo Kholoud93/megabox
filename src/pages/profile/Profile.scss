@@ -355,5 +355,98 @@
                 background: var(--color-indigo-600) !important;
             }
         }
+
+        // User Analytics Section
+        .bg-white.rounded-xl.shadow-lg {
+            background: rgba(30, 41, 59, 0.8) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        // Analytics Cards
+        .bg-gradient-to-br {
+            &.from-indigo-50,
+            &.from-blue-50,
+            &.from-green-50,
+            &.from-purple-50,
+            &.from-orange-50,
+            &.from-pink-50 {
+                background: rgba(30, 41, 59, 0.9) !important;
+                border-color: rgba(99, 102, 241, 0.3) !important;
+            }
+
+            &.to-indigo-100,
+            &.to-blue-100,
+            &.to-green-100,
+            &.to-purple-100,
+            &.to-orange-100,
+            &.to-pink-100 {
+                background: rgba(30, 41, 59, 0.9) !important;
+            }
+        }
+
+        // Analytics Card Icons
+        .bg-indigo-500,
+        .bg-blue-500,
+        .bg-green-500,
+        .bg-purple-500,
+        .bg-orange-500,
+        .bg-pink-500 {
+            background: rgba(99, 102, 241, 0.3) !important;
+        }
+
+        // Analytics Text Colors
+        .text-indigo-600,
+        .text-blue-600,
+        .text-green-600,
+        .text-purple-600,
+        .text-orange-600,
+        .text-pink-600 {
+            color: var(--color-indigo-300) !important;
+        }
+
+        .text-indigo-900,
+        .text-blue-900,
+        .text-green-900,
+        .text-purple-900,
+        .text-orange-900,
+        .text-pink-900 {
+            color: #f1f5f9 !important;
+        }
+
+        // Analytics Table
+        .bg-indigo-50 {
+            background: rgba(30, 41, 59, 0.6) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+        }
+
+        .bg-indigo-100 {
+            background: rgba(30, 41, 59, 0.8) !important;
+        }
+
+        .divide-indigo-100 {
+            border-color: rgba(99, 102, 241, 0.2) !important;
+        }
+
+        .hover\:bg-indigo-50:hover {
+            background: rgba(99, 102, 241, 0.1) !important;
+        }
+
+        .text-indigo-700 {
+            color: #cbd5e1 !important;
+        }
+
+        // Loading spinner
+        .border-purple-200 {
+            border-color: rgba(99, 102, 241, 0.3) !important;
+        }
+
+        .border-purple-600 {
+            border-color: rgba(99, 102, 241, 0.6) !important;
+        }
+
+        .text-purple-600 {
+            color: var(--color-indigo-300) !important;
+        }
     }
 }

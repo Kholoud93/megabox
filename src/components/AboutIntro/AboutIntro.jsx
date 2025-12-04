@@ -5,6 +5,7 @@ import privateDataSvgContent from "../../assets/animations/private-data-animate.
 import nftSvgContent from "../../assets/animations/nft-animate.svg?raw";
 import { modifySvgToIndigo } from "../../utils/svgColorModifier";
 import { useLanguage } from "../../context/LanguageContext";
+import "./AboutIntro.scss";
 
 const PrivateDataAnimation = () => {
     const svgRef = useRef(null);

@@ -1,0 +1,63 @@
+// AboutIntro Dark Mode Styles
+.dark {
+  #about-storage,
+  #about-earnings {
+    background: 
+      radial-gradient(circle at 15% 25%, rgba(99, 102, 241, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 85% 75%, rgba(79, 70, 229, 0.25) 0%, transparent 50%),
+      radial-gradient(circle at 45% 55%, rgba(67, 56, 202, 0.2) 0%, transparent 65%),
+      radial-gradient(circle at 70% 30%, rgba(55, 48, 163, 0.25) 0%, transparent 40%),
+      linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1e293b 100%) !important;
+  }
+
+  .bg-white\/10 {
+    background: rgba(30, 41, 59, 0.6) !important;
+    border-color: rgba(99, 102, 241, 0.3) !important;
+
+    &:hover {
+      background: rgba(30, 41, 59, 0.8) !important;
+      border-color: rgba(99, 102, 241, 0.5) !important;
+    }
+  }
+
+  .bg-white\/15 {
+    background: rgba(30, 41, 59, 0.8) !important;
+  }
+
+  .bg-indigo-500\/30 {
+    background: rgba(99, 102, 241, 0.2) !important;
+  }
+
+  .bg-indigo-500\/20 {
+    background: rgba(99, 102, 241, 0.15) !important;
+  }
+
+  .bg-indigo-400\/20 {
+    background: rgba(99, 102, 241, 0.15) !important;
+  }
+
+  .border-white\/20 {
+    border-color: rgba(99, 102, 241, 0.3) !important;
+  }
+
+  .text-white {
+    color: #f1f5f9 !important;
+  }
+
+  .text-gray-200 {
+    color: #cbd5e1 !important;
+  }
+
+  .text-indigo-300 {
+    color: var(--color-indigo-300) !important;
+  }
+
+  .from-indigo-400 {
+    --tw-gradient-from: var(--color-indigo-400) !important;
+  }
+
+  .to-indigo-300 {
+    --tw-gradient-to: var(--color-indigo-300) !important;
+  }
+}
+
