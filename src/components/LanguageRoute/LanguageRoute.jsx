@@ -1,17 +1,14 @@
 import { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 
 export default function LanguageRoute({ children }) {
-    const { lang } = useParams();
-    const { changeLanguage } = useLanguage();
-    const navigate = useNavigate();
+    const { language } = useLanguage();
 
     useEffect(() => {
-        if (lang && (lang === 'en' || lang === 'ar')) {
-            changeLanguage(lang);
-        }
-    }, [lang, changeLanguage]);
+        // Ensure document direction and lang attribute are set based on current language
+        document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+        document.documentElement.lang = language;
+    }, [language]);
 
     return children;
 }

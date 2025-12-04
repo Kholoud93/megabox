@@ -71,10 +71,6 @@ const AppRouter = () => {
   const router = useMemo(() => createBrowserRouter([
     {
       path: "/",
-      element: <Navigate to="/en" replace />
-    },
-    {
-      path: "/:lang(en|ar)",
       element: (
         <LanguageRoute>
           <LandingLayout />
@@ -114,49 +110,7 @@ const AppRouter = () => {
       ]
     },
     {
-      path: "/:lang(en|ar)/share/:VideoId", element: <VideoPreview />
-    },
-    {
       path: "/share/:VideoId", element: <VideoPreview />
-    },
-    {
-      path: "/:lang(en|ar)/login",
-      element: (
-        <AuthWrapper>
-          {({ navigate, auth, Token }) => (
-            <Login
-              onSignup={() => navigate('/login')}
-              onForgot={() => navigate('/forgot-password')}
-
-              onSubmit={async (values) => {
-                let success = await auth.login(values.email, values.password)
-
-                const tokenStr = Token.MegaBox;
-                console.log(tokenStr);
-
-
-                if (success) {
-                  const { role } = jwtDecode(success);
-                  console.log(role);
-                  switch (role) {
-                    case 'User':
-                      navigate('/dashboard');
-                      break;
-                    case 'Owner':
-                      navigate('/Owner/profile');
-                      break;
-                    default:
-                      navigate('/dashboard');
-                  }
-                }
-
-              }}
-              loading={auth.loading}
-              error={auth.error}
-            />
-          )}
-        </AuthWrapper>
-      )
     },
     {
       path: "/login",

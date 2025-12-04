@@ -181,3 +181,94 @@
     }
 }
 
+// Dark Mode Styles
+.dark {
+    .partner-form-modal {
+        &__overlay {
+            background: rgba(0, 0, 0, 0.8) !important;
+            backdrop-filter: blur(8px) !important;
+        }
+
+        &__content {
+            background: rgba(30, 41, 59, 0.95) !important;
+            backdrop-filter: blur(20px) !important;
+            border: 1px solid rgba(99, 102, 241, 0.3) !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        &__header {
+            border-bottom-color: rgba(99, 102, 241, 0.3) !important;
+        }
+
+        &__title {
+            color: #f1f5f9 !important;
+        }
+
+        &__subtitle {
+            color: #cbd5e1 !important;
+        }
+
+        &__close {
+            background: rgba(99, 102, 241, 0.2) !important;
+            color: #cbd5e1 !important;
+
+            &:hover {
+                background: rgba(99, 102, 241, 0.3) !important;
+                color: #f1f5f9 !important;
+            }
+        }
+
+        &__label {
+            color: #f1f5f9 !important;
+        }
+
+        &__icon {
+            color: var(--color-indigo-400) !important;
+        }
+
+        &__input,
+        &__textarea {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+            color: #f1f5f9 !important;
+
+            &:focus {
+                border-color: var(--color-indigo-500) !important;
+                box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+                background: rgba(15, 23, 42, 0.8) !important;
+            }
+
+            &::placeholder {
+                color: rgba(203, 213, 225, 0.5) !important;
+            }
+        }
+
+        &__textarea {
+            background: rgba(15, 23, 42, 0.6) !important;
+        }
+
+        &__button {
+            &--cancel {
+                background: rgba(99, 102, 241, 0.2) !important;
+                color: #cbd5e1 !important;
+
+                &:hover {
+                    background: rgba(99, 102, 241, 0.3) !important;
+                    color: #f1f5f9 !important;
+                }
+            }
+
+            &--submit {
+                background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+                color: white !important;
+                box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4) !important;
+
+                &:hover {
+                    background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+                    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5) !important;
+                }
+            }
+        }
+    }
+}
+

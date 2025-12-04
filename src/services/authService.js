@@ -107,10 +107,21 @@ export const authService = {
 
     userRole: async (id) => {
         try {
-            const { data } = await api.get(`/auth/getUserRoleById/${id}`);
+            const { data } = await api.get(`/auth/getUserRoleById/${id}`, {
+                timeout: 10000 // 10 seconds timeout
+            });
             return data?.data;
         } catch (error) {
-            console.log(error);
+            if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+                console.error('Request timeout: Server took too long to respond');
+                return null;
+            }
+            if (error.code === 'ERR_CONNECTION_TIMED_OUT' || error.code === 'ERR_NETWORK') {
+                console.error('Connection timeout: Unable to reach server');
+                return null;
+            }
+            console.error('Error getting user role:', error);
+            return null;
         }
     },
 
