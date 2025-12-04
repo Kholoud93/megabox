@@ -321,7 +321,7 @@ export default function PromotersPage() {
                                     disableOnInteraction: false,
                                     pauseOnMouseEnter: true,
                                 }}
-                                speed={3000}
+                                speed={5000}
                                 loop={true}
                                 className="promoters-services__swiper"
                                 dir={language === 'ar' ? 'rtl' : 'ltr'}
@@ -436,7 +436,10 @@ export default function PromotersPage() {
                                     initial={{ opacity: 0, x: language === 'ar' ? 40 : -40 }}
                                     whileInView={{ opacity: 1, x: 0 }}
                                     viewport={{ once: true }}
-                                    whileHover={{ scale: 1.08 }}
+                                    whileHover={{ 
+                                        scale: 1.08,
+                                        transition: { duration: 0.15 }
+                                    }}
                                     transition={{ duration: 0.4, delay: idx * 0.1 }}
                                     className="promoters-features__card"
                                 >
