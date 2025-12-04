@@ -660,40 +660,134 @@
     }
 
     .admin-withdrawal-modal {
-        background: rgba(30, 41, 59, 0.95);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        background: rgba(30, 41, 59, 0.95) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid rgba(99, 102, 241, 0.3) !important;
 
         &__header {
-            border-color: rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.3) !important;
+            background: rgba(30, 41, 59, 0.8) !important;
 
             h2 {
-                color: #f1f5f9;
+                color: #f1f5f9 !important;
             }
         }
 
         &__close {
-            color: #cbd5e1;
+            color: #cbd5e1 !important;
+            background: rgba(30, 41, 59, 0.6) !important;
 
             &:hover {
-                background: rgba(30, 41, 59, 0.6);
-                color: #f1f5f9;
+                background: rgba(30, 41, 59, 0.8) !important;
+                color: #f1f5f9 !important;
             }
         }
 
+        &__body {
+            background: rgba(30, 41, 59, 0.95) !important;
+        }
+
         &__row {
-            border-color: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.2) !important;
 
             strong {
-                color: var(--color-indigo-300);
+                color: var(--color-indigo-300) !important;
             }
 
             span, p {
-                color: #cbd5e1;
+                color: #cbd5e1 !important;
             }
         }
 
         &__actions {
-            border-color: rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.3) !important;
+            background: rgba(30, 41, 59, 0.8) !important;
+        }
+    }
+
+    .admin-withdrawals-table-wrapper {
+        .admin-users-table {
+            &__header {
+                th {
+                    background: rgba(30, 41, 59, 0.6) !important;
+                    color: #f1f5f9 !important;
+                    border-color: rgba(99, 102, 241, 0.3) !important;
+                }
+            }
+
+            tbody {
+                tr {
+                    background: rgba(30, 41, 59, 0.4) !important;
+
+                    &:hover {
+                        background: rgba(30, 41, 59, 0.6) !important;
+                    }
+
+                    td {
+                        color: #cbd5e1 !important;
+                        border-color: rgba(99, 102, 241, 0.1) !important;
+                    }
+                }
+            }
+        }
+    }
+
+    .admin-users-pagination {
+        &__btn {
+            background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+
+            &:hover:not(:disabled) {
+                background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+            }
+        }
+    }
+
+    .admin-withdrawals-actions {
+        &__btn {
+            &--view {
+                background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+
+                &:hover:not(:disabled) {
+                    background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+                }
+            }
+
+            &--approve {
+                background: linear-gradient(135deg, #10b981, #059669) !important;
+
+                &:hover:not(:disabled) {
+                    background: linear-gradient(135deg, #059669, #047857) !important;
+                }
+            }
+
+            &--reject {
+                background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+
+                &:hover:not(:disabled) {
+                    background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+                }
+            }
+        }
+
+        &__no-action {
+            color: #94a3b8 !important;
+        }
+    }
+
+    .status-badge {
+        &.status-pending {
+            background: rgba(254, 243, 199, 0.2) !important;
+            color: #fbbf24 !important;
+        }
+
+        &.status-approved {
+            background: rgba(209, 250, 229, 0.2) !important;
+            color: #10b981 !important;
+        }
+
+        &.status-rejected {
+            background: rgba(254, 226, 226, 0.2) !important;
+            color: #ef4444 !important;
         }
     }
 }

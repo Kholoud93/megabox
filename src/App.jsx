@@ -1,6 +1,7 @@
 import { lazy, Suspense, useMemo } from 'react'
 import { BrowserRouter as Router, Routes, Route, createBrowserRouter, RouterProvider, useNavigate, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import LanguageRoute from './components/LanguageRoute/LanguageRoute'
 import LandingPage from './pages/LandingPage'
 import Login from './pages/Auth/Login'
 import Signup from './pages/Auth/Signup'
@@ -70,7 +71,15 @@ const AppRouter = () => {
   const router = useMemo(() => createBrowserRouter([
     {
       path: "/",
-      element: <LandingLayout />,
+      element: <Navigate to="/en" replace />
+    },
+    {
+      path: "/:lang(en|ar)",
+      element: (
+        <LanguageRoute>
+          <LandingLayout />
+        </LanguageRoute>
+      ),
       children: [
         {
           index: true, element: <LandingPage />
@@ -103,8 +112,51 @@ const AppRouter = () => {
           path: "Promoters", element: <Suspense fallback={<Loading />}> <PromotersLanding /></Suspense>
         }
       ]
-    }, {
-      path: "share/:VideoId", element: <VideoPreview />
+    },
+    {
+      path: "/:lang(en|ar)/share/:VideoId", element: <VideoPreview />
+    },
+    {
+      path: "/share/:VideoId", element: <VideoPreview />
+    },
+    {
+      path: "/:lang(en|ar)/login",
+      element: (
+        <AuthWrapper>
+          {({ navigate, auth, Token }) => (
+            <Login
+              onSignup={() => navigate('/login')}
+              onForgot={() => navigate('/forgot-password')}
+
+              onSubmit={async (values) => {
+                let success = await auth.login(values.email, values.password)
+
+                const tokenStr = Token.MegaBox;
+                console.log(tokenStr);
+
+
+                if (success) {
+                  const { role } = jwtDecode(success);
+                  console.log(role);
+                  switch (role) {
+                    case 'User':
+                      navigate('/dashboard');
+                      break;
+                    case 'Owner':
+                      navigate('/Owner/profile');
+                      break;
+                    default:
+                      navigate('/dashboard');
+                  }
+                }
+
+              }}
+              loading={auth.loading}
+              error={auth.error}
+            />
+          )}
+        </AuthWrapper>
+      )
     },
     {
       path: "/login",

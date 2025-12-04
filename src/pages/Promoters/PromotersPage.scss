@@ -346,6 +346,30 @@
         .swiper-wrapper {
             transition-timing-function: linear !important;
         }
+
+        // RTL Support
+        &[dir="rtl"],
+        [dir="rtl"] & {
+            direction: rtl !important;
+
+            .swiper-wrapper {
+                flex-direction: row-reverse !important;
+            }
+
+            .swiper-slide {
+                direction: rtl;
+            }
+        }
+
+        // LTR Support
+        &[dir="ltr"],
+        [dir="ltr"] & {
+            direction: ltr !important;
+
+            .swiper-wrapper {
+                flex-direction: row !important;
+            }
+        }
     }
 
     &__slide {

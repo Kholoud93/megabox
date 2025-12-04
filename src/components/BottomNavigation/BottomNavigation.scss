@@ -232,3 +232,75 @@
         display: block;
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .bottom-navigation {
+        background: rgba(30, 41, 59, 0.95) !important;
+        border-top-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.4) !important;
+        backdrop-filter: blur(10px);
+    }
+
+    .bottom-navigation__item {
+        color: #cbd5e1 !important;
+
+        &:hover {
+            background: rgba(30, 41, 59, 0.8) !important;
+            color: var(--color-indigo-300) !important;
+        }
+
+        &--active {
+            color: var(--color-indigo-300) !important;
+            background: rgba(99, 102, 241, 0.2) !important;
+
+            .bottom-navigation__icon {
+                color: var(--color-indigo-300) !important;
+            }
+        }
+    }
+
+    .bottom-navigation__more-button {
+        color: #cbd5e1 !important;
+
+        &:hover {
+            background: rgba(30, 41, 59, 0.8) !important;
+            color: var(--color-indigo-300) !important;
+        }
+
+        &--active {
+            color: var(--color-indigo-300) !important;
+            background: rgba(99, 102, 241, 0.2) !important;
+        }
+
+        &:active {
+            background: rgba(15, 23, 42, 0.8) !important;
+        }
+    }
+
+    .bottom-navigation__dropdown {
+        background: rgba(30, 41, 59, 0.95) !important;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid rgba(99, 102, 241, 0.3) !important;
+    }
+
+    .bottom-navigation__dropdown-item {
+        color: #cbd5e1 !important;
+
+        &:hover {
+            background: rgba(30, 41, 59, 0.8) !important;
+            color: var(--color-indigo-300) !important;
+        }
+
+        &--active {
+            background: rgba(99, 102, 241, 0.2) !important;
+            color: var(--color-indigo-300) !important;
+        }
+    }
+
+    .bottom-navigation__badge,
+    .bottom-navigation__dropdown-badge {
+        background: #ef4444 !important;
+        border-color: rgba(30, 41, 59, 0.95) !important;
+    }
+}

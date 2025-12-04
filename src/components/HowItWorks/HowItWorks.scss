@@ -747,41 +747,88 @@
 // Dark Mode Styles
 .dark {
     .howitworks {
-        background: linear-gradient(350deg, #0f172a 0%, #1e293b 20%, #1e293b 80%, #0f172a 100%);
+        background: linear-gradient(350deg, #0f172a 0%, #1e293b 20%, #1e293b 80%, #0f172a 100%) !important;
 
         &__title {
-            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
-            -webkit-text-fill-color: transparent;
+            background: linear-gradient(135deg, #f1f5f9, #cbd5e1) !important;
+            -webkit-background-clip: text !important;
+            background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
         }
 
-        &__slide {
-            background: rgba(30, 41, 59, 0.6);
+        &__row {
+            background: rgba(30, 41, 59, 0.9) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+
+            &:hover {
+                background: rgba(30, 41, 59, 1) !important;
+                border-color: rgba(99, 102, 241, 0.5) !important;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+
+                &::before {
+                    opacity: 1 !important;
+                    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.1)) !important;
+                }
+            }
+
+            &::before {
+                background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.08)) !important;
+            }
         }
 
         &__step-title {
-            color: #f1f5f9;
+            color: #f1f5f9 !important;
+
+            &::after {
+                background: linear-gradient(to right, var(--color-indigo-400), var(--color-indigo-500)) !important;
+            }
         }
 
-        &__step-description {
-            color: #cbd5e1;
+        &__step-desc {
+            color: #cbd5e1 !important;
+        }
+
+        &__image-wrapper {
+            &::before {
+                background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.08)) !important;
+            }
+        }
+
+        &__image {
+            background: rgba(30, 41, 59, 0.8) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+
+            &:hover {
+                box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3) !important;
+            }
         }
 
         &__nav-button {
-            background: rgba(30, 41, 59, 0.8);
-            border-color: rgba(99, 102, 241, 0.3);
-            color: #cbd5e1;
+            background: rgba(30, 41, 59, 0.9) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+            color: var(--color-indigo-300) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
 
-            &:hover {
-                background: rgba(99, 102, 241, 0.3);
-                border-color: rgba(99, 102, 241, 0.5);
+            &:hover:not(:disabled) {
+                background: rgba(99, 102, 241, 0.2) !important;
+                border-color: rgba(99, 102, 241, 0.5) !important;
+                color: var(--color-indigo-200) !important;
             }
         }
 
         &__indicator {
-            background: rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.4) !important;
+            background: transparent !important;
+
+            &:hover:not(&--active) {
+                background: rgba(99, 102, 241, 0.2) !important;
+            }
 
             &--active {
-                background: var(--color-indigo-500);
+                background: var(--color-indigo-500) !important;
+                border-color: var(--color-indigo-500) !important;
             }
         }
     }

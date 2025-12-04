@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +17,7 @@ import './PromotersPage.scss';
 
 export default function PromotersPage() {
     const { t, language } = useLanguage();
+    const swiperRef = useRef(null);
     const navigate = useNavigate();
     const [cookies] = useCookies(['MegaBox']);
     const [showPlansModal, setShowPlansModal] = useState(false);
@@ -95,6 +96,15 @@ export default function PromotersPage() {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cookies.MegaBox]);
+
+    // Reinitialize Swiper when language changes
+    useEffect(() => {
+        if (swiperRef.current) {
+            swiperRef.current.update();
+            swiperRef.current.updateSlides();
+            swiperRef.current.updateSlidesClasses();
+        }
+    }, [language]);
 
 
     // Check if user is subscribed to any plan
@@ -312,6 +322,7 @@ export default function PromotersPage() {
                         </motion.h2>
                         <div className="promoters-services__swiper-wrapper">
                             <Swiper
+                                ref={swiperRef}
                                 modules={[Autoplay, FreeMode]}
                                 spaceBetween={24}
                                 slidesPerView="auto"
@@ -325,6 +336,9 @@ export default function PromotersPage() {
                                 loop={true}
                                 className="promoters-services__swiper"
                                 dir={language === 'ar' ? 'rtl' : 'ltr'}
+                                onSwiper={(swiper) => {
+                                    swiperRef.current = swiper;
+                                }}
                             >
                                 {servicesData.map((service, idx) => (
                                     <SwiperSlide key={idx} className="promoters-services__slide">

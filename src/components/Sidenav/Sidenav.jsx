@@ -280,6 +280,23 @@ export default function Sidenav({ role }) {
         }
         const newLang = language === 'en' ? 'ar' : 'en';
         changeLanguage(newLang);
+        
+        // Update URL with language prefix
+        const currentPath = pathname;
+        const search = window.location.search;
+        const hash = window.location.hash;
+        
+        // Remove existing language prefix if any
+        let newPath = currentPath.replace(/^\/(en|ar)/, '');
+        if (!newPath.startsWith('/')) {
+            newPath = '/' + newPath;
+        }
+        
+        // Add new language prefix
+        const langPrefix = newLang === 'ar' ? '/ar' : '/en';
+        const finalPath = langPrefix + newPath;
+        
+        navigate(finalPath + search + hash, { replace: true });
     }
 
     // Toggle sidebar open/close

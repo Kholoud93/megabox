@@ -837,3 +837,100 @@
         transform: translate(-50%, -50%) rotate(360deg);
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .partner-cta {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+
+        &__title {
+            color: #f1f5f9 !important;
+        }
+
+        &__card {
+            background: rgba(30, 41, 59, 0.9) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
+
+            &:hover {
+                border-color: rgba(99, 102, 241, 0.5) !important;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5) !important;
+            }
+        }
+
+        &__card-header {
+            // Keep gradient colors but make them darker
+            &.purple {
+                background: linear-gradient(135deg, rgba(147, 51, 234, 0.8), rgba(124, 58, 237, 0.8)) !important;
+            }
+
+            &.orange {
+                background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(79, 70, 229, 0.8)) !important;
+            }
+        }
+
+        &__card-content {
+            background: rgba(30, 41, 59, 0.9) !important;
+        }
+
+        &__feature {
+            color: #cbd5e1 !important;
+
+            &:hover {
+                background: rgba(30, 41, 59, 0.6) !important;
+            }
+        }
+
+        &__feature-icon {
+            color: var(--color-indigo-300) !important;
+        }
+
+        &__subscribed-text {
+            color: #f1f5f9 !important;
+        }
+
+        &__subscribed-desc {
+            color: #cbd5e1 !important;
+        }
+
+        &__button {
+            background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4) !important;
+
+            &:hover {
+                background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+                box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5) !important;
+            }
+        }
+
+        &__dashboard-button {
+            background: var(--color-indigo-600) !important;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+
+            &:hover {
+                background: var(--color-indigo-700) !important;
+                box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4) !important;
+            }
+        }
+    }
+
+    .partners-modal-backdrop {
+        background: rgba(0, 0, 0, 0.8) !important;
+    }
+
+    .partners-modal {
+        background: rgba(30, 41, 59, 0.95) !important;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
+
+        &__close {
+            background: rgba(30, 41, 59, 0.8) !important;
+            color: var(--color-indigo-300) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+
+            &:hover {
+                background: rgba(30, 41, 59, 1) !important;
+                color: #f1f5f9 !important;
+            }
+        }
+    }
+}

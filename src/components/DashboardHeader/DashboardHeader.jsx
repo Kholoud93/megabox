@@ -146,6 +146,23 @@ export default function DashboardHeader() {
         }
         const newLang = language === 'en' ? 'ar' : 'en';
         changeLanguage(newLang);
+        
+        // Update URL with language prefix
+        const currentPath = location.pathname;
+        const search = location.search;
+        const hash = location.hash;
+        
+        // Remove existing language prefix if any
+        let newPath = currentPath.replace(/^\/(en|ar)/, '');
+        if (!newPath.startsWith('/')) {
+            newPath = '/' + newPath;
+        }
+        
+        // Add new language prefix
+        const langPrefix = newLang === 'ar' ? '/ar' : '/en';
+        const finalPath = langPrefix + newPath;
+        
+        navigate(finalPath + search + hash, { replace: true });
     };
 
 
