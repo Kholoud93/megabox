@@ -321,6 +321,39 @@
 
         .bg-indigo-50 {
             background: rgba(30, 41, 59, 0.6) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+        }
+
+        // Card backgrounds
+        .bg-white {
+            background: rgba(30, 41, 59, 0.8) !important;
+        }
+
+        // Text colors
+        .text-gray-700,
+        .text-gray-600,
+        .text-gray-500 {
+            color: #cbd5e1 !important;
+        }
+
+        .text-indigo-900,
+        .text-indigo-800,
+        .text-indigo-700 {
+            color: #f1f5f9 !important;
+        }
+
+        // Borders
+        .border-gray-200,
+        .border-indigo-200 {
+            border-color: rgba(99, 102, 241, 0.3) !important;
+        }
+
+        // Buttons
+        button {
+            &.bg-indigo-600,
+            &.bg-indigo-500 {
+                background: var(--color-indigo-600) !important;
+            }
         }
     }
 }

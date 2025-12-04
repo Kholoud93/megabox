@@ -687,4 +687,30 @@ body.profile-menu-open {
   }
 }
 
+// Dark Mode Styles for Profile Dropdown
+.dark {
+  .files-header__profile-dropdown {
+    background: rgba(30, 41, 59, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(99, 102, 241, 0.3) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+
+    .files-header__profile-item {
+      color: #cbd5e1 !important;
+
+      &:hover {
+        background: rgba(30, 41, 59, 0.8) !important;
+        color: #f1f5f9 !important;
+      }
+
+      .files-header__profile-item-icon {
+        color: var(--color-indigo-300) !important;
+      }
+
+      &:hover .files-header__profile-item-icon {
+        color: var(--color-indigo-200) !important;
+      }
+    }
+  }
+}
 

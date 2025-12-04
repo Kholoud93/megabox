@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
+import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { useCookies } from 'react-cookie';
 import { useQuery } from 'react-query';
-import { userService, notificationService } from '../../services/api';
-import { HiUserCircle, HiArrowRightOnRectangle, HiUserGroup, HiCurrencyDollar, HiBell, HiTv } from 'react-icons/hi2';
+import { userService } from '../../services/api';
+import { HiUserCircle, HiArrowRightOnRectangle, HiUserGroup, HiCurrencyDollar, HiBell, HiTv, HiSun, HiMoon } from 'react-icons/hi2';
 import { FiGlobe } from 'react-icons/fi';
 import { FaUser } from 'react-icons/fa';
 import { toast } from 'react-toastify';
@@ -14,6 +15,7 @@ import './DashboardHeader.scss';
 
 export default function DashboardHeader() {
     const { t, language, changeLanguage } = useLanguage();
+    const { theme, toggleTheme } = useTheme();
     const navigate = useNavigate();
     const location = useLocation();
     const { setUserRole } = useAuth();
@@ -322,6 +324,22 @@ export default function DashboardHeader() {
                                                 <span>{t("sidenav.partners") || "Partners Center"}</span>
                                             </Link>
                                         )}
+                                        
+                                        <button
+                                            type="button"
+                                            className="files-header__profile-item"
+                                            onClick={() => {
+                                                toggleTheme();
+                                                setProfileMenuOpen(false);
+                                            }}
+                                        >
+                                            {theme === 'light' ? (
+                                                <HiMoon className="files-header__profile-item-icon" />
+                                            ) : (
+                                                <HiSun className="files-header__profile-item-icon" />
+                                            )}
+                                            <span>{theme === 'light' ? (t("navbar.darkMode") || "Dark Mode") : (t("navbar.lightMode") || "Light Mode")}</span>
+                                        </button>
                                         
                                         <button
                                             type="button"

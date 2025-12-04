@@ -567,3 +567,133 @@
     }
 }
 
+// Dark Mode Styles
+.dark {
+    .admin-withdrawals-page {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    }
+
+    .admin-withdrawals-header {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__subtitle {
+            color: var(--color-indigo-300);
+        }
+
+        &__back {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: var(--color-indigo-300);
+
+            &:hover {
+                background: rgba(30, 41, 59, 0.8);
+                border-color: rgba(99, 102, 241, 0.5);
+            }
+        }
+
+        &__icon {
+            color: var(--color-indigo-400);
+        }
+    }
+
+    .admin-withdrawals-loading,
+    .admin-withdrawals-empty {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+        color: var(--color-indigo-300);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .admin-withdrawals-table-wrapper {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+        .admin-users-table {
+            color: #cbd5e1;
+
+            &__header {
+                background: rgba(30, 41, 59, 0.6) !important;
+
+                th {
+                    background: rgba(30, 41, 59, 0.6) !important;
+                    color: #f1f5f9 !important;
+                    border-color: rgba(99, 102, 241, 0.3) !important;
+                }
+            }
+
+            tbody {
+                tr {
+                    border-color: rgba(99, 102, 241, 0.2);
+
+                    &:hover {
+                        background: rgba(30, 41, 59, 0.6);
+                    }
+
+                    td {
+                        color: #cbd5e1;
+                    }
+                }
+            }
+        }
+    }
+
+    .admin-users-pagination {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+        &__info {
+            color: var(--color-indigo-300);
+        }
+    }
+
+    .admin-withdrawals-count {
+        background: rgba(30, 41, 59, 0.6);
+        color: var(--color-indigo-300);
+    }
+
+    .admin-withdrawal-modal {
+        background: rgba(30, 41, 59, 0.95);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+
+        &__header {
+            border-color: rgba(99, 102, 241, 0.3);
+
+            h2 {
+                color: #f1f5f9;
+            }
+        }
+
+        &__close {
+            color: #cbd5e1;
+
+            &:hover {
+                background: rgba(30, 41, 59, 0.6);
+                color: #f1f5f9;
+            }
+        }
+
+        &__row {
+            border-color: rgba(99, 102, 241, 0.2);
+
+            strong {
+                color: var(--color-indigo-300);
+            }
+
+            span, p {
+                color: #cbd5e1;
+            }
+        }
+
+        &__actions {
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+    }
+}

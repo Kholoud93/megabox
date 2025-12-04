@@ -20,7 +20,7 @@ const LandingPage = () => {
   }, [])
 
   return (
-    <div className="w-full bg-light dark:bg-slate-900 transition-colors duration-300">
+    <div className="w-full bg-light dark:bg-dark transition-colors duration-300">
       <Hero />
       <Features />
       <div id="about">

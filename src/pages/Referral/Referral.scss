@@ -474,4 +474,16 @@
             }
         }
     }
+
+    .referral-banner {
+        &__button {
+            background: rgba(30, 41, 59, 0.8) !important;
+            color: var(--color-indigo-300) !important;
+
+            &:hover {
+                background: rgba(30, 41, 59, 1) !important;
+                color: #f1f5f9 !important;
+            }
+        }
+    }
 }
