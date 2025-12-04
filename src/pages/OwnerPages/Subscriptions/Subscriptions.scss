@@ -725,3 +725,15 @@
         }
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .admin-subscriptions-page {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    }
+
+    .admin-subscriptions-header {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+    }
+}

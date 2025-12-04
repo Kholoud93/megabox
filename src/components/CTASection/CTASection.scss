@@ -194,3 +194,49 @@
     }
   }
 }
+
+// Dark Mode Styles
+.dark {
+  .cta-wrapperr-2 {
+    background-color: #0f172a;
+  }
+
+  .cta-background {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  }
+
+  .cta-section {
+    background-color: rgba(30, 41, 59, 0.6);
+
+    .cta-container {
+      background-color: rgba(30, 41, 59, 0.9);
+      border-color: var(--color-indigo-500);
+    }
+
+    .cta-title {
+      background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+      -webkit-text-fill-color: transparent;
+    }
+
+    .cta-description {
+      color: #cbd5e1;
+    }
+
+    .cta-action-content {
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    .cta-button {
+      &-secondary {
+        background-color: rgba(30, 41, 59, 0.8);
+        color: #cbd5e1;
+        border-color: rgba(99, 102, 241, 0.3);
+
+        &:hover {
+          background-color: rgba(99, 102, 241, 0.2);
+          border-color: rgba(99, 102, 241, 0.5);
+        }
+      }
+    }
+  }
+}

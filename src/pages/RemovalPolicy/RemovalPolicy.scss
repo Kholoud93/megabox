@@ -153,3 +153,61 @@
     }
 }
 
+// Dark Mode Styles
+.dark {
+    .RemovalPolicy {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+
+        .removal-header {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.9) 0%, rgba(139, 92, 246, 0.9) 100%);
+        }
+
+        .removal-content {
+            background: rgba(30, 41, 59, 0.8);
+            color: #cbd5e1;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+            h2 {
+                color: #f1f5f9;
+                border-color: rgba(99, 102, 241, 0.5);
+
+                &::after {
+                    background: rgba(99, 102, 241, 0.5);
+                }
+            }
+
+            p {
+                color: #cbd5e1;
+            }
+
+            ul, ol {
+                li {
+                    color: #cbd5e1;
+                }
+            }
+
+            hr {
+                border-color: rgba(99, 102, 241, 0.3);
+            }
+
+            a {
+                color: var(--color-indigo-400);
+
+                &:hover {
+                    color: var(--color-indigo-300);
+                }
+            }
+
+            .removal-notice {
+                background: rgba(30, 41, 59, 0.6);
+                border-color: rgba(99, 102, 241, 0.5);
+                color: #cbd5e1;
+            }
+
+            strong {
+                color: #f1f5f9;
+            }
+        }
+    }
+}
+

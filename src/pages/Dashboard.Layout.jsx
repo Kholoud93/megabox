@@ -98,13 +98,13 @@ export default function DashboardLayout({ role }) {
         return <Loading />
 
 
-    return <div className='flex justify-start items-center bg-[#f2f0f0]'>
+    return <div className='flex justify-start items-center bg-[#f2f0f0] dark:bg-slate-900 transition-colors duration-300'>
         {role !== "Owner" && (
             <div className="sidnav">
                 <Sidenav role={role} />
             </div>
         )}
-        <div className="min-h-screen w-full overflow-hidden pb-24 md:pb-4">
+        <div className="min-h-screen w-full overflow-hidden pb-24 md:pb-4 dark:bg-slate-900 transition-colors duration-300">
             <DashboardHeader />
             <Outlet>
             </Outlet>

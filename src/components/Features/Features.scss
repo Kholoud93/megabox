@@ -384,3 +384,40 @@
     padding: 2.5rem 0 3rem 0;
   }
 }
+
+// Dark Mode Styles
+.dark {
+  .features {
+    background: transparent;
+
+    &__section {
+      &:nth-child(1) {
+        background: rgba(30, 41, 59, 0.6);
+        
+        .features__description {
+          color: var(--color-indigo-300);
+        }
+      }
+
+      &:nth-child(2) {
+        background: rgba(30, 41, 59, 0.7);
+      }
+
+      &:nth-child(3) {
+        background: rgba(30, 41, 59, 0.6);
+      }
+
+      &:nth-child(4) {
+        background: rgba(30, 41, 59, 0.7);
+      }
+    }
+
+    &__description {
+      color: #cbd5e1;
+    }
+
+    &__fallback-text {
+      color: #94a3b8;
+    }
+  }
+}

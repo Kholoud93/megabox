@@ -246,3 +246,64 @@
     }
 }
 
+// Dark Mode Styles
+.dark {
+    .Feedback {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+
+        .feedback-header {
+            h1 {
+                color: #f1f5f9;
+            }
+
+            p {
+                color: #cbd5e1;
+            }
+
+            &__icon {
+                svg {
+                    background: rgba(220, 38, 38, 0.2);
+                    color: #fca5a5;
+                }
+            }
+        }
+
+        .feedback-form {
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+
+            &__header {
+                background: linear-gradient(135deg, rgba(220, 38, 38, 0.9) 0%, rgba(185, 28, 28, 0.9) 100%);
+            }
+
+            form {
+                background: transparent;
+
+                label {
+                    color: #cbd5e1;
+                }
+
+                input[type="text"],
+                input[type="email"],
+                input[type="url"],
+                input[type="tel"],
+                select,
+                textarea {
+                    background: rgba(30, 41, 59, 0.6);
+                    border-color: rgba(99, 102, 241, 0.3);
+                    color: #f1f5f9;
+
+                    &:focus {
+                        background: rgba(30, 41, 59, 0.8);
+                        border-color: rgba(99, 102, 241, 0.5);
+                    }
+                }
+
+                p {
+                    color: #cbd5e1;
+                }
+            }
+        }
+    }
+}
+

@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useLanguage } from '../../context/LanguageContext'
 import { toast } from 'react-toastify'
 import { ToastOptions } from '../../helpers/ToastOptions'
+import ThemeToggle from '../ThemeToggle/ThemeToggle'
 
 const Navbar = () => {
 
@@ -130,6 +131,9 @@ const Navbar = () => {
         </ul>
 
         <div className="navbar__right-section">
+          <div className="navbar__theme-wrapper">
+            <ThemeToggle />
+          </div>
           <div className="navbar__language-wrapper">
             <button 
               className="navbar__language-button" 

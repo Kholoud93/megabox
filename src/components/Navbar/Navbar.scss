@@ -59,6 +59,39 @@
     }
   }
 
+  .navbar__theme-wrapper {
+    position: relative;
+    margin-right: 0.5rem;
+    margin-left: 0;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    height: 100%;
+
+    @include fn.Breakpoints(small) {
+      margin-right: 0.25rem;
+      margin-left: 0;
+    }
+
+    @include fn.Breakpoints(mobile) {
+      margin-right: 0;
+      margin-left: 0;
+    }
+
+    [dir="rtl"] & {
+      margin-right: 0;
+      margin-left: 0.5rem;
+
+      @include fn.Breakpoints(small) {
+        margin-left: 0.25rem;
+      }
+
+      @include fn.Breakpoints(mobile) {
+        margin-left: 0;
+      }
+    }
+  }
+
   .navbar__language-wrapper {
     position: relative;
     margin-right: 0.5rem;

@@ -284,3 +284,93 @@
         color: vars.$gray-500;
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .admin-page-container {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    }
+
+    .admin-page-header {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__subtitle {
+            color: #cbd5e1;
+        }
+    }
+
+    .admin-table-container {
+        background: rgba(30, 41, 59, 0.8);
+        border-color: rgba(99, 102, 241, 0.3);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__count {
+            color: #cbd5e1;
+            background: rgba(30, 41, 59, 0.6);
+        }
+
+        &__header {
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+    }
+
+    .admin-table {
+        thead {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+
+            th {
+                color: #f1f5f9;
+                border-color: rgba(99, 102, 241, 0.3);
+            }
+        }
+
+        tbody {
+            tr {
+                border-color: rgba(99, 102, 241, 0.2);
+
+                &:hover {
+                    background: rgba(30, 41, 59, 0.6);
+                }
+
+                td {
+                    color: #cbd5e1;
+                }
+            }
+        }
+    }
+
+    .admin-btn {
+        &--secondary {
+            background: rgba(30, 41, 59, 0.6);
+            color: #f1f5f9;
+            border-color: rgba(99, 102, 241, 0.3);
+
+            &:hover {
+                background: rgba(30, 41, 59, 0.8);
+                border-color: rgba(99, 102, 241, 0.5);
+            }
+        }
+    }
+
+    .admin-empty-state {
+        color: #cbd5e1;
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__message {
+            color: #cbd5e1;
+        }
+    }
+}

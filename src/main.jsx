@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import { CookiesProvider } from 'react-cookie'
 import { LanguageProvider } from './context/LanguageContext'
+import { ThemeProvider } from './context/ThemeContext'
 import './index.css'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
@@ -19,13 +20,15 @@ let query = new QueryClient()
 ReactDOM.createRoot(document.getElementById('root')).render(
   <>
     <CookiesProvider>
-      <LanguageProvider>
-        <QueryClientProvider client={query}>
-          <App />
-          <ToastContainer position='bottom-right' stacked autoClose={2000} />
-          <ReactQueryDevtools position='bottom-right' />
-        </QueryClientProvider>
-      </LanguageProvider>
+      <ThemeProvider>
+        <LanguageProvider>
+          <QueryClientProvider client={query}>
+            <App />
+            <ToastContainer position='bottom-right' stacked autoClose={2000} />
+            <ReactQueryDevtools position='bottom-right' />
+          </QueryClientProvider>
+        </LanguageProvider>
+      </ThemeProvider>
     </CookiesProvider>
   </>
 )

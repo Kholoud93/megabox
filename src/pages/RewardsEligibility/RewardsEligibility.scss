@@ -167,3 +167,32 @@
     }
 }
 
+// Dark Mode Styles
+.dark {
+    .RewardsEligibility {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+
+        &__content {
+            background: rgba(30, 41, 59, 0.9);
+            color: #cbd5e1;
+        }
+
+        &__description {
+            color: #cbd5e1;
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        &__rules {
+            li {
+                background: rgba(30, 41, 59, 0.6);
+                border-color: rgba(102, 126, 234, 0.5);
+                color: #cbd5e1;
+
+                &::before {
+                    background: rgba(102, 126, 234, 0.8);
+                }
+            }
+        }
+    }
+}
+

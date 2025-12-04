@@ -291,3 +291,82 @@
     }
 }
 
+// Dark Mode Styles
+.dark {
+    .dashboard-demo {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__subtitle {
+            color: #cbd5e1;
+        }
+
+        &__stat-card {
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+
+            &:hover {
+                background: rgba(30, 41, 59, 1);
+            }
+        }
+
+        &__stat-value {
+            color: #f1f5f9;
+        }
+
+        &__stat-label {
+            color: #cbd5e1;
+        }
+
+        &__chart {
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        &__chart-title {
+            color: #f1f5f9;
+        }
+
+        &__chart-label {
+            color: #cbd5e1;
+        }
+
+        &__files {
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        &__files-title {
+            color: #f1f5f9;
+        }
+
+        &__files-row {
+            &--header {
+                background: rgba(30, 41, 59, 1);
+                color: #f1f5f9;
+            }
+
+            &:not(&--header) {
+                &:hover {
+                    background: rgba(30, 41, 59, 0.6);
+                }
+            }
+        }
+
+        &__files-cell {
+            color: #cbd5e1;
+        }
+
+        &__note {
+            background: rgba(30, 41, 59, 0.6);
+        }
+
+        &__note-text {
+            color: #cbd5e1;
+        }
+    }
+}
+

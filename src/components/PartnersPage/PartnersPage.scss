@@ -1265,3 +1265,178 @@
         transform: translate(-20px, 20px) rotate(240deg);
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .partners-page {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 25%, #475569 50%, #64748b 100%);
+
+        &::before {
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        }
+
+        &::after {
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+        }
+    }
+
+    .partners-hero {
+        &__overlay {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.7) 0%, rgba(30, 41, 59, 0.8) 100%);
+        }
+
+        &__container {
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__description {
+            color: #cbd5e1;
+        }
+    }
+
+    .partners-types {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(15px);
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__card {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        &__card-title {
+            color: #f1f5f9;
+        }
+
+        &__card-price {
+            color: #cbd5e1;
+        }
+
+        &__feature {
+            color: #cbd5e1;
+        }
+    }
+
+    .partners-technical {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(15px);
+
+        &__title {
+            color: #f1f5f9;
+        }
+    }
+
+    .partners-why {
+        background: rgba(15, 23, 42, 0.7);
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__card {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        &__card-title {
+            color: #f1f5f9;
+        }
+
+        &__card-desc {
+            color: #cbd5e1;
+        }
+    }
+
+    .partners-section {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(10px);
+
+        &__divider {
+            background: linear-gradient(90deg, transparent, vars.$indigo-700, transparent);
+        }
+
+        &__title {
+            color: #f1f5f9;
+        }
+    }
+
+    .partners-grid {
+        &__item {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(99, 102, 241, 0.3);
+
+            &:hover {
+                background: rgba(30, 41, 59, 1);
+                border-color: rgba(99, 102, 241, 0.5);
+            }
+        }
+
+        &__name {
+            color: #f1f5f9;
+        }
+
+        &__type {
+            color: #cbd5e1;
+        }
+    }
+
+    .partners-testimonials {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(10px);
+
+        &__divider {
+            background: linear-gradient(90deg, transparent, vars.$indigo-700, transparent);
+        }
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__card {
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        &__quote {
+            color: #cbd5e1;
+        }
+
+        &__author {
+            strong {
+                color: #f1f5f9;
+            }
+
+            span {
+                color: #cbd5e1;
+            }
+        }
+    }
+
+    .partners-cta {
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.95) 100%);
+
+        &__divider {
+            background: linear-gradient(90deg, transparent, vars.$indigo-700, transparent);
+        }
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__description {
+            color: #cbd5e1;
+        }
+
+        &__benefit {
+            color: #cbd5e1;
+        }
+    }
+}

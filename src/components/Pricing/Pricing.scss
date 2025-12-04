@@ -766,3 +766,58 @@
         }
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .pricing {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+
+        &__title {
+            background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+            -webkit-text-fill-color: transparent;
+        }
+
+        &__subtitle {
+            color: #cbd5e1;
+        }
+
+        &__toggle {
+            background: rgba(30, 41, 59, 0.8);
+
+            &-label {
+                color: #cbd5e1;
+
+                &--active {
+                    color: #f1f5f9;
+                    background: rgba(99, 102, 241, 0.3);
+                }
+            }
+        }
+
+        &__card {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(99, 102, 241, 0.3);
+
+            &--featured {
+                background: rgba(30, 41, 59, 0.95);
+                border-color: rgba(99, 102, 241, 0.5);
+            }
+        }
+
+        &__card-title {
+            color: #f1f5f9;
+        }
+
+        &__card-price {
+            color: #f1f5f9;
+        }
+
+        &__card-description {
+            color: #cbd5e1;
+        }
+
+        &__feature {
+            color: #cbd5e1;
+        }
+    }
+}

@@ -172,6 +172,48 @@
     }
 }
 
+// Dark Mode Styles
+.dark {
+    .landing-options {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__subtitle {
+            color: #cbd5e1;
+        }
+
+        &__card {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+
+            &:hover {
+                background: rgba(30, 41, 59, 1);
+                border-color: rgba(99, 102, 241, 0.5);
+            }
+        }
+
+        &__card-title {
+            color: #f1f5f9;
+        }
+
+        &__card-description {
+            color: #cbd5e1;
+        }
+
+        &__link {
+            color: var(--color-indigo-400);
+
+            &:hover {
+                color: var(--color-indigo-300);
+            }
+        }
+    }
+}
+
 // Promoter Plans Modal
 .promoter-plans-modal {
     &__overlay {

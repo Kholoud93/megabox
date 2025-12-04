@@ -4,6 +4,7 @@ module.exports = {
     './public/index.html',
     './node_modules/flowbite-react/**/*.js'
   ],
+  darkMode: 'class', // Enable class-based dark mode
   theme: {
     extend: {
       colors: {

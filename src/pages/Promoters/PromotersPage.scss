@@ -1216,3 +1216,266 @@
         }
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .promoters-page {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 25%, #475569 50%, #64748b 75%, #94a3b8 100%);
+        
+        &::before {
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.03) 2px, transparent 2px),
+                radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 0.02) 1.5px, transparent 1.5px),
+                radial-gradient(ellipse at 30% 60%, rgba(255, 255, 255, 0.025) 3px, transparent 3px),
+                radial-gradient(ellipse at 70% 80%, rgba(255, 255, 255, 0.02) 2px, transparent 2px),
+                radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.025) 2px, transparent 2px),
+                radial-gradient(ellipse at 20% 70%, rgba(255, 255, 255, 0.02) 2.5px, transparent 2.5px),
+                radial-gradient(ellipse at 90% 20%, rgba(255, 255, 255, 0.025) 2px, transparent 2px);
+        }
+        
+        &::after {
+            background-image: 
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(255, 255, 255, 0.015) 10px,
+                    rgba(255, 255, 255, 0.015) 20px
+                ),
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(255, 255, 255, 0.01) 10px,
+                    rgba(255, 255, 255, 0.01) 20px
+                );
+        }
+    }
+
+    .promoters-hero {
+        &__overlay {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.95) 100%);
+        }
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__description {
+            color: #cbd5e1;
+        }
+
+        &--welcome {
+            background: linear-gradient(135deg, vars.$indigo-800, vars.$indigo-900);
+        }
+
+        &__welcome-title {
+            color: #f1f5f9;
+        }
+
+        &__welcome-description {
+            color: #cbd5e1;
+        }
+    }
+
+    .promoters-services {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(10px);
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__card {
+            background: rgba(30, 41, 59, 0.8);
+            color: #f1f5f9;
+            border-color: rgba(99, 102, 241, 0.3);
+
+            &--indigo,
+            &--purple,
+            &--blue,
+            &--green,
+            &--orange,
+            &--red {
+                background: rgba(30, 41, 59, 0.9);
+            }
+
+            &:hover {
+                background: rgba(30, 41, 59, 1);
+                border-color: rgba(99, 102, 241, 0.5);
+            }
+        }
+
+        &__card-title {
+            color: #f1f5f9;
+        }
+
+        &__card-desc {
+            color: #cbd5e1;
+        }
+
+        &__icon {
+            color: vars.$indigo-400;
+        }
+    }
+
+    .promoters-how {
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(10px);
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__subtitle {
+            color: #cbd5e1;
+        }
+
+        &__timeline-line {
+            background: linear-gradient(90deg, vars.$indigo-800, vars.$indigo-700, vars.$indigo-800);
+        }
+
+        &__step-circle {
+            background: rgba(30, 41, 59, 0.9);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        &__step-number {
+            color: vars.$indigo-400;
+        }
+
+        &__icon-badge {
+            background: vars.$indigo-800;
+            color: vars.$indigo-300;
+        }
+
+        &__card {
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        &__card-title {
+            color: #f1f5f9;
+        }
+
+        &__card-desc {
+            color: #cbd5e1;
+        }
+
+        &__mobile-item {
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        &__mobile-number {
+            background: vars.$indigo-800;
+            color: vars.$indigo-300;
+        }
+
+        &__mobile-line {
+            background: vars.$indigo-700;
+        }
+
+        &__mobile-title {
+            color: #f1f5f9;
+        }
+
+        &__mobile-desc {
+            color: #cbd5e1;
+        }
+
+        &__mobile-icon {
+            color: vars.$indigo-400;
+        }
+    }
+
+    .promoters-features {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(10px);
+
+        &__divider {
+            background: linear-gradient(90deg, transparent, vars.$indigo-700, transparent);
+        }
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__card {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+            &:hover {
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+                background: rgba(30, 41, 59, 1);
+            }
+        }
+
+        &__card-title {
+            color: #f1f5f9;
+        }
+
+        &__card-desc {
+            color: #cbd5e1;
+        }
+
+        &__check-icon {
+            color: vars.$indigo-400;
+        }
+    }
+
+    .promoters-rewards {
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(10px);
+
+        &__divider {
+            background: linear-gradient(90deg, transparent, vars.$indigo-700, transparent);
+        }
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__subtitle {
+            color: #cbd5e1;
+        }
+    }
+
+    .promoters-cta {
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.95) 100%);
+
+        &__divider {
+            background: linear-gradient(90deg, transparent, vars.$indigo-700, transparent);
+        }
+
+        &__title {
+            color: #f1f5f9;
+        }
+
+        &__description {
+            color: #cbd5e1;
+        }
+    }
+
+    .promoter-plans-modal {
+        &__overlay {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        &__content {
+            background: rgba(30, 41, 59, 0.95);
+            color: #f1f5f9;
+        }
+
+        &__close {
+            background: vars.$indigo-800;
+            color: #f1f5f9;
+
+            &:hover {
+                background: vars.$indigo-700;
+                color: white;
+            }
+        }
+    }
+}

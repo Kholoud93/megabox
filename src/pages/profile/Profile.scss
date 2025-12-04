@@ -298,3 +298,29 @@
         }
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .Profile {
+        background: transparent;
+
+        label, p {
+            color: #cbd5e1;
+        }
+
+        input {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: #f1f5f9;
+
+            &:focus {
+                background: rgba(30, 41, 59, 0.8);
+                border-color: rgba(99, 102, 241, 0.5);
+            }
+        }
+
+        .bg-indigo-50 {
+            background: rgba(30, 41, 59, 0.6) !important;
+        }
+    }
+}

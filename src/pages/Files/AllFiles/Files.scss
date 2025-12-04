@@ -1589,3 +1589,47 @@ body.profile-menu-open {
   position: relative;
   z-index: 1 !important;
 }
+
+// Dark Mode Styles
+.dark {
+  .files-page-wrapper {
+    background: #1e293b;
+  }
+
+  .files-sidebar {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+
+    &__header {
+      background: rgba(15, 23, 42, 0.8);
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    &__title {
+      color: #f1f5f9;
+    }
+
+    &__close {
+      color: #cbd5e1;
+
+      &:hover {
+        color: #f1f5f9;
+      }
+    }
+
+    &__tab {
+      color: #cbd5e1;
+
+      &:hover {
+        background: rgba(30, 41, 59, 0.6);
+        color: #f1f5f9;
+      }
+
+      &--active {
+        background: rgba(99, 102, 241, 0.2);
+        color: #f1f5f9;
+      }
+    }
+  }
+}

@@ -743,3 +743,46 @@
         }
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .howitworks {
+        background: linear-gradient(350deg, #0f172a 0%, #1e293b 20%, #1e293b 80%, #0f172a 100%);
+
+        &__title {
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+            -webkit-text-fill-color: transparent;
+        }
+
+        &__slide {
+            background: rgba(30, 41, 59, 0.6);
+        }
+
+        &__step-title {
+            color: #f1f5f9;
+        }
+
+        &__step-description {
+            color: #cbd5e1;
+        }
+
+        &__nav-button {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: #cbd5e1;
+
+            &:hover {
+                background: rgba(99, 102, 241, 0.3);
+                border-color: rgba(99, 102, 241, 0.5);
+            }
+        }
+
+        &__indicator {
+            background: rgba(99, 102, 241, 0.3);
+
+            &--active {
+                background: var(--color-indigo-500);
+            }
+        }
+    }
+}

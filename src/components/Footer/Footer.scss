@@ -755,3 +755,14 @@
         flex-direction: row-reverse;
     }
 }
+
+// Dark Mode Styles
+.dark {
+    .footer {
+        background: linear-gradient(135deg, #1e293b, #0f172a, #1e293b);
+
+        &::after {
+            background: radial-gradient(circle at center, rgba(var(--color-indigo-800-rgb), 0.3), transparent);
+        }
+    }
+}

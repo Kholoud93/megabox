@@ -23,6 +23,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useTheme } from '../../context/ThemeContext';
 import { useQuery, useQueryClient } from 'react-query';
 import { notificationService, userService } from '../../services';
 import { fileService } from '../../services/api';
@@ -47,6 +48,7 @@ export default function Sidenav({ role }) {
     const navigate = useNavigate()
     const { setUserRole } = useAuth();
     const { t, language, changeLanguage } = useLanguage();
+    const { theme, toggleTheme } = useTheme();
     const [Token] = useCookies(['MegaBox']);
     const [, , removeToken] = useCookies(['MegaBox']);
     const queryClient = useQueryClient();
@@ -481,6 +483,20 @@ export default function Sidenav({ role }) {
 
 
                                 <div className="sidenav-bottom-actions">
+
+                                    <MenuItem
+
+                                        className="menu-items ThemeToggle"
+
+                                        icon={theme === 'light' ? <HiSun className="icon" /> : <HiMoon className="icon" />}
+
+                                        onClick={toggleTheme}
+
+                                    >
+
+                                        {!collapsed && (theme === 'light' ? t("navbar.darkMode") || "Dark Mode" : t("navbar.lightMode") || "Light Mode")}
+
+                                    </MenuItem>
 
                                     <MenuItem
 
