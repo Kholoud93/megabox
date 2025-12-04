@@ -3,12 +3,28 @@
 
 .promoters-page {
     min-height: 100vh;
-    // Premium Gradient Background - Soft Indigo Glow
-    background: radial-gradient(circle at top left, #eef2ff, #e0e7ff, #c7d2fe);
     position: relative;
     overflow-x: hidden;
     
-    // Subtle Pattern Overlay
+    // Dynamic/Energetic/Marketing Background
+    // Indigo Dynamic Gradient (Energetic Indigo tones)
+    background: linear-gradient(135deg, #6366f1 0%, #818cf8 25%, #a5b4fc 50%, #c7d2fe 75%, #e0e7ff 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    
+    @keyframes gradientShift {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+    
+    // Floating Icons Background (Money, Referrals, Arrows, Hearts, Downloads)
     &::before {
         content: '';
         position: fixed;
@@ -16,12 +32,105 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: #f8fafc;
-        background-image: radial-gradient(#c7d2fe 1px, transparent 1px);
-        background-size: 20px 20px;
-        opacity: 0.35;
+        background-image: 
+            /* Money icons */
+            radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.08) 2px, transparent 2px),
+            radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 0.06) 1.5px, transparent 1.5px),
+            /* Arrow icons */
+            radial-gradient(ellipse at 30% 60%, rgba(255, 255, 255, 0.07) 3px, transparent 3px),
+            radial-gradient(ellipse at 70% 80%, rgba(255, 255, 255, 0.05) 2px, transparent 2px),
+            /* Heart icons */
+            radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.06) 2px, transparent 2px),
+            /* Download arrows */
+            radial-gradient(ellipse at 20% 70%, rgba(255, 255, 255, 0.05) 2.5px, transparent 2.5px),
+            radial-gradient(ellipse at 90% 20%, rgba(255, 255, 255, 0.07) 2px, transparent 2px);
+        background-size: 
+            200px 200px,
+            150px 150px,
+            180px 180px,
+            220px 220px,
+            160px 160px,
+            190px 190px,
+            170px 170px;
+        opacity: 0.4;
         pointer-events: none;
         z-index: 0;
+        animation: floatIcons 25s ease-in-out infinite;
+    }
+    
+    @keyframes floatIcons {
+        0%, 100% {
+            transform: translate(0, 0);
+        }
+        25% {
+            transform: translate(20px, -20px);
+        }
+        50% {
+            transform: translate(-15px, 15px);
+        }
+        75% {
+            transform: translate(10px, 10px);
+        }
+    }
+    
+    // Wave Background (Curved Lines)
+    &::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            /* Wave lines */
+            repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255, 255, 255, 0.03) 10px,
+                rgba(255, 255, 255, 0.03) 20px
+            ),
+            repeating-linear-gradient(
+                -45deg,
+                transparent,
+                transparent 10px,
+                rgba(255, 255, 255, 0.02) 10px,
+                rgba(255, 255, 255, 0.02) 20px
+            );
+        opacity: 0.5;
+        pointer-events: none;
+        z-index: 0;
+    }
+    
+    // Light Glow Effect
+    .promoters-hero {
+        position: relative;
+        
+        &::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: pulseGlow 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% {
+                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
     }
 }
 
@@ -80,6 +189,60 @@
         margin-top: 2rem;
     }
 
+    // Welcome message styles for promoters
+    &--welcome {
+        background: linear-gradient(135deg, vars.$indigo-100, vars.$indigo-200);
+    }
+
+    &__welcome-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    &__welcome-icon {
+        font-size: 4rem;
+        color: #10b981;
+        margin-bottom: 0.5rem;
+        filter: drop-shadow(0 4px 8px rgba(16, 185, 129, 0.3));
+
+        @include mixins.media-breakpoint-down(sm) {
+            font-size: 3rem;
+        }
+    }
+
+    &__welcome-title {
+        @include mixins.responsive-font(vars.$text-4xl, vars.$text-3xl, vars.$text-2xl, vars.$text-xl);
+        font-weight: 800;
+        color: vars.$indigo-900;
+        margin-bottom: 0;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+    }
+
+    &__welcome-description {
+        @include mixins.responsive-font(vars.$text-lg, vars.$text-base, vars.$text-sm, vars.$text-xs);
+        color: vars.$indigo-700;
+        max-width: 700px;
+        margin: 0;
+        line-height: 1.7;
+    }
+
+    &__welcome-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        @include mixins.media-breakpoint-down(sm) {
+            flex-direction: column;
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+
     &__button {
         padding: 1.25rem 3rem;
         background: linear-gradient(135deg, vars.$indigo-600, vars.$indigo-700);
@@ -94,6 +257,25 @@
 
         @include mixins.media-breakpoint-down(sm) {
             padding: 1rem 2rem;
+        }
+
+        &--primary {
+            background: linear-gradient(135deg, vars.$indigo-600, vars.$indigo-700);
+            
+            &:hover {
+                background: linear-gradient(135deg, vars.$indigo-700, vars.$indigo-800);
+            }
+        }
+
+        &--secondary {
+            background: white;
+            color: vars.$indigo-700;
+            border: 2px solid vars.$indigo-300;
+            
+            &:hover {
+                background: vars.$indigo-100;
+                border-color: vars.$indigo-400;
+            }
         }
 
         &:hover {
@@ -141,29 +323,117 @@
         }
     }
 
-    &__grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
+    &__swiper-wrapper {
+        padding: 1rem 0 2rem;
+        margin: 0 -1rem;
+        width: calc(100% + 2rem);
 
         @include mixins.media-breakpoint-down(sm) {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
+            padding: 0.75rem 0 1.5rem;
+            margin: 0 -0.5rem;
+            width: calc(100% + 1rem);
         }
     }
 
+    &__swiper {
+        padding: 0 1rem;
+        overflow: visible;
+
+        @include mixins.media-breakpoint-down(sm) {
+            padding: 0 0.5rem;
+        }
+
+        .swiper-wrapper {
+            transition-timing-function: linear !important;
+        }
+    }
+
+    &__slide {
+        width: auto;
+        height: auto;
+    }
+
     &__card {
-        background: vars.$bg-light;
-        padding: 2.5rem;
+        background: white;
+        padding: 1.25rem 1rem;
         border-radius: 1rem;
         text-align: center;
         @include mixins.transition(all, 0.3s);
         border: 2px solid transparent;
+        min-width: 200px;
+        flex-shrink: 0;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        position: relative;
+        overflow: hidden;
+
+        @include mixins.media-breakpoint-down(sm) {
+            min-width: 180px;
+            padding: 1rem 0.875rem;
+        }
+
+        // Color variants
+        &--indigo {
+            border-top: 4px solid vars.$indigo-600;
+            background: linear-gradient(135deg, rgba(var(--color-indigo-100-rgb), 0.5) 0%, white 100%);
+
+            &:hover {
+                border-top-color: vars.$indigo-700;
+                box-shadow: 0 8px 25px rgba(var(--color-indigo-600-rgb), 0.2);
+            }
+        }
+
+        &--purple {
+            border-top: 4px solid #9333ea;
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, white 100%);
+
+            &:hover {
+                border-top-color: #7c3aed;
+                box-shadow: 0 8px 25px rgba(147, 51, 234, 0.2);
+            }
+        }
+
+        &--blue {
+            border-top: 4px solid #3b82f6;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, white 100%);
+
+            &:hover {
+                border-top-color: #2563eb;
+                box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+            }
+        }
+
+        &--green {
+            border-top: 4px solid #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, white 100%);
+
+            &:hover {
+                border-top-color: #059669;
+                box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+            }
+        }
+
+        &--orange {
+            border-top: 4px solid #f97316;
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, white 100%);
+
+            &:hover {
+                border-top-color: #ea580c;
+                box-shadow: 0 8px 25px rgba(249, 115, 22, 0.2);
+            }
+        }
+
+        &--red {
+            border-top: 4px solid #ef4444;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, white 100%);
+
+            &:hover {
+                border-top-color: #dc2626;
+                box-shadow: 0 8px 25px rgba(239, 68, 68, 0.2);
+            }
+        }
 
         &:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            border-color: vars.$indigo-200;
+            transform: translateY(-8px) scale(1.02);
         }
     }
 
@@ -172,6 +442,21 @@
         color: vars.$indigo-600;
         margin-bottom: 1.5rem;
         display: inline-block;
+        @include mixins.transition(all, 0.3s);
+
+        @include mixins.media-breakpoint-down(md) {
+            font-size: 2.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        @include mixins.media-breakpoint-down(sm) {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .promoters-services__card:hover & {
+            transform: scale(1.1) rotate(5deg);
+        }
     }
 
     &__card-title {
@@ -209,13 +494,9 @@
         margin: 0 auto;
     }
 
-    &__title {
-        @include mixins.responsive-font(vars.$text-4xl, vars.$text-3xl, vars.$text-2xl, vars.$text-xl);
-        font-weight: 800;
+    &__header {
         text-align: center;
         margin-bottom: 3rem;
-        color: vars.$indigo-900;
-        letter-spacing: -0.02em;
 
         @include mixins.media-breakpoint-down(md) {
             margin-bottom: 2.5rem;
@@ -226,69 +507,221 @@
         }
     }
 
-    &__grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2rem;
+    &__title {
+        @include mixins.responsive-font(vars.$text-4xl, vars.$text-3xl, vars.$text-2xl, vars.$text-xl);
+        font-weight: 800;
+        color: vars.$indigo-900;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.02em;
+    }
 
-        @include mixins.media-breakpoint-down(sm) {
-            grid-template-columns: 1fr;
+    &__subtitle {
+        @include mixins.responsive-font(vars.$text-lg, vars.$text-base, vars.$text-sm, vars.$text-xs);
+        color: vars.$indigo-700;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    // Desktop Timeline
+    &__desktop {
+        display: block;
+        position: relative;
+
+        @include mixins.media-breakpoint-down(md) {
+            display: none;
+        }
+    }
+
+    &__timeline-line {
+        position: absolute;
+        left: 2rem;
+        right: 2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 2px;
+        background: linear-gradient(90deg, vars.$indigo-100, vars.$indigo-200, vars.$indigo-100);
+        border-radius: 9999px;
+        z-index: 0;
+    }
+
+    &__timeline-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+        position: relative;
+        z-index: 10;
+
+        @include mixins.media-breakpoint-down(lg) {
             gap: 1.5rem;
         }
     }
 
-    &__card {
-        background: vars.$bg-light;
-        padding: 2.5rem;
-        border-radius: 1rem;
+    &__timeline-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         text-align: center;
-        @include mixins.transition(all, 0.3s);
-        border: 2px solid transparent;
-        position: relative;
+    }
 
-        &:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            border-color: vars.$indigo-200;
+    &__step-wrapper {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    &__step-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+
+        @include mixins.media-breakpoint-down(lg) {
+            width: 70px;
+            height: 70px;
         }
     }
 
     &__step-number {
-        position: absolute;
-        top: -15px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 40px;
-        height: 40px;
-        background: linear-gradient(135deg, vars.$indigo-600, vars.$indigo-700);
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 800;
-        font-size: 1.25rem;
-        box-shadow: 0 4px 15px rgba(var(--color-indigo-600-rgb), 0.4);
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: vars.$indigo-600;
+
+        @include mixins.media-breakpoint-down(lg) {
+            font-size: 1.25rem;
+        }
     }
 
-    &__icon {
-        font-size: 3rem;
+    &__icon-badge {
+        position: absolute;
+        top: -24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: vars.$indigo-100;
+        padding: 0.75rem;
+        border-radius: 50%;
         color: vars.$indigo-600;
-        margin: 1.5rem 0 1rem;
-        display: inline-block;
+        font-size: 1.25rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        z-index: 3;
+
+        @include mixins.media-breakpoint-down(lg) {
+            top: -20px;
+            padding: 0.625rem;
+            font-size: 1.125rem;
+        }
+    }
+
+    &__card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 280px;
+        margin: 0 auto;
+        @include mixins.transition(all, 0.3s);
+
+        @include mixins.media-breakpoint-down(lg) {
+            max-width: 250px;
+            padding: 1.25rem;
+        }
+
+        &:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
     }
 
     &__card-title {
-        @include mixins.responsive-font(vars.$text-xl, vars.$text-lg, vars.$text-base, vars.$text-sm);
-        font-weight: 700;
-        margin-bottom: 0.75rem;
+        @include mixins.responsive-font(vars.$text-lg, vars.$text-base, vars.$text-base, vars.$text-sm);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
         color: vars.$indigo-900;
     }
 
     &__card-desc {
-        @include mixins.responsive-font(vars.$text-base, vars.$text-sm, vars.$text-sm, vars.$text-xs);
+        @include mixins.responsive-font(vars.$text-sm, vars.$text-xs, vars.$text-xs, vars.$text-xs);
         color: vars.$indigo-700;
         line-height: 1.6;
+        margin: 0;
+    }
+
+    // Mobile Stacked
+    &__mobile {
+        display: none;
+
+        @include mixins.media-breakpoint-down(md) {
+            display: block;
+        }
+    }
+
+    &__mobile-item {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        background: white;
+        padding: 1rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        margin-bottom: 1.5rem;
+    }
+
+    &__mobile-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    &__mobile-number {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: vars.$indigo-100;
+        color: vars.$indigo-600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.125rem;
+        font-weight: 700;
+    }
+
+    &__mobile-line {
+        width: 2px;
+        height: 32px;
+        background: vars.$indigo-100;
+        margin-top: 0.5rem;
+    }
+
+    &__mobile-content {
+        flex: 1;
+    }
+
+    &__mobile-icon {
+        color: vars.$indigo-600;
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    &__mobile-title {
+        @include mixins.responsive-font(vars.$text-base, vars.$text-sm, vars.$text-sm, vars.$text-xs);
+        font-weight: 600;
+        margin-top: 0.25rem;
+        margin-bottom: 0.25rem;
+        color: vars.$indigo-900;
+    }
+
+    &__mobile-desc {
+        @include mixins.responsive-font(vars.$text-sm, vars.$text-xs, vars.$text-xs, vars.$text-xs);
+        color: vars.$indigo-700;
+        line-height: 1.6;
+        margin: 0;
     }
 }
 
@@ -343,48 +776,93 @@
 
     &__grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 2rem;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+
+        // Arabic: Right to left
+        &--ar {
+            direction: rtl;
+        }
+
+        // English: Left to right
+        &--en {
+            direction: ltr;
+        }
+
+        @include mixins.media-breakpoint-down(lg) {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+        }
+
+        @include mixins.media-breakpoint-down(md) {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+        }
 
         @include mixins.media-breakpoint-down(sm) {
             grid-template-columns: 1fr;
-            gap: 1.5rem;
+            gap: 1rem;
         }
     }
 
     &__card {
-        background: vars.$bg-light;
-        padding: 2rem;
-        border-radius: 1rem;
-        text-align: center;
+        background: white;
+        border: 1px solid rgba(var(--color-indigo-200-rgb), 0.5);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         @include mixins.transition(all, 0.3s);
-        border: 2px solid transparent;
 
         &:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            border-color: vars.$indigo-200;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px) scale(1.05);
         }
     }
 
-    &__icon {
-        font-size: 2.5rem;
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+
+        // Arabic: Icon on right (start), title on left (after icon)
+        .promoters-features__grid--ar & {
+            flex-direction: row;
+            direction: rtl;
+        }
+
+        // English: Icon on left (start), title on right (after icon)
+        .promoters-features__grid--en & {
+            flex-direction: row;
+            direction: ltr;
+        }
+    }
+
+    &__check-icon {
+        width: 1.5rem;
+        height: 1.5rem;
         color: vars.$indigo-600;
-        margin-bottom: 1rem;
-        display: inline-block;
+        flex-shrink: 0;
+
+        @include mixins.media-breakpoint-down(sm) {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
     }
 
     &__card-title {
-        @include mixins.responsive-font(vars.$text-xl, vars.$text-lg, vars.$text-base, vars.$text-sm);
-        font-weight: 700;
-        margin-bottom: 0.75rem;
-        color: vars.$indigo-900;
+        @include mixins.responsive-font(vars.$text-lg, vars.$text-base, vars.$text-base, vars.$text-sm);
+        font-weight: 600;
+        margin: 0;
+        color: vars.$indigo-800;
+        letter-spacing: -0.01em;
     }
 
     &__card-desc {
         @include mixins.responsive-font(vars.$text-base, vars.$text-sm, vars.$text-sm, vars.$text-xs);
         color: vars.$indigo-700;
         line-height: 1.6;
+        margin: 0;
     }
 }
 
@@ -455,6 +933,26 @@
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 2rem;
 
+        // Arabic: Right to left
+        &--ar {
+            direction: rtl;
+        }
+
+        // English: Left to right
+        &--en {
+            direction: ltr;
+        }
+
+        @include mixins.media-breakpoint-down(lg) {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.75rem;
+        }
+
+        @include mixins.media-breakpoint-down(md) {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
         @include mixins.media-breakpoint-down(sm) {
             grid-template-columns: 1fr;
             gap: 1.5rem;
@@ -462,38 +960,125 @@
     }
 
     &__card {
-        background: vars.$bg-light;
-        padding: 2.5rem;
-        border-radius: 1rem;
-        text-align: center;
-        @include mixins.transition(all, 0.3s);
-        border: 2px solid transparent;
+        color: white;
+        border-radius: 1.5rem;
+        padding: 2rem;
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
 
-        &:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            border-color: vars.$indigo-200;
+        // Card 1: Light indigo gradient (Views)
+        &--1 {
+            background: linear-gradient(135deg, vars.$indigo-400, vars.$indigo-500);
+            box-shadow: 0 10px 30px rgba(var(--color-indigo-400-rgb), 0.3);
+        }
+
+        // Card 2: Medium indigo gradient (Downloads)
+        &--2 {
+            background: linear-gradient(135deg, vars.$indigo-500, vars.$indigo-600);
+            box-shadow: 0 10px 30px rgba(var(--color-indigo-500-rgb), 0.3);
+        }
+
+        // Card 3: Dark indigo gradient (Signups)
+        &--3 {
+            background: linear-gradient(135deg, vars.$indigo-600, vars.$indigo-700);
+            box-shadow: 0 10px 30px rgba(var(--color-indigo-600-rgb), 0.3);
+        }
+
+        @include mixins.media-breakpoint-down(sm) {
+            padding: 1.5rem;
+            max-width: 100%;
+        }
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+
+        // Arabic: Icon on right (start), title on left (after icon)
+        .promoters-rewards__grid--ar & {
+            flex-direction: row;
+            direction: rtl;
+        }
+
+        // English: Icon on left (start), title on right (after icon)
+        .promoters-rewards__grid--en & {
+            flex-direction: row;
+            direction: ltr;
+        }
+    }
+
+    &__icon-wrapper {
+        width: 2.5rem;
+        height: 2.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 0.75rem;
+        backdrop-filter: blur(10px);
+        flex-shrink: 0;
+
+        @include mixins.media-breakpoint-down(sm) {
+            width: 2rem;
+            height: 2rem;
         }
     }
 
     &__icon {
-        font-size: 3rem;
-        color: vars.$indigo-600;
-        margin-bottom: 1.5rem;
-        display: inline-block;
+        font-size: 1.5rem;
+        color: white;
+        display: block;
+
+        @include mixins.media-breakpoint-down(sm) {
+            font-size: 1.25rem;
+        }
     }
 
     &__card-title {
         @include mixins.responsive-font(vars.$text-xl, vars.$text-lg, vars.$text-base, vars.$text-sm);
         font-weight: 700;
-        margin-bottom: 0.75rem;
-        color: vars.$indigo-900;
+        margin: 0;
+        color: white;
+        letter-spacing: -0.01em;
     }
 
     &__card-desc {
         @include mixins.responsive-font(vars.$text-base, vars.$text-sm, vars.$text-sm, vars.$text-xs);
-        color: vars.$indigo-700;
+        color: rgba(255, 255, 255, 0.9);
         line-height: 1.6;
+        margin: 0 0 1rem 0;
+    }
+
+    &__points {
+        margin-top: 1rem;
+    }
+
+    &__points-text {
+        @include mixins.responsive-font(vars.$text-base, vars.$text-sm, vars.$text-sm, vars.$text-xs);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: white;
+    }
+
+    &__progress-bar {
+        width: 100%;
+        height: 0.5rem;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 9999px;
+        overflow: hidden;
+    }
+
+    &__progress-fill {
+        height: 100%;
+        background: white;
+        border-radius: 9999px;
     }
 }
 

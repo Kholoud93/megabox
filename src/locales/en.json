@@ -1027,19 +1027,51 @@
       "title": "Partnership Types",
       "api": {
         "title": "API Integration",
-        "desc": "Integrate our cloud storage and streaming services into your application with our comprehensive REST API."
+        "price": "Comprehensive API Integration",
+        "desc": "Integrate our cloud storage and streaming services into your application with our comprehensive REST API.",
+        "features": [
+          "Complete REST API",
+          "Comprehensive documentation and SDK libraries",
+          "Multi-language support",
+          "Enterprise-grade security",
+          "High scalability"
+        ]
       },
       "whiteLabel": {
         "title": "White Label",
-        "desc": "Rebrand our platform with your own logo and branding to offer cloud storage under your brand name."
+        "price": "White Label Solution",
+        "desc": "Rebrand our platform with your own logo and branding to offer cloud storage under your brand name.",
+        "features": [
+          "Full branding customization",
+          "Custom dashboard",
+          "Dedicated support",
+          "Flexible pricing",
+          "Scalable solutions"
+        ]
       },
       "contentHosting": {
         "title": "Content Hosting",
-        "desc": "Host and deliver your content with our high-performance CDN and streaming infrastructure."
+        "price": "Professional Content Hosting",
+        "desc": "Host and deliver your content with our high-performance CDN and streaming infrastructure.",
+        "features": [
+          "Global CDN network",
+          "High-speed delivery",
+          "Support for all file types",
+          "Detailed analytics",
+          "Content protection"
+        ]
       },
       "reseller": {
         "title": "Reseller",
-        "desc": "Resell our services to your customers with competitive pricing and dedicated support."
+        "price": "Reseller Program",
+        "desc": "Resell our services to your customers with competitive pricing and dedicated support.",
+        "features": [
+          "Competitive pricing",
+          "Dedicated customer support",
+          "Reseller dashboard",
+          "Detailed sales reports",
+          "Training and technical support"
+        ]
       }
     },
     "technicalFeatures": {
@@ -1066,21 +1098,32 @@
     "hero": {
       "title": "Promoters Program",
       "description": "Join our promoters program and earn from every signup, view, and download. Share the platform and get rewarded for your efforts.",
-      "cta": "Start as Promoter"
+      "cta": "Start as Promoter",
+      "welcome": {
+        "title": "Welcome back, our valued promoter! 🎉",
+        "description": "We're glad to have you with us. You're now subscribed to the promoters program and can start earning money by sharing the platform.",
+        "viewDashboard": "View Earnings",
+        "goToDashboard": "Go to Dashboard"
+      }
     },
     "howItWorks": {
-      "title": "How It Works",
+      "title": "How the Promoters Program Works",
+      "subtitle": "Simple and clear steps to get users and earn from every view or download.",
       "step1": {
-        "title": "Get Your Referral Link",
-        "desc": "After registration, you'll receive a unique referral link that you can share with others."
+        "title": "Register as Promoter",
+        "desc": "Register with a free account and get your referral link in seconds."
       },
       "step2": {
-        "title": "Attract Users",
-        "desc": "Share your link on social media, websites, or any platform. Every signup, view, or download from your link earns you points."
+        "title": "Share Your Link",
+        "desc": "Share the link on social media, your blog, or with your audience."
       },
       "step3": {
+        "title": "Attract Views and Downloads",
+        "desc": "Every view or download from your link is automatically counted in your favor."
+      },
+      "step4": {
         "title": "Withdraw Your Earnings",
-        "desc": "Track your earnings in your dashboard and withdraw your money whenever you want."
+        "desc": "Track your earnings and withdraw them easily through your dashboard."
       }
     },
     "features": {
@@ -1105,6 +1148,20 @@
     "rewards": {
       "title": "Rewards System",
       "subtitle": "Earn money from multiple sources",
+      "level": "Level",
+      "points": "points",
+      "level1": {
+        "desc": "Start your journey and earn your first points"
+      },
+      "level2": {
+        "desc": "Keep progressing and reach level two"
+      },
+      "level3": {
+        "desc": "You're on the right track! Keep growing"
+      },
+      "level4": {
+        "desc": "Advanced level! You're a pro now"
+      },
       "views": {
         "title": "For Views",
         "desc": "Get paid for every view generated from your shared links. The more views, the more you earn."

@@ -21,7 +21,7 @@ const LandingPage = () => {
 
   return (
     <div className="w-full bg-light">
-      {!isLoggedIn && <Hero />}
+      <Hero />
       <Features />
       <div id="about">
         <AboutUsDescription />

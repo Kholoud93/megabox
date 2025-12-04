@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
@@ -49,17 +50,25 @@ export default function PartnerCTA({ isModal = false, onClose }) {
     ];
 
     useEffect(() => {
+        const isLoggedIn = cookies.MegaBox && cookies.MegaBox !== 'undefined' && cookies.MegaBox !== 'null' && cookies.MegaBox.trim() !== '';
+        
         if (!isModal) {
-            fetchUserData();
+            if (isLoggedIn) {
+                fetchUserData();
+            } else {
+                setUserData(null);
+                setLoading(false);
+            }
         } else {
             // For modal, fetch user data if token exists
-            if (cookies.MegaBox) {
+            if (isLoggedIn) {
                 fetchUserData();
             } else {
                 setUserData(null);
                 setLoading(false);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isModal, cookies.MegaBox]);
 
     const fetchUserData = async () => {
@@ -78,7 +87,18 @@ export default function PartnerCTA({ isModal = false, onClose }) {
     };
 
     const handleSubscribe = async (planKey) => {
-        if (!cookies.MegaBox) {
+        // Check if user is logged in properly
+        const token = cookies?.MegaBox;
+        const isLoggedIn = token && 
+                          token !== 'undefined' && 
+                          token !== 'null' && 
+                          typeof token === 'string' && 
+                          token.trim().length > 0;
+        
+        // Debug: Log token status
+        console.log('PartnerCTA - Token check:', { token, isLoggedIn, cookies });
+        
+        if (!isLoggedIn) {
             // If modal is open from landing page, close it and navigate to login
             if (isModal && onClose) {
                 onClose();
@@ -201,7 +221,6 @@ export default function PartnerCTA({ isModal = false, onClose }) {
                         className="partner-cta__subscribed"
                     >
                         <div className="partner-cta__subscribed-message">
-                            <p className="partner-cta__subscribed-text">{t('partners.alreadySubscribed')}</p>
                             <p className="partner-cta__subscribed-desc">
                                 {userData?.watchingplan && userData?.Downloadsplan 
                                     ? t('partners.subscribedBothPlans') || 'أنت مشترك في كلا الخطتين'

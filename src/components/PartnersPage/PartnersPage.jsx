@@ -4,8 +4,9 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
 import { usePageSEO } from '../../hooks/usePageSEO';
 import { partnersData } from '../../data/partners';
-import { FaHandshake, FaChartLine, FaShieldAlt, FaUsers, FaCode, FaServer, FaCloud, FaStore } from 'react-icons/fa';
+import { FaHandshake, FaChartLine, FaShieldAlt, FaUsers, FaCode, FaServer, FaCloud, FaStore, FaCheckCircle } from 'react-icons/fa';
 import PartnerFormModal from '../PartnerFormModal/PartnerFormModal';
+import partnerImage from '../../assets/Images/partners.png';
 import './PartnersPage.scss';
 
 export default function PartnersPage() {
@@ -37,29 +38,8 @@ export default function PartnersPage() {
     };
 
     // Animation Variants - Optimized
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.15,
-                delayChildren: 0.1
-            }
-        }
-    };
 
-    const itemVariants = {
-        hidden: { opacity: 0, y: 30, scale: 0.9 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            transition: {
-                duration: 0.6,
-                ease: [0.25, 0.46, 0.45, 0.94]
-            }
-        }
-    };
+
 
 
     return (
@@ -72,25 +52,37 @@ export default function PartnersPage() {
 
             <div className="partners-page">
                 {/* Hero Section */}
-                <section className="partners-hero">
+                <section className={`partners-hero partners-hero--${language}`}>
                     <div className="partners-hero__overlay"></div>
                     <div className="partners-hero__container">
-                        <motion.h1
-                            initial={{ opacity: 0, y: -30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
-                            className="partners-hero__title"
-                        >
-                            {t('partnersPage.hero.title')}
-                        </motion.h1>
-                        <motion.p
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-                            className="partners-hero__description"
-                        >
-                            {t('partnersPage.hero.description')}
-                        </motion.p>
+                        <div className="partners-hero__content">
+                            <div className={`partners-hero__text partners-hero__text--${language}`}>
+                                <motion.h1
+                                    initial={{ opacity: 0, y: -30 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.8, ease: "easeOut" }}
+                                    className="partners-hero__title"
+                                >
+                                    {t('partnersPage.hero.title')}
+                                </motion.h1>
+                                <motion.p
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+                                    className="partners-hero__description"
+                                >
+                                    {t('partnersPage.hero.description')}
+                                </motion.p>
+                            </div>
+                            <div className={`partners-hero__image-wrapper partners-hero__image-wrapper--${language}`}>
+                                <img 
+                                    src={partnerImage} 
+                                    alt="Partners" 
+                                    className="partners-hero__image"
+                                    loading="eager"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -106,34 +98,140 @@ export default function PartnersPage() {
                         >
                             {t('partnersPage.partnershipTypes.title')}
                         </motion.h2>
-                        <motion.div
-                            variants={containerVariants}
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={{ once: true, margin: "-50px" }}
-                            className="partners-types__grid"
-                        >
-                            <motion.div variants={itemVariants} className="partners-types__card">
-                                <FaCode className="partners-types__icon" />
-                                <h3 className="partners-types__card-title">{t('partnersPage.partnershipTypes.api.title')}</h3>
-                                <p className="partners-types__card-desc">{t('partnersPage.partnershipTypes.api.desc')}</p>
+                        <div className={`partners-types__grid partners-types__grid--${language}`}>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.4, delay: 0.1 }}
+                                whileHover={{ y: -4, transition: { duration: 0.3 } }}
+                                className="partners-types__card"
+                            >
+                                <div className="partners-types__card-title-wrapper">
+                                    <FaCode className="partners-types__card-title-icon" />
+                                    <h3 className="partners-types__card-title">{t('partnersPage.partnershipTypes.api.title')}</h3>
+                                </div>
+                                <p className="partners-types__card-price">{t('partnersPage.partnershipTypes.api.price') || 'API Integration'}</p>
+                                <ul className="partners-types__features">
+                                    {(() => {
+                                        const features = t('partnersPage.partnershipTypes.api.features', { returnObjects: true });
+                                        if (Array.isArray(features)) {
+                                            return features.map((feature, idx) => (
+                                                <li key={idx} className="partners-types__feature">
+                                                    <FaCheckCircle className="partners-types__feature-icon" />
+                                                    <span>{feature}</span>
+                                                </li>
+                                            ));
+                                        }
+                                        return (
+                                            <li className="partners-types__feature">
+                                                <FaCheckCircle className="partners-types__feature-icon" />
+                                                <span>{t('partnersPage.partnershipTypes.api.desc')}</span>
+                                            </li>
+                                        );
+                                    })()}
+                                </ul>
                             </motion.div>
-                            <motion.div variants={itemVariants} className="partners-types__card">
-                                <FaServer className="partners-types__icon" />
-                                <h3 className="partners-types__card-title">{t('partnersPage.partnershipTypes.whiteLabel.title')}</h3>
-                                <p className="partners-types__card-desc">{t('partnersPage.partnershipTypes.whiteLabel.desc')}</p>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.4, delay: 0.2 }}
+                                whileHover={{ y: -4, transition: { duration: 0.3 } }}
+                                className="partners-types__card"
+                            >
+                                <div className="partners-types__card-title-wrapper">
+                                    <FaStore className="partners-types__card-title-icon" />
+                                    <h3 className="partners-types__card-title">{t('partnersPage.partnershipTypes.whiteLabel.title')}</h3>
+                                </div>
+                                <p className="partners-types__card-price">{t('partnersPage.partnershipTypes.whiteLabel.price') || 'White Label Solution'}</p>
+                                <ul className="partners-types__features">
+                                    {(() => {
+                                        const features = t('partnersPage.partnershipTypes.whiteLabel.features', { returnObjects: true });
+                                        if (Array.isArray(features)) {
+                                            return features.map((feature, idx) => (
+                                                <li key={idx} className="partners-types__feature">
+                                                    <FaCheckCircle className="partners-types__feature-icon" />
+                                                    <span>{feature}</span>
+                                                </li>
+                                            ));
+                                        }
+                                        return (
+                                            <li className="partners-types__feature">
+                                                <FaCheckCircle className="partners-types__feature-icon" />
+                                                <span>{t('partnersPage.partnershipTypes.whiteLabel.desc')}</span>
+                                            </li>
+                                        );
+                                    })()}
+                                </ul>
                             </motion.div>
-                            <motion.div variants={itemVariants} className="partners-types__card">
-                                <FaCloud className="partners-types__icon" />
-                                <h3 className="partners-types__card-title">{t('partnersPage.partnershipTypes.contentHosting.title')}</h3>
-                                <p className="partners-types__card-desc">{t('partnersPage.partnershipTypes.contentHosting.desc')}</p>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.4, delay: 0.3 }}
+                                whileHover={{ y: -4, transition: { duration: 0.3 } }}
+                                className="partners-types__card"
+                            >
+                                <div className="partners-types__card-title-wrapper">
+                                    <FaCloud className="partners-types__card-title-icon" />
+                                    <h3 className="partners-types__card-title">{t('partnersPage.partnershipTypes.contentHosting.title')}</h3>
+                                </div>
+                                <p className="partners-types__card-price">{t('partnersPage.partnershipTypes.contentHosting.price') || 'Content Hosting'}</p>
+                                <ul className="partners-types__features">
+                                    {(() => {
+                                        const features = t('partnersPage.partnershipTypes.contentHosting.features', { returnObjects: true });
+                                        if (Array.isArray(features)) {
+                                            return features.map((feature, idx) => (
+                                                <li key={idx} className="partners-types__feature">
+                                                    <FaCheckCircle className="partners-types__feature-icon" />
+                                                    <span>{feature}</span>
+                                                </li>
+                                            ));
+                                        }
+                                        return (
+                                            <li className="partners-types__feature">
+                                                <FaCheckCircle className="partners-types__feature-icon" />
+                                                <span>{t('partnersPage.partnershipTypes.contentHosting.desc')}</span>
+                                            </li>
+                                        );
+                                    })()}
+                                </ul>
                             </motion.div>
-                            <motion.div variants={itemVariants} className="partners-types__card">
-                                <FaStore className="partners-types__icon" />
-                                <h3 className="partners-types__card-title">{t('partnersPage.partnershipTypes.reseller.title')}</h3>
-                                <p className="partners-types__card-desc">{t('partnersPage.partnershipTypes.reseller.desc')}</p>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.4, delay: 0.4 }}
+                                whileHover={{ y: -4, transition: { duration: 0.3 } }}
+                                className="partners-types__card"
+                            >
+                                <div className="partners-types__card-title-wrapper">
+                                    <FaUsers className="partners-types__card-title-icon" />
+                                    <h3 className="partners-types__card-title">{t('partnersPage.partnershipTypes.reseller.title')}</h3>
+                                </div>
+                                <p className="partners-types__card-price">{t('partnersPage.partnershipTypes.reseller.price') || 'Reseller Program'}</p>
+                                <ul className="partners-types__features">
+                                    {(() => {
+                                        const features = t('partnersPage.partnershipTypes.reseller.features', { returnObjects: true });
+                                        if (Array.isArray(features)) {
+                                            return features.map((feature, idx) => (
+                                                <li key={idx} className="partners-types__feature">
+                                                    <FaCheckCircle className="partners-types__feature-icon" />
+                                                    <span>{feature}</span>
+                                                </li>
+                                            ));
+                                        }
+                                        return (
+                                            <li className="partners-types__feature">
+                                                <FaCheckCircle className="partners-types__feature-icon" />
+                                                <span>{t('partnersPage.partnershipTypes.reseller.desc')}</span>
+                                            </li>
+                                        );
+                                    })()}
+                                </ul>
                             </motion.div>
-                        </motion.div>
+                        </div>
                     </div>
                 </section>
 
@@ -149,34 +247,64 @@ export default function PartnersPage() {
                         >
                             {t('partnersPage.technicalFeatures.title')}
                         </motion.h2>
-                        <motion.div
-                            variants={containerVariants}
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={{ once: true, margin: "-50px" }}
-                            className="partners-technical__grid"
-                        >
-                            <motion.div variants={itemVariants} className="partners-technical__card">
-                                <FaShieldAlt className="partners-technical__icon" />
+                        <div className="partners-technical__grid">
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.8, rotate: -3 }}
+                                whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, type: "spring", delay: 0.1 }}
+                                whileHover={{ scale: 1.05, rotate: 1 }}
+                                className="partners-technical__card partners-technical__card--purple"
+                            >
+                                <div className="partners-technical__icon-wrapper">
+                                    <FaShieldAlt className="partners-technical__icon" />
+                                </div>
                                 <h3 className="partners-technical__card-title">{t('partnersPage.technicalFeatures.secureStorage.title')}</h3>
                                 <p className="partners-technical__card-desc">{t('partnersPage.technicalFeatures.secureStorage.desc')}</p>
                             </motion.div>
-                            <motion.div variants={itemVariants} className="partners-technical__card">
-                                <FaChartLine className="partners-technical__icon" />
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.8, rotate: -3 }}
+                                whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, type: "spring", delay: 0.2 }}
+                                whileHover={{ scale: 1.05, rotate: 1 }}
+                                className="partners-technical__card partners-technical__card--indigo"
+                            >
+                                <div className="partners-technical__icon-wrapper">
+                                    <FaChartLine className="partners-technical__icon" />
+                                </div>
                                 <h3 className="partners-technical__card-title">{t('partnersPage.technicalFeatures.fastUpload.title')}</h3>
                                 <p className="partners-technical__card-desc">{t('partnersPage.technicalFeatures.fastUpload.desc')}</p>
                             </motion.div>
-                            <motion.div variants={itemVariants} className="partners-technical__card">
-                                <FaServer className="partners-technical__icon" />
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.8, rotate: -3 }}
+                                whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, type: "spring", delay: 0.3 }}
+                                whileHover={{ scale: 1.05, rotate: 1 }}
+                                className="partners-technical__card partners-technical__card--blue"
+                            >
+                                <div className="partners-technical__icon-wrapper">
+                                    <FaServer className="partners-technical__icon" />
+                                </div>
                                 <h3 className="partners-technical__card-title">{t('partnersPage.technicalFeatures.largeCapacity.title')}</h3>
                                 <p className="partners-technical__card-desc">{t('partnersPage.technicalFeatures.largeCapacity.desc')}</p>
                             </motion.div>
-                            <motion.div variants={itemVariants} className="partners-technical__card">
-                                <FaHandshake className="partners-technical__icon" />
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.8, rotate: -3 }}
+                                whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, type: "spring", delay: 0.4 }}
+                                whileHover={{ scale: 1.05, rotate: 1 }}
+                                className="partners-technical__card partners-technical__card--green"
+                            >
+                                <div className="partners-technical__icon-wrapper">
+                                    <FaHandshake className="partners-technical__icon" />
+                                </div>
                                 <h3 className="partners-technical__card-title">{t('partnersPage.technicalFeatures.technicalSupport.title')}</h3>
                                 <p className="partners-technical__card-desc">{t('partnersPage.technicalFeatures.technicalSupport.desc')}</p>
                             </motion.div>
-                        </motion.div>
+                        </div>
                     </div>
                 </section>
 
