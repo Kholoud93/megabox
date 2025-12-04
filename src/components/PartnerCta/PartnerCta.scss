@@ -491,7 +491,9 @@
 
     &__subscribed {
         display: flex !important;
-        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
         padding: 2rem 0;
         visibility: visible !important;
         opacity: 1 !important;
@@ -499,10 +501,48 @@
 
         @include mixins.media-breakpoint-down(md) {
             padding: 1.5rem 0;
+            gap: 1.25rem;
         }
 
         @include mixins.media-breakpoint-down(sm) {
             padding: 1rem 0;
+            gap: 1rem;
+        }
+    }
+
+    &__subscribed-message {
+        text-align: center;
+        max-width: 600px;
+    }
+
+    &__subscribed-text {
+        font-size: vars.$text-2xl;
+        font-weight: 800;
+        color: var(--color-indigo-900);
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.02em;
+
+        @include mixins.media-breakpoint-down(md) {
+            font-size: vars.$text-xl;
+        }
+
+        @include mixins.media-breakpoint-down(sm) {
+            font-size: vars.$text-lg;
+        }
+    }
+
+    &__subscribed-desc {
+        font-size: vars.$text-lg;
+        color: var(--color-indigo-700);
+        line-height: 1.6;
+        margin: 0;
+
+        @include mixins.media-breakpoint-down(md) {
+            font-size: vars.$text-base;
+        }
+
+        @include mixins.media-breakpoint-down(sm) {
+            font-size: vars.$text-sm;
         }
     }
 

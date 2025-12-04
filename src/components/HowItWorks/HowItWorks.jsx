@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import './HowItWorks.scss';
 import step1SvgContent from '../../assets/How_it_works/Image upload-bro.svg?raw';
 import step2SvgContent from '../../assets/How_it_works/Organizing projects-rafiki.svg?raw';
 import step3SvgContent from '../../assets/How_it_works/Cloud sync-rafiki.svg?raw';
+import step4SvgContent from '../../assets/How_it_works/undraw_folder-files_5www.svg?raw';
 import { useLanguage } from '../../context/LanguageContext';
 import { modifySvgToIndigo } from '../../utils/svgColorModifier';
 
@@ -69,6 +71,11 @@ const HowItWorks = () => {
             svgContent: modifySvgToIndigo(step3SvgContent, { isFirstImage: false, isThirdImage: true }), // Third image (Stream or Share) with specific colors
             titleKey: 'howItWorks.steps.step3.title',
             descKey: 'howItWorks.steps.step3.desc',
+        },
+        {
+            svgContent: modifySvgToIndigo(step4SvgContent, { isFirstImage: false, isThirdImage: false }),
+            titleKey: 'howItWorks.steps.step4.title',
+            descKey: 'howItWorks.steps.step4.desc',
         }
     ];
 

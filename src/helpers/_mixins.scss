@@ -81,3 +81,25 @@ $breakpoints: (
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   }
 }
+
+// Responsive Font Size
+@mixin responsive-font($xl, $lg, $md, $sm) {
+  font-size: $xl;
+
+  @include media-breakpoint-down(lg) {
+    font-size: $lg;
+  }
+
+  @include media-breakpoint-down(md) {
+    font-size: $md;
+  }
+
+  @include media-breakpoint-down(sm) {
+    font-size: $sm;
+  }
+}
+
+// Float Animation
+@mixin float-animation($duration: 20s) {
+  animation: float $duration ease-in-out infinite;
+}

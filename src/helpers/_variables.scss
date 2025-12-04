@@ -77,3 +77,18 @@ $shadow-md:
 $shadow-lg:
     0 10px 15px -3px $shadow-color-medium,
     0 4px 6px -2px $shadow-color-light;
+
+// Indigo Colors (Partners Page)
+$indigo-900: var(--color-indigo-900);
+$indigo-800: var(--color-indigo-800);
+$indigo-700: var(--color-indigo-700);
+$indigo-600: var(--color-indigo-600);
+$indigo-500: var(--color-indigo-500);
+$indigo-400: var(--color-indigo-400);
+$indigo-300: var(--color-indigo-300);
+$indigo-200: var(--color-indigo-200);
+$indigo-100: var(--color-indigo-100);
+
+// Background Gradients (Partners Page)
+$bg-light: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+$bg-primary: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);

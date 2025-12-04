@@ -24,8 +24,10 @@ html {
   --color-indigo-800: oklch(0.398 0.195 277.366);
   --color-indigo-900: oklch(0.359 0.144 278.697);
   --color-indigo-950: oklch(0.257 0.09 281.288);
-  
+
   /* RGBA versions for SCSS rgba() compatibility */
+  --color-indigo-50-rgb: 238, 242, 255; /* approximate RGB values for indigo-50 */
+  --color-indigo-100-rgb: 224, 231, 255; /* approximate RGB values for indigo-100 */
   --color-indigo-200-rgb: 199, 210, 254; /* approximate RGB values for indigo-200 */
   --color-indigo-300-rgb: 165, 180, 252; /* approximate RGB values for indigo-300 */
   --color-indigo-400-rgb: 129, 140, 248; /* approximate RGB values for indigo-400 */
@@ -35,11 +37,10 @@ html {
   --color-indigo-800-rgb: 55, 48, 163; /* approximate RGB values for indigo-800 */
 }
 
-
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -52,13 +53,13 @@ body {
 /* Arabic font */
 [dir="rtl"],
 [dir="rtl"] * {
-  font-family: 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: "Cairo", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 

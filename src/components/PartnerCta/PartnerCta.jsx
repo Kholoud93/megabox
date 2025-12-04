@@ -78,7 +78,14 @@ export default function PartnerCTA({ isModal = false, onClose }) {
     };
 
     const handleSubscribe = async (planKey) => {
-        if (!cookies.MegaBox) return navigate("/login");
+        if (!cookies.MegaBox) {
+            // If modal is open from landing page, close it and navigate to login
+            if (isModal && onClose) {
+                onClose();
+            }
+            navigate("/login");
+            return;
+        }
         
         // Check if user has already accepted terms
         const termsAccepted = localStorage.getItem('termsAccepted');
@@ -193,6 +200,17 @@ export default function PartnerCTA({ isModal = false, onClose }) {
                         transition={{ duration: 0.5 }}
                         className="partner-cta__subscribed"
                     >
+                        <div className="partner-cta__subscribed-message">
+                            <p className="partner-cta__subscribed-text">{t('partners.alreadySubscribed')}</p>
+                            <p className="partner-cta__subscribed-desc">
+                                {userData?.watchingplan && userData?.Downloadsplan 
+                                    ? t('partners.subscribedBothPlans') || 'أنت مشترك في كلا الخطتين'
+                                    : userData?.watchingplan 
+                                        ? t('partners.subscribedViewsPlan') || 'أنت مشترك في خطة المشاهدات'
+                                        : t('partners.subscribedDownloadsPlan') || 'أنت مشترك في خطة التحميلات'
+                                }
+                            </p>
+                        </div>
                         <button
                             onClick={() => {
                                 if (onClose) onClose();

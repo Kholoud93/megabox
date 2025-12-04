@@ -1,0 +1,183 @@
+@use "../../helpers/_variables.scss" as vars;
+@use "../../helpers/_mixins.scss" as mixins;
+
+.partner-form-modal {
+    &__overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+
+        @include mixins.media-breakpoint-down(sm) {
+            padding: 0.5rem;
+        }
+    }
+
+    &__content {
+        background: white;
+        border-radius: 1.5rem;
+        max-width: 600px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+
+        @include mixins.media-breakpoint-down(sm) {
+            max-height: 95vh;
+            border-radius: 1rem;
+        }
+    }
+
+    &__header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 2rem 2rem 1.5rem;
+        border-bottom: 1px solid vars.$indigo-100;
+
+        @include mixins.media-breakpoint-down(sm) {
+            padding: 1.5rem 1.5rem 1rem;
+        }
+    }
+
+    &__title {
+        @include mixins.responsive-font(vars.$text-2xl, vars.$text-xl, vars.$text-lg, vars.$text-base);
+        font-weight: 800;
+        color: vars.$indigo-900;
+        margin: 0 0 0.5rem 0;
+    }
+
+    &__subtitle {
+        @include mixins.responsive-font(vars.$text-sm, vars.$text-sm, vars.$text-xs, vars.$text-xs);
+        color: vars.$indigo-600;
+        margin: 0;
+    }
+
+    &__close {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: none;
+        background: vars.$indigo-100;
+        color: vars.$indigo-700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        @include mixins.transition(all, 0.3s);
+
+        &:hover {
+            background: vars.$indigo-200;
+            color: vars.$indigo-900;
+        }
+    }
+
+    &__form {
+        padding: 2rem;
+
+        @include mixins.media-breakpoint-down(sm) {
+            padding: 1.5rem;
+        }
+    }
+
+    &__field {
+        margin-bottom: 1.5rem;
+    }
+
+    &__label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        @include mixins.responsive-font(vars.$text-sm, vars.$text-sm, vars.$text-xs, vars.$text-xs);
+        font-weight: 600;
+        color: vars.$indigo-900;
+        margin-bottom: 0.5rem;
+    }
+
+    &__icon {
+        color: vars.$indigo-600;
+        font-size: 1rem;
+    }
+
+    &__input,
+    &__textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid vars.$indigo-200;
+        border-radius: 0.75rem;
+        @include mixins.responsive-font(vars.$text-base, vars.$text-sm, vars.$text-sm, vars.$text-xs);
+        color: vars.$indigo-900;
+        @include mixins.transition(all, 0.3s);
+        background: white;
+
+        &:focus {
+            outline: none;
+            border-color: vars.$indigo-600;
+            box-shadow: 0 0 0 3px rgba(var(--color-indigo-600-rgb), 0.1);
+        }
+
+        &::placeholder {
+            color: vars.$indigo-400;
+        }
+    }
+
+    &__textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    &__actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        justify-content: flex-end;
+
+        @include mixins.media-breakpoint-down(sm) {
+            flex-direction: column-reverse;
+        }
+    }
+
+    &__button {
+        padding: 0.75rem 2rem;
+        border-radius: 0.75rem;
+        @include mixins.responsive-font(vars.$text-base, vars.$text-sm, vars.$text-sm, vars.$text-xs);
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        @include mixins.transition(all, 0.3s);
+
+        @include mixins.media-breakpoint-down(sm) {
+            width: 100%;
+        }
+
+        &--cancel {
+            background: vars.$indigo-100;
+            color: vars.$indigo-700;
+
+            &:hover {
+                background: vars.$indigo-200;
+                color: vars.$indigo-900;
+            }
+        }
+
+        &--submit {
+            background: linear-gradient(135deg, vars.$indigo-600, vars.$indigo-700);
+            color: white;
+            box-shadow: 0 4px 15px rgba(var(--color-indigo-600-rgb), 0.4);
+
+            &:hover {
+                background: linear-gradient(135deg, vars.$indigo-700, vars.$indigo-800);
+                box-shadow: 0 6px 20px rgba(var(--color-indigo-600-rgb), 0.5);
+            }
+        }
+    }
+}
+

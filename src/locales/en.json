@@ -2,6 +2,8 @@
   "navbar": {
     "home": "Home",
     "about": "About",
+    "partners": "Partners",
+    "promoters": "Promoters",
     "login": "Login",
     "logout": "Logout",
     "dashboard": "Dashboard",
@@ -11,6 +13,19 @@
     "arabic": "العربية",
     "english": "English"
   },
+  "landingOptions": {
+    "title": "For Businesses & Individuals",
+    "subtitle": "Choose the option that best fits your needs",
+    "partners": {
+      "title": "Partners Program",
+      "description": "For companies and professional content creators who want to integrate our platform with their services."
+    },
+    "promoters": {
+      "title": "Promoters Program",
+      "description": "For individuals who want to promote the platform and earn money from referrals."
+    },
+    "learnMore": "Learn More"
+  },
   "hero": {
     "title": "1024GB Cloud Storage",
     "description": "Easy to use, private and secure, reliable.",
@@ -19,10 +34,10 @@
     "footer": "Your free and secure cloud storage by MegaBox"
   },
   "features": {
-    "feature1": "Stream your videos instantly from anywhere, on any device, with no buffering. Experience seamless playback with our advanced cloud streaming technology.",
-    "feature2": "Your files are encrypted and safely stored in the cloud, accessible only by you. Enterprise-grade security ensures your data remains private and protected.",
-    "feature3": "Upload videos with a single click and share them securely with your team or friends. Organize your content effortlessly with our intuitive interface.",
-    "feature4": "Enjoy your videos in stunning HD and 4K quality, with adaptive streaming that adjusts to your connection speed for the best viewing experience."
+    "feature1": "Upload files quickly and easily. Support for all file types with drag-and-drop functionality and instant upload.",
+    "feature2": "Fast viewing experience. Stream your videos instantly from anywhere, on any device, with no buffering.",
+    "feature3": "Secure downloads. Your files are encrypted and safely stored in the cloud, accessible only by you.",
+    "feature4": "Track views and downloads. Monitor all activity on your shared files with real-time statistics and insights (marketing purposes)."
   },
   "howItWorks": {
     "title": "How It Works",
@@ -36,12 +51,33 @@
         "desc": "Easily organize your videos into folders and manage your content. Keep everything tidy and accessible."
       },
       "step3": {
-        "title": "Stream or Share",
-        "desc": "Stream your videos instantly or share them securely with others. Control who has access to your content."
+        "title": "Track Views & Downloads",
+        "desc": "Monitor all views and downloads of your shared files. Get real-time statistics and insights."
+      },
+      "step4": {
+        "title": "Download Anytime",
+        "desc": "Download your files whenever you want, from any device. Your files are always accessible and secure."
       }
     },
     "prev": "Previous",
     "next": "Next"
+  },
+  "dashboardDemo": {
+    "title": "Your Dashboard",
+    "subtitle": "See how your dashboard will look after uploading your files. Track views and downloads easily.",
+    "totalViews": "Total Views",
+    "totalDownloads": "Total Downloads",
+    "activeFiles": "Active Files",
+    "totalFiles": "Total Files",
+    "chartTitle": "Weekly Activity",
+    "recentFiles": "Recent Files",
+    "fileName": "File Name",
+    "views": "Views",
+    "downloads": "Downloads",
+    "sampleFile1": "video-file.mp4",
+    "sampleFile2": "document.pdf",
+    "sampleFile3": "image.jpg",
+    "note": "Note: This is demo data only. After signing up and uploading your files, your real statistics will appear here."
   },
   "pricing": {
     "title": "Choose Your Plan",
@@ -109,6 +145,7 @@
     "home": "Home",
     "about": "About",
     "partners": "Partners",
+    "promoters": "Promoters",
     "privacyPolicy": "Privacy Policy",
     "removalPolicy": "Removal Policy",
     "reportIssue": "Report Issue",
@@ -128,6 +165,24 @@
     "pending": "Pending",
     "premium": "Premium",
     "logoutSuccess": "Logged out successfully"
+  },
+  "partnerFormModal": {
+    "title": "Partner Registration",
+    "subtitle": "Fill out the form below to become a partner with us",
+    "companyName": "Company Name",
+    "contactName": "Contact Name",
+    "email": "Email",
+    "phone": "Phone",
+    "website": "Website (Optional)",
+    "partnershipType": "Partnership Type",
+    "selectType": "Select Partnership Type",
+    "message": "Message (Optional)",
+    "messagePlaceholder": "Tell us about your partnership goals...",
+    "cancel": "Cancel",
+    "submit": "Submit Application",
+    "submitting": "Submitting...",
+    "success": "Application submitted successfully! We will contact you soon.",
+    "error": "An error occurred. Please try again."
   },
   "about": {
     "storage": {
@@ -830,9 +885,13 @@
     "title": "Our Services",
     "selectPlan": "+ Please select your income plan +",
     "alreadySubscribed": "You're Already Subscribed",
+    "subscribedBothPlans": "You're subscribed to both plans (Views & Downloads)",
+    "subscribedViewsPlan": "You're subscribed to the Views plan",
+    "subscribedDownloadsPlan": "You're subscribed to the Downloads plan",
     "seeDashboard": "See Your Dashboard",
     "choosePlan": "Choose this plan",
     "services": {
+      "title": "Our Services",
       "videoUploads": {
         "title": "Video Uploads",
         "desc": "Easily upload videos and get unique sharing links to increase the reach of your content."
@@ -898,6 +957,171 @@
         "feature5": "Accurate tracking of downloads",
         "feature6": "24/7 technical support"
       }
+    }
+  },
+  "partnersPage": {
+    "hero": {
+      "title": "Our Partners",
+      "description": "We are proud to collaborate with global companies that help us deliver secure and fast cloud storage services."
+    },
+    "logo": "logo",
+    "types": {
+      "technical": "Technical Partner",
+      "content": "Content Partner",
+      "supported": "Supported Company",
+      "affiliate": "Affiliate Partner"
+    },
+    "sections": {
+      "technical": "Our Technical Partners",
+      "content": "Content Partners",
+      "supported": "Supported Companies",
+      "affiliate": "Affiliate Partners"
+    },
+    "partnerDescriptions": {
+      "aws": "We provide robust and secure cloud infrastructure for data storage and processing.",
+      "google": "We use Google Cloud services to deliver high performance and speed.",
+      "microsoft": "We leverage Azure to provide advanced cloud solutions.",
+      "cdn": "We use CDN networks to accelerate content delivery to users worldwide.",
+      "streaming": "We provide a high-quality and seamless video streaming platform.",
+      "security": "We ensure your data security with specialized security partners.",
+      "payment": "We provide secure and multiple payment methods for customers.",
+      "analytics": "We use advanced analytics platforms to track performance."
+    },
+    "whyPartner": {
+      "title": "Why Companies Partner With Us",
+      "reliability": {
+        "title": "Reliability",
+        "desc": "We provide stable and reliable services with high performance guarantees."
+      },
+      "growth": {
+        "title": "Mutual Growth",
+        "desc": "We work with our partners to achieve mutual growth and sustainable success."
+      },
+      "security": {
+        "title": "Security",
+        "desc": "We adhere to the highest security standards to protect partner and user data."
+      },
+      "global": {
+        "title": "Global Reach",
+        "desc": "We provide global access with multi-language and regional support."
+      }
+    },
+    "testimonials": {
+      "title": "What Our Partners Say",
+      "quote1": "Working with MegaBox has been an amazing experience. Professional team and excellent services.",
+      "author1": "Ahmed Mohamed",
+      "company1": "Advanced Technology Company",
+      "quote2": "We are proud of our partnership with MegaBox. They deliver innovative and reliable solutions.",
+      "author2": "Sara Ali",
+      "company2": "Digital Content Platform"
+    },
+    "cta": {
+      "title": "Become a Partner",
+      "description": "Want to become a partner with us? Join us today and benefit from mutual growth opportunities.",
+      "benefit1": "Increase Revenue",
+      "benefit2": "Content Support",
+      "benefit3": "Strategic Partnership",
+      "button": "Start as Partner"
+    },
+    "partnershipTypes": {
+      "title": "Partnership Types",
+      "api": {
+        "title": "API Integration",
+        "desc": "Integrate our cloud storage and streaming services into your application with our comprehensive REST API."
+      },
+      "whiteLabel": {
+        "title": "White Label",
+        "desc": "Rebrand our platform with your own logo and branding to offer cloud storage under your brand name."
+      },
+      "contentHosting": {
+        "title": "Content Hosting",
+        "desc": "Host and deliver your content with our high-performance CDN and streaming infrastructure."
+      },
+      "reseller": {
+        "title": "Reseller",
+        "desc": "Resell our services to your customers with competitive pricing and dedicated support."
+      }
+    },
+    "technicalFeatures": {
+      "title": "Technical Partnership Features",
+      "secureStorage": {
+        "title": "Secure Storage",
+        "desc": "Enterprise-grade encryption and security protocols to protect your data and your customers' data."
+      },
+      "fastUpload": {
+        "title": "Fast Upload Speed",
+        "desc": "High-speed upload and download capabilities with global CDN network for optimal performance."
+      },
+      "largeCapacity": {
+        "title": "Large Capacity",
+        "desc": "Scalable storage solutions that grow with your business needs, from GB to PB scale."
+      },
+      "technicalSupport": {
+        "title": "Technical Support",
+        "desc": "Dedicated technical support team available 24/7 to assist with integration and troubleshooting."
+      }
+    }
+  },
+  "promotersPage": {
+    "hero": {
+      "title": "Promoters Program",
+      "description": "Join our promoters program and earn from every signup, view, and download. Share the platform and get rewarded for your efforts.",
+      "cta": "Start as Promoter"
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "step1": {
+        "title": "Get Your Referral Link",
+        "desc": "After registration, you'll receive a unique referral link that you can share with others."
+      },
+      "step2": {
+        "title": "Attract Users",
+        "desc": "Share your link on social media, websites, or any platform. Every signup, view, or download from your link earns you points."
+      },
+      "step3": {
+        "title": "Withdraw Your Earnings",
+        "desc": "Track your earnings in your dashboard and withdraw your money whenever you want."
+      }
+    },
+    "features": {
+      "title": "Program Features",
+      "freeSignup": {
+        "title": "Free Registration",
+        "desc": "Join the program completely free. No fees or hidden costs."
+      },
+      "dashboard": {
+        "title": "Earnings Dashboard",
+        "desc": "Track all your earnings, views, downloads, and referrals in one comprehensive dashboard."
+      },
+      "trackViews": {
+        "title": "Track Views",
+        "desc": "Monitor all views that come from your referral link in real-time."
+      },
+      "trackDownloads": {
+        "title": "Track Downloads",
+        "desc": "See every download generated from your shared links and earn from each one."
+      }
+    },
+    "rewards": {
+      "title": "Rewards System",
+      "subtitle": "Earn money from multiple sources",
+      "views": {
+        "title": "For Views",
+        "desc": "Get paid for every view generated from your shared links. The more views, the more you earn."
+      },
+      "downloads": {
+        "title": "For Downloads",
+        "desc": "Earn rewards for every file download that comes through your referral link."
+      },
+      "signups": {
+        "title": "For Signups",
+        "desc": "Receive bonuses for every new user who registers through your referral link."
+      }
+    },
+    "cta": {
+      "title": "Start Earning Today",
+      "description": "Join thousands of promoters who are already earning from sharing MegaBox. Register now and start your journey.",
+      "button": "Start as Promoter"
     }
   },
   "termsModal": {
