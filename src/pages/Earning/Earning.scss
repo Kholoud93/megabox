@@ -2178,4 +2178,177 @@
   .earning-container {
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   }
+
+  .withdraw-summary-cards {
+    .withdraw-summary-card {
+      background: rgba(30, 41, 59, 0.8) !important;
+      border-color: rgba(99, 102, 241, 0.4) !important;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+      &:hover {
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+        background: rgba(30, 41, 59, 0.9) !important;
+      }
+
+      &__icon {
+        &--amount,
+        &--review,
+        &--withdrawable {
+          background: linear-gradient(135deg, rgba(99, 102, 241, 0.3) 0%, rgba(79, 70, 229, 0.4) 100%) !important;
+          color: var(--color-indigo-300) !important;
+        }
+      }
+
+      &__label {
+        color: var(--color-indigo-300) !important;
+      }
+
+      &__value {
+        color: #f1f5f9 !important;
+      }
+    }
+  }
+
+  .withdraw-apply-section {
+    background: rgba(30, 41, 59, 0.8) !important;
+    border-color: rgba(99, 102, 241, 0.3) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+    &__header {
+      h2 {
+        color: #f1f5f9 !important;
+      }
+
+      a {
+        color: var(--color-indigo-300) !important;
+
+        &:hover {
+          color: var(--color-indigo-400) !important;
+        }
+      }
+    }
+
+    &__title {
+      color: #f1f5f9 !important;
+    }
+
+    .withdraw-form-group {
+      label {
+        color: #f1f5f9 !important;
+      }
+    }
+
+    .withdraw-form-input,
+    .withdraw-form-select {
+      background: rgba(15, 23, 42, 0.6) !important;
+      border-color: rgba(99, 102, 241, 0.3) !important;
+      color: #f1f5f9 !important;
+
+      &:focus {
+        border-color: var(--color-indigo-500) !important;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2) !important;
+        background: rgba(15, 23, 42, 0.8) !important;
+      }
+
+      &::placeholder {
+        color: #94a3b8 !important;
+      }
+    }
+
+    .withdraw-payment-method-card {
+      background: rgba(30, 41, 59, 0.6) !important;
+      border-color: rgba(99, 102, 241, 0.3) !important;
+
+      &:hover {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.5) !important;
+      }
+
+      &--selected {
+        background: rgba(99, 102, 241, 0.3) !important;
+        border-color: var(--color-indigo-500) !important;
+      }
+
+      .withdraw-payment-details {
+        h4 {
+          color: #f1f5f9 !important;
+        }
+
+        p {
+          color: #cbd5e1 !important;
+        }
+      }
+    }
+
+    .withdraw-submit-button {
+      background: linear-gradient(135deg, var(--color-indigo-600), var(--color-indigo-700)) !important;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4) !important;
+
+      &:hover:not(:disabled) {
+        background: linear-gradient(135deg, var(--color-indigo-700), var(--color-indigo-800)) !important;
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5) !important;
+      }
+    }
+  }
+
+  .withdraw-table-container {
+    background: rgba(30, 41, 59, 0.8) !important;
+    border-color: rgba(99, 102, 241, 0.3) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+    .withdraw-table {
+      thead {
+        background: rgba(30, 41, 59, 0.9) !important;
+
+        th {
+          color: #f1f5f9 !important;
+          border-color: rgba(99, 102, 241, 0.4) !important;
+        }
+      }
+
+      tbody {
+        tr {
+          border-color: rgba(99, 102, 241, 0.2) !important;
+          background: rgba(30, 41, 59, 0.5) !important;
+
+          &:hover {
+            background: rgba(30, 41, 59, 0.7) !important;
+          }
+
+          td {
+            color: #cbd5e1 !important;
+            border-color: rgba(99, 102, 241, 0.1) !important;
+          }
+        }
+      }
+    }
+  }
+
+  .withdraw-record-modal {
+    background: rgba(30, 41, 59, 0.95) !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid rgba(99, 102, 241, 0.3) !important;
+
+    &__header {
+      border-color: rgba(99, 102, 241, 0.3) !important;
+
+      h2 {
+        color: #f1f5f9 !important;
+      }
+    }
+
+    &__body {
+      .withdraw-record-detail {
+        border-color: rgba(99, 102, 241, 0.2) !important;
+
+        strong {
+          color: var(--color-indigo-300) !important;
+        }
+
+        span {
+          color: #cbd5e1 !important;
+        }
+      }
+    }
+  }
 }

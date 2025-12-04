@@ -416,25 +416,30 @@
 
     .referral-stats {
         &__card {
-            background: rgba(30, 41, 59, 0.8);
-            border-color: rgba(99, 102, 241, 0.3);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            background: rgba(30, 41, 59, 0.8) !important;
+            border-color: rgba(99, 102, 241, 0.4) !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+            &:hover {
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+                background: rgba(30, 41, 59, 0.9) !important;
+            }
         }
 
         &__title {
-            color: #f1f5f9;
+            color: #f1f5f9 !important;
         }
 
         &__item {
-            border-color: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.3) !important;
         }
 
         &__label {
-            color: var(--color-indigo-300);
+            color: var(--color-indigo-300) !important;
         }
 
         &__value {
-            color: #f1f5f9;
+            color: #f1f5f9 !important;
         }
     }
 
