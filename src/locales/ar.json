@@ -812,7 +812,9 @@
     "removePremiumConfirm": "هل أنت متأكد من إزالة حالة المميز من هذا المستخدم؟",
     "user": "المستخدم",
     "close": "إغلاق",
-    "deleting": "جاري الحذف..."
+    "deleting": "جاري الحذف...",
+    "status": "الحالة",
+    "actions": "الإجراءات"
   },
   "adminPromoters": {
     "page": "صفحة",

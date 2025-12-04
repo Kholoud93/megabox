@@ -812,7 +812,9 @@
     "removePremiumConfirm": "Are you sure you want to remove premium status from this user?",
     "user": "User",
     "close": "Close",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "status": "Status",
+    "actions": "Actions"
   },
   "adminPromoters": {
     "page": "Page",

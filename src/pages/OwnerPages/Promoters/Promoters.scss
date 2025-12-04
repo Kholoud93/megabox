@@ -886,12 +886,141 @@
 // Dark Mode Styles
 .dark {
     .admin-promoters-page {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+    }
+
+    .promoters-back-button {
+        .back-btn {
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.8), rgba(124, 58, 237, 0.8)) !important;
+            filter: brightness(0.85) saturate(1.1) !important;
+
+            &:hover {
+                background: linear-gradient(135deg, rgba(124, 58, 237, 0.9), rgba(109, 40, 217, 0.9)) !important;
+                box-shadow: 0 4px 12px rgba(147, 51, 234, 0.4) !important;
+            }
+        }
     }
 
     .Promoters {
-        background: rgba(30, 41, 59, 0.8);
-        border-color: rgba(99, 102, 241, 0.3);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+
+        table {
+            th {
+                background: rgba(30, 41, 59, 0.6) !important;
+                color: #f1f5f9 !important;
+                border-bottom-color: rgba(99, 102, 241, 0.3) !important;
+            }
+        }
+
+        .admin-users-table {
+            &__header {
+                background: rgba(30, 41, 59, 0.6) !important;
+                
+                th {
+                    background: rgba(30, 41, 59, 0.6) !important;
+                    color: #f1f5f9 !important;
+                    border-bottom-color: rgba(99, 102, 241, 0.3) !important;
+                }
+            }
+
+            tbody {
+                tr {
+                    border-color: rgba(99, 102, 241, 0.2) !important;
+                    background: rgba(30, 41, 59, 0.4) !important;
+
+                    &:hover {
+                        background: rgba(30, 41, 59, 0.6) !important;
+                    }
+
+                    td {
+                        color: #cbd5e1 !important;
+                        border-color: rgba(99, 102, 241, 0.1) !important;
+
+                        &::before {
+                            color: var(--color-indigo-300) !important;
+                        }
+                    }
+                }
+            }
+        }
+
+        .action-buttons {
+            button, a {
+                &:hover {
+                    background: rgba(99, 102, 241, 0.2) !important;
+                }
+            }
+        }
+    }
+
+    .admin-users-pagination {
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+
+        &__btn {
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.8), rgba(124, 58, 237, 0.8)) !important;
+            filter: brightness(0.85) saturate(1.1) !important;
+            color: white !important;
+
+            &:hover:not(:disabled) {
+                background: linear-gradient(135deg, rgba(124, 58, 237, 0.9), rgba(109, 40, 217, 0.9)) !important;
+                box-shadow: 0 4px 12px rgba(147, 51, 234, 0.4) !important;
+            }
+
+            &:disabled {
+                opacity: 0.5 !important;
+            }
+        }
+
+        &__info {
+            color: var(--color-indigo-300) !important;
+            font-weight: 600 !important;
+        }
+    }
+
+    .admin-delete-modal-backdrop {
+        background: rgba(0, 0, 0, 0.8) !important;
+    }
+
+    .admin-delete-modal {
+        background: rgba(30, 41, 59, 0.95) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid rgba(99, 102, 241, 0.3) !important;
+
+        h3 {
+            color: #f1f5f9 !important;
+        }
+
+        p {
+            color: #cbd5e1 !important;
+        }
+
+        &__warning {
+            color: #fca5a5 !important;
+        }
+
+        &__btn {
+            &--cancel {
+                background: rgba(30, 41, 59, 0.6) !important;
+                color: #cbd5e1 !important;
+
+                &:hover:not(:disabled) {
+                    background: rgba(30, 41, 59, 0.8) !important;
+                }
+            }
+
+            &--delete {
+                background: linear-gradient(135deg, rgba(220, 38, 38, 0.8), rgba(185, 28, 28, 0.8)) !important;
+                filter: brightness(0.85) saturate(1.1) !important;
+
+                &:hover:not(:disabled) {
+                    background: linear-gradient(135deg, rgba(185, 28, 28, 0.9), rgba(153, 27, 27, 0.9)) !important;
+                    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4) !important;
+                }
+            }
+        }
     }
 }
