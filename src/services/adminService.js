@@ -57,21 +57,86 @@ export const adminService = {
         }
     },
 
-    // NOTE: The following APIs are NOT in the backend and need to be implemented:
-    // - /auth/updateWithdrawalStatus/:withdrawalId (PATCH) - Approve/reject withdrawals
-    // - /auth/getAllStorage (GET) - Get all user storage data
-    // - /auth/getAllPayments (GET) - Get all payment records
-    // - /auth/getAllDownloadsViews (GET) - Get all downloads and views data
-    // These methods return empty data until the backend implements them.
-
-    // Update withdrawal status (approve/reject) - NOT IMPLEMENTED IN BACKEND
-    updateWithdrawalStatus: async () => {
-        throw new Error("API not implemented: /auth/updateWithdrawalStatus/:withdrawalId");
+    // Update withdrawal status (approve/reject)
+    updateWithdrawalStatus: async (withdrawalId, status, reason, token) => {
+        try {
+            const body = { status };
+            if (reason) {
+                body.reason = reason;
+            }
+            const response = await api.patch(`/auth/updateWithdrawalStatus/${withdrawalId}`, body, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success(
+                status === 'approved' 
+                    ? "Withdrawal approved successfully!" 
+                    : status === 'rejected'
+                        ? "Withdrawal rejected successfully!"
+                        : "Withdrawal status updated successfully!",
+                ToastOptions("success")
+            );
+            return response.data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to update withdrawal status", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
     },
 
-    // Get all storage (admin) - NOT IMPLEMENTED IN BACKEND
-    getAllStorage: async () => {
-        return { storage: [] };
+    // Get approved withdrawals
+    getApprovedWithdrawals: async (token) => {
+        try {
+            const response = await api.get('/auth/getApprovedWithdrawals', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Get all storage (admin)
+    getAllStorage: async (token) => {
+        try {
+            // Try to use getAllStorageStats first, fallback to empty if not available
+            const response = await api.get('/auth/getAllStorageStats', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            // Transform the response to match expected format
+            if (response.data?.storage) {
+                return response.data;
+            }
+            if (Array.isArray(response.data)) {
+                return { storage: response.data };
+            }
+            if (response.data?.data) {
+                return { storage: response.data.data };
+            }
+            return { storage: [] };
+        } catch (error) {
+            // If API doesn't exist or fails, return empty array
+            console.warn('getAllStorageStats API not available, returning empty storage');
+            return { storage: [] };
+        }
+    },
+
+    // Get all storage statistics (admin)
+    getAllStorageStats: async (token) => {
+        try {
+            const response = await api.get('/auth/getAllStorageStats', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
     },
 
     // Get all payments (admin) - NOT IMPLEMENTED IN BACKEND
@@ -157,7 +222,7 @@ export const adminService = {
     // Update subscription plan (admin)
     updatePlan: async (planId, days, price, name, token) => {
         try {
-            const response = await api.patch(`/auth/deletePlan/${planId}`, {
+            const response = await api.patch(`/auth/updatePlan/${planId}`, {
                 days,
                 price,
                 name
@@ -323,6 +388,40 @@ export const adminService = {
             // Show the actual error message from backend
             const errorMessage = error.response?.data?.message || error.message || "Failed to send notification to all users";
             toast.error(errorMessage, ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Update single pending reward (admin)
+    updateSinglePendingReward: async (userId, rewardId, amount, token) => {
+        try {
+            const response = await api.patch(`/auth/updateSinglePendingReward/${userId}/${rewardId}`, {
+                amount
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success("Pending reward updated successfully!", ToastOptions("success"));
+            return response.data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to update pending reward", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Update analytics data (admin)
+    updateAnalyticsData: async (userId, analyticsData, token) => {
+        try {
+            const response = await api.patch(`/auth/updateAnalyticsData/${userId}`, analyticsData, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success("Analytics data updated successfully!", ToastOptions("success"));
+            return response.data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to update analytics data", ToastOptions("error"));
             throw error.response?.data || error.message;
         }
     }

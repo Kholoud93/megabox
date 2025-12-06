@@ -24,6 +24,7 @@ export default function Withdrawals() {
     const queryClient = useQueryClient();
     const [processingWithdrawals, setProcessingWithdrawals] = useState(new Set());
     const [selectedWithdrawal, setSelectedWithdrawal] = useState(null);
+    const [rejectionModal, setRejectionModal] = useState({ isOpen: false, withdrawalId: null, reason: '' });
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -128,9 +129,10 @@ export default function Withdrawals() {
     const handleApprove = async (withdrawalId) => {
         setProcessingWithdrawals(prev => new Set(prev).add(withdrawalId));
         try {
-            await adminService.updateWithdrawalStatus(withdrawalId, 'approved', token);
+            await adminService.updateWithdrawalStatus(withdrawalId, 'approved', null, token);
             toast.success(t('adminWithdrawals.approvedSuccess') || 'Withdrawal approved successfully', ToastOptions("success"));
             queryClient.invalidateQueries(['allWithdrawals']);
+            queryClient.invalidateQueries(['approvedWithdrawals']);
             // Optimistic update
             queryClient.setQueryData(['allWithdrawals'], (oldData) => {
                 if (!oldData?.withdrawals) return oldData;
@@ -154,13 +156,25 @@ export default function Withdrawals() {
         }
     };
 
-    // Handle reject withdrawal
-    const handleReject = async (withdrawalId) => {
+    // Open rejection modal
+    const openRejectionModal = (withdrawalId) => {
+        setRejectionModal({ isOpen: true, withdrawalId, reason: '' });
+    };
+
+    // Handle reject withdrawal with reason
+    const handleReject = async () => {
+        const { withdrawalId, reason } = rejectionModal;
+        if (!reason || reason.trim() === '') {
+            toast.error(t('adminWithdrawals.reasonRequired') || 'Please provide a reason for rejection', ToastOptions("error"));
+            return;
+        }
+
         setProcessingWithdrawals(prev => new Set(prev).add(withdrawalId));
         try {
-            await adminService.updateWithdrawalStatus(withdrawalId, 'rejected', token);
+            await adminService.updateWithdrawalStatus(withdrawalId, 'rejected', reason.trim(), token);
             toast.success(t('adminWithdrawals.rejectedSuccess') || 'Withdrawal rejected successfully', ToastOptions("success"));
             queryClient.invalidateQueries(['allWithdrawals']);
+            queryClient.invalidateQueries(['approvedWithdrawals']);
             // Optimistic update
             queryClient.setQueryData(['allWithdrawals'], (oldData) => {
                 if (!oldData?.withdrawals) return oldData;
@@ -168,11 +182,12 @@ export default function Withdrawals() {
                     ...oldData,
                     withdrawals: oldData.withdrawals.map(w => 
                         (w._id === withdrawalId || w.id === withdrawalId) 
-                            ? { ...w, status: 'rejected' }
+                            ? { ...w, status: 'rejected', reason: reason.trim() }
                             : w
                     )
                 };
             });
+            setRejectionModal({ isOpen: false, withdrawalId: null, reason: '' });
         } catch (error) {
             toast.error(error.response?.data?.message || t('adminWithdrawals.rejectFailed') || 'Failed to reject withdrawal', ToastOptions("error"));
         } finally {
@@ -291,7 +306,7 @@ export default function Withdrawals() {
                                                                 </motion.button>
                                                                 <motion.button
                                                                     className="admin-withdrawals-actions__btn admin-withdrawals-actions__btn--reject"
-                                                                    onClick={() => handleReject(withdrawal._id || withdrawal.id)}
+                                                                    onClick={() => openRejectionModal(withdrawal._id || withdrawal.id)}
                                                                     disabled={processingWithdrawals.has(withdrawal._id || withdrawal.id)}
                                                                     whileHover={{ scale: 1.05 }}
                                                                     whileTap={{ scale: 0.95 }}
@@ -456,8 +471,8 @@ export default function Withdrawals() {
                                     <motion.button
                                         className="admin-withdrawal-modal__btn admin-withdrawal-modal__btn--reject"
                                         onClick={() => {
-                                            handleReject(selectedWithdrawal._id || selectedWithdrawal.id);
                                             setSelectedWithdrawal(null);
+                                            openRejectionModal(selectedWithdrawal._id || selectedWithdrawal.id);
                                         }}
                                         disabled={processingWithdrawals.has(selectedWithdrawal._id || selectedWithdrawal.id)}
                                         whileHover={{ scale: 1.05 }}
@@ -470,6 +485,67 @@ export default function Withdrawals() {
                         </div>
                     </div>
                 )}
+
+            {/* Rejection Reason Modal */}
+            {rejectionModal.isOpen && (
+                <div
+                    className="admin-withdrawal-modal-backdrop"
+                    onClick={() => setRejectionModal({ isOpen: false, withdrawalId: null, reason: '' })}
+                >
+                    <div
+                        className="admin-withdrawal-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="admin-withdrawal-modal__header">
+                            <h2>{t('adminWithdrawals.rejectWithdrawal') || 'Reject Withdrawal'}</h2>
+                            <button
+                                onClick={() => setRejectionModal({ isOpen: false, withdrawalId: null, reason: '' })}
+                                className="admin-withdrawal-modal__close"
+                                aria-label="Close"
+                            >
+                                <FaTimes />
+                            </button>
+                        </div>
+
+                        <div className="admin-withdrawal-modal__body">
+                            <div className="admin-withdrawal-modal__row admin-withdrawal-modal__row--full">
+                                <label htmlFor="rejection-reason">
+                                    <strong>{t('adminWithdrawals.rejectionReason') || 'Reason for Rejection'} *</strong>
+                                </label>
+                                <textarea
+                                    id="rejection-reason"
+                                    className="admin-withdrawal-modal__textarea"
+                                    value={rejectionModal.reason}
+                                    onChange={(e) => setRejectionModal(prev => ({ ...prev, reason: e.target.value }))}
+                                    placeholder={t('adminWithdrawals.enterRejectionReason') || 'Please provide a reason for rejecting this withdrawal request...'}
+                                    rows={4}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="admin-withdrawal-modal__actions">
+                            <motion.button
+                                className="admin-withdrawal-modal__btn admin-withdrawal-modal__btn--cancel"
+                                onClick={() => setRejectionModal({ isOpen: false, withdrawalId: null, reason: '' })}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                {t('adminWithdrawals.cancel') || 'Cancel'}
+                            </motion.button>
+                            <motion.button
+                                className="admin-withdrawal-modal__btn admin-withdrawal-modal__btn--reject"
+                                onClick={handleReject}
+                                disabled={!rejectionModal.reason?.trim() || processingWithdrawals.has(rejectionModal.withdrawalId)}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                <FaTimes /> {t('adminWithdrawals.confirmReject') || 'Confirm Rejection'}
+                            </motion.button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

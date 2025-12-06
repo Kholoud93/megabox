@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { adminService } from '../../../services/adminService';
@@ -10,6 +11,7 @@ import StatCard from '../../../components/StatCard/StatCard';
 import { FaUsers, FaFileAlt, FaDollarSign, FaChartLine, FaDownload, FaEye, FaLink, FaMoneyBillWave, FaHdd, FaUserPlus, FaCreditCard, FaCrown } from 'react-icons/fa';
 import './Analasys.scss';
 
+// cspell:ignore Analasys
 export default function Analasys() {
     const { t } = useLanguage();
     const navigate = useNavigate();
@@ -45,17 +47,52 @@ export default function Analasys() {
 
     // Fetch platform statistics
     const { data: platformStats, isLoading: platformStatsLoading } = useQuery(
-        ['platformStats'],
+        ['platformStats', promotersData],
         async () => {
             try {
-                // TODO: Connect to API endpoint when available
-                // const res = await axios.get(`${API_URL}/admin/getPlatformStats`, {
-                //     headers: { Authorization: `Bearer ${token}` }
-                // });
-                // return res?.data;
-                return null;
+                // Use getAllStorageStats for storage statistics
+                const storageStats = await adminService.getAllStorageStats(token);
+                // Calculate total storage from storage stats
+                let totalStorageGB = 0;
+                if (storageStats?.storage && Array.isArray(storageStats.storage)) {
+                    totalStorageGB = storageStats.storage.reduce((sum, item) => {
+                        const total = item.totalStorage || 0;
+                        // Convert bytes to GB if needed
+                        const totalGB = total > 1000000 ? total / (1024 * 1024 * 1024) : total;
+                        return sum + totalGB;
+                    }, 0);
+                } else if (storageStats?.data?.storage && Array.isArray(storageStats.data.storage)) {
+                    totalStorageGB = storageStats.data.storage.reduce((sum, item) => {
+                        const total = item.totalStorage || 0;
+                        const totalGB = total > 1000000 ? total / (1024 * 1024 * 1024) : total;
+                        return sum + totalGB;
+                    }, 0);
+                }
+                // Calculate promoters with plans
+                const promotersWithPlansCount = promotersData?.filter(p =>
+                    p.Downloadsplan === "true" || p.Downloadsplan === true ||
+                    p.watchingplan === "true" || p.watchingplan === true
+                )?.length || 0;
+                return {
+                    totalStorage: Math.round(totalStorageGB * 100) / 100, // Round to 2 decimal places
+                    totalPayments: 0, // TODO: Connect to payments API when available
+                    totalSubscriptions: promotersWithPlansCount,
+                    totalDownloads: 0, // TODO: Connect to downloads API when available
+                    totalViews: 0 // TODO: Connect to views API when available
+                };
             } catch {
-                return null;
+                // Calculate promoters with plans even on error
+                const promotersWithPlansCount = promotersData?.filter(p =>
+                    p.Downloadsplan === "true" || p.Downloadsplan === true ||
+                    p.watchingplan === "true" || p.watchingplan === true
+                )?.length || 0;
+                return {
+                    totalStorage: 0,
+                    totalPayments: 0,
+                    totalSubscriptions: promotersWithPlansCount,
+                    totalDownloads: 0,
+                    totalViews: 0
+                };
             }
         },
         { enabled: !!token }
@@ -93,7 +130,7 @@ export default function Analasys() {
     // Platform statistics
     const totalStorage = platformStats?.totalStorage || 0; // GB
     const totalPayments = platformStats?.totalPayments || 0;
-    const totalSubscriptions = platformStats?.totalSubscriptions || promotersWithPlans; // Fallback to promoters with plans
+    const totalSubscriptions = platformStats?.totalSubscriptions !== undefined ? platformStats.totalSubscriptions : promotersWithPlans; // Fallback to promoters with plans
     const totalDownloads = platformStats?.totalDownloads || 0;
     const totalViews = platformStats?.totalViews || 0;
 

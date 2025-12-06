@@ -687,7 +687,7 @@
     "comingSoon": "Storage management page coming soon...",
     "backToAnalytics": "Back to Analytics",
     "loading": "Loading storage data...",
-    "noStorage": "No storage data found",
+    "noStorage": "No storage statistics available",
     "user": "User",
     "usedStorage": "Used Storage",
     "totalStorage": "Total Storage",
@@ -699,7 +699,12 @@
     "viewDetails": "View Details",
     "storageDetails": "Storage Details",
     "noStorageFound": "No storage data found matching your criteria",
-    "storage": "storage records"
+    "storage": "storage records",
+    "totalFiles": "Total Files",
+    "totalFolders": "Total Folders",
+    "sharedFiles": "Shared Files",
+    "uniqueSharedUsers": "Unique Shared Users",
+    "totalUsedSpace": "Total Used Space"
   },
   "adminDownloadsViews": {
     "title": "Downloads & Views",

@@ -687,7 +687,7 @@
     "comingSoon": "صفحة إدارة التخزين قريباً...",
     "backToAnalytics": "العودة للتحليلات",
     "loading": "جارٍ تحميل بيانات التخزين...",
-    "noStorage": "لا توجد بيانات تخزين",
+    "noStorage": "لا توجد إحصائيات تخزين متاحة",
     "user": "المستخدم",
     "usedStorage": "المساحة المستخدمة",
     "totalStorage": "إجمالي المساحة",
@@ -699,7 +699,12 @@
     "viewDetails": "عرض التفاصيل",
     "storageDetails": "تفاصيل التخزين",
     "noStorageFound": "لم يتم العثور على بيانات تخزين تطابق معاييرك",
-    "storage": "سجلات التخزين"
+    "storage": "سجلات التخزين",
+    "totalFiles": "إجمالي الملفات",
+    "totalFolders": "إجمالي المجلدات",
+    "sharedFiles": "الملفات المشتركة",
+    "uniqueSharedUsers": "المستخدمون المشتركون الفريدون",
+    "totalUsedSpace": "إجمالي المساحة المستخدمة"
   },
   "adminDownloadsViews": {
     "title": "التحميلات والمشاهدات",
