@@ -41,7 +41,7 @@ export default function CopyrightCard({ data }) {
     const handleDelete = async () => {
         setIsDeleting(true);
         try {
-            await adminService.deleteComplaint(data._id || data.id, token);
+            await adminService.deleteCopyrightReport(data._id || data.id, token);
             toast.success(t("adminReports.complaintDeletedSuccess") || "Complaint deleted successfully", ToastOptions("success"));
             queryClient.invalidateQueries("Get all compaints");
             setShowDeleteConfirm(false);

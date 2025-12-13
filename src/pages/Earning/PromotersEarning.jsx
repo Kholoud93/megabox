@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './Earning.scss';
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     FaEye, FaDownload, FaMoneyBillWave, FaFileAlt, FaFileImage, FaFileVideo, FaFilePdf, FaFileWord,
-    FaLink, FaGlobe, FaTimes, FaChartLine, FaUsers, FaRocket
+    FaLink, FaGlobe, FaTimes, FaChartLine, FaUsers, FaRocket, FaEdit
 } from 'react-icons/fa';
 import { HiArrowLeft, HiArrowRight } from 'react-icons/hi2';
 import { adminService } from '../../services/adminService';
@@ -14,6 +15,8 @@ import { MdPendingActions } from "react-icons/md";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { MdOutlineAssuredWorkload } from "react-icons/md";
 import { useLanguage } from '../../context/LanguageContext';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../helpers/ToastOptions';
 
 
 // Enhanced Animation variants with smoother 
@@ -564,9 +567,16 @@ export default function PromotersEarning() {
     const [selectedFile, setSelectedFile] = useState(null);
 
     const { id } = useParams()
+    const queryClient = useQueryClient();
+    const [showUpdateRewardModal, setShowUpdateRewardModal] = useState(false);
+    const [showUpdateAnalyticsModal, setShowUpdateAnalyticsModal] = useState(false);
+    const [selectedReward, setSelectedReward] = useState(null);
+    const [rewardAmount, setRewardAmount] = useState('');
+    const [analyticsFormData, setAnalyticsFormData] = useState({ totalDownloads: '', totalViews: '' });
+    const [isUpdating, setIsUpdating] = useState(false);
 
     // Fetch user data to get username
-    const { data: userData, isLoading: userDataLoading } = useQuery(
+    const { data: userData } = useQuery(
         ['userData', id],
         async () => {
             try {
@@ -633,10 +643,77 @@ export default function PromotersEarning() {
     const PendingEarnings = earningsData?.pendingRewards || '0.000000';
     const ConfirmedEarnings = earningsData?.confirmedRewards || '0.000000';
     const currency = earningsData?.currency || 'USD';
+    const pendingRewardsList = earningsData?.pendingRewardsList || earningsData?.rewards || [];
     
     // API Response structure: { "message", "userId", "totalAnalytics": { "totalDownloads", "totalViews" } }
     const totalViews = analyticsData?.totalAnalytics?.totalViews || 0;
     const totalDownloads = analyticsData?.totalAnalytics?.totalDownloads || 0;
+
+    // Handle update pending reward
+    const handleUpdateReward = async () => {
+        if (!selectedReward || !rewardAmount || parseFloat(rewardAmount) < 0) {
+            toast.error(t('earning.invalidRewardAmount') || 'Please enter a valid reward amount', ToastOptions("error"));
+            return;
+        }
+
+        setIsUpdating(true);
+        try {
+            const rewardId = selectedReward._id || selectedReward.id || selectedReward.rewardId;
+            await adminService.updateSinglePendingReward(id, rewardId, parseFloat(rewardAmount), token);
+            toast.success(t('earning.rewardUpdated') || 'Pending reward updated successfully!', ToastOptions("success"));
+            queryClient.invalidateQueries(['userEarnings', id]);
+            setShowUpdateRewardModal(false);
+            setSelectedReward(null);
+            setRewardAmount('');
+        } catch (error) {
+            toast.error(error.response?.data?.message || t('earning.rewardUpdateFailed') || 'Failed to update reward', ToastOptions("error"));
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    // Handle update analytics data
+    const handleUpdateAnalytics = async () => {
+        const downloads = parseInt(analyticsFormData.totalDownloads);
+        const views = parseInt(analyticsFormData.totalViews);
+
+        if (isNaN(downloads) || downloads < 0 || isNaN(views) || views < 0) {
+            toast.error(t('earning.invalidAnalyticsData') || 'Please enter valid numbers for downloads and views', ToastOptions("error"));
+            return;
+        }
+
+        setIsUpdating(true);
+        try {
+            await adminService.updateAnalyticsData(id, {
+                totalDownloads: downloads,
+                totalViews: views
+            }, token);
+            toast.success(t('earning.analyticsUpdated') || 'Analytics data updated successfully!', ToastOptions("success"));
+            queryClient.invalidateQueries(['userAnalytics', id]);
+            setShowUpdateAnalyticsModal(false);
+            setAnalyticsFormData({ totalDownloads: '', totalViews: '' });
+        } catch (error) {
+            toast.error(error.response?.data?.message || t('earning.analyticsUpdateFailed') || 'Failed to update analytics', ToastOptions("error"));
+        } finally {
+            setIsUpdating(false);
+        }
+    };
+
+    // Open update reward modal
+    const openUpdateRewardModal = (reward) => {
+        setSelectedReward(reward);
+        setRewardAmount(reward.amount || reward.value || '');
+        setShowUpdateRewardModal(true);
+    };
+
+    // Open update analytics modal
+    const openUpdateAnalyticsModal = () => {
+        setAnalyticsFormData({
+            totalDownloads: totalDownloads.toString(),
+            totalViews: totalViews.toString()
+        });
+        setShowUpdateAnalyticsModal(true);
+    };
     
     // API Response structure: { "message", "analytics": [{ "fileId", "fileName", "sharedUrl", "downloads", "views", "lastUpdated", "viewsByCountry" }] }
     const files = shareLinksData?.analytics || [];
@@ -726,12 +803,32 @@ export default function PromotersEarning() {
                     initial="hidden"
                     animate="visible"
                 >
-                    <StatCard label={t('earning.totalViews')} value={totalViews} icon={<FaEye />} color="#9333ea" index={0} />
+                    <motion.div variants={cardVariants} style={{ position: 'relative' }}>
+                        <StatCard label={t('earning.totalViews')} value={totalViews} icon={<FaEye />} color="#9333ea" index={0} />
+                        <button
+                            className="update-analytics-btn"
+                            onClick={openUpdateAnalyticsModal}
+                            title={t('earning.updateAnalytics') || 'Update Analytics'}
+                        >
+                            <FaEdit />
+                        </button>
+                    </motion.div>
                     <StatCard label={t('earning.totalDownloads')} value={totalDownloads} icon={<FaDownload />} color="#9333ea" index={1} />
                     <StatCard label={t('earning.totalLinks')} value={totalLinks} icon={<FaLink />} color="#9333ea" index={2} />
-                    <StatCard label={t('promoterDashboard.pendingEarnings')} value={`${PendingEarnings} ${currency}`} icon={<MdPendingActions />} color="#9333ea" index={3} />
-                    <StatCard label={t('promoterDashboard.confirmedEarnings')} value={`${ConfirmedEarnings} ${currency}`} icon={<MdOutlineAssuredWorkload />} color="#9333ea" index={3} />
-                    <StatCard label={t('promoterDashboard.totalEarnings')} value={`${totalEarnings} ${currency}`} icon={<GiTakeMyMoney />} color="#9333ea" index={3} />
+                    <motion.div variants={cardVariants} style={{ position: 'relative' }}>
+                        <StatCard label={t('promoterDashboard.pendingEarnings')} value={`${PendingEarnings} ${currency}`} icon={<MdPendingActions />} color="#9333ea" index={3} />
+                        {pendingRewardsList.length > 0 && (
+                            <button
+                                className="update-reward-btn"
+                                onClick={() => openUpdateRewardModal(pendingRewardsList[0])}
+                                title={t('earning.updatePendingReward') || 'Update Pending Reward'}
+                            >
+                                <FaEdit />
+                            </button>
+                        )}
+                    </motion.div>
+                    <StatCard label={t('promoterDashboard.confirmedEarnings')} value={`${ConfirmedEarnings} ${currency}`} icon={<MdOutlineAssuredWorkload />} color="#9333ea" index={4} />
+                    <StatCard label={t('promoterDashboard.totalEarnings')} value={`${totalEarnings} ${currency}`} icon={<GiTakeMyMoney />} color="#9333ea" index={5} />
                 </motion.div>
             )}
 
@@ -842,6 +939,170 @@ export default function PromotersEarning() {
                     )}
                 </motion.div>
             </motion.div>
+
+            {/* Update Pending Reward Modal */}
+            <AnimatePresence mode="wait">
+                {showUpdateRewardModal && (
+                    <motion.div
+                        className="modal-backdrop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => {
+                            setShowUpdateRewardModal(false);
+                            setSelectedReward(null);
+                            setRewardAmount('');
+                        }}
+                    >
+                        <motion.div
+                            className="modal-content"
+                            variants={modalVariants}
+                            initial="hidden"
+                            animate="visible"
+                            exit="exit"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="modal-header">
+                                <h2>{t('earning.updatePendingReward') || 'Update Pending Reward'}</h2>
+                                <button
+                                    className="modal-close"
+                                    onClick={() => {
+                                        setShowUpdateRewardModal(false);
+                                        setSelectedReward(null);
+                                        setRewardAmount('');
+                                    }}
+                                >
+                                    <FaTimes />
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="form-group">
+                                    <label>{t('earning.rewardId') || 'Reward ID'}</label>
+                                    <input
+                                        type="text"
+                                        value={selectedReward?._id || selectedReward?.id || selectedReward?.rewardId || ''}
+                                        disabled
+                                        className="form-input"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>{t('earning.rewardAmount') || 'Reward Amount'} *</label>
+                                    <input
+                                        type="number"
+                                        step="0.000001"
+                                        min="0"
+                                        value={rewardAmount}
+                                        onChange={(e) => setRewardAmount(e.target.value)}
+                                        className="form-input"
+                                        placeholder={t('earning.enterRewardAmount') || 'Enter reward amount'}
+                                    />
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button
+                                    className="btn btn-secondary"
+                                    onClick={() => {
+                                        setShowUpdateRewardModal(false);
+                                        setSelectedReward(null);
+                                        setRewardAmount('');
+                                    }}
+                                    disabled={isUpdating}
+                                >
+                                    {t('common.cancel') || 'Cancel'}
+                                </button>
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={handleUpdateReward}
+                                    disabled={isUpdating || !rewardAmount || parseFloat(rewardAmount) < 0}
+                                >
+                                    {isUpdating ? (t('common.updating') || 'Updating...') : (t('common.update') || 'Update')}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Update Analytics Data Modal */}
+            <AnimatePresence mode="wait">
+                {showUpdateAnalyticsModal && (
+                    <motion.div
+                        className="modal-backdrop"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => {
+                            setShowUpdateAnalyticsModal(false);
+                            setAnalyticsFormData({ totalDownloads: '', totalViews: '' });
+                        }}
+                    >
+                        <motion.div
+                            className="modal-content"
+                            variants={modalVariants}
+                            initial="hidden"
+                            animate="visible"
+                            exit="exit"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="modal-header">
+                                <h2>{t('earning.updateAnalytics') || 'Update Analytics Data'}</h2>
+                                <button
+                                    className="modal-close"
+                                    onClick={() => {
+                                        setShowUpdateAnalyticsModal(false);
+                                        setAnalyticsFormData({ totalDownloads: '', totalViews: '' });
+                                    }}
+                                >
+                                    <FaTimes />
+                                </button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="form-group">
+                                    <label>{t('earning.totalDownloads') || 'Total Downloads'} *</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={analyticsFormData.totalDownloads}
+                                        onChange={(e) => setAnalyticsFormData(prev => ({ ...prev, totalDownloads: e.target.value }))}
+                                        className="form-input"
+                                        placeholder={t('earning.enterTotalDownloads') || 'Enter total downloads'}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>{t('earning.totalViews') || 'Total Views'} *</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={analyticsFormData.totalViews}
+                                        onChange={(e) => setAnalyticsFormData(prev => ({ ...prev, totalViews: e.target.value }))}
+                                        className="form-input"
+                                        placeholder={t('earning.enterTotalViews') || 'Enter total views'}
+                                    />
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button
+                                    className="btn btn-secondary"
+                                    onClick={() => {
+                                        setShowUpdateAnalyticsModal(false);
+                                        setAnalyticsFormData({ totalDownloads: '', totalViews: '' });
+                                    }}
+                                    disabled={isUpdating}
+                                >
+                                    {t('common.cancel') || 'Cancel'}
+                                </button>
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={handleUpdateAnalytics}
+                                    disabled={isUpdating || !analyticsFormData.totalDownloads || !analyticsFormData.totalViews}
+                                >
+                                    {isUpdating ? (t('common.updating') || 'Updating...') : (t('common.update') || 'Update')}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Country Modal */}
             <AnimatePresence mode="wait">

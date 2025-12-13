@@ -424,6 +424,50 @@ export const adminService = {
             toast.error(error.response?.data?.message || "Failed to update analytics data", ToastOptions("error"));
             throw error.response?.data || error.message;
         }
+    },
+
+    // Get user statistics (admin)
+    getUserStats: async (token) => {
+        try {
+            const response = await api.get('/auth/getUserStats', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Get user withdrawals (admin) - POST method
+    getUserWithdrawals: async (token) => {
+        try {
+            const response = await api.post('/auth/getUserWithdrawals', {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Delete copyright report (admin)
+    deleteCopyrightReport: async (complaintId, token) => {
+        try {
+            const response = await api.delete(`/auth/deleteCopyrightReport/${complaintId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success("Copyright report deleted successfully!", ToastOptions("success"));
+            return response.data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to delete copyright report", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
     }
 };
 

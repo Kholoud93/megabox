@@ -601,6 +601,7 @@
     "totalWithdrawalAmount": "Total Withdrawal Amount",
     "pendingWithdrawals": "Pending Withdrawals",
     "approvedWithdrawals": "Approved Withdrawals",
+    "userStats": "User Statistics",
     "recentWithdrawals": "Recent Withdrawals",
     "user": "User",
     "amount": "Amount",
@@ -757,7 +758,24 @@
     "prev": "Previous",
     "next": "Next",
     "of": "of",
-    "withdrawals": "withdrawals"
+    "withdrawals": "withdrawals",
+    "allWithdrawals": "All Withdrawals",
+    "approvedOnly": "Approved Only",
+    "userWithdrawals": "User Withdrawals"
+  },
+  "adminUserStats": {
+    "title": "User Statistics",
+    "subtitle": "Comprehensive user statistics and analytics",
+    "backToAnalytics": "Back to Analytics",
+    "loading": "Loading user statistics...",
+    "noStats": "No user statistics available",
+    "totalUsers": "Total Users",
+    "activeUsers": "Active Users",
+    "newUsers": "New Users",
+    "premiumUsers": "Premium Users",
+    "totalFiles": "Total Files",
+    "totalStorage": "Total Storage",
+    "detailedStats": "Detailed Statistics"
   },
   "adminUsers": {
     "title": "Users Management",

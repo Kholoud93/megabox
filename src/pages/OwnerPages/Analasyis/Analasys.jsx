@@ -45,6 +45,13 @@ export default function Analasys() {
         { enabled: !!token }
     );
 
+    // Fetch user statistics
+    const { data: userStatsData, isLoading: userStatsLoading } = useQuery(
+        ['userStats'],
+        () => adminService.getUserStats(token),
+        { enabled: !!token }
+    );
+
     // Fetch platform statistics
     const { data: platformStats, isLoading: platformStatsLoading } = useQuery(
         ['platformStats', promotersData],
@@ -98,7 +105,7 @@ export default function Analasys() {
         { enabled: !!token }
     );
 
-    const isLoading = usersLoading || withdrawalsLoading || promotersLoading || platformStatsLoading;
+    const isLoading = usersLoading || withdrawalsLoading || promotersLoading || platformStatsLoading || userStatsLoading;
 
     // Calculate statistics
     const totalUsers = usersData?.length || 0;
@@ -272,6 +279,16 @@ export default function Analasys() {
                             index={12}
                             onClick={() => navigate('/Owner/Withdrawals')}
                         />
+                        {userStatsData && (
+                            <StatCard
+                                label={t('adminAnalytics.userStats') || 'User Statistics'}
+                                value={userStatsData?.totalUsers || userStatsData?.count || Object.keys(userStatsData || {}).length || 0}
+                                icon={<FaUsers />}
+                                color="#9333ea"
+                                index={13}
+                                onClick={() => navigate('/Owner/UserStats')}
+                            />
+                        )}
                     </motion.div>
                 )}
             </div>

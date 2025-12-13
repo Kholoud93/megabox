@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion'; // eslint-disable-line no-unused-vars
 import { useNavigate } from 'react-router-dom';
 import { adminService } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
@@ -27,19 +27,51 @@ export default function Withdrawals() {
     const [rejectionModal, setRejectionModal] = useState({ isOpen: false, withdrawalId: null, reason: '' });
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
+    const [showApprovedOnly, setShowApprovedOnly] = useState(false);
+    const [viewMode, setViewMode] = useState('all'); // 'all', 'approved', 'userWithdrawals'
 
     // Fetch all withdrawals
     const { data: withdrawalsData, isLoading: withdrawalsLoading } = useQuery(
         ['allWithdrawals'],
         () => adminService.getAllWithdrawals(token),
-        { enabled: !!token }
+        { enabled: !!token && viewMode !== 'userWithdrawals' }
     );
+
+    // Fetch approved withdrawals
+    const { data: approvedWithdrawalsData, isLoading: approvedLoading } = useQuery(
+        ['approvedWithdrawals'],
+        () => adminService.getApprovedWithdrawals(token),
+        { enabled: !!token && (showApprovedOnly || viewMode === 'approved') }
+    );
+
+    // Fetch user withdrawals (POST method)
+    const { data: userWithdrawalsData, isLoading: userWithdrawalsLoading } = useQuery(
+        ['userWithdrawals'],
+        () => adminService.getUserWithdrawals(token),
+        { enabled: !!token && viewMode === 'userWithdrawals' }
+    );
+
+    // Use appropriate withdrawals based on view mode
+    const withdrawalsToFilter = useMemo(() => {
+        if (viewMode === 'userWithdrawals') {
+            return userWithdrawalsData?.withdrawals || userWithdrawalsData || [];
+        }
+        if (viewMode === 'approved' || showApprovedOnly) {
+            return approvedWithdrawalsData?.withdrawals || approvedWithdrawalsData || [];
+        }
+        return withdrawalsData?.withdrawals || [];
+    }, [viewMode, showApprovedOnly, approvedWithdrawalsData, withdrawalsData, userWithdrawalsData]);
 
     // Filter withdrawals based on search and filters
     const filteredWithdrawals = useMemo(() => {
-        if (!withdrawalsData?.withdrawals) return [];
+        if (!withdrawalsToFilter || withdrawalsToFilter.length === 0) return [];
 
-        return withdrawalsData.withdrawals.filter((withdrawal) => {
+        // Handle case where API returns array directly
+        const withdrawalsArray = Array.isArray(withdrawalsToFilter) 
+            ? withdrawalsToFilter 
+            : (withdrawalsToFilter.withdrawals || []);
+
+        return withdrawalsArray.filter((withdrawal) => {
             // Search filter
             if (searchTerm) {
                 const userInfo = typeof withdrawal.userId === 'object' && withdrawal.userId !== null
@@ -74,7 +106,7 @@ export default function Withdrawals() {
 
             return true;
         });
-    }, [withdrawalsData?.withdrawals, searchTerm, filters]);
+    }, [withdrawalsToFilter, searchTerm, filters]);
 
     // Pagination logic
     const totalPages = Math.ceil(filteredWithdrawals.length / itemsPerPage);
@@ -89,9 +121,12 @@ export default function Withdrawals() {
 
     // Get unique payment methods for filter
     const paymentMethods = useMemo(() => {
-        if (!withdrawalsData?.withdrawals) return [];
+        const withdrawalsArray = Array.isArray(withdrawalsToFilter) 
+            ? withdrawalsToFilter 
+            : (withdrawalsToFilter?.withdrawals || []);
+        if (!withdrawalsArray || withdrawalsArray.length === 0) return [];
         const methods = new Set();
-        withdrawalsData.withdrawals.forEach(w => {
+        withdrawalsArray.forEach(w => {
             if (w.paymentMethod) {
                 const methodValue = typeof w.paymentMethod === 'object' && w.paymentMethod !== null
                     ? (w.paymentMethod.name || w.paymentMethod.type || w.paymentMethod.walletId || '')
@@ -133,6 +168,7 @@ export default function Withdrawals() {
             toast.success(t('adminWithdrawals.approvedSuccess') || 'Withdrawal approved successfully', ToastOptions("success"));
             queryClient.invalidateQueries(['allWithdrawals']);
             queryClient.invalidateQueries(['approvedWithdrawals']);
+            queryClient.invalidateQueries(['userWithdrawals']);
             // Optimistic update
             queryClient.setQueryData(['allWithdrawals'], (oldData) => {
                 if (!oldData?.withdrawals) return oldData;
@@ -175,6 +211,7 @@ export default function Withdrawals() {
             toast.success(t('adminWithdrawals.rejectedSuccess') || 'Withdrawal rejected successfully', ToastOptions("success"));
             queryClient.invalidateQueries(['allWithdrawals']);
             queryClient.invalidateQueries(['approvedWithdrawals']);
+            queryClient.invalidateQueries(['userWithdrawals']);
             // Optimistic update
             queryClient.setQueryData(['allWithdrawals'], (oldData) => {
                 if (!oldData?.withdrawals) return oldData;
@@ -199,7 +236,9 @@ export default function Withdrawals() {
         }
     };
 
-    const currency = withdrawalsData?.withdrawals?.[0]?.currency || 'USD';
+    const currency = withdrawalsToFilter?.[0]?.currency || 
+                     (Array.isArray(withdrawalsToFilter) ? withdrawalsToFilter[0]?.currency : null) ||
+                     withdrawalsData?.withdrawals?.[0]?.currency || 'USD';
 
     return (
         <div className="admin-withdrawals-page">
@@ -221,12 +260,40 @@ export default function Withdrawals() {
                     </div>
                 </div>
 
-                {withdrawalsLoading ? (
+                {withdrawalsLoading || (showApprovedOnly && approvedLoading) || (viewMode === 'userWithdrawals' && userWithdrawalsLoading) ? (
                     <div className="admin-withdrawals-loading">
                         <p>{t('adminWithdrawals.loading')}</p>
                     </div>
-                ) : withdrawalsData?.withdrawals?.length > 0 ? (
+                ) : (withdrawalsToFilter && (Array.isArray(withdrawalsToFilter) ? withdrawalsToFilter.length > 0 : withdrawalsToFilter.withdrawals?.length > 0)) ? (
                     <>
+                        <div className="admin-withdrawals-filters">
+                            <div className="admin-withdrawals-toggle">
+                                <button
+                                    className={`admin-withdrawals-toggle__btn ${viewMode === 'all' ? 'active' : ''}`}
+                                    onClick={() => {
+                                        setViewMode('all');
+                                        setShowApprovedOnly(false);
+                                    }}
+                                >
+                                    {t('adminWithdrawals.allWithdrawals') || 'All Withdrawals'}
+                                </button>
+                                <button
+                                    className={`admin-withdrawals-toggle__btn ${viewMode === 'approved' ? 'active' : ''}`}
+                                    onClick={() => {
+                                        setViewMode('approved');
+                                        setShowApprovedOnly(true);
+                                    }}
+                                >
+                                    {t('adminWithdrawals.approvedOnly') || 'Approved Only'}
+                                </button>
+                                <button
+                                    className={`admin-withdrawals-toggle__btn ${viewMode === 'userWithdrawals' ? 'active' : ''}`}
+                                    onClick={() => setViewMode('userWithdrawals')}
+                                >
+                                    {t('adminWithdrawals.userWithdrawals') || 'User Withdrawals'}
+                                </button>
+                            </div>
+                        </div>
                         <SearchFilter
                             searchPlaceholder={t('adminAnalytics.searchWithdrawals')}
                             filters={filterConfig}

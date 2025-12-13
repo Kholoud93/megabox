@@ -757,7 +757,24 @@
     "prev": "السابق",
     "next": "التالي",
     "of": "من",
-    "withdrawals": "سحوبات"
+    "withdrawals": "سحوبات",
+    "allWithdrawals": "جميع السحوبات",
+    "approvedOnly": "الموافق عليها فقط",
+    "userWithdrawals": "سحوبات المستخدمين"
+  },
+  "adminUserStats": {
+    "title": "إحصائيات المستخدمين",
+    "subtitle": "إحصائيات وتحليلات شاملة للمستخدمين",
+    "backToAnalytics": "العودة للتحليلات",
+    "loading": "جارٍ تحميل إحصائيات المستخدمين...",
+    "noStats": "لا توجد إحصائيات متاحة للمستخدمين",
+    "totalUsers": "إجمالي المستخدمين",
+    "activeUsers": "المستخدمون النشطون",
+    "newUsers": "المستخدمون الجدد",
+    "premiumUsers": "المستخدمون المميزون",
+    "totalFiles": "إجمالي الملفات",
+    "totalStorage": "إجمالي التخزين",
+    "detailedStats": "إحصائيات مفصلة"
   },
   "adminUsers": {
     "title": "إدارة المستخدمين",
