@@ -6,8 +6,9 @@ import { adminService } from '../../../services/adminService';
 import { useLanguage } from '../../../context/LanguageContext';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
 import Pagination from '../../../components/Pagination/Pagination';
-import { FaCrown, FaEye, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
-import { HiArrowRight, HiArrowLeft } from 'react-icons/hi2';
+import { motion } from 'framer-motion';
+import { FaCrown, FaEye, FaPlus, FaEdit, FaTrash, FaCheckCircle } from 'react-icons/fa';
+import { HiArrowRight, HiArrowLeft, HiCurrencyDollar, HiClock } from 'react-icons/hi2';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
 import './Subscriptions.scss';
@@ -225,67 +226,71 @@ export default function Subscriptions() {
                             onFilterChange={setFilters}
                         />
 
-                        <div className="admin-subscriptions-table-wrapper">
-                            <table className="admin-users-table">
-                                <thead className="admin-users-table__header">
-                                    <tr>
-                                        <th scope="col">{t('adminSubscriptions.planName')}</th>
-                                        <th scope="col">{t('adminSubscriptions.durationDays')}</th>
-                                        <th scope="col">{t('adminSubscriptions.price')}</th>
-                                        <th scope="col">{t('adminSubscriptions.actions')}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {paginatedPlans.length > 0 ? (
-                                        paginatedPlans.map((plan, index) => (
-                                            <tr key={plan._id || plan.id || index}>
-                                                <td data-label={t('adminSubscriptions.planName')}>
-                                                    <span className="subscription-plan-badge">
-                                                        {plan.name || '-'}
+                        <div className="admin-subscriptions-plans">
+                            {paginatedPlans.length > 0 ? (
+                                paginatedPlans.map((plan, index) => (
+                                    <motion.div
+                                        key={plan._id || plan.id || index}
+                                        initial={{ y: 20, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                                        className="admin-subscriptions-plan-card"
+                                    >
+                                        <div className="admin-subscriptions-plan-card__header">
+                                            <h3 className="admin-subscriptions-plan-card__title">
+                                                {plan.name || t('adminSubscriptions.planName') || 'Subscription Plan'}
+                                            </h3>
+                                            <div className="admin-subscriptions-plan-card__price">
+                                                <HiCurrencyDollar className="admin-subscriptions-plan-card__price-icon" />
+                                                <span className="admin-subscriptions-plan-card__amount">
+                                                    {plan.price || '0'}
+                                                </span>
+                                                <span className="admin-subscriptions-plan-card__currency">
+                                                    {plan.currency || 'USD'}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="admin-subscriptions-plan-card__content">
+                                            <ul className="admin-subscriptions-plan-card__features">
+                                                <li className="admin-subscriptions-plan-card__feature">
+                                                    <HiClock className="admin-subscriptions-plan-card__feature-icon" />
+                                                    <span>
+                                                        {plan.days || 30} {t('adminSubscriptions.days') || 'days'}
                                                     </span>
-                                                </td>
-                                                <td data-label={t('adminSubscriptions.durationDays')}>
-                                                    {plan.days || '-'} {t('adminSubscriptions.days')}
-                                                </td>
-                                                <td data-label={t('adminSubscriptions.price')}>
-                                                    {plan.price || '-'} {plan.currency || 'USD'}
-                                                </td>
-                                                <td data-label={t('adminSubscriptions.actions')}>
-                                                    <div className="action-buttons">
-                                                        <button
-                                                            className="admin-subscriptions-actions__btn admin-subscriptions-actions__btn--view"
-                                                            onClick={() => setSelectedPlan(plan)}
-                                                            title={t('adminSubscriptions.viewDetails')}
-                                                        >
-                                                            <FaEye size={18} />
-                                                        </button>
-                                                        <button
-                                                            className="admin-subscriptions-actions__btn admin-subscriptions-actions__btn--edit"
-                                                            onClick={() => openEditModal(plan)}
-                                                            title={t('adminSubscriptions.edit')}
-                                                        >
-                                                            <FaEdit size={18} />
-                                                        </button>
-                                                        <button
-                                                            className="admin-subscriptions-actions__btn admin-subscriptions-actions__btn--delete"
-                                                            onClick={() => setShowDeleteConfirm(plan)}
-                                                            title={t('adminSubscriptions.delete')}
-                                                        >
-                                                            <FaTrash size={18} />
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="4" className="text-center py-8 text-gray-500">
-                                                {t('adminSubscriptions.noPlansFound')}
-                                            </td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                                                </li>
+                                            </ul>
+                                            <div className="admin-subscriptions-plan-card__actions">
+                                                <button
+                                                    onClick={() => setSelectedPlan(plan)}
+                                                    className="admin-subscriptions-plan-card__button admin-subscriptions-plan-card__button--view"
+                                                    title={t('adminSubscriptions.viewDetails')}
+                                                >
+                                                    <FaEye size={16} />
+                                                </button>
+                                                <button
+                                                    onClick={() => openEditModal(plan)}
+                                                    className="admin-subscriptions-plan-card__button admin-subscriptions-plan-card__button--edit"
+                                                    title={t('adminSubscriptions.edit')}
+                                                >
+                                                    <FaEdit size={16} />
+                                                </button>
+                                                <button
+                                                    onClick={() => setShowDeleteConfirm(plan)}
+                                                    className="admin-subscriptions-plan-card__button admin-subscriptions-plan-card__button--delete"
+                                                    title={t('adminSubscriptions.delete')}
+                                                >
+                                                    <FaTrash size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                ))
+                            ) : (
+                                <div className="admin-subscriptions-empty">
+                                    <p>{t('adminSubscriptions.noPlansFound')}</p>
+                                </div>
+                            )}
                         </div>
 
                         {/* Pagination */}

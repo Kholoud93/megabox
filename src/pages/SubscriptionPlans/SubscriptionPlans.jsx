@@ -210,16 +210,14 @@ export default function SubscriptionPlans() {
                                             className="subscription-plans-page__plan-button subscription-plans-page__plan-button--edit"
                                             title={t('subscriptionPlans.edit') || "Edit Plan"}
                                         >
-                                            <FaEdit />
-                                            {t('subscriptionPlans.edit') || "Edit"}
+                                            <FaEdit size={16} />
                                         </button>
                                         <button
                                             onClick={() => handleDeletePlan(plan._id || plan.id)}
                                             className="subscription-plans-page__plan-button subscription-plans-page__plan-button--delete"
                                             title={t('subscriptionPlans.delete') || "Delete Plan"}
                                         >
-                                            <FaTrash />
-                                            {t('subscriptionPlans.delete') || "Delete"}
+                                            <FaTrash size={16} />
                                         </button>
                                     </div>
                                 </div>
