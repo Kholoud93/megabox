@@ -81,6 +81,20 @@ export const promoterService = {
         }
     },
 
+    // Get user withdrawals (for promoters)
+    getUserWithdrawals: async (token) => {
+        try {
+            const response = await api.post('/auth/getUserWithdrawals', {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
 };
 
 export default promoterService;

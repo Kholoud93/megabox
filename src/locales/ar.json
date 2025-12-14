@@ -1568,8 +1568,12 @@
     "withdrawable": "القابل للسحب",
     "allWithdrawals": "الكل",
     "allWithdrawalsDesc": "عرض جميع طلبات السحب",
+    "pending": "قيد الانتظار",
+    "pendingDesc": "عرض السحوبات قيد الانتظار",
     "approvedOnly": "الموافق عليها",
-    "approvedOnlyDesc": "عرض السحوبات الموافق عليها فقط"
+    "approvedOnlyDesc": "عرض السحوبات الموافق عليها فقط",
+    "rejected": "المرفوضة",
+    "rejectedDesc": "عرض السحوبات المرفوضة"
   },
   "adminPagination": {
     "page": "صفحة",

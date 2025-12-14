@@ -1571,8 +1571,12 @@
     "withdrawable": "Withdrawable",
     "allWithdrawals": "All",
     "allWithdrawalsDesc": "View all withdrawal requests",
+    "pending": "Pending",
+    "pendingDesc": "View pending withdrawals",
     "approvedOnly": "Approved",
-    "approvedOnlyDesc": "View approved withdrawals only"
+    "approvedOnlyDesc": "View approved withdrawals only",
+    "rejected": "Rejected",
+    "rejectedDesc": "View rejected withdrawals"
   },
   "adminPagination": {
     "page": "Page",

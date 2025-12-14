@@ -79,7 +79,7 @@ export default function Earning() {
     const [touched, setTouched] = useState({});
     const [showRecordModal, setShowRecordModal] = useState(false);
     const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
-    const [viewMode, setViewMode] = useState('all'); // 'all', 'approved'
+    const [viewMode, setViewMode] = useState('all'); // 'all', 'approved', 'pending', 'rejected'
     const queryClient = useQueryClient();
 
     // Payment methods details
@@ -108,11 +108,11 @@ export default function Earning() {
 
     const selectedPaymentDetails = paymentMethod ? paymentMethodsDetails[paymentMethod] : null;
 
-    // Fetch withdrawal history (promoter's own withdrawals)
+    // Fetch withdrawal history using getUserWithdrawals API
     const { data: withdrawalHistory, isLoading: withdrawalHistoryLoading } = useQuery(
-        ['withdrawalHistory'],
+        ['userWithdrawals'],
         async () => {
-            return withdrawalService.getWithdrawalHistory(token);
+            return promoterService.getUserWithdrawals(token);
         },
         {
             enabled: !!token && showRecordModal,
@@ -120,13 +120,28 @@ export default function Earning() {
         }
     );
 
-    // Filter withdrawals client-side based on view mode (promoter's own data only)
+    // Filter withdrawals client-side based on view mode
     const displayWithdrawals = useMemo(() => {
-        const allWithdrawals = withdrawalHistory?.withdrawals || withdrawalHistory?.data || [];
+        const allWithdrawals = withdrawalHistory?.withdrawals || withdrawalHistory?.data || withdrawalHistory || [];
         
         if (viewMode === 'approved') {
             // Filter to show only approved withdrawals
-            return allWithdrawals.filter(w => w.status === 'approved' || w.status === 'Approved');
+            return allWithdrawals.filter(w => {
+                const status = (w.status || '').toLowerCase();
+                return status === 'approved' || status === 'active';
+            });
+        } else if (viewMode === 'pending') {
+            // Filter to show only pending withdrawals
+            return allWithdrawals.filter(w => {
+                const status = (w.status || '').toLowerCase();
+                return status === 'pending';
+            });
+        } else if (viewMode === 'rejected') {
+            // Filter to show only rejected withdrawals
+            return allWithdrawals.filter(w => {
+                const status = (w.status || '').toLowerCase();
+                return status === 'rejected';
+            });
         }
         
         // 'all' mode - show all withdrawals
@@ -146,6 +161,7 @@ export default function Earning() {
         ),
         {
             onSuccess: () => {
+                queryClient.invalidateQueries('userWithdrawals');
                 queryClient.invalidateQueries('withdrawalHistory');
                 queryClient.invalidateQueries('userEarnings');
                 setWithdrawalAmount('');
@@ -166,6 +182,7 @@ export default function Earning() {
         () => withdrawalService.withdrawEarnings(token),
         {
             onSuccess: () => {
+                queryClient.invalidateQueries('userWithdrawals');
                 queryClient.invalidateQueries('withdrawalHistory');
                 queryClient.invalidateQueries('userEarnings');
                 toast.success(t('withdrawSection.earningsWithdrawn') || 'Earnings withdrawn successfully!', ToastOptions("success"));
@@ -569,6 +586,18 @@ export default function Earning() {
                                     </button>
                                     <button
                                         type="button"
+                                        onClick={() => setViewMode('pending')}
+                                        className={`withdraw-filter-btn ${viewMode === 'pending' ? 'active' : ''}`}
+                                    >
+                                        <span className="filter-title">
+                                            {t('withdrawSection.pending') || 'Pending'}
+                                        </span>
+                                        <span className="filter-desc">
+                                            {t('withdrawSection.pendingDesc') || 'View pending withdrawals'}
+                                        </span>
+                                    </button>
+                                    <button
+                                        type="button"
                                         onClick={() => setViewMode('approved')}
                                         className={`withdraw-filter-btn ${viewMode === 'approved' ? 'active' : ''}`}
                                     >
@@ -577,6 +606,18 @@ export default function Earning() {
                                         </span>
                                         <span className="filter-desc">
                                             {t('withdrawSection.approvedOnlyDesc') || 'View approved withdrawals only'}
+                                        </span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setViewMode('rejected')}
+                                        className={`withdraw-filter-btn ${viewMode === 'rejected' ? 'active' : ''}`}
+                                    >
+                                        <span className="filter-title">
+                                            {t('withdrawSection.rejected') || 'Rejected'}
+                                        </span>
+                                        <span className="filter-desc">
+                                            {t('withdrawSection.rejectedDesc') || 'View rejected withdrawals'}
                                         </span>
                                     </button>
                                 </div>
