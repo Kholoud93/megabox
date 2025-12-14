@@ -43,7 +43,6 @@ const Navbar = () => {
 
   const menuItems = [
     { label: t('navbar.partners'), to: '/Partners' },
-    { label: t('navbar.promoters'), to: '/Promoters' },
     // { label: 'Feedback', to: '/Feedback' },
   ]
 

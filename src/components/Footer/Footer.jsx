@@ -76,9 +76,6 @@ const Footer = () => {
             <Link to={"/Partners"} className="footer__link block hover:text-white transition-colors duration-200">
               {t("footer.partners")}
             </Link>
-            <Link to={"/Promoters"} className="footer__link block hover:text-white transition-colors duration-200">
-              {t("footer.promoters")}
-            </Link>
             <Link to={"/Privacy"} className="footer__link block hover:text-white transition-colors duration-200">
               {t("footer.privacyPolicy")}
             </Link>

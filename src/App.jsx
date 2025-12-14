@@ -47,7 +47,6 @@ import SubscriptionPlans from './pages/SubscriptionPlans/SubscriptionPlans'
 const Feedback = lazy(() => import('./pages/Feedback/Feedback'))
 const PrivacyPolicy = lazy(() => import('./pages/Privacy/Privacy'))
 const RemovalGuidelines = lazy(() => import('./pages/RemovalPolicy/RemovalPolicy'))
-const Partners = lazy(() => import('./pages/Partners/Partners'))
 const PromotersLanding = lazy(() => import('./pages/Promoters/Promoters'))
 const Subscription = lazy(() => import('./pages/Subscription/Subscription'))
 const Contact = lazy(() => import('./pages/Contact/Contact'))
@@ -82,10 +81,6 @@ const AppRouter = () => {
           index: true, element: <LandingPage />
         },
         {
-          path: "Partners", element:
-            <Suspense fallback={<Loading />}><Partners /></Suspense>
-        },
-        {
           path: "Privacy", element: <Suspense fallback={<Loading />}> <PrivacyPolicy /></Suspense>
         },
         {
@@ -106,7 +101,7 @@ const AppRouter = () => {
           path: "rewards-eligibility", element: <Suspense fallback={<Loading />}> <RewardsEligibility /></Suspense>
         },
         {
-          path: "Promoters", element: <Suspense fallback={<Loading />}> <PromotersLanding /></Suspense>
+          path: "Partners", element: <Suspense fallback={<Loading />}> <PromotersLanding /></Suspense>
         }
       ]
     },

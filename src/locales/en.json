@@ -3,7 +3,6 @@
     "home": "Home",
     "about": "About",
     "partners": "Partners",
-    "promoters": "Promoters",
     "login": "Login",
     "logout": "Logout",
     "dashboard": "Dashboard",
@@ -20,10 +19,6 @@
     "subtitle": "Choose the option that best fits your needs",
     "partners": {
       "title": "Partners Program",
-      "description": "For companies and professional content creators who want to integrate our platform with their services."
-    },
-    "promoters": {
-      "title": "Promoters Program",
       "description": "For individuals who want to promote the platform and earn money from referrals."
     },
     "learnMore": "Learn More"
@@ -147,7 +142,6 @@
     "home": "Home",
     "about": "About",
     "partners": "Partners",
-    "promoters": "Promoters",
     "privacyPolicy": "Privacy Policy",
     "removalPolicy": "Removal Policy",
     "reportIssue": "Report Issue",

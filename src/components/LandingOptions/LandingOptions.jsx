@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
-import { FaHandshake, FaUsers, FaArrowRight } from 'react-icons/fa';
+import { FaUsers, FaArrowRight } from 'react-icons/fa';
 import './LandingOptions.scss';
 
 export default function LandingOptions() {
@@ -15,16 +15,8 @@ export default function LandingOptions() {
             id: 'partners',
             title: t('landingOptions.partners.title'),
             description: t('landingOptions.partners.description'),
-            icon: <FaHandshake />,
-            link: '/Partners',
-            color: 'indigo'
-        },
-        {
-            id: 'promoters',
-            title: t('landingOptions.promoters.title'),
-            description: t('landingOptions.promoters.description'),
             icon: <FaUsers />,
-            link: '/Promoters',
+            link: '/Partners',
             color: 'purple'
         }
     ];
@@ -87,11 +79,7 @@ export default function LandingOptions() {
                             variants={itemVariants}
                             className={`landing-options__card landing-options__card--${option.color}`}
                             onClick={() => {
-                                if (option.id === 'partners') {
-                                    navigate('/Partners');
-                                } else if (option.id === 'promoters') {
-                                    navigate('/Promoters');
-                                }
+                                navigate(option.link);
                             }}
                         >
                             <div className="landing-options__icon">{option.icon}</div>
