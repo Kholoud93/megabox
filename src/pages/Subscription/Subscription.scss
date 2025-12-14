@@ -257,8 +257,14 @@
     flex-shrink: 0;
   }
 
-  &__plan-button {
+  &__plan-actions {
+    display: flex;
+    gap: 0.75rem;
     width: 100%;
+  }
+
+  &__plan-button {
+    flex: 1;
     padding: 1rem 1.5rem;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -296,6 +302,18 @@
     
     &:active:not(:disabled) {
       transform: translateY(0);
+    }
+
+    &--subscribe {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      
+      &:hover:not(:disabled) {
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+      }
+    }
+
+    &--create {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
 
     &--disabled {

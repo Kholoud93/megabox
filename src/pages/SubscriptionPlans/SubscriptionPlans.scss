@@ -103,15 +103,15 @@
     color: var(--color-gray-600);
 }
 
-  // Plans Section
-  &__plans {
+// Plans Section
+.subscription-plans-page__plans {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 2rem;
     margin-top: 2rem;
-  }
+}
 
-  &__plan-card {
+.subscription-plans-page__plan-card {
     background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
     border-radius: 1.25rem;
     padding: 2rem;
@@ -144,78 +144,78 @@
     }
   }
 
-  &__plan-header {
+.subscription-plans-page__plan-header {
     margin-bottom: 1.5rem;
     padding-bottom: 1.5rem;
     border-bottom: 2px solid #e2e8f0;
-  }
+}
 
-  &__plan-title {
+.subscription-plans-page__plan-title {
     font-size: 1.75rem;
     font-weight: 700;
     color: #1a202c;
     margin-bottom: 1rem;
-  }
+}
 
-  &__plan-price {
+.subscription-plans-page__plan-price {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-  }
+}
 
-  &__plan-price-icon {
+.subscription-plans-page__plan-price-icon {
     color: #10b981;
     font-size: 1.5rem;
-  }
+}
 
-  &__plan-amount {
+.subscription-plans-page__plan-amount {
     font-size: 2.5rem;
     font-weight: 800;
     color: #4f46e5;
-  }
+}
 
-  &__plan-currency {
+.subscription-plans-page__plan-currency {
     font-size: 1.25rem;
     color: #718096;
     font-weight: 500;
-  }
+}
 
-  &__plan-content {
+.subscription-plans-page__plan-content {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-  }
+}
 
-  &__plan-features {
+.subscription-plans-page__plan-features {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-  }
+}
 
-  &__plan-feature {
+.subscription-plans-page__plan-feature {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     color: #4a5568;
     font-size: 1rem;
-  }
+}
 
-  &__plan-feature-icon {
+.subscription-plans-page__plan-feature-icon {
     color: #10b981;
     font-size: 1.25rem;
     flex-shrink: 0;
-  }
+}
 
-  &__plan-actions {
+.subscription-plans-page__plan-actions {
     display: flex;
     gap: 0.75rem;
     margin-top: 0.5rem;
-  }
+}
 
-  &__plan-button {
+.subscription-plans-page__plan-button {
     flex: 1;
     padding: 0.875rem 1.25rem;
     border: none;

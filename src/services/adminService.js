@@ -213,6 +213,20 @@ export const adminService = {
         }
     },
 
+    // Get all plans (alternative endpoint)
+    getAllPlans: async (token) => {
+        try {
+            const response = await api.get('/auth/getAllPlans', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
     // Create subscription plan (admin)
     createPlan: async (days, price, name, token) => {
         try {

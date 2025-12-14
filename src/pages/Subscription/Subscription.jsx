@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaCheckCircle, FaTimes, FaUser, FaPhone, FaCalendar, FaTag, FaFileInvoice } from 'react-icons/fa';
 import { HiCurrencyDollar, HiClock } from 'react-icons/hi2';
 import { promoterService, userService, adminService } from '../../services/api';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../helpers/ToastOptions';
 import { useLanguage } from '../../context/LanguageContext';
 import Loading from '../../components/Loading/Loading';
 import TermsModal from '../../components/TermsModal/TermsModal';
@@ -29,12 +31,12 @@ export default function Subscription() {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Fetch plans from API
+    // Fetch plans from API using getAllPlans
     const { data: plansData, isLoading: plansLoading } = useQuery(
         ['subscription-plans'],
         async () => {
             try {
-                const response = await promoterService.getPlans();
+                const response = await adminService.getAllPlans(cookies.MegaBox);
                 if (response.plans) return response;
                 if (Array.isArray(response)) return { plans: response };
                 if (response.data) return { plans: response.data };
@@ -44,7 +46,7 @@ export default function Subscription() {
                 return { plans: [] };
             }
         },
-        { enabled: true }
+        { enabled: !!cookies.MegaBox }
     );
 
     const plans = plansData?.plans || [];
@@ -184,6 +186,52 @@ export default function Subscription() {
         }
     };
 
+    // Handle promoter subscribing to a plan for themselves
+    const handleSubscribeToPlan = async (plan) => {
+        if (!cookies.MegaBox) {
+            navigate('/login');
+            return;
+        }
+
+        const termsAccepted = localStorage.getItem('termsAccepted');
+
+        if (!termsAccepted) {
+            setSelectedPlan(plan);
+            setShowTermsModal(true);
+            return;
+        }
+
+        // For promoter subscribing to themselves, we need to get their own info
+        if (!userData) {
+            toast.error(t('subscriptionPage.error.userInfo') || "Please wait, loading user information...", ToastOptions("error"));
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            // Create subscription for the promoter themselves
+            await promoterService.createSubscription(
+                null, // No invoice file for self-subscription
+                userData.phone || '',
+                userData.name || userData.username || '',
+                plan.days || 30,
+                plan.name || plan.planName,
+                cookies.MegaBox
+            );
+
+            // Invalidate queries to refresh data
+            queryClient.invalidateQueries(['subscription-plans']);
+            queryClient.invalidateQueries(['userAccount']);
+            queryClient.invalidateQueries(['allSubscriptions']);
+            
+            toast.success(t('subscriptionPage.success.subscribed') || "Successfully subscribed to plan!", ToastOptions("success"));
+        } catch (error) {
+            console.error('Error subscribing to plan:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     const handleSubscriptionSubmit = async (e) => {
         e.preventDefault();
 
@@ -313,12 +361,24 @@ export default function Subscription() {
                                                 )}
                                             </ul>
                                         {isPromoter ? (
-                                            <button
-                                                onClick={() => handleCreateSubscription(plan)}
-                                                className="subscription-page__plan-button"
-                                            >
-                                                {t('subscriptionPage.createSubscription') || 'Create Subscription'}
-                                            </button>
+                                            <div className="subscription-page__plan-actions">
+                                                <button
+                                                    onClick={() => handleSubscribeToPlan(plan)}
+                                                    className="subscription-page__plan-button subscription-page__plan-button--subscribe"
+                                                    disabled={isSubmitting || subscribedPlans.some(sp => (sp._id || sp.id) === (plan._id || plan.id))}
+                                                >
+                                                    {subscribedPlans.some(sp => (sp._id || sp.id) === (plan._id || plan.id))
+                                                        ? (t('subscriptionPage.subscribed') || 'Subscribed')
+                                                        : (t('subscriptionPage.subscribe') || 'Subscribe')
+                                                    }
+                                                </button>
+                                                <button
+                                                    onClick={() => handleCreateSubscription(plan)}
+                                                    className="subscription-page__plan-button subscription-page__plan-button--create"
+                                                >
+                                                    {t('subscriptionPage.createSubscription') || 'Create Subscription'}
+                                                </button>
+                                            </div>
                                         ) : (
                                             <button
                                                 onClick={() => navigate('/dashboard/subscription-plans')}
