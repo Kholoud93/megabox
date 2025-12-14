@@ -401,7 +401,6 @@ export default function Users() {
                                 <th scope="col" className="px-6 py-3 ">{t("adminUsers.userId")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminUsers.username")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminUsers.email")}</th>
-                                <th scope="col" className="px-6 py-3">{t("adminUsers.premiumStatus")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminUsers.status")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminUsers.actions")}</th>
                             </tr>
@@ -414,16 +413,6 @@ export default function Users() {
                                             <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap" data-label={t("adminUsers.userId")}>{ele?.userId}</td>
                                             <td className="px-6 py-4" data-label={t("adminUsers.username")}>{ele.username}</td>
                                             <td className="px-6 py-4" data-label={t("adminUsers.email")}>{ele.email}</td>
-                                            <td className="px-6 py-4" data-label={t("adminUsers.premiumStatus")}>
-                                                {ele.isBrimume ? (
-                                                    <div className='flex items-center gap-3'>
-                                                        <span className='text-yellow-600 font-semibold'>{t("adminUsers.premium")}</span>
-                                                        <FaCrown className='text-yellow-500' size={18} />
-                                                    </div>
-                                                ) : (
-                                                    <div className='text-gray-500'>{t("adminUsers.notPremium")}</div>
-                                                )}
-                                            </td>
                                             <td className="px-6 py-4" data-label={t("adminUsers.status")}>
                                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${ele.isBanned ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
                                                     }`}>
@@ -467,7 +456,7 @@ export default function Users() {
                                     )
                                 })) : (
                                 <tr>
-                                    <td colSpan="6" className="text-center py-8 text-gray-500">
+                                    <td colSpan="5" className="text-center py-8 text-gray-500">
                                         {t('adminUsers.noUsersFound')}
                                     </td>
                                 </tr>

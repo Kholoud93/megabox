@@ -1,15 +1,16 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { adminService } from '../../../services/adminService';
 import { useLanguage } from '../../../context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaCrown, FaTimes, FaUser, FaPhone, FaCalendar, FaFileInvoice, FaCheckCircle, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaCrown, FaTimes, FaUser, FaPhone, FaCalendar, FaFileInvoice, FaCheckCircle, FaExternalLinkAlt, FaEye } from 'react-icons/fa';
 import { HiArrowRight, HiArrowLeft, HiCurrencyDollar, HiClock } from 'react-icons/hi2';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
 import Loading from '../../../components/Loading/Loading';
+import Pagination from '../../../components/Pagination/Pagination';
 import './Subscriptions.scss';
 
 export default function AdminSubscriptions() {
@@ -19,6 +20,8 @@ export default function AdminSubscriptions() {
     const token = cookies.MegaBox;
     const [selectedSubscription, setSelectedSubscription] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
     const queryClient = useQueryClient();
 
     // Fetch all subscriptions
@@ -47,45 +50,7 @@ export default function AdminSubscriptions() {
         }
     );
 
-    // Approve/Activate subscription mutation
-    const approveSubscriptionMutation = useMutation(
-        async (subscriptionId) => {
-            return await adminService.approveSubscription(subscriptionId, token);
-        },
-        {
-            onSuccess: async () => {
-                queryClient.invalidateQueries('allSubscriptions');
-                
-                // Automatically activate premium for the user/promoter
-                if (selectedSubscription) {
-                    const userId = getUserIdFromSubscription(selectedSubscription);
-                    if (userId) {
-                        const durationDays = selectedSubscription.durationDays || selectedSubscription.days || 30;
-                        try {
-                            await adminService.toggleBrimumeByOwner(userId, true, durationDays, token);
-                            queryClient.invalidateQueries("getAllusers");
-                            queryClient.invalidateQueries("getAllPromoters");
-                            toast.success(t('adminSubscriptions.subscriptionApprovedAndPremium') || 'Subscription approved and premium activated successfully!', ToastOptions("success"));
-                        } catch (premiumError) {
-                            // Premium activation failed, but subscription was approved
-                            toast.success(t('adminSubscriptions.subscriptionApproved') || 'Subscription approved successfully!', ToastOptions("success"));
-                            toast.warning(t('adminSubscriptions.premiumActivationFailed') || 'Premium activation failed. Please activate manually.', ToastOptions("warning"));
-                        }
-                    } else {
-                        toast.success(t('adminSubscriptions.subscriptionApproved') || 'Subscription approved successfully!', ToastOptions("success"));
-                        toast.warning(t('adminSubscriptions.userNotFound') || 'User ID not found. Premium not activated.', ToastOptions("warning"));
-                    }
-                } else {
-                    toast.success(t('adminSubscriptions.subscriptionApproved') || 'Subscription approved successfully!', ToastOptions("success"));
-                }
-                
-                setSelectedSubscription(null);
-            },
-            onError: (error) => {
-                toast.error(error.message || t('adminSubscriptions.approveFailed') || 'Failed to approve subscription', ToastOptions("error"));
-            }
-        }
-    );
+    const [isApproving, setIsApproving] = useState(false);
 
     // Filter subscriptions
     const filteredSubscriptions = useMemo(() => {
@@ -108,6 +73,17 @@ export default function AdminSubscriptions() {
         });
     }, [subscriptionsData, searchTerm]);
 
+    // Pagination logic
+    const totalPages = Math.ceil(filteredSubscriptions.length / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedSubscriptions = filteredSubscriptions.slice(startIndex, endIndex);
+
+    // Reset to page 1 when search changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         try {
@@ -122,11 +98,24 @@ export default function AdminSubscriptions() {
         setSelectedSubscription(subscription);
     };
 
-    const handleApproveSubscription = () => {
-        if (!selectedSubscription) return;
-        const subscriptionId = selectedSubscription._id || selectedSubscription.id;
-        if (subscriptionId) {
-            approveSubscriptionMutation.mutate(subscriptionId);
+    const handleApproveSubscription = async (subscription = null) => {
+        const subToApprove = subscription || selectedSubscription;
+        if (!subToApprove) return;
+
+        setIsApproving(true);
+        try {
+            // Activate premium using toggleBrimumeByOwner
+            await handleSetPremium(subToApprove);
+            
+            // Invalidate queries to refresh data
+            queryClient.invalidateQueries('allSubscriptions');
+            
+            toast.success(t('adminSubscriptions.subscriptionApprovedAndPremium') || 'Subscription approved and premium activated successfully!', ToastOptions("success"));
+            setSelectedSubscription(null);
+        } catch (error) {
+            toast.error(error.message || t('adminSubscriptions.approveFailed') || 'Failed to approve subscription', ToastOptions("error"));
+        } finally {
+            setIsApproving(false);
         }
     };
 
@@ -137,6 +126,27 @@ export default function AdminSubscriptions() {
                subscription.createdBy?._id || subscription.createdBy?.id || subscription.createdBy ||
                subscription.promoter?._id || subscription.promoter?.id ||
                subscription.user?._id || subscription.user?.id;
+    };
+
+    // Set premium for user/promoter
+    const handleSetPremium = async (subscription) => {
+        if (!subscription) return;
+        
+        const userId = getUserIdFromSubscription(subscription);
+        if (!userId) {
+            toast.warning(t('adminSubscriptions.userNotFound') || 'User ID not found. Premium not activated.', ToastOptions("warning"));
+            return;
+        }
+
+        try {
+            const durationDays = subscription.durationDays || subscription.days || 30;
+            await adminService.toggleBrimumeByOwner(userId, true, durationDays, token);
+            queryClient.invalidateQueries("getAllusers");
+            queryClient.invalidateQueries("getAllPromoters");
+            toast.success(t('adminSubscriptions.premiumActivated') || 'Premium activated successfully!', ToastOptions("success"));
+        } catch (error) {
+            toast.error(error.message || t('adminSubscriptions.premiumActivationFailed') || 'Failed to activate premium', ToastOptions("error"));
+        }
     };
 
 
@@ -192,49 +202,102 @@ export default function AdminSubscriptions() {
                         <Loading />
                     </div>
                 ) : filteredSubscriptions.length > 0 ? (
-                    <div className="admin-subscriptions-list">
-                        {filteredSubscriptions.map((subscription, index) => (
-                            <motion.div
-                                key={subscription._id || subscription.id || index}
-                                initial={{ y: 20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ duration: 0.5, delay: index * 0.05 }}
-                                className="admin-subscription-item"
-                                onClick={() => handleViewDetails(subscription)}
-                            >
-                                <div className="admin-subscription-item__header">
-                                    <div className="admin-subscription-item__user-info">
-                                        <FaUser className="admin-subscription-item__icon" />
-                                        <div>
-                                            <h3 className="admin-subscription-item__name">
-                                                {subscription.subscriberName || subscription.name || '-'}
-                                            </h3>
-                                            <p className="admin-subscription-item__plan">
+                    <>
+                        <div className="admin-subscriptions-table-wrapper">
+                            <table className="admin-users-table">
+                                <thead className="admin-users-table__header">
+                                    <tr>
+                                        <th scope="col" className="px-6 py-3">{t("adminSubscriptions.subscriberName") || "Subscriber"}</th>
+                                        <th scope="col" className="px-6 py-3">{t("adminSubscriptions.phone") || "Phone"}</th>
+                                        <th scope="col" className="px-6 py-3">{t("adminSubscriptions.planName") || "Plan"}</th>
+                                        <th scope="col" className="px-6 py-3">{t("adminSubscriptions.duration") || "Duration"}</th>
+                                        <th scope="col" className="px-6 py-3">{t("adminSubscriptions.status") || "Status"}</th>
+                                        <th scope="col" className="px-6 py-3">{t("adminSubscriptions.createdAt") || "Created At"}</th>
+                                        <th scope="col" className="px-6 py-3">{t("adminSubscriptions.actions") || "Actions"}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {paginatedSubscriptions.map((subscription, index) => (
+                                    <tr 
+                                        key={subscription._id || subscription.id || index}
+                                        className="bg-white border-b hover:bg-gray-50"
+                                    >
+                                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap" data-label={t("adminSubscriptions.subscriberName") || "Subscriber"}>
+                                            <div className="flex items-center gap-2">
+                                                <FaUser className="text-indigo-600" size={16} />
+                                                <span>{subscription.subscriberName || subscription.name || '-'}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4" data-label={t("adminSubscriptions.phone") || "Phone"}>
+                                            <div className="flex items-center gap-2">
+                                                <FaPhone className="text-gray-400" size={14} />
+                                                <span>{subscription.phone || '-'}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4" data-label={t("adminSubscriptions.planName") || "Plan"}>
+                                            <span className="font-medium text-indigo-600">
                                                 {subscription.planName || subscription.plan?.name || '-'}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <span className={`admin-subscription-item__status admin-subscription-item__status--${(subscription.status || 'pending').toLowerCase()}`}>
-                                        {subscription.status || 'Pending'}
-                                    </span>
-                                </div>
-                                <div className="admin-subscription-item__details">
-                                    <div className="admin-subscription-item__detail">
-                                        <FaPhone className="admin-subscription-item__detail-icon" />
-                                        <span>{subscription.phone || '-'}</span>
-                                    </div>
-                                    <div className="admin-subscription-item__detail">
-                                        <HiClock className="admin-subscription-item__detail-icon" />
-                                        <span>{subscription.durationDays || subscription.days || '-'} {t('adminSubscriptions.days') || 'days'}</span>
-                                    </div>
-                                    <div className="admin-subscription-item__detail">
-                                        <FaCalendar className="admin-subscription-item__detail-icon" />
-                                        <span>{formatDate(subscription.createdAt || subscription.created)}</span>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4" data-label={t("adminSubscriptions.duration") || "Duration"}>
+                                            <div className="flex items-center gap-2">
+                                                <HiClock className="text-gray-400" size={14} />
+                                                <span>{subscription.durationDays || subscription.days || '-'} {t('adminSubscriptions.days') || 'days'}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4" data-label={t("adminSubscriptions.status") || "Status"}>
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium admin-subscription-status admin-subscription-status--${(subscription.status || 'pending').toLowerCase()}`}>
+                                                {subscription.status || 'Pending'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4" data-label={t("adminSubscriptions.createdAt") || "Created At"}>
+                                            <div className="flex items-center gap-2">
+                                                <FaCalendar className="text-gray-400" size={14} />
+                                                <span>{formatDate(subscription.createdAt || subscription.created)}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4" data-label={t("adminSubscriptions.actions") || "Actions"}>
+                                            <div className="action-buttons">
+                                                <button
+                                                    onClick={() => handleViewDetails(subscription)}
+                                                    className="text-indigo-600 hover:text-indigo-800 transition-colors"
+                                                    title={t("adminSubscriptions.viewDetails") || "View Details"}
+                                                >
+                                                    <FaEye size={20} />
+                                                </button>
+                                                {(subscription.status === 'pending' || !subscription.status) && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleApproveSubscription(subscription);
+                                                        }}
+                                                        disabled={isApproving}
+                                                        className="text-green-600 hover:text-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        title={t("adminSubscriptions.approve") || "Approve Subscription"}
+                                                    >
+                                                        <FaCheckCircle size={20} />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Pagination */}
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={setCurrentPage}
+                            showCount={true}
+                            startIndex={startIndex}
+                            endIndex={Math.min(endIndex, filteredSubscriptions.length)}
+                            totalItems={filteredSubscriptions.length}
+                            itemsLabel={t('adminSubscriptions.subscriptions') || 'subscriptions'}
+                        />
+                    </>
                 ) : (
                     <div className="admin-subscriptions-empty">
                         <p>{t('adminSubscriptions.noSubscriptions') || 'No subscriptions found'}</p>
@@ -396,11 +459,11 @@ export default function AdminSubscriptions() {
                                 </button>
                                 {(selectedSubscription.status === 'pending' || !selectedSubscription.status) && (
                                     <button
-                                        onClick={handleApproveSubscription}
-                                        disabled={approveSubscriptionMutation.isLoading}
+                                        onClick={() => handleApproveSubscription(selectedSubscription)}
+                                        disabled={isApproving}
                                         className="admin-subscription-details-modal__btn admin-subscription-details-modal__btn--approve"
                                     >
-                                        {approveSubscriptionMutation.isLoading 
+                                        {isApproving 
                                             ? (t('adminSubscriptions.approving') || 'Approving...')
                                             : (t('adminSubscriptions.approve') || 'Approve Subscription')
                                         }

@@ -186,7 +186,6 @@ export default function Promoters() {
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.email")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.watchingPlan")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.downloadsPlan")}</th>
-                                <th scope="col" className="px-6 py-3">{t("adminUsers.premiumStatus") || t("adminPromoters.premiumStatus")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.actions")}</th>
                             </tr>
                         </thead>
@@ -214,17 +213,6 @@ export default function Promoters() {
                                                 )}
                                             </td>
 
-                                            <td data-label={t("adminUsers.premiumStatus") || t("adminPromoters.premiumStatus")}>
-                                                {ele.isBrimume ? (
-                                                    <div className='flex items-center gap-3'>
-                                                        <span className='text-yellow-600 font-semibold'>{t("adminUsers.premium") || t("adminPromoters.premium")}</span>
-                                                        <FaCrown className='text-yellow-500' size={18} />
-                                                    </div>
-                                                ) : (
-                                                    <div className='text-gray-500'>{t("adminUsers.notPremium") || t("adminPromoters.notPremium")}</div>
-                                                )}
-                                            </td>
-
                                             <td data-label={t("adminPromoters.actions")}>
                                                 <div className="action-buttons">
                                                     <Link
@@ -234,6 +222,13 @@ export default function Promoters() {
                                                     >
                                                         <MdAttachMoney size={20} />
                                                     </Link>
+                                                    <button
+                                                        onClick={() => setPremiumModal(ele)}
+                                                        className={`transition-colors ${ele.isBrimume ? 'text-yellow-600 hover:text-yellow-800' : 'text-purple-600 hover:text-purple-800'}`}
+                                                        title={ele.isBrimume ? (t("adminUsers.removePremium") || t("adminPromoters.removePremium")) : (t("adminUsers.makePremium") || t("adminPromoters.makePremium"))}
+                                                    >
+                                                        <FaCrown size={20} />
+                                                    </button>
                                                     <button
                                                         title={t("adminPromoters.delete")}
                                                         onClick={() => setDeleteConfirm(ele)}
@@ -247,7 +242,7 @@ export default function Promoters() {
                                     )
                                 })) : (
                                 <tr>
-                                    <td colSpan="6" className="text-center py-8 text-gray-500">
+                                    <td colSpan="5" className="text-center py-8 text-gray-500">
                                         {t('adminPromoters.noPromotersFound')}
                                     </td>
                                 </tr>
