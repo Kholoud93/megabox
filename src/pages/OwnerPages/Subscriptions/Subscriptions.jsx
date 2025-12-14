@@ -6,9 +6,8 @@ import { adminService } from '../../../services/adminService';
 import { useLanguage } from '../../../context/LanguageContext';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
 import Pagination from '../../../components/Pagination/Pagination';
-import { FaCrown, FaEye, FaPlus } from 'react-icons/fa';
+import { FaCrown, FaEye, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import { HiArrowRight, HiArrowLeft } from 'react-icons/hi2';
-import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
 import './Subscriptions.scss';
@@ -20,47 +19,30 @@ export default function Subscriptions() {
     const token = cookies.MegaBox;
     const [searchTerm, setSearchTerm] = useState('');
     const [filters, setFilters] = useState({});
-    const [selectedSubscription, setSelectedSubscription] = useState(null);
+    const [selectedPlan, setSelectedPlan] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
     const [createFormData, setCreateFormData] = useState({
-        invoice: null,
-        phone: '',
-        subscriberName: '',
-        durationDays: '',
-        planName: ''
+        name: '',
+        days: '',
+        price: ''
+    });
+    const [editFormData, setEditFormData] = useState({
+        id: '',
+        name: '',
+        days: '',
+        price: ''
     });
     const [isCreating, setIsCreating] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const itemsPerPage = 10;
     const queryClient = useQueryClient();
 
-    // Fetch all subscriptions
-    const { data: subscriptionsData, isLoading: subscriptionsLoading } = useQuery(
-        ['allSubscriptions'],
-        async () => {
-            try {
-                const response = await adminService.getAllSubscriptions(token);
-                // Handle different response structures
-                if (response.subscriptions) {
-                    return response;
-                } else if (Array.isArray(response)) {
-                    return { subscriptions: response };
-                } else if (response.data) {
-                    return { subscriptions: response.data };
-                }
-                return { subscriptions: [] };
-            } catch {
-                // Return empty array on error instead of mock data
-                return { subscriptions: [] };
-            }
-        },
-        { 
-            enabled: !!token
-        }
-    );
-
-    // Fetch plans for dropdown
-    const { data: plansData } = useQuery(
+    // Fetch all plans
+    const { data: plansData, isLoading: plansLoading } = useQuery(
         ['plans'],
         async () => {
             try {
@@ -73,36 +55,35 @@ export default function Subscriptions() {
                 console.error('Error fetching plans:', error);
                 return { plans: [] };
             }
+        },
+        { 
+            enabled: true
         }
     );
 
-    // Handle create subscription
-    const handleCreateSubscription = async (e) => {
+    // Handle create plan
+    const handleCreatePlan = async (e) => {
         e.preventDefault();
-        if (!createFormData.phone || !createFormData.subscriberName || !createFormData.durationDays || !createFormData.planName) {
+        if (!createFormData.name || !createFormData.days || !createFormData.price) {
             toast.error(t('adminSubscriptions.fillAllFields') || "Please fill all required fields", ToastOptions("error"));
             return;
         }
 
         setIsCreating(true);
         try {
-            await adminService.createSubscription(
-                createFormData.invoice,
-                createFormData.phone,
-                createFormData.subscriberName,
-                createFormData.durationDays,
-                createFormData.planName,
+            await adminService.createPlan(
+                parseInt(createFormData.days),
+                parseFloat(createFormData.price),
+                createFormData.name,
                 token
             );
             setShowCreateModal(false);
             setCreateFormData({
-                invoice: null,
-                phone: '',
-                subscriberName: '',
-                durationDays: '',
-                planName: ''
+                name: '',
+                days: '',
+                price: ''
             });
-            queryClient.invalidateQueries('allSubscriptions');
+            queryClient.invalidateQueries('plans');
         } catch {
             // Error is handled by service
         } finally {
@@ -110,112 +91,98 @@ export default function Subscriptions() {
         }
     };
 
-    // Helper function to parse date from "MM/DD/YYYY" format
-    const parseDate = React.useCallback((dateString) => {
-        if (!dateString) return null;
-        if (dateString instanceof Date) return dateString;
-        // Handle "MM/DD/YYYY" format
-        const parts = dateString.split('/');
-        if (parts.length === 3) {
-            return new Date(parts[2], parts[0] - 1, parts[1]);
+    // Handle edit plan
+    const handleEditPlan = async (e) => {
+        e.preventDefault();
+        if (!editFormData.name || !editFormData.days || !editFormData.price) {
+            toast.error(t('adminSubscriptions.fillAllFields') || "Please fill all required fields", ToastOptions("error"));
+            return;
         }
-        return new Date(dateString);
-    }, []);
 
-    // Helper function to calculate subscription status
-    const getSubscriptionStatus = React.useCallback((endDate) => {
-        if (!endDate) return 'expired';
-        const end = parseDate(endDate);
-        if (!end || isNaN(end.getTime())) return 'expired';
-        const now = new Date();
-        now.setHours(0, 0, 0, 0);
-        end.setHours(0, 0, 0, 0);
-        return end >= now ? 'active' : 'expired';
-    }, [parseDate]);
+        setIsUpdating(true);
+        try {
+            await adminService.updatePlan(
+                editFormData.id,
+                parseInt(editFormData.days),
+                parseFloat(editFormData.price),
+                editFormData.name,
+                token
+            );
+            setShowEditModal(false);
+            setEditFormData({
+                id: '',
+                name: '',
+                days: '',
+                price: ''
+            });
+            queryClient.invalidateQueries('plans');
+        } catch {
+            // Error is handled by service
+        } finally {
+            setIsUpdating(false);
+        }
+    };
 
-    // Filter subscriptions based on search and filters
-    const filteredSubscriptions = useMemo(() => {
-        if (!subscriptionsData?.subscriptions) return [];
+    // Handle delete plan
+    const handleDeletePlan = async () => {
+        if (!showDeleteConfirm) return;
+        
+        setIsDeleting(true);
+        try {
+            await adminService.deletePlan(showDeleteConfirm._id || showDeleteConfirm.id, token);
+            setShowDeleteConfirm(null);
+            queryClient.invalidateQueries('plans');
+        } catch {
+            // Error is handled by service
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
-        return subscriptionsData.subscriptions.map(subscription => ({
-            ...subscription,
-            status: getSubscriptionStatus(subscription.endDate)
-        })).filter((subscription) => {
+    // Open edit modal
+    const openEditModal = (plan) => {
+        setEditFormData({
+            id: plan._id || plan.id,
+            name: plan.name || '',
+            days: plan.days || '',
+            price: plan.price || ''
+        });
+        setShowEditModal(true);
+    };
+
+    // Filter plans based on search and filters
+    const filteredPlans = useMemo(() => {
+        if (!plansData?.plans) return [];
+
+        return plansData.plans.filter((plan) => {
             // Search filter
             if (searchTerm) {
-                const userInfo = subscription.createdBy
-                    ? `${subscription.createdBy.name || ''} ${subscription.createdBy.email || ''}`
-                    : subscription.subscriberName || '';
                 const searchLower = searchTerm.toLowerCase();
-                const planNameStr = (subscription.planName || '').toLowerCase();
-                const subscriberNameStr = (subscription.subscriberName || '').toLowerCase();
-                const phoneStr = (subscription.phone || '').toLowerCase();
+                const nameStr = (plan.name || '').toLowerCase();
+                const daysStr = (plan.days || '').toString().toLowerCase();
+                const priceStr = (plan.price || '').toString().toLowerCase();
                 
-                if (!userInfo.toLowerCase().includes(searchLower) &&
-                    !planNameStr.includes(searchLower) &&
-                    !subscriberNameStr.includes(searchLower) &&
-                    !phoneStr.includes(searchLower)) {
+                if (!nameStr.includes(searchLower) &&
+                    !daysStr.includes(searchLower) &&
+                    !priceStr.includes(searchLower)) {
                     return false;
                 }
             }
 
-            // Status filter
-            if (filters.status && subscription.status !== filters.status) {
-                return false;
-            }
-
-            // Plan type filter
-            if (filters.planType && subscription.planName !== filters.planType) {
-                return false;
-            }
-
             return true;
         });
-    }, [subscriptionsData?.subscriptions, searchTerm, filters, getSubscriptionStatus]);
+    }, [plansData?.plans, searchTerm, filters]);
 
     // Pagination logic
-    const totalPages = Math.ceil(filteredSubscriptions.length / itemsPerPage);
+    const totalPages = Math.ceil(filteredPlans.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const paginatedSubscriptions = filteredSubscriptions.slice(startIndex, endIndex);
+    const paginatedPlans = filteredPlans.slice(startIndex, endIndex);
 
     // Reset to page 1 when filters change
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm, filters]);
-
-    // Get unique plan names for filter
-    const planNames = useMemo(() => {
-        if (!subscriptionsData?.subscriptions) return [];
-        const plans = new Set();
-        subscriptionsData.subscriptions.forEach(sub => {
-            if (sub.planName) plans.add(sub.planName);
-        });
-        return Array.from(plans).map(plan => ({
-            value: plan,
-            label: plan
-        }));
-    }, [subscriptionsData?.subscriptions]);
-
-    // Filter configuration
-    const filterConfig = [
-        {
-            key: 'status',
-            label: t('adminAnalytics.status'),
-            allLabel: t('searchFilter.all'),
-            options: [
-                { value: 'active', label: t('adminSubscriptions.active') },
-                { value: 'expired', label: t('adminSubscriptions.expired') }
-            ]
-        },
-        ...(planNames.length > 0 ? [{
-            key: 'planType',
-            label: t('adminSubscriptions.planType'),
-            allLabel: t('searchFilter.all'),
-            options: planNames
-        }] : [])
-    ];
-
 
     return (
         <div className="admin-subscriptions-page">
@@ -238,22 +205,22 @@ export default function Subscriptions() {
                     <button
                         onClick={() => setShowCreateModal(true)}
                         className="admin-subscriptions-header__create-btn"
-                        title={t('adminSubscriptions.createSubscription')}
+                        title={t('adminSubscriptions.createPlan')}
                     >
                         <FaPlus size={16} />
-                        {t('adminSubscriptions.createSubscription')}
+                        {t('adminSubscriptions.createPlan')}
                     </button>
                 </div>
 
-                {subscriptionsLoading ? (
+                {plansLoading ? (
                     <div className="admin-subscriptions-loading">
                         <p>{t('adminSubscriptions.loading')}</p>
                     </div>
-                ) : subscriptionsData?.subscriptions?.length > 0 ? (
+                ) : plansData?.plans?.length > 0 ? (
                     <>
                         <SearchFilter
-                            searchPlaceholder={t('adminSubscriptions.searchSubscriptions')}
-                            filters={filterConfig}
+                            searchPlaceholder={t('adminSubscriptions.searchPlans')}
+                            filters={[]}
                             onSearchChange={setSearchTerm}
                             onFilterChange={setFilters}
                         />
@@ -262,72 +229,58 @@ export default function Subscriptions() {
                             <table className="admin-users-table">
                                 <thead className="admin-users-table__header">
                                     <tr>
-                                        <th scope="col">{t('adminSubscriptions.user')}</th>
-                                        <th scope="col">{t('adminSubscriptions.planType')}</th>
-                                        <th scope="col">{t('adminSubscriptions.startDate')}</th>
-                                        <th scope="col">{t('adminSubscriptions.endDate')}</th>
-                                        <th scope="col">{t('adminSubscriptions.status')}</th>
-                                        <th scope="col">{t('adminSubscriptions.amount')}</th>
+                                        <th scope="col">{t('adminSubscriptions.planName')}</th>
+                                        <th scope="col">{t('adminSubscriptions.durationDays')}</th>
+                                        <th scope="col">{t('adminSubscriptions.price')}</th>
                                         <th scope="col">{t('adminSubscriptions.actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {paginatedSubscriptions.length > 0 ? (
-                                        paginatedSubscriptions.map((subscription, index) => {
-                                            const startDate = parseDate(subscription.startDate);
-                                            const endDate = parseDate(subscription.endDate);
-                                            const userDisplay = subscription.createdBy
-                                                ? (subscription.createdBy.name || subscription.createdBy.email || '-')
-                                                : subscription.subscriberName || '-';
-                                            
-                                            return (
-                                                <tr key={subscription.id || subscription._id || index}>
-                                                    <td data-label={t('adminSubscriptions.user')}>
-                                                        {userDisplay}
-                                                    </td>
-                                                    <td data-label={t('adminSubscriptions.planType')}>
-                                                        <span className="subscription-plan-badge">
-                                                            {subscription.planName || '-'}
-                                                        </span>
-                                                    </td>
-                                                    <td data-label={t('adminSubscriptions.startDate')}>
-                                                        {startDate && !isNaN(startDate.getTime())
-                                                            ? format(startDate, 'PPP')
-                                                            : subscription.startDate || '-'}
-                                                    </td>
-                                                    <td data-label={t('adminSubscriptions.endDate')}>
-                                                        {endDate && !isNaN(endDate.getTime())
-                                                            ? format(endDate, 'PPP')
-                                                            : subscription.endDate || '-'}
-                                                    </td>
-                                                    <td data-label={t('adminSubscriptions.status')}>
-                                                        <span className={`status-badge status-${subscription.status || 'expired'}`}>
-                                                            {subscription.status === 'active'
-                                                                ? t('adminSubscriptions.active')
-                                                                : t('adminSubscriptions.expired')}
-                                                        </span>
-                                                    </td>
-                                                    <td data-label={t('adminSubscriptions.amount')}>
-                                                        {subscription.amount || '-'} {subscription.currency || '-'}
-                                                    </td>
-                                                    <td data-label={t('adminSubscriptions.actions')}>
-                                                        <div className="action-buttons">
-                                                            <button
-                                                                className="admin-subscriptions-actions__btn admin-subscriptions-actions__btn--view"
-                                                                onClick={() => setSelectedSubscription(subscription)}
-                                                                title={t('adminSubscriptions.viewDetails')}
-                                                            >
-                                                                <FaEye size={18} />
-                                                            </button>
-                                                        </div>
-                                                    </td>
+                                    {paginatedPlans.length > 0 ? (
+                                        paginatedPlans.map((plan, index) => (
+                                            <tr key={plan._id || plan.id || index}>
+                                                <td data-label={t('adminSubscriptions.planName')}>
+                                                    <span className="subscription-plan-badge">
+                                                        {plan.name || '-'}
+                                                    </span>
+                                                </td>
+                                                <td data-label={t('adminSubscriptions.durationDays')}>
+                                                    {plan.days || '-'} {t('adminSubscriptions.days')}
+                                                </td>
+                                                <td data-label={t('adminSubscriptions.price')}>
+                                                    {plan.price || '-'} {plan.currency || 'USD'}
+                                                </td>
+                                                <td data-label={t('adminSubscriptions.actions')}>
+                                                    <div className="action-buttons">
+                                                        <button
+                                                            className="admin-subscriptions-actions__btn admin-subscriptions-actions__btn--view"
+                                                            onClick={() => setSelectedPlan(plan)}
+                                                            title={t('adminSubscriptions.viewDetails')}
+                                                        >
+                                                            <FaEye size={18} />
+                                                        </button>
+                                                        <button
+                                                            className="admin-subscriptions-actions__btn admin-subscriptions-actions__btn--edit"
+                                                            onClick={() => openEditModal(plan)}
+                                                            title={t('adminSubscriptions.edit')}
+                                                        >
+                                                            <FaEdit size={18} />
+                                                        </button>
+                                                        <button
+                                                            className="admin-subscriptions-actions__btn admin-subscriptions-actions__btn--delete"
+                                                            onClick={() => setShowDeleteConfirm(plan)}
+                                                            title={t('adminSubscriptions.delete')}
+                                                        >
+                                                            <FaTrash size={18} />
+                                                        </button>
+                                                    </div>
+                                                </td>
                                             </tr>
-                                            );
-                                        })
+                                        ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="7" className="text-center py-8 text-gray-500">
-                                                {t('adminSubscriptions.noSubscriptionsFound')}
+                                            <td colSpan="4" className="text-center py-8 text-gray-500">
+                                                {t('adminSubscriptions.noPlansFound')}
                                             </td>
                                         </tr>
                                     )}
@@ -342,32 +295,32 @@ export default function Subscriptions() {
                             onPageChange={setCurrentPage}
                             showCount={true}
                             startIndex={startIndex}
-                            endIndex={Math.min(endIndex, filteredSubscriptions.length)}
-                            totalItems={filteredSubscriptions.length}
-                            itemsLabel={t('adminSubscriptions.subscriptions')}
+                            endIndex={Math.min(endIndex, filteredPlans.length)}
+                            totalItems={filteredPlans.length}
+                            itemsLabel={t('adminSubscriptions.plans')}
                         />
                     </>
                 ) : (
                     <div className="admin-subscriptions-empty">
-                        <p>{t('adminSubscriptions.noSubscriptions')}</p>
+                        <p>{t('adminSubscriptions.noPlans')}</p>
                     </div>
                 )}
             </div>
 
-            {/* Subscription Details Modal */}
-            {selectedSubscription && (
+            {/* Plan Details Modal */}
+            {selectedPlan && (
                 <div
                     className="admin-subscription-modal-backdrop"
-                    onClick={() => setSelectedSubscription(null)}
+                    onClick={() => setSelectedPlan(null)}
                 >
                     <div
                         className="admin-subscription-modal"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="admin-subscription-modal__header">
-                            <h2>{t('adminSubscriptions.subscriptionDetails')}</h2>
+                            <h2>{t('adminSubscriptions.planDetails')}</h2>
                             <button
-                                onClick={() => setSelectedSubscription(null)}
+                                onClick={() => setSelectedPlan(null)}
                                 className="admin-subscription-modal__close"
                                 aria-label="Close"
                             >
@@ -377,97 +330,23 @@ export default function Subscriptions() {
 
                         <div className="admin-subscription-modal__body">
                             <div className="admin-subscription-modal__row">
-                                <strong>{t('adminSubscriptions.subscriberName')}:</strong>
-                                <span>
-                                    {selectedSubscription.subscriberName || '-'}
-                                </span>
-                            </div>
-
-                            <div className="admin-subscription-modal__row">
-                                <strong>{t('adminSubscriptions.phone')}:</strong>
-                                <span>
-                                    {selectedSubscription.phone || '-'}
-                                </span>
-                            </div>
-
-                            <div className="admin-subscription-modal__row">
-                                <strong>{t('adminSubscriptions.user')}:</strong>
-                                <span>
-                                    {selectedSubscription.createdBy
-                                        ? (selectedSubscription.createdBy.name || selectedSubscription.createdBy.email || '-')
-                                        : '-'}
-                                </span>
-                            </div>
-
-                            <div className="admin-subscription-modal__row">
-                                <strong>{t('adminSubscriptions.planType')}:</strong>
+                                <strong>{t('adminSubscriptions.planName')}:</strong>
                                 <span className="subscription-plan-badge">
-                                    {selectedSubscription.planName || '-'}
+                                    {selectedPlan.name || '-'}
                                 </span>
                             </div>
 
                             <div className="admin-subscription-modal__row">
                                 <strong>{t('adminSubscriptions.durationDays')}:</strong>
                                 <span>
-                                    {selectedSubscription.durationDays || '-'} {t('adminSubscriptions.days')}
+                                    {selectedPlan.days || '-'} {t('adminSubscriptions.days')}
                                 </span>
                             </div>
 
                             <div className="admin-subscription-modal__row">
-                                <strong>{t('adminSubscriptions.startDate')}:</strong>
+                                <strong>{t('adminSubscriptions.price')}:</strong>
                                 <span>
-                                    {(() => {
-                                        const startDate = parseDate(selectedSubscription.startDate);
-                                        return startDate && !isNaN(startDate.getTime())
-                                            ? format(startDate, 'PPPpp')
-                                            : selectedSubscription.startDate || '-';
-                                    })()}
-                                </span>
-                            </div>
-
-                            <div className="admin-subscription-modal__row">
-                                <strong>{t('adminSubscriptions.endDate')}:</strong>
-                                <span>
-                                    {(() => {
-                                        const endDate = parseDate(selectedSubscription.endDate);
-                                        return endDate && !isNaN(endDate.getTime())
-                                            ? format(endDate, 'PPPpp')
-                                            : selectedSubscription.endDate || '-';
-                                    })()}
-                                </span>
-                            </div>
-
-                            <div className="admin-subscription-modal__row">
-                                <strong>{t('adminSubscriptions.status')}:</strong>
-                                <span className={`status-badge status-${selectedSubscription.status || 'expired'}`}>
-                                    {selectedSubscription.status === 'active'
-                                        ? t('adminSubscriptions.active')
-                                        : t('adminSubscriptions.expired')}
-                                </span>
-                            </div>
-
-                            {selectedSubscription.invoicePic && (
-                                <div className="admin-subscription-modal__row admin-subscription-modal__row--full">
-                                    <strong>{t('adminSubscriptions.invoice')}:</strong>
-                                    <div>
-                                        <img 
-                                            src={selectedSubscription.invoicePic} 
-                                            alt="Invoice" 
-                                            style={{ maxWidth: '100%', height: 'auto', marginTop: '0.5rem', borderRadius: '0.5rem' }}
-                                        />
-                                    </div>
-                                </div>
-                            )}
-
-                            <div className="admin-subscription-modal__row">
-                                <strong>{t('adminSubscriptions.createdAt')}:</strong>
-                                <span>
-                                    {(() => {
-                                        const createdAt = parseDate(selectedSubscription.createdAt);
-                                        return createdAt && !isNaN(createdAt.getTime())
-                                            ? format(createdAt, 'PPPpp')
-                                            : selectedSubscription.createdAt || '-';
-                                    })()}
+                                    {selectedPlan.price || '-'} {selectedPlan.currency || 'USD'}
                                 </span>
                             </div>
                         </div>
@@ -475,7 +354,7 @@ export default function Subscriptions() {
                 </div>
             )}
 
-            {/* Create Subscription Modal */}
+            {/* Create Plan Modal */}
             {showCreateModal && (
                 <div
                     className="admin-subscription-modal-backdrop"
@@ -486,7 +365,7 @@ export default function Subscriptions() {
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="admin-subscription-modal__header">
-                            <h2>{t('adminSubscriptions.createSubscription')}</h2>
+                            <h2>{t('adminSubscriptions.createPlan')}</h2>
                             <button
                                 onClick={() => !isCreating && setShowCreateModal(false)}
                                 className="admin-subscription-modal__close"
@@ -497,67 +376,32 @@ export default function Subscriptions() {
                             </button>
                         </div>
 
-                        <form onSubmit={handleCreateSubscription} className="admin-subscription-modal__body">
-                            <div className="form-group">
-                                <label htmlFor="subscriberName">
-                                    {t('adminSubscriptions.subscriberName')} *
-                                </label>
-                                <input
-                                    id="subscriberName"
-                                    type="text"
-                                    value={createFormData.subscriberName}
-                                    onChange={(e) => setCreateFormData({ ...createFormData, subscriberName: e.target.value })}
-                                    required
-                                    disabled={isCreating}
-                                    placeholder={t('adminSubscriptions.subscriberName')}
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="phone">
-                                    {t('adminSubscriptions.phone')} *
-                                </label>
-                                <input
-                                    id="phone"
-                                    type="tel"
-                                    value={createFormData.phone}
-                                    onChange={(e) => setCreateFormData({ ...createFormData, phone: e.target.value })}
-                                    required
-                                    disabled={isCreating}
-                                    placeholder={t('adminSubscriptions.phone')}
-                                />
-                            </div>
-
+                        <form onSubmit={handleCreatePlan} className="admin-subscription-modal__body">
                             <div className="form-group">
                                 <label htmlFor="planName">
-                                    {t('adminSubscriptions.planName')} *
+                                    {t('adminSubscriptions.planName')}
                                 </label>
-                                <select
+                                <input
                                     id="planName"
-                                    value={createFormData.planName}
-                                    onChange={(e) => setCreateFormData({ ...createFormData, planName: e.target.value })}
+                                    type="text"
+                                    value={createFormData.name}
+                                    onChange={(e) => setCreateFormData({ ...createFormData, name: e.target.value })}
                                     required
                                     disabled={isCreating}
-                                >
-                                    <option value="">{t('adminSubscriptions.selectPlan')}</option>
-                                    {plansData?.plans?.map((plan) => (
-                                        <option key={plan._id || plan.id} value={plan.name}>
-                                            {plan.name} ({plan.days} {t('adminSubscriptions.days')} - {plan.price} {plan.currency || 'USD'})
-                                        </option>
-                                    ))}
-                                </select>
+                                    placeholder={t('adminSubscriptions.planName')}
+                                />
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="durationDays">
-                                    {t('adminSubscriptions.durationDays')} *
+                                <label htmlFor="days">
+                                    {t('adminSubscriptions.durationDays')}
                                 </label>
                                 <input
-                                    id="durationDays"
+                                    id="days"
                                     type="number"
                                     min="1"
-                                    value={createFormData.durationDays}
-                                    onChange={(e) => setCreateFormData({ ...createFormData, durationDays: e.target.value })}
+                                    value={createFormData.days}
+                                    onChange={(e) => setCreateFormData({ ...createFormData, days: e.target.value })}
                                     required
                                     disabled={isCreating}
                                     placeholder="30"
@@ -565,15 +409,19 @@ export default function Subscriptions() {
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="invoice">
-                                    {t('adminSubscriptions.invoice')}
+                                <label htmlFor="price">
+                                    {t('adminSubscriptions.price')}
                                 </label>
                                 <input
-                                    id="invoice"
-                                    type="file"
-                                    accept="image/*,.pdf"
-                                    onChange={(e) => setCreateFormData({ ...createFormData, invoice: e.target.files[0] })}
+                                    id="price"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value={createFormData.price}
+                                    onChange={(e) => setCreateFormData({ ...createFormData, price: e.target.value })}
+                                    required
                                     disabled={isCreating}
+                                    placeholder="100.00"
                                 />
                             </div>
 
@@ -595,6 +443,148 @@ export default function Subscriptions() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Plan Modal */}
+            {showEditModal && (
+                <div
+                    className="admin-subscription-modal-backdrop"
+                    onClick={() => !isUpdating && setShowEditModal(false)}
+                >
+                    <div
+                        className="admin-subscription-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="admin-subscription-modal__header">
+                            <h2>{t('adminSubscriptions.editPlan')}</h2>
+                            <button
+                                onClick={() => !isUpdating && setShowEditModal(false)}
+                                className="admin-subscription-modal__close"
+                                aria-label={t('adminSubscriptions.cancel')}
+                                disabled={isUpdating}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleEditPlan} className="admin-subscription-modal__body">
+                            <div className="form-group">
+                                <label htmlFor="editPlanName">
+                                    {t('adminSubscriptions.planName')}
+                                </label>
+                                <input
+                                    id="editPlanName"
+                                    type="text"
+                                    value={editFormData.name}
+                                    onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                                    required
+                                    disabled={isUpdating}
+                                    placeholder={t('adminSubscriptions.planName')}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="editDays">
+                                    {t('adminSubscriptions.durationDays')}
+                                </label>
+                                <input
+                                    id="editDays"
+                                    type="number"
+                                    min="1"
+                                    value={editFormData.days}
+                                    onChange={(e) => setEditFormData({ ...editFormData, days: e.target.value })}
+                                    required
+                                    disabled={isUpdating}
+                                    placeholder="30"
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="editPrice">
+                                    {t('adminSubscriptions.price')}
+                                </label>
+                                <input
+                                    id="editPrice"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value={editFormData.price}
+                                    onChange={(e) => setEditFormData({ ...editFormData, price: e.target.value })}
+                                    required
+                                    disabled={isUpdating}
+                                    placeholder="100.00"
+                                />
+                            </div>
+
+                            <div className="admin-subscription-modal__actions">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowEditModal(false)}
+                                    disabled={isUpdating}
+                                    className="btn btn-secondary"
+                                >
+                                    {t('adminSubscriptions.cancel')}
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isUpdating}
+                                    className="btn btn-primary"
+                                >
+                                    {isUpdating ? t('adminSubscriptions.updating') : t('adminSubscriptions.update')}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteConfirm && (
+                <div
+                    className="admin-subscription-modal-backdrop"
+                    onClick={() => !isDeleting && setShowDeleteConfirm(null)}
+                >
+                    <div
+                        className="admin-subscription-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="admin-subscription-modal__header">
+                            <h2>{t('adminSubscriptions.deletePlan')}</h2>
+                            <button
+                                onClick={() => !isDeleting && setShowDeleteConfirm(null)}
+                                className="admin-subscription-modal__close"
+                                aria-label="Close"
+                                disabled={isDeleting}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <div className="admin-subscription-modal__body">
+                            <p>{t('adminSubscriptions.deletePlanConfirm')} "{showDeleteConfirm.name}"?</p>
+                            <p className="admin-subscription-modal__warning">{t('adminSubscriptions.deletePlanWarning')}</p>
+                        </div>
+
+                        <div className="admin-subscription-modal__actions">
+                            <button
+                                type="button"
+                                onClick={() => setShowDeleteConfirm(null)}
+                                disabled={isDeleting}
+                                className="btn btn-secondary"
+                            >
+                                {t('adminSubscriptions.cancel')}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleDeletePlan}
+                                disabled={isDeleting}
+                                className="btn btn-danger"
+                            >
+                                {isDeleting ? t('adminSubscriptions.deleting') : t('adminSubscriptions.delete')}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

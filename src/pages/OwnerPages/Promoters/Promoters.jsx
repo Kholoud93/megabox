@@ -4,7 +4,6 @@ import { useQuery, useQueryClient } from 'react-query';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { API_URL, adminService, promoterService } from '../../../services/api';
 import { Link, useNavigate } from 'react-router-dom';
-import { TbDeviceAnalytics } from "react-icons/tb";
 import { MdDelete } from "react-icons/md";
 import { MdAttachMoney } from "react-icons/md";
 import { useLanguage } from '../../../context/LanguageContext';
@@ -202,13 +201,6 @@ export default function Promoters() {
 
                                             <td data-label={t("adminPromoters.actions")}>
                                                 <div className="action-buttons">
-                                                    <Link
-                                                        title={t("adminPromoters.viewAnalytics") || "View Analytics & Downloads/Views"}
-                                                        to={`/Owner/Promoter/${ele?._id}`}
-                                                        className="text-blue-600 hover:text-blue-800 transition-colors"
-                                                    >
-                                                        <TbDeviceAnalytics size={20} />
-                                                    </Link>
                                                     <Link
                                                         title={t("adminPromoters.viewEarnings")}
                                                         to={`/Owner/Promoter/${ele?._id}`}

@@ -28,7 +28,7 @@ export default function Withdrawals() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
     const [showApprovedOnly, setShowApprovedOnly] = useState(false);
-    const [viewMode, setViewMode] = useState('all'); // 'all', 'approved', 'userWithdrawals'
+    const [viewMode, setViewMode] = useState('all'); // 'all', 'approved'
 
     // Fetch all withdrawals
     const { data: withdrawalsData, isLoading: withdrawalsLoading } = useQuery(
@@ -53,22 +53,6 @@ export default function Withdrawals() {
             baseWithdrawals = approvedWithdrawalsData?.withdrawals || approvedWithdrawalsData || [];
         } else {
             baseWithdrawals = withdrawalsData?.withdrawals || withdrawalsData || [];
-        }
-
-        // Filter for user withdrawals (non-promoters) if needed
-        if (viewMode === 'userWithdrawals') {
-            return baseWithdrawals.filter((withdrawal) => {
-                // Check if user is a promoter
-                const userId = withdrawal.userId;
-                if (typeof userId === 'object' && userId !== null) {
-                    // User is not a promoter if isPromoter is false, undefined, or not 'true'
-                    const isPromoter = userId.isPromoter === 'true' || userId.isPromoter === true;
-                    return !isPromoter;
-                }
-                // If userId is a string, we can't determine if it's a promoter
-                // Include it by default (assume it's a regular user)
-                return true;
-            });
         }
 
         return baseWithdrawals;
@@ -180,7 +164,6 @@ export default function Withdrawals() {
             toast.success(t('adminWithdrawals.approvedSuccess') || 'Withdrawal approved successfully', ToastOptions("success"));
             queryClient.invalidateQueries(['allWithdrawals']);
             queryClient.invalidateQueries(['approvedWithdrawals']);
-            queryClient.invalidateQueries(['userWithdrawals']);
             // Optimistic update
             queryClient.setQueryData(['allWithdrawals'], (oldData) => {
                 if (!oldData?.withdrawals) return oldData;
@@ -223,7 +206,6 @@ export default function Withdrawals() {
             toast.success(t('adminWithdrawals.rejectedSuccess') || 'Withdrawal rejected successfully', ToastOptions("success"));
             queryClient.invalidateQueries(['allWithdrawals']);
             queryClient.invalidateQueries(['approvedWithdrawals']);
-            queryClient.invalidateQueries(['userWithdrawals']);
             // Optimistic update
             queryClient.setQueryData(['allWithdrawals'], (oldData) => {
                 if (!oldData?.withdrawals) return oldData;
@@ -306,17 +288,6 @@ export default function Withdrawals() {
                                     </span>
                                     <span className="filter-desc">
                                         {t('adminWithdrawals.approvedOnlyDesc') || 'View approved withdrawals only'}
-                                    </span>
-                                </button>
-                                <button
-                                    className={`admin-withdrawals-toggle__btn ${viewMode === 'userWithdrawals' ? 'active' : ''}`}
-                                    onClick={() => setViewMode('userWithdrawals')}
-                                >
-                                    <span className="filter-title">
-                                        {t('adminWithdrawals.userWithdrawals') || 'User'}
-                                    </span>
-                                    <span className="filter-desc">
-                                        {t('adminWithdrawals.userWithdrawalsDesc') || 'View user withdrawals'}
                                     </span>
                                 </button>
                             </div>

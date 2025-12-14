@@ -21,6 +21,7 @@ import Subscriptions from './pages/OwnerPages/Subscriptions/Subscriptions'
 import Storage from './pages/OwnerPages/Storage/Storage'
 import Withdrawals from './pages/OwnerPages/Withdrawals/Withdrawals'
 import UserStats from './pages/OwnerPages/UserStats/UserStats'
+import DownloadsViews from './pages/OwnerPages/DownloadsViews/DownloadsViews'
 import { useCookies } from 'react-cookie'
 import { jwtDecode } from 'jwt-decode'
 import LandingLayout from './pages/LandingLayout'
@@ -529,6 +530,12 @@ const AppRouter = () => {
           path: "UserStats", element: <LoginProtector>
             <RoleProtector requiredRole="Owner">
               <UserStats />
+            </RoleProtector>
+          </LoginProtector>
+        }, {
+          path: "DownloadsViews", element: <LoginProtector>
+            <RoleProtector requiredRole="Owner">
+              <DownloadsViews />
             </RoleProtector>
           </LoginProtector>
         }
