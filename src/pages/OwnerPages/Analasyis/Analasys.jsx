@@ -237,7 +237,7 @@ export default function Analasys() {
                             icon={<FaDownload />}
                             color="#10b981"
                             index={7}
-                            onClick={() => navigate('/Owner/DownloadsViews')}
+                            onClick={() => navigate('/Owner/Promoters')}
                         />
                         <StatCard
                             label={t('adminAnalytics.totalViews')}
@@ -245,7 +245,7 @@ export default function Analasys() {
                             icon={<FaEye />}
                             color="#ef4444"
                             index={8}
-                            onClick={() => navigate('/Owner/DownloadsViews')}
+                            onClick={() => navigate('/Owner/Promoters')}
                         />
                         <StatCard
                             label={t('adminAnalytics.totalWithdrawals')}

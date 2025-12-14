@@ -19,7 +19,6 @@ import Analasys from './pages/OwnerPages/Analasyis/Analasys'
 import Payments from './pages/OwnerPages/Payments/Payments'
 import Subscriptions from './pages/OwnerPages/Subscriptions/Subscriptions'
 import Storage from './pages/OwnerPages/Storage/Storage'
-import DownloadsViews from './pages/OwnerPages/DownloadsViews/DownloadsViews'
 import Withdrawals from './pages/OwnerPages/Withdrawals/Withdrawals'
 import UserStats from './pages/OwnerPages/UserStats/UserStats'
 import { useCookies } from 'react-cookie'
@@ -518,12 +517,6 @@ const AppRouter = () => {
           path: "Storage", element: <LoginProtector>
             <RoleProtector requiredRole="Owner">
               <Storage />
-            </RoleProtector>
-          </LoginProtector>
-        }, {
-          path: "DownloadsViews", element: <LoginProtector>
-            <RoleProtector requiredRole="Owner">
-              <DownloadsViews />
             </RoleProtector>
           </LoginProtector>
         }, {

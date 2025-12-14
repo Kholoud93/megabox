@@ -203,6 +203,13 @@ export default function Promoters() {
                                             <td data-label={t("adminPromoters.actions")}>
                                                 <div className="action-buttons">
                                                     <Link
+                                                        title={t("adminPromoters.viewAnalytics") || "View Analytics & Downloads/Views"}
+                                                        to={`/Owner/Promoter/${ele?._id}`}
+                                                        className="text-blue-600 hover:text-blue-800 transition-colors"
+                                                    >
+                                                        <TbDeviceAnalytics size={20} />
+                                                    </Link>
+                                                    <Link
                                                         title={t("adminPromoters.viewEarnings")}
                                                         to={`/Owner/Promoter/${ele?._id}`}
                                                         className="text-indigo-600 hover:text-indigo-800 transition-colors"

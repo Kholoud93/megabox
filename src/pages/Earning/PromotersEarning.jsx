@@ -620,11 +620,12 @@ export default function PromotersEarning() {
         }
     );
 
-    // Fetch shared files analytics
-    // API Response structure: { "message", "analytics": [{ "fileId", "fileName", "sharedUrl", "downloads", "views", "lastUpdated", "viewsByCountry" }] }
+    // Fetch shared files analytics with downloads and views
+    // API Response structure: { "analytics": [{ "fileId", "fileName", "sharedUrl", "downloads", "views", "lastUpdated", "viewsByCountry" }] }
+    // or { "downloadsViews": [...] } or { "data": [...] }
     const { data: shareLinksData, isLoading: shareLinksLoading, error: shareLinksError } = useQuery(
         ['shareLinkAnalytics', id],
-        () => adminService.getShareLinkAnalyticsadmin(id, token),
+        () => adminService.getShareLinkAnalyticdownloads(id, token),
         {
             enabled: !!token && !!id,
             retry: 2,
@@ -715,8 +716,17 @@ export default function PromotersEarning() {
         setShowUpdateAnalyticsModal(true);
     };
     
-    // API Response structure: { "message", "analytics": [{ "fileId", "fileName", "sharedUrl", "downloads", "views", "lastUpdated", "viewsByCountry" }] }
-    const files = shareLinksData?.analytics || [];
+    // Extract files from response - handle different response structures
+    let files = [];
+    if (shareLinksData?.analytics && Array.isArray(shareLinksData.analytics)) {
+        files = shareLinksData.analytics;
+    } else if (shareLinksData?.downloadsViews && Array.isArray(shareLinksData.downloadsViews)) {
+        files = shareLinksData.downloadsViews;
+    } else if (shareLinksData?.data && Array.isArray(shareLinksData.data)) {
+        files = shareLinksData.data;
+    } else if (Array.isArray(shareLinksData)) {
+        files = shareLinksData;
+    }
     const totalLinks = files.length;
     
     // Debug: Log the files data to verify API response

@@ -149,6 +149,20 @@ export const adminService = {
         return { downloadsViews: [] };
     },
 
+    // Get share link analytics downloads (admin) - for specific user/promoter
+    getShareLinkAnalyticdownloads: async (userId, token) => {
+        try {
+            const response = await api.get(`/auth/getShareLinkAnalyticdownloads/${userId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
     // Get all subscriptions (admin)
     getAllSubscriptions: async (token) => {
         try {
@@ -441,6 +455,8 @@ export const adminService = {
     },
 
     // Get user withdrawals (admin) - POST method
+    // NOTE: This endpoint doesn't exist on the backend (returns 404)
+    // Currently filtering client-side from getAllWithdrawals instead
     getUserWithdrawals: async (token) => {
         try {
             const response = await api.post('/auth/getUserWithdrawals', {}, {

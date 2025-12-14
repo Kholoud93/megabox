@@ -3,6 +3,7 @@ import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { adminService } from '../../../services/adminService';
+import { promoterService } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
 import Pagination from '../../../components/Pagination/Pagination';
@@ -22,24 +23,88 @@ export default function DownloadsViews() {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
-    // Fetch all downloads and views data
+    // Fetch all promoters first
+    const { data: promotersData, isLoading: promotersLoading } = useQuery(
+        ['allPromoters'],
+        () => promoterService.getAllPromoters(token),
+        { 
+            enabled: !!token
+        }
+    );
+
+    // Fetch downloads and views for each promoter
     const { data: downloadsViewsData, isLoading: downloadsViewsLoading } = useQuery(
-        ['allDownloadsViews'],
+        ['allDownloadsViews', promotersData],
         async () => {
             try {
-                const response = await adminService.getAllDownloadsViews(token);
-                // Handle different response structures
-                if (response.downloadsViews) return response;
-                if (Array.isArray(response)) return { downloadsViews: response };
-                if (response.data) return { downloadsViews: response.data };
-                return { downloadsViews: [] };
-            } catch {
-                // Return empty array on error
+                // Get all promoters
+                const promoters = promotersData?.promoters || promotersData?.data || promotersData || [];
+                
+                if (!Array.isArray(promoters) || promoters.length === 0) {
+                    return { downloadsViews: [] };
+                }
+
+                // Fetch analytics for all promoters in parallel
+                const promoterPromises = promoters
+                    .filter(promoter => promoter._id || promoter.id || promoter.userId)
+                    .map(async (promoter) => {
+                        const userId = promoter._id || promoter.id || promoter.userId;
+                        try {
+                            const response = await adminService.getShareLinkAnalyticdownloads(userId, token);
+                            
+                            // Extract analytics data from response
+                            let analyticsData = [];
+                            
+                            if (response.analytics && Array.isArray(response.analytics)) {
+                                analyticsData = response.analytics;
+                            } else if (response.downloadsViews && Array.isArray(response.downloadsViews)) {
+                                analyticsData = response.downloadsViews;
+                            } else if (response.data && Array.isArray(response.data)) {
+                                analyticsData = response.data;
+                            } else if (Array.isArray(response)) {
+                                analyticsData = response;
+                            }
+
+                            // Transform analytics data and add promoter info
+                            return analyticsData.map((item) => ({
+                                _id: `${userId}_${item.fileId || item.id || item._id || Math.random()}`,
+                                id: `${userId}_${item.fileId || item.id || item._id || Math.random()}`,
+                                fileName: item.fileName || item.name || 'Unknown',
+                                userId: userId,
+                                user: {
+                                    _id: userId,
+                                    username: promoter.username || promoter.email || userId,
+                                    email: promoter.email || null
+                                },
+                                username: promoter.username || promoter.email || userId,
+                                downloads: item.downloads || item.totalDownloads || 0,
+                                views: item.views || item.totalViews || 0,
+                                lastDownload: item.lastDownload || item.lastDownloadDate || item.lastUpdated || null,
+                                lastView: item.lastView || item.lastViewDate || item.lastUpdated || null,
+                                sharedUrl: item.sharedUrl || item.shareLink || item.shareUrl || null,
+                                fileId: item.fileId || item.id || item._id
+                            }));
+                        } catch (error) {
+                            console.error(`Error fetching analytics for promoter ${userId}:`, error);
+                            // Return empty array if fetch fails for this promoter
+                            return [];
+                        }
+                    });
+
+                // Wait for all promises to resolve
+                const allPromoterAnalytics = await Promise.all(promoterPromises);
+                
+                // Flatten the array of arrays into a single array
+                const allDownloadsViews = allPromoterAnalytics.flat();
+
+                return { downloadsViews: allDownloadsViews };
+            } catch (error) {
+                console.error('Error fetching downloads and views:', error);
                 return { downloadsViews: [] };
             }
         },
         { 
-            enabled: !!token
+            enabled: !!token && !!promotersData
         }
     );
 
@@ -101,7 +166,7 @@ export default function DownloadsViews() {
                     </div>
                 </div>
 
-                {downloadsViewsLoading ? (
+                {(downloadsViewsLoading || promotersLoading) ? (
                     <div className="admin-downloads-views-loading">
                         <p>{t('adminDownloadsViews.loading')}</p>
                     </div>

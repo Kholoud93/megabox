@@ -34,7 +34,7 @@ export default function Withdrawals() {
     const { data: withdrawalsData, isLoading: withdrawalsLoading } = useQuery(
         ['allWithdrawals'],
         () => adminService.getAllWithdrawals(token),
-        { enabled: !!token && viewMode !== 'userWithdrawals' }
+        { enabled: !!token }
     );
 
     // Fetch approved withdrawals
@@ -44,23 +44,35 @@ export default function Withdrawals() {
         { enabled: !!token && (showApprovedOnly || viewMode === 'approved') }
     );
 
-    // Fetch user withdrawals (POST method)
-    const { data: userWithdrawalsData, isLoading: userWithdrawalsLoading } = useQuery(
-        ['userWithdrawals'],
-        () => adminService.getUserWithdrawals(token),
-        { enabled: !!token && viewMode === 'userWithdrawals' }
-    );
-
     // Use appropriate withdrawals based on view mode
     const withdrawalsToFilter = useMemo(() => {
-        if (viewMode === 'userWithdrawals') {
-            return userWithdrawalsData?.withdrawals || userWithdrawalsData || [];
-        }
+        // Get base withdrawals data
+        let baseWithdrawals = [];
+        
         if (viewMode === 'approved' || showApprovedOnly) {
-            return approvedWithdrawalsData?.withdrawals || approvedWithdrawalsData || [];
+            baseWithdrawals = approvedWithdrawalsData?.withdrawals || approvedWithdrawalsData || [];
+        } else {
+            baseWithdrawals = withdrawalsData?.withdrawals || withdrawalsData || [];
         }
-        return withdrawalsData?.withdrawals || [];
-    }, [viewMode, showApprovedOnly, approvedWithdrawalsData, withdrawalsData, userWithdrawalsData]);
+
+        // Filter for user withdrawals (non-promoters) if needed
+        if (viewMode === 'userWithdrawals') {
+            return baseWithdrawals.filter((withdrawal) => {
+                // Check if user is a promoter
+                const userId = withdrawal.userId;
+                if (typeof userId === 'object' && userId !== null) {
+                    // User is not a promoter if isPromoter is false, undefined, or not 'true'
+                    const isPromoter = userId.isPromoter === 'true' || userId.isPromoter === true;
+                    return !isPromoter;
+                }
+                // If userId is a string, we can't determine if it's a promoter
+                // Include it by default (assume it's a regular user)
+                return true;
+            });
+        }
+
+        return baseWithdrawals;
+    }, [viewMode, showApprovedOnly, approvedWithdrawalsData, withdrawalsData]);
 
     // Filter withdrawals based on search and filters
     const filteredWithdrawals = useMemo(() => {
@@ -260,7 +272,7 @@ export default function Withdrawals() {
                     </div>
                 </div>
 
-                {withdrawalsLoading || (showApprovedOnly && approvedLoading) || (viewMode === 'userWithdrawals' && userWithdrawalsLoading) ? (
+                {withdrawalsLoading || (showApprovedOnly && approvedLoading) ? (
                     <div className="admin-withdrawals-loading">
                         <p>{t('adminWithdrawals.loading')}</p>
                     </div>
