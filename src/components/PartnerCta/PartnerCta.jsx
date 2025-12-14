@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { FaCheckCircle } from "react-icons/fa";
 import api from "../../services/api";
+import { promoterService } from "../../services/api";
+import { useQuery } from "react-query";
 import Loading from "../Loading/Loading";
 import { useLanguage } from "../../context/LanguageContext";
 import TermsModal from "../TermsModal/TermsModal";
@@ -16,11 +18,41 @@ export default function PartnerCTA({ isModal = false, onClose }) {
     const [loading, setLoading] = useState(true);
     const [showTermsModal, setShowTermsModal] = useState(false);
     const [selectedPlan, setSelectedPlan] = useState(null);
+    const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+    const [subscriptionForm, setSubscriptionForm] = useState({
+        invoiceFile: null,
+        phone: '',
+        subscriberName: '',
+        planName: '',
+        durationDays: ''
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
     const [cookies] = useCookies(["MegaBox"]);
     const { t } = useLanguage();
 
-    const cards = [
+    // Fetch plans from API
+    const { data: plansData, isLoading: plansLoading } = useQuery(
+        ['plans'],
+        async () => {
+            try {
+                const response = await promoterService.getPlans();
+                if (response.plans) return response;
+                if (Array.isArray(response)) return { plans: response };
+                if (response.data) return { plans: response.data };
+                return { plans: [] };
+            } catch (error) {
+                console.error('Error fetching plans:', error);
+                return { plans: [] };
+            }
+        },
+        { enabled: true }
+    );
+
+    const plans = plansData?.plans || [];
+
+    // Fallback cards if no plans from API
+    const fallbackCards = [
         {
             title: t('partners.plans.viewsPlan.title'),
             features: [
@@ -48,6 +80,22 @@ export default function PartnerCTA({ isModal = false, onClose }) {
             planKey: "Downloadsplan"
         }
     ];
+
+    // Use API plans if available, otherwise use fallback
+    const cards = plans.length > 0 
+        ? plans.map(plan => ({
+            title: plan.name || t('partners.plans.defaultTitle'),
+            features: [
+                `${plan.days} ${t('partners.plans.days') || 'days'}`,
+                `${plan.price} ${t('partners.plans.price') || 'price'}`
+            ],
+            smallDesc: `${plan.days} ${t('partners.plans.days') || 'days'} - ${plan.price}`,
+            planKey: plan.name,
+            planId: plan._id || plan.id,
+            planDays: plan.days,
+            planPrice: plan.price
+        }))
+        : fallbackCards;
 
     useEffect(() => {
         const isLoggedIn = cookies.MegaBox && cookies.MegaBox !== 'undefined' && cookies.MegaBox !== 'null' && cookies.MegaBox.trim() !== '';
@@ -86,7 +134,7 @@ export default function PartnerCTA({ isModal = false, onClose }) {
         }
     };
 
-    const handleSubscribe = async (planKey) => {
+    const handleSubscribe = async (plan) => {
         // Check if user is logged in properly
         const token = cookies?.MegaBox;
         const isLoggedIn = token && 
@@ -112,38 +160,65 @@ export default function PartnerCTA({ isModal = false, onClose }) {
         
         if (!termsAccepted) {
             // Show terms modal first
-            setSelectedPlan(planKey);
+            setSelectedPlan(plan);
             setShowTermsModal(true);
             return;
         }
         
-        // If terms already accepted, proceed with subscription
-        await proceedWithSubscription(planKey);
+        // If terms already accepted, show subscription form
+        setSelectedPlan(plan);
+        setShowSubscriptionModal(true);
     };
 
-    const proceedWithSubscription = async (planKey) => {
+    const handleSubscriptionSubmit = async (e) => {
+        e.preventDefault();
+        
+        if (!subscriptionForm.phone || !subscriptionForm.subscriberName || !selectedPlan) {
+            return;
+        }
+
+        setIsSubmitting(true);
         try {
-            const updateData = {
-                isPromoter: "true",
-                [planKey]: "true"
-            };
-            await api.patch('/auth/updateProfile', updateData, {
-                headers: {
-                    Authorization: `Bearer ${cookies.MegaBox}`
-                }
+            const plan = selectedPlan;
+            await promoterService.createSubscription(
+                subscriptionForm.invoiceFile,
+                subscriptionForm.phone,
+                subscriptionForm.subscriberName,
+                plan.planDays || plan.days || 30,
+                plan.planKey || plan.name || plan.planName,
+                cookies.MegaBox
+            );
+            
+            await fetchUserData(); // Refresh user data after subscription
+            setShowSubscriptionModal(false);
+            setSubscriptionForm({
+                invoiceFile: null,
+                phone: '',
+                subscriberName: '',
+                planName: '',
+                durationDays: ''
             });
-            await fetchUserData(); // Refresh user data after update
             if (isModal && onClose) {
                 onClose();
             }
         } catch (error) {
-            console.error('Error updating profile:', error);
+            console.error('Error creating subscription:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setSubscriptionForm(prev => ({ ...prev, invoiceFile: file }));
         }
     };
 
     const handleTermsAccept = () => {
         if (selectedPlan) {
-            proceedWithSubscription(selectedPlan);
+            setShowTermsModal(false);
+            setShowSubscriptionModal(true);
         }
     };
 
@@ -176,42 +251,48 @@ export default function PartnerCTA({ isModal = false, onClose }) {
                 </motion.h2>
 
                 {hasNoPlans ? (
-                    <div className="partner-cta__cards">
-                        {cards.map((card, idx) => (
-                            <motion.div
-                                key={idx}
-                                initial={{ y: 20, opacity: 0 }}
-                                whileInView={{ y: 0, opacity: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: idx * 0.2 }}
-                                className={`partner-cta__card partner-cta__card--${idx === 0 ? 'purple' : 'orange'}`}
-                            >
-                                {/* Card Header */}
-                                <div className="partner-cta__card-header">
-                                    <h3 className="partner-cta__card-title">{card.title}</h3>
-                                    <p className="partner-cta__card-desc">{card.smallDesc}</p>
-                                </div>
+                    plansLoading ? (
+                        <div className="partner-cta__loading">
+                            <Loading />
+                        </div>
+                    ) : (
+                        <div className="partner-cta__cards">
+                            {cards.map((card, idx) => (
+                                <motion.div
+                                    key={card.planId || card.planKey || idx}
+                                    initial={{ y: 20, opacity: 0 }}
+                                    whileInView={{ y: 0, opacity: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.5, delay: idx * 0.2 }}
+                                    className={`partner-cta__card partner-cta__card--${idx % 2 === 0 ? 'purple' : 'orange'}`}
+                                >
+                                    {/* Card Header */}
+                                    <div className="partner-cta__card-header">
+                                        <h3 className="partner-cta__card-title">{card.title}</h3>
+                                        <p className="partner-cta__card-desc">{card.smallDesc}</p>
+                                    </div>
 
-                                {/* Card Content */}
-                                <div className="partner-cta__card-content">
-                                    <ul className="partner-cta__features">
-                                        {card.features.map((feature, i) => (
-                                            <li key={i} className="partner-cta__feature">
-                                                <FaCheckCircle className="partner-cta__feature-icon" />
-                                                {feature}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    <button
-                                        onClick={() => handleSubscribe(card.planKey)}
-                                        className={`partner-cta__button partner-cta__button--${idx === 0 ? 'purple' : 'orange'}`}
-                                    >
-                                        {t('partners.choosePlan')}
-                                    </button>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
+                                    {/* Card Content */}
+                                    <div className="partner-cta__card-content">
+                                        <ul className="partner-cta__features">
+                                            {card.features.map((feature, i) => (
+                                                <li key={i} className="partner-cta__feature">
+                                                    <FaCheckCircle className="partner-cta__feature-icon" />
+                                                    {feature}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        <button
+                                            onClick={() => handleSubscribe(card)}
+                                            className={`partner-cta__button partner-cta__button--${idx % 2 === 0 ? 'purple' : 'orange'}`}
+                                        >
+                                            {t('partners.choosePlan')}
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    )
                 ) : (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -243,6 +324,75 @@ export default function PartnerCTA({ isModal = false, onClose }) {
                 )}
             </div>
         </section>
+
+        {/* Subscription Modal */}
+        <AnimatePresence>
+            {showSubscriptionModal && selectedPlan && (
+                <motion.div
+                    className="partner-cta__subscription-modal"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setShowSubscriptionModal(false)}
+                >
+                <motion.div
+                    className="partner-cta__subscription-modal-content"
+                    initial={{ scale: 0.9, y: 20 }}
+                    animate={{ scale: 1, y: 0 }}
+                    exit={{ scale: 0.9, y: 20 }}
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <button
+                        className="partner-cta__subscription-modal-close"
+                        onClick={() => setShowSubscriptionModal(false)}
+                    >
+                        ×
+                    </button>
+                    <h3 className="partner-cta__subscription-modal-title">
+                        {t('partners.createSubscription') || 'Create Subscription'}
+                    </h3>
+                    <p className="partner-cta__subscription-modal-subtitle">
+                        {t('partners.selectedPlan') || 'Selected Plan'}: {selectedPlan.title || selectedPlan.name}
+                    </p>
+                    <form onSubmit={handleSubscriptionSubmit} className="partner-cta__subscription-form">
+                        <div className="partner-cta__form-group">
+                            <label>{t('partners.subscriberName') || 'Subscriber Name'}</label>
+                            <input
+                                type="text"
+                                value={subscriptionForm.subscriberName}
+                                onChange={(e) => setSubscriptionForm(prev => ({ ...prev, subscriberName: e.target.value }))}
+                                required
+                            />
+                        </div>
+                        <div className="partner-cta__form-group">
+                            <label>{t('partners.phone') || 'Phone Number'}</label>
+                            <input
+                                type="tel"
+                                value={subscriptionForm.phone}
+                                onChange={(e) => setSubscriptionForm(prev => ({ ...prev, phone: e.target.value }))}
+                                required
+                            />
+                        </div>
+                        <div className="partner-cta__form-group">
+                            <label>{t('partners.invoice') || 'Invoice (Optional)'}</label>
+                            <input
+                                type="file"
+                                accept="image/*,.pdf"
+                                onChange={handleFileChange}
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            className="partner-cta__subscription-submit"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? (t('partners.submitting') || 'Submitting...') : (t('partners.submitSubscription') || 'Submit Subscription')}
+                        </button>
+                    </form>
+                </motion.div>
+            </motion.div>
+            )}
+        </AnimatePresence>
         </>
     );
 }

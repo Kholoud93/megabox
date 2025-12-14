@@ -286,6 +286,7 @@
     "emptyFolder": "مجلد فارغ",
     "menu": "القائمة",
     "subscribe": "اشترك",
+    "subscription": "الاشتراك",
     "users": "المستخدمون",
     "promoters": "المروجون",
     "analytics": "التحليلات",
@@ -695,6 +696,9 @@
     "create": "إنشاء",
     "creating": "جارٍ الإنشاء...",
     "fillAllFields": "يرجى ملء جميع الحقول المطلوبة",
+    "selectedPlan": "الخطة المختارة",
+    "submitSubscription": "إرسال الاشتراك",
+    "submitting": "جاري الإرسال...",
     "createdAt": "تاريخ الإنشاء",
     "title": "إدارة الخطط",
     "subtitle": "إدارة خطط الاشتراك",
@@ -1022,8 +1026,15 @@
         "feature4": "روابط إحالة فريدة",
         "feature5": "تتبع دقيق لعمليات التنزيل",
         "feature6": "دعم فني متاح على مدار الساعة"
-      }
-    }
+      },
+      "defaultTitle": "خطة الاشتراك",
+      "days": "أيام",
+      "price": "السعر"
+    },
+    "createSubscription": "إنشاء اشتراك",
+    "selectedPlan": "الخطة المختارة",
+    "submitSubscription": "إرسال الاشتراك",
+    "submitting": "جاري الإرسال..."
   },
   "partnersPage": {
     "hero": {
@@ -1644,6 +1655,48 @@
       "noResults": "لم يتم العثور على قنوات",
       "loading": "جاري تحميل القنوات...",
       "error": "فشل تحميل القنوات"
+    }
+  },
+  "subscriptionPage": {
+    "title": "خطط الاشتراك",
+    "subtitle": "اختر خطة اشتراك وأنشئ اشتراكاً لمشتركيك",
+    "createSubscription": "إنشاء اشتراك",
+    "alreadySubscribed": "مشترك بالفعل",
+    "subscribed": "مشترك",
+    "availablePlans": "الخطط المتاحة",
+    "noPlans": "لا توجد خطط اشتراك متاحة في الوقت الحالي.",
+    "mySubscriptions": "الاشتراكات التي أنشأتها",
+    "mySubscribedPlans": "الخطط المشترك فيها",
+    "subscriptions": "اشتراك",
+    "noSubscriptions": "لم تقم بإنشاء أي اشتراكات بعد.",
+    "createFirstSubscription": "أنشئ أول اشتراك لك عن طريق اختيار خطة أعلاه.",
+    "subscriberName": "اسم المشترك",
+    "phone": "الهاتف",
+    "plan": "الخطة",
+    "duration": "المدة",
+    "active": "نشط",
+    "table": {
+      "subscriber": "المشترك",
+      "phone": "الهاتف",
+      "plan": "الخطة",
+      "duration": "المدة",
+      "status": "الحالة",
+      "date": "التاريخ"
+    },
+    "plan": {
+      "defaultName": "خطة اشتراك",
+      "days": "أيام"
+    },
+    "modal": {
+      "title": "إنشاء اشتراك",
+      "selectedPlan": "الخطة المختارة",
+      "subscriberName": "اسم المشترك",
+      "subscriberNamePlaceholder": "أدخل اسم المشترك",
+      "phone": "رقم الهاتف",
+      "phonePlaceholder": "أدخل رقم الهاتف",
+      "invoice": "الفاتورة (اختياري)",
+      "submit": "إرسال الاشتراك",
+      "submitting": "جاري الإرسال..."
     }
   },
   "subscriptionPlans": {

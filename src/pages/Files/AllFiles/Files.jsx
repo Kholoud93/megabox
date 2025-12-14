@@ -22,7 +22,7 @@ import { useLanguage } from '../../../context/LanguageContext';
 import ShareLinkModal from '../../../components/ShareLinkModal/ShareLinkModal';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-import { HiUserCircle, HiArrowRightOnRectangle, HiUserGroup, HiCurrencyDollar, HiArrowUp, HiArrowDown, HiBell, HiShare } from 'react-icons/hi2';
+import { HiUserCircle, HiArrowRightOnRectangle, HiUserGroup, HiCurrencyDollar, HiArrowUp, HiArrowDown, HiBell, HiShare, HiTicket } from 'react-icons/hi2';
 import { FiGlobe } from 'react-icons/fi';
 import { FaUser } from 'react-icons/fa';
 import './Files.scss';
@@ -572,6 +572,14 @@ export default function Files() {
                                                     <span>{t("sidenav.partners") || "Partners"}</span>
                                                 </Link>
                                                 <Link
+                                                    to="/Subscription"
+                                                    className="files-header__profile-item"
+                                                    onClick={() => setProfileMenuOpen(false)}
+                                                >
+                                                    <HiTicket className="files-header__profile-item-icon" />
+                                                    <span>{t("sidenav.subscription") || "Subscription"}</span>
+                                                </Link>
+                                                <Link
                                                     to="/dashboard/subscription-plans"
                                                     className="files-header__profile-item"
                                                     onClick={() => setProfileMenuOpen(false)}
@@ -583,14 +591,24 @@ export default function Files() {
                                         )}
                                         
                                         {isPromoter && (
-                                            <Link
-                                                to="/Partners"
-                                                className="files-header__profile-item"
-                                                onClick={() => setProfileMenuOpen(false)}
-                                            >
-                                                <HiUserGroup className="files-header__profile-item-icon" />
-                                                <span>{t("sidenav.partners") || "Partners Center"}</span>
-                                            </Link>
+                                            <>
+                                                <Link
+                                                    to="/Subscription"
+                                                    className="files-header__profile-item"
+                                                    onClick={() => setProfileMenuOpen(false)}
+                                                >
+                                                    <HiTicket className="files-header__profile-item-icon" />
+                                                    <span>{t("sidenav.subscription") || "Subscription"}</span>
+                                                </Link>
+                                                <Link
+                                                    to="/Partners"
+                                                    className="files-header__profile-item"
+                                                    onClick={() => setProfileMenuOpen(false)}
+                                                >
+                                                    <HiUserGroup className="files-header__profile-item-icon" />
+                                                    <span>{t("sidenav.partners") || "Partners Center"}</span>
+                                                </Link>
+                                            </>
                                         )}
                                         
                                         <button

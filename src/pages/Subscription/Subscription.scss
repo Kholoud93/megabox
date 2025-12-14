@@ -1,0 +1,648 @@
+.subscription-page {
+  min-height: 100vh;
+  padding: 4rem 1rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+
+  &__container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  &__header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  &__title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #1a202c;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    
+    @media (max-width: 768px) {
+      font-size: 2rem;
+    }
+  }
+
+  &__subtitle {
+    font-size: 1.25rem;
+    color: #4a5568;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+    
+    @media (max-width: 768px) {
+      font-size: 1rem;
+    }
+  }
+
+  &__section {
+    margin-bottom: 4rem;
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    
+    @media (max-width: 768px) {
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+  }
+
+  &__section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  &__section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0;
+    
+    @media (max-width: 768px) {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__subscriptions-count {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  &__loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 300px;
+  }
+
+  // Plans Section
+  &__plans {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  &__plan-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 1.25rem;
+    padding: 2rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      border-color: #667eea;
+      
+      &::before {
+        transform: scaleX(1);
+      }
+    }
+
+    &--subscribed {
+      border-color: #10b981;
+      background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+      
+      &::before {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        transform: scaleX(1);
+      }
+    }
+  }
+
+  &__plan-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+
+  &__plan-badge-text {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 0.375rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__plan-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  &__plan-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 1rem;
+  }
+
+  &__plan-price {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__plan-price-icon {
+    color: #10b981;
+    font-size: 1.5rem;
+  }
+
+  &__plan-amount {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #4f46e5;
+  }
+
+  &__plan-currency {
+    font-size: 1.25rem;
+    color: #718096;
+    font-weight: 500;
+  }
+
+  &__plan-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__plan-feature {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #4a5568;
+    font-size: 1rem;
+  }
+
+  &__plan-feature-icon {
+    color: #10b981;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  &__plan-button {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+      
+      &::before {
+        width: 300px;
+        height: 300px;
+      }
+    }
+    
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    &--disabled {
+      background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+      cursor: not-allowed;
+      opacity: 0.7;
+      
+      &:hover {
+        transform: none;
+        box-shadow: none;
+      }
+    }
+  }
+
+  &__empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    
+    p {
+      font-size: 1.125rem;
+      color: #718096;
+    }
+  }
+
+  // Subscriptions Table
+  &__subscriptions-table-wrapper {
+    overflow-x: auto;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  }
+
+  &__subscriptions-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    
+    thead {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      
+      th {
+        padding: 1rem 1.5rem;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        
+        &:first-child {
+          border-top-left-radius: 1rem;
+        }
+        
+        &:last-child {
+          border-top-right-radius: 1rem;
+        }
+      }
+    }
+    
+    tbody {
+      tr {
+        border-bottom: 1px solid #e2e8f0;
+        transition: background 0.2s ease;
+        
+        &:hover {
+          background: #f8f9fa;
+        }
+        
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+      
+      td {
+        padding: 1.25rem 1.5rem;
+        color: #4a5568;
+        font-size: 0.95rem;
+      }
+    }
+  }
+
+  &__subscription-row {
+    animation: fadeInRow 0.3s ease;
+  }
+
+  @keyframes fadeInRow {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  &__table-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__table-icon {
+    color: #667eea;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  &__plan-name-badge {
+    background: #e0e7ff;
+    color: #4f46e5;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  &__subscription-status {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    display: inline-block;
+    
+    &--pending,
+    &--pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    &--approved,
+    &--active,
+    &--active {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    &--rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+  }
+
+  &__date {
+    color: #718096;
+    font-size: 0.875rem;
+  }
+
+  &__no-subscriptions {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 1rem;
+    border: 2px dashed #e2e8f0;
+    
+    &-icon {
+      font-size: 4rem;
+      color: #cbd5e1;
+      margin-bottom: 1rem;
+    }
+    
+    p {
+      font-size: 1.125rem;
+      color: #718096;
+      margin: 0.5rem 0;
+    }
+    
+    &-hint {
+      font-size: 0.95rem;
+      color: #a0aec0;
+      margin-top: 1rem;
+    }
+  }
+
+  // Modal Styles
+  &__modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    padding: 1rem;
+  }
+
+  &__modal-content {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    max-width: 550px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+  }
+
+  &__modal-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: #f3f4f6;
+    border: none;
+    font-size: 1.5rem;
+    color: #718096;
+    cursor: pointer;
+    padding: 0.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      background: #e5e7eb;
+      color: #1a202c;
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__modal-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+  }
+
+  &__modal-subtitle {
+    font-size: 1rem;
+    color: #718096;
+    margin-bottom: 2rem;
+    
+    strong {
+      color: #4f46e5;
+      font-weight: 600;
+    }
+  }
+
+  &__modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    
+    label {
+      font-weight: 600;
+      color: #1a202c;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    input[type="text"],
+    input[type="tel"] {
+      padding: 0.875rem 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      
+      &:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+      
+      &:disabled {
+        background: #f7fafc;
+        cursor: not-allowed;
+      }
+    }
+    
+    input[type="file"] {
+      padding: 0.75rem;
+      border: 2px dashed #e2e8f0;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        border-color: #667eea;
+        background: #f8f9ff;
+      }
+      
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  &__form-icon {
+    color: #667eea;
+    font-size: 1rem;
+  }
+
+  &__file-name {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: #4f46e5;
+    font-weight: 500;
+  }
+
+  &__modal-submit {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 0.5rem;
+    
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  // Responsive
+  @media (max-width: 768px) {
+    padding: 2rem 1rem;
+
+    &__plans {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    &__plan-card {
+      padding: 1.5rem;
+    }
+
+    &__subscriptions-table-wrapper {
+      overflow-x: scroll;
+    }
+
+    &__subscriptions-table {
+      min-width: 800px;
+      
+      thead th,
+      tbody td {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+      }
+    }
+
+    &__modal-content {
+      padding: 1.5rem;
+      margin: 1rem;
+    }
+  }
+}

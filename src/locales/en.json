@@ -286,6 +286,7 @@
     "emptyFolder": "Empty folder",
     "menu": "Menu",
     "subscribe": "Subscribe",
+    "subscription": "Subscription",
     "users": "Users",
     "promoters": "Promoters",
     "analytics": "Analytics",
@@ -696,6 +697,11 @@
     "create": "Create",
     "creating": "Creating...",
     "fillAllFields": "Please fill all required fields",
+    "selectedPlan": "Selected Plan",
+    "submitSubscription": "Submit Subscription",
+    "submitting": "Submitting...",
+    "days": "days",
+    "price": "price",
     "createdAt": "Created At",
     "title": "Plans Management",
     "subtitle": "Manage subscription plans",
@@ -1023,8 +1029,15 @@
         "feature4": "Unique referral links",
         "feature5": "Accurate tracking of downloads",
         "feature6": "24/7 technical support"
-      }
-    }
+      },
+      "defaultTitle": "Subscription Plan",
+      "days": "days",
+      "price": "price"
+    },
+    "createSubscription": "Create Subscription",
+    "selectedPlan": "Selected Plan",
+    "submitSubscription": "Submit Subscription",
+    "submitting": "Submitting..."
   },
   "partnersPage": {
     "hero": {
@@ -1643,6 +1656,48 @@
       "noResults": "No channels found",
       "loading": "Loading channels...",
       "error": "Failed to load channels"
+    }
+  },
+  "subscriptionPage": {
+    "title": "Subscription Plans",
+    "subtitle": "Choose a subscription plan and create a subscription for your subscribers",
+    "createSubscription": "Create Subscription",
+    "alreadySubscribed": "Already Subscribed",
+    "subscribed": "Subscribed",
+    "availablePlans": "Available Plans",
+    "noPlans": "No subscription plans available at the moment.",
+    "mySubscriptions": "My Created Subscriptions",
+    "mySubscribedPlans": "My Subscribed Plans",
+    "subscriptions": "subscriptions",
+    "noSubscriptions": "You haven't created any subscriptions yet.",
+    "createFirstSubscription": "Create your first subscription by selecting a plan above.",
+    "subscriberName": "Subscriber Name",
+    "phone": "Phone",
+    "plan": "Plan",
+    "duration": "Duration",
+    "active": "Active",
+    "table": {
+      "subscriber": "Subscriber",
+      "phone": "Phone",
+      "plan": "Plan",
+      "duration": "Duration",
+      "status": "Status",
+      "date": "Date"
+    },
+    "plan": {
+      "defaultName": "Subscription Plan",
+      "days": "days"
+    },
+    "modal": {
+      "title": "Create Subscription",
+      "selectedPlan": "Selected Plan",
+      "subscriberName": "Subscriber Name",
+      "subscriberNamePlaceholder": "Enter subscriber name",
+      "phone": "Phone Number",
+      "phonePlaceholder": "Enter phone number",
+      "invoice": "Invoice (Optional)",
+      "submit": "Submit Subscription",
+      "submitting": "Submitting..."
     }
   },
   "subscriptionPlans": {

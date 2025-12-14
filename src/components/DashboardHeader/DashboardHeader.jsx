@@ -6,7 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCookies } from 'react-cookie';
 import { useQuery } from 'react-query';
 import { userService, notificationService } from '../../services/api';
-import { HiUserCircle, HiArrowRightOnRectangle, HiUserGroup, HiCurrencyDollar, HiBell, HiTv, HiSun, HiMoon } from 'react-icons/hi2';
+import { HiUserCircle, HiArrowRightOnRectangle, HiUserGroup, HiCurrencyDollar, HiBell, HiTv, HiSun, HiMoon, HiTicket } from 'react-icons/hi2';
 import { FiGlobe } from 'react-icons/fi';
 import { FaUser } from 'react-icons/fa';
 import { toast } from 'react-toastify';
@@ -315,13 +315,35 @@ export default function DashboardHeader() {
                                         
                                         {/* Subscribe - for regular users without plans */}
                                         {!isOwner && !isPromoter && !isUserWithPlan && (
+                                            <>
+                                                <Link
+                                                    to="/Subscription"
+                                                    className="files-header__profile-item"
+                                                    onClick={() => setProfileMenuOpen(false)}
+                                                >
+                                                    <HiTicket className="files-header__profile-item-icon" />
+                                                    <span>{t("sidenav.subscription") || "Subscription"}</span>
+                                                </Link>
+                                                <Link
+                                                    to="/dashboard/subscription-plans"
+                                                    className="files-header__profile-item"
+                                                    onClick={() => setProfileMenuOpen(false)}
+                                                >
+                                                    <HiCurrencyDollar className="files-header__profile-item-icon" />
+                                                    <span>{t("sidenav.subscribe") || "Subscribe"}</span>
+                                                </Link>
+                                            </>
+                                        )}
+                                        
+                                        {/* Subscription - for promoters OR users with plans */}
+                                        {!isOwner && (isPromoter || isUserWithPlan) && (
                                             <Link
-                                                to="/dashboard/subscription-plans"
+                                                to="/Subscription"
                                                 className="files-header__profile-item"
                                                 onClick={() => setProfileMenuOpen(false)}
                                             >
-                                                <HiCurrencyDollar className="files-header__profile-item-icon" />
-                                                <span>{t("sidenav.subscribe") || "Subscribe"}</span>
+                                                <HiTicket className="files-header__profile-item-icon" />
+                                                <span>{t("sidenav.subscription") || "Subscription"}</span>
                                             </Link>
                                         )}
                                         

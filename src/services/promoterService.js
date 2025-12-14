@@ -43,7 +43,44 @@ export const promoterService = {
         } catch (error) {
             throw error.response?.data || error.message;
         }
-    }
+    },
+
+    // Get all subscription plans (for promoters)
+    getPlans: async () => {
+        try {
+            const response = await api.get('/auth/getPlans');
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Create subscription (for promoters)
+    createSubscription: async (invoiceFile, phone, subscriberName, durationDays, planName, token) => {
+        try {
+            const formData = new FormData();
+            if (invoiceFile) {
+                formData.append('invoice', invoiceFile);
+            }
+            formData.append('phone', phone);
+            formData.append('subscriberName', subscriberName);
+            formData.append('durationDays', durationDays);
+            formData.append('planName', planName);
+
+            const response = await api.post('/auth/createSubscription', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success("Subscription created successfully!", ToastOptions("success"));
+            return response.data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to create subscription", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
+    },
+
 };
 
 export default promoterService;
