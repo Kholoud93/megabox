@@ -639,12 +639,27 @@ export default function PromotersEarning() {
     const hasError = earningsError || analyticsError || shareLinksError;
 
     // Extract data from API responses
-    // API Response structure: { "message", "userId", "pendingRewards", "confirmedRewards", "totalEarnings", "currency" }
+    // API Response structure: { "message", "userId", "pendingRewards", "confirmedRewards", "totalEarnings", "currency", "pendingRewardsList" }
     const totalEarnings = earningsData?.totalEarnings || '0.000000';
     const PendingEarnings = earningsData?.pendingRewards || '0.000000';
     const ConfirmedEarnings = earningsData?.confirmedRewards || '0.000000';
     const currency = earningsData?.currency || 'USD';
-    const pendingRewardsList = earningsData?.pendingRewardsList || earningsData?.rewards || [];
+    const pendingRewardsList = earningsData?.pendingRewardsList || 
+                               earningsData?.rewards || 
+                               earningsData?.pendingRewardsList || 
+                               [];
+    
+    // Debug: Log earnings data structure
+    useEffect(() => {
+        if (earningsData) {
+            console.log('Earnings Data Structure:', {
+                earningsData,
+                pendingRewardsList,
+                firstReward: pendingRewardsList[0],
+                keys: Object.keys(earningsData)
+            });
+        }
+    }, [earningsData, pendingRewardsList]);
     
     // API Response structure: { "message", "userId", "totalAnalytics": { "totalDownloads", "totalViews" } }
     const totalViews = analyticsData?.totalAnalytics?.totalViews || 0;
@@ -657,9 +672,31 @@ export default function PromotersEarning() {
             return;
         }
 
+        // Extract reward ID with multiple fallback options
+        const rewardId = selectedReward._id || 
+                        selectedReward.id || 
+                        selectedReward.rewardId || 
+                        selectedReward.pendingRewardId ||
+                        selectedReward.reward?._id ||
+                        selectedReward.reward?.id;
+
+        // Validate reward ID exists
+        if (!rewardId) {
+            console.error('Reward ID not found. Reward object:', selectedReward);
+            console.error('Available keys:', Object.keys(selectedReward || {}));
+            toast.error(t('earning.rewardIdNotFound') || 'Reward ID not found. Please try again.', ToastOptions("error"));
+            return;
+        }
+
         setIsUpdating(true);
         try {
-            const rewardId = selectedReward._id || selectedReward.id || selectedReward.rewardId;
+            console.log('Updating reward:', {
+                userId: id,
+                rewardId: rewardId,
+                amount: parseFloat(rewardAmount),
+                rewardObject: selectedReward
+            });
+            
             await adminService.updateSinglePendingReward(id, rewardId, parseFloat(rewardAmount), token);
             toast.success(t('earning.rewardUpdated') || 'Pending reward updated successfully!', ToastOptions("success"));
             queryClient.invalidateQueries(['userEarnings', id]);
@@ -667,7 +704,13 @@ export default function PromotersEarning() {
             setSelectedReward(null);
             setRewardAmount('');
         } catch (error) {
-            toast.error(error.response?.data?.message || t('earning.rewardUpdateFailed') || 'Failed to update reward', ToastOptions("error"));
+            console.error('Error updating reward:', error);
+            console.error('Error response:', error.response?.data);
+            const errorMessage = error.response?.data?.message || 
+                                error.message || 
+                                t('earning.rewardUpdateFailed') || 
+                                'Failed to update reward';
+            toast.error(errorMessage, ToastOptions("error"));
         } finally {
             setIsUpdating(false);
         }
@@ -702,8 +745,19 @@ export default function PromotersEarning() {
 
     // Open update reward modal
     const openUpdateRewardModal = (reward) => {
+        console.log('Opening update reward modal with reward:', reward);
+        console.log('Reward keys:', Object.keys(reward || {}));
+        console.log('Full earnings data:', earningsData);
+        console.log('Pending rewards list:', pendingRewardsList);
+        
+        if (!reward) {
+            console.error('No reward provided to openUpdateRewardModal');
+            toast.error(t('earning.noRewardSelected') || 'No reward selected', ToastOptions("error"));
+            return;
+        }
+        
         setSelectedReward(reward);
-        setRewardAmount(reward.amount || reward.value || '');
+        setRewardAmount(reward.amount || reward.value || reward.pendingAmount || reward.reward?.amount || '');
         setShowUpdateRewardModal(true);
     };
 
@@ -990,10 +1044,30 @@ export default function PromotersEarning() {
                                     <label>{t('earning.rewardId') || 'Reward ID'}</label>
                                     <input
                                         type="text"
-                                        value={selectedReward?._id || selectedReward?.id || selectedReward?.rewardId || ''}
+                                        value={
+                                            (() => {
+                                                const rewardId = selectedReward?._id || 
+                                                                selectedReward?.id || 
+                                                                selectedReward?.rewardId || 
+                                                                selectedReward?.pendingRewardId ||
+                                                                selectedReward?.reward?._id ||
+                                                                selectedReward?.reward?.id;
+                                                if (rewardId) {
+                                                    return String(rewardId);
+                                                }
+                                                // If no ID found, show a warning message
+                                                return t('earning.noRewardId') || 'N/A - Reward ID not found';
+                                            })()
+                                        }
                                         disabled
-                                        className="form-input"
+                                        className="form-input reward-id-input"
+                                        readOnly
                                     />
+                                    {!selectedReward?._id && !selectedReward?.id && !selectedReward?.rewardId && (
+                                        <small className="form-help-text" style={{ color: '#ef4444' }}>
+                                            {t('earning.rewardIdWarning') || '⚠️ Warning: Reward ID not found. Update may fail.'}
+                                        </small>
+                                    )}
                                 </div>
                                 <div className="form-group">
                                     <label>{t('earning.rewardAmount') || 'Reward Amount'} *</label>
@@ -1006,6 +1080,9 @@ export default function PromotersEarning() {
                                         className="form-input"
                                         placeholder={t('earning.enterRewardAmount') || 'Enter reward amount'}
                                     />
+                                    <small className="form-help-text">
+                                        {t('earning.rewardAmountHelp') || 'Enter the new amount for this pending reward'}
+                                    </small>
                                 </div>
                             </div>
                             <div className="modal-footer">
@@ -1055,7 +1132,7 @@ export default function PromotersEarning() {
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="modal-header">
-                                <h2>{t('earning.updateAnalytics') || 'Update Analytics Data'}</h2>
+                                <h2>{t('earning.updateAnalyticsData') || 'Update Analytics Data'}</h2>
                                 <button
                                     className="modal-close"
                                     onClick={() => {
@@ -1077,6 +1154,9 @@ export default function PromotersEarning() {
                                         className="form-input"
                                         placeholder={t('earning.enterTotalDownloads') || 'Enter total downloads'}
                                     />
+                                    <small className="form-help-text">
+                                        {t('earning.totalDownloadsDescription') || 'Total number of downloads across all shared content'}
+                                    </small>
                                 </div>
                                 <div className="form-group">
                                     <label>{t('earning.totalViews') || 'Total Views'} *</label>
@@ -1088,6 +1168,9 @@ export default function PromotersEarning() {
                                         className="form-input"
                                         placeholder={t('earning.enterTotalViews') || 'Enter total views'}
                                     />
+                                    <small className="form-help-text">
+                                        {t('earning.totalViewsDescription') || 'Total number of views across all shared content'}
+                                    </small>
                                 </div>
                             </div>
                             <div className="modal-footer">
