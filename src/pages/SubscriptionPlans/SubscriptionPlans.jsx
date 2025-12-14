@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { adminService } from '../../services/adminService';
 import { useLanguage } from '../../context/LanguageContext';
-import { FaCrown, FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
-import { HiArrowRight, HiArrowLeft } from 'react-icons/hi2';
+import { FaCrown, FaEdit, FaTrash, FaPlus, FaTimes, FaCheckCircle } from 'react-icons/fa';
+import { HiArrowRight, HiArrowLeft, HiCurrencyDollar, HiClock } from 'react-icons/hi2';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
 import './SubscriptionPlans.scss';
@@ -164,50 +165,65 @@ export default function SubscriptionPlans() {
                         <p>{t('subscriptionPlans.loading') || "Loading plans..."}</p>
                     </div>
                 ) : plans.length > 0 ? (
-                    <div className="subscription-plans-grid">
-                        {plans.map((plan) => (
-                            <div key={plan._id || plan.id} className="subscription-plan-card">
-                                <div className="subscription-plan-card__header">
-                                    <FaCrown className="subscription-plan-card__icon" />
-                                    <h3 className="subscription-plan-card__name">{plan.name}</h3>
-                                </div>
-                                <div className="subscription-plan-card__body">
-                                    <div className="subscription-plan-card__detail">
-                                        <span className="subscription-plan-card__label">
-                                            {t('subscriptionPlans.duration') || "Duration"}:
+                    <div className="subscription-plans-page__plans">
+                        {plans.map((plan, idx) => (
+                            <motion.div
+                                key={plan._id || plan.id}
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                                className="subscription-plans-page__plan-card"
+                            >
+                                <div className="subscription-plans-page__plan-header">
+                                    <h3 className="subscription-plans-page__plan-title">
+                                        {plan.name || t('subscriptionPlans.defaultName') || 'Subscription Plan'}
+                                    </h3>
+                                    <div className="subscription-plans-page__plan-price">
+                                        <HiCurrencyDollar className="subscription-plans-page__plan-price-icon" />
+                                        <span className="subscription-plans-page__plan-amount">
+                                            {plan.price || '0'}
                                         </span>
-                                        <span className="subscription-plan-card__value">
-                                            {plan.days} {t('subscriptionPlans.days') || "days"}
-                                        </span>
-                                    </div>
-                                    <div className="subscription-plan-card__detail">
-                                        <span className="subscription-plan-card__label">
-                                            {t('subscriptionPlans.price') || "Price"}:
-                                        </span>
-                                        <span className="subscription-plan-card__value">
-                                            {plan.price} {plan.currency || 'USD'}
+                                        <span className="subscription-plans-page__plan-currency">
+                                            {plan.currency || 'USD'}
                                         </span>
                                     </div>
                                 </div>
-                                <div className="subscription-plan-card__actions">
-                                    <button
-                                        onClick={() => openEditModal(plan)}
-                                        className="subscription-plan-card__btn subscription-plan-card__btn--edit"
-                                        title={t('subscriptionPlans.edit') || "Edit Plan"}
-                                    >
-                                        <FaEdit size={16} />
-                                        {t('subscriptionPlans.edit') || "Edit"}
-                                    </button>
-                                    <button
-                                        onClick={() => handleDeletePlan(plan._id || plan.id)}
-                                        className="subscription-plan-card__btn subscription-plan-card__btn--delete"
-                                        title={t('subscriptionPlans.delete') || "Delete Plan"}
-                                    >
-                                        <FaTrash size={16} />
-                                        {t('subscriptionPlans.delete') || "Delete"}
-                                    </button>
+
+                                <div className="subscription-plans-page__plan-content">
+                                    <ul className="subscription-plans-page__plan-features">
+                                        <li className="subscription-plans-page__plan-feature">
+                                            <HiClock className="subscription-plans-page__plan-feature-icon" />
+                                            <span>
+                                                {plan.days || 30} {t('subscriptionPlans.days') || 'days'}
+                                            </span>
+                                        </li>
+                                        {plan.description && (
+                                            <li className="subscription-plans-page__plan-feature">
+                                                <FaCheckCircle className="subscription-plans-page__plan-feature-icon" />
+                                                <span>{plan.description}</span>
+                                            </li>
+                                        )}
+                                    </ul>
+                                    <div className="subscription-plans-page__plan-actions">
+                                        <button
+                                            onClick={() => openEditModal(plan)}
+                                            className="subscription-plans-page__plan-button subscription-plans-page__plan-button--edit"
+                                            title={t('subscriptionPlans.edit') || "Edit Plan"}
+                                        >
+                                            <FaEdit />
+                                            {t('subscriptionPlans.edit') || "Edit"}
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeletePlan(plan._id || plan.id)}
+                                            className="subscription-plans-page__plan-button subscription-plans-page__plan-button--delete"
+                                            title={t('subscriptionPlans.delete') || "Delete Plan"}
+                                        >
+                                            <FaTrash />
+                                            {t('subscriptionPlans.delete') || "Delete"}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
                 ) : (
@@ -219,12 +235,18 @@ export default function SubscriptionPlans() {
 
             {/* Create Plan Modal */}
             {showCreateModal && (
-                <div
+                <motion.div
                     className="subscription-plan-modal-backdrop"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                     onClick={() => !isSubmitting && setShowCreateModal(false)}
                 >
-                    <div
+                    <motion.div
                         className="subscription-plan-modal"
+                        initial={{ scale: 0.9, y: 20 }}
+                        animate={{ scale: 1, y: 0 }}
+                        exit={{ scale: 0.9, y: 20 }}
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="subscription-plan-modal__header">
@@ -235,7 +257,7 @@ export default function SubscriptionPlans() {
                                 aria-label="Close"
                                 disabled={isSubmitting}
                             >
-                                ×
+                                <FaTimes />
                             </button>
                         </div>
 
@@ -306,18 +328,24 @@ export default function SubscriptionPlans() {
                                 </button>
                             </div>
                         </form>
-                    </div>
-                </div>
+                    </motion.div>
+                </motion.div>
             )}
 
             {/* Edit Plan Modal */}
             {showEditModal && selectedPlan && (
-                <div
+                <motion.div
                     className="subscription-plan-modal-backdrop"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
                     onClick={() => !isSubmitting && setShowEditModal(false)}
                 >
-                    <div
+                    <motion.div
                         className="subscription-plan-modal"
+                        initial={{ scale: 0.9, y: 20 }}
+                        animate={{ scale: 1, y: 0 }}
+                        exit={{ scale: 0.9, y: 20 }}
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="subscription-plan-modal__header">
@@ -328,7 +356,7 @@ export default function SubscriptionPlans() {
                                 aria-label="Close"
                                 disabled={isSubmitting}
                             >
-                                ×
+                                <FaTimes />
                             </button>
                         </div>
 
@@ -396,8 +424,8 @@ export default function SubscriptionPlans() {
                                 </button>
                             </div>
                         </form>
-                    </div>
-                </div>
+                    </motion.div>
+                </motion.div>
             )}
         </div>
     );

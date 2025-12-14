@@ -103,111 +103,184 @@
     color: var(--color-gray-600);
 }
 
-.subscription-plans-grid {
+  // Plans Section
+  &__plans {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
 
-    @include mix.media-breakpoint-down(md) {
-        grid-template-columns: 1fr;
+  &__plan-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 1.25rem;
+    padding: 2rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
     }
-}
-
-.subscription-plan-card {
-    background: white;
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e0e7ff;
-    transition: all 0.2s;
-
+    
     &:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        transform: translateY(-2px);
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      border-color: #667eea;
+      
+      &::before {
+        transform: scaleX(1);
+      }
+    }
+  }
+
+  &__plan-header {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  &__plan-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 1rem;
+  }
+
+  &__plan-price {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__plan-price-icon {
+    color: #10b981;
+    font-size: 1.5rem;
+  }
+
+  &__plan-amount {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #4f46e5;
+  }
+
+  &__plan-currency {
+    font-size: 1.25rem;
+    color: #718096;
+    font-weight: 500;
+  }
+
+  &__plan-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__plan-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__plan-feature {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #4a5568;
+    font-size: 1rem;
+  }
+
+  &__plan-feature-icon {
+    color: #10b981;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+  }
+
+  &__plan-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  &__plan-button {
+    flex: 1;
+    padding: 0.875rem 1.25rem;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+    
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      
+      &::before {
+        width: 300px;
+        height: 300px;
+      }
+    }
+    
+    &:active:not(:disabled) {
+      transform: translateY(0);
     }
 
-    &__header {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-bottom: 1rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #e5e7eb;
+    &--edit {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+
+      &:hover:not(:disabled) {
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+      }
     }
 
-    &__icon {
-        color: var(--color-yellow-500);
-        font-size: 1.25rem;
+    &--delete {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+
+      &:hover:not(:disabled) {
+        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+      }
     }
 
-    &__name {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--color-gray-900);
-        margin: 0;
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
     }
-
-    &__body {
-        margin-bottom: 1rem;
-    }
-
-    &__detail {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.5rem 0;
-    }
-
-    &__label {
-        color: var(--color-gray-600);
-        font-size: 0.875rem;
-    }
-
-    &__value {
-        color: var(--color-gray-900);
-        font-weight: 600;
-    }
-
-    &__actions {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 1rem;
-        padding-top: 1rem;
-        border-top: 1px solid #e5e7eb;
-    }
-
-    &__btn {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 0.5rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-
-        &--edit {
-            background: var(--color-blue-50);
-            color: var(--color-blue-700);
-
-            &:hover {
-                background: var(--color-blue-100);
-            }
-        }
-
-        &--delete {
-            background: var(--color-red-50);
-            color: var(--color-red-700);
-
-            &:hover {
-                background: var(--color-red-100);
-            }
-        }
-    }
-}
+  }
 
 .subscription-plan-modal-backdrop {
     position: fixed;
@@ -384,30 +457,38 @@
         color: #cbd5e1;
     }
 
-    .subscription-plan-card {
-        background: rgba(30, 41, 59, 0.8);
+    .subscription-plans-page__plan-card {
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
         border-color: rgba(99, 102, 241, 0.3);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 
-        &__header {
-            border-color: rgba(99, 102, 241, 0.2);
+        &::before {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.6) 0%, rgba(139, 92, 246, 0.6) 100%);
         }
 
-        &__name {
-            color: #f1f5f9;
+        &:hover {
+            border-color: rgba(99, 102, 241, 0.5);
         }
+    }
 
-        &__label {
-            color: #cbd5e1;
-        }
+    .subscription-plans-page__plan-header {
+        border-color: rgba(99, 102, 241, 0.2);
+    }
 
-        &__value {
-            color: #f1f5f9;
-        }
+    .subscription-plans-page__plan-title {
+        color: #f1f5f9;
+    }
 
-        &__actions {
-            border-color: rgba(99, 102, 241, 0.2);
-        }
+    .subscription-plans-page__plan-amount {
+        color: #818cf8;
+    }
+
+    .subscription-plans-page__plan-currency {
+        color: #cbd5e1;
+    }
+
+    .subscription-plans-page__plan-feature {
+        color: #cbd5e1;
     }
 
     .subscription-plan-modal {

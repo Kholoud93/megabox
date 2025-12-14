@@ -59,6 +59,9 @@ export default function Subscription() {
         }
     );
 
+    // Check if user is promoter
+    const isPromoter = userData?.isPromoter === "true" || userData?.isPromoter === true;
+    
     // Check if user has subscribed to a plan
     const hasWatchingPlan = userData?.watchingplan === "true" || userData?.watchingplan === true;
     const hasDownloadsPlan = userData?.Downloadsplan === "true" || userData?.Downloadsplan === true;
@@ -86,6 +89,7 @@ export default function Subscription() {
                 // Separate subscriptions:
                 // 1. Created by current user (for subscribers) - these are subscriptions the promoter created for others
                 const createdSubscriptions = subscriptions.filter(sub => {
+                    // Check if this subscription was created by the current user (as promoter)
                     const subPromoterId = sub.promoterId?._id || sub.promoterId?.id || sub.promoterId;
                     const subCreatedBy = sub.createdBy?._id || sub.createdBy?.id || sub.createdBy;
                     const subUserId = sub.userId?._id || sub.userId?.id || sub.userId;
@@ -98,19 +102,23 @@ export default function Subscription() {
                 });
 
                 // 2. Subscriptions where current user is the subscriber (user's own subscriptions)
-                // Check by subscriber name matching user's name or email
+                // Since we don't have subscriberId, we'll use watchingplan/Downloadsplan from userData
+                // and match by plan name if available
                 const userSubscriptions = subscriptions.filter(sub => {
-                    const subscriberName = (sub.subscriberName || sub.name || '').toLowerCase();
-                    const userEmail = (userData?.email || '').toLowerCase();
-                    const userName = (userData?.username || userData?.name || '').toLowerCase();
+                    // Check by subscriber name/email matching
+                    const subscriberName = (sub.subscriberName || sub.name || '').toLowerCase().trim();
+                    const userEmail = (userData?.email || '').toLowerCase().trim();
+                    const userName = (userData?.username || userData?.name || '').toLowerCase().trim();
                     
-                    return subscriberName === userEmail ||
-                           subscriberName === userName ||
-                           sub.subscriberId === userId ||
-                           sub.subscriber?._id === userId ||
-                           sub.subscriber?.id === userId ||
-                           sub.user?._id === userId ||
-                           sub.user?.id === userId;
+                    // Also check by subscriberId if available
+                    const hasMatchingName = subscriberName && (subscriberName === userEmail || subscriberName === userName);
+                    const hasMatchingId = sub.subscriberId === userId ||
+                                         sub.subscriber?._id === userId ||
+                                         sub.subscriber?.id === userId ||
+                                         sub.user?._id === userId ||
+                                         sub.user?.id === userId;
+                    
+                    return hasMatchingName || hasMatchingId;
                 });
 
                 return { created: createdSubscriptions, subscribed: userSubscriptions };
@@ -130,33 +138,26 @@ export default function Subscription() {
 
     // Get plans that user has subscribed to
     const getUserSubscribedPlans = () => {
-        if (!userSubscribedPlans.length && !hasWatchingPlan && !hasDownloadsPlan) return [];
-        
-        // Get plans from userSubscribedPlans
+        // Get plans from userSubscribedPlans (from getAllSubscriptions API)
         const plansFromSubscriptions = plans.filter(plan => {
-            const planName = plan.name || '';
+            const planName = (plan.name || '').toLowerCase().trim();
             const planId = plan._id || plan.id;
             
             return userSubscribedPlans.some(sub => {
-                return sub.planName === planName ||
-                       sub.plan?.name === planName ||
-                       sub.planId === planId ||
-                       sub.plan?._id === planId ||
-                       sub.plan?.id === planId;
+                const subPlanName = (sub.planName || sub.plan?.name || '').toLowerCase().trim();
+                const subPlanId = sub.planId || sub.plan?._id || sub.plan?.id;
+                
+                return subPlanName === planName || subPlanId === planId;
             });
         });
-
-        // Also check watchingplan and Downloadsplan
-        // If user has watchingplan or Downloadsplan, show all plans as subscribed
-        // (since these are legacy plans that don't map to specific plan names)
-        if (hasWatchingPlan || hasDownloadsPlan) {
-            return plans; // Show all plans as subscribed if user has legacy plans
-        }
 
         return plansFromSubscriptions;
     };
 
     const subscribedPlans = getUserSubscribedPlans();
+    
+    // Check if user has any legacy plans (watchingplan or Downloadsplan)
+    const hasLegacyPlan = hasWatchingPlan || hasDownloadsPlan;
 
     const handleCreateSubscription = (plan) => {
         if (!cookies.MegaBox) {
@@ -186,7 +187,7 @@ export default function Subscription() {
     const handleSubscriptionSubmit = async (e) => {
         e.preventDefault();
 
-        if (!subscriptionForm.phone || !subscriptionForm.subscriberName || !selectedPlan) {
+        if (!subscriptionForm.phone || !subscriptionForm.subscriberName || !subscriptionForm.invoiceFile || !selectedPlan) {
             return;
         }
 
@@ -229,6 +230,7 @@ export default function Subscription() {
         }
     };
 
+
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         try {
@@ -254,7 +256,10 @@ export default function Subscription() {
                             {t('subscriptionPage.title') || 'Subscription Plans'}
                         </h1>
                         <p className="subscription-page__subtitle">
-                            {t('subscriptionPage.subtitle') || 'Choose a subscription plan and create a subscription for your subscribers'}
+                            {isPromoter 
+                                ? (t('subscriptionPage.subtitle') || 'Choose a subscription plan and create a subscription for your subscribers')
+                                : (t('subscriptionPage.subtitleUser') || 'Browse available subscription plans')
+                            }
                         </p>
                     </motion.div>
 
@@ -307,12 +312,21 @@ export default function Subscription() {
                                                     </li>
                                                 )}
                                             </ul>
-                                        <button
-                                            onClick={() => handleCreateSubscription(plan)}
-                                            className="subscription-page__plan-button"
-                                        >
-                                            {t('subscriptionPage.createSubscription') || 'Create Subscription'}
-                                        </button>
+                                        {isPromoter ? (
+                                            <button
+                                                onClick={() => handleCreateSubscription(plan)}
+                                                className="subscription-page__plan-button"
+                                            >
+                                                {t('subscriptionPage.createSubscription') || 'Create Subscription'}
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => navigate('/dashboard/subscription-plans')}
+                                                className="subscription-page__plan-button"
+                                            >
+                                                {t('subscriptionPage.subscribe') || 'Subscribe'}
+                                            </button>
+                                        )}
                                         </div>
                                     </motion.div>
                                 ))}
@@ -325,7 +339,7 @@ export default function Subscription() {
                     </div>
 
                     {/* User's Subscribed Plans Section */}
-                    {cookies.MegaBox && subscribedPlans.length > 0 && (
+                    {cookies.MegaBox && (subscribedPlans.length > 0 || hasLegacyPlan) && (
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -335,58 +349,80 @@ export default function Subscription() {
                             <h2 className="subscription-page__section-title">
                                 {t('subscriptionPage.mySubscribedPlans') || 'My Subscribed Plans'}
                             </h2>
-                            <div className="subscription-page__plans">
-                                {subscribedPlans.map((plan, idx) => (
-                                    <motion.div
-                                        key={plan._id || plan.id || idx}
-                                        initial={{ y: 20, opacity: 0 }}
-                                        animate={{ y: 0, opacity: 1 }}
-                                        transition={{ duration: 0.5, delay: idx * 0.1 }}
-                                        className="subscription-page__plan-card subscription-page__plan-card--subscribed"
-                                    >
-                                        <div className="subscription-page__plan-badge">
-                                            <span className="subscription-page__plan-badge-text">
-                                                {t('subscriptionPage.subscribed') || 'Subscribed'}
-                                            </span>
+                            
+                            {/* Legacy Plans Info */}
+                            {hasLegacyPlan && (
+                                <div className="subscription-page__legacy-plans">
+                                    {hasWatchingPlan && (
+                                        <div className="subscription-page__legacy-plan-item">
+                                            <FaCheckCircle className="subscription-page__legacy-plan-icon" />
+                                            <span>{t('subscriptionPage.watchingPlan') || 'Watching Plan'} - {t('subscriptionPage.active') || 'Active'}</span>
                                         </div>
-                                        <div className="subscription-page__plan-header">
-                                            <h3 className="subscription-page__plan-title">
-                                                {plan.name || t('subscriptionPage.plan.defaultName') || 'Subscription Plan'}
-                                            </h3>
-                                            <div className="subscription-page__plan-price">
-                                                <HiCurrencyDollar className="subscription-page__plan-price-icon" />
-                                                <span className="subscription-page__plan-amount">
-                                                    {plan.price || '0'}
-                                                </span>
-                                                <span className="subscription-page__plan-currency">
-                                                    {plan.currency || 'USD'}
+                                    )}
+                                    {hasDownloadsPlan && (
+                                        <div className="subscription-page__legacy-plan-item">
+                                            <FaCheckCircle className="subscription-page__legacy-plan-icon" />
+                                            <span>{t('subscriptionPage.downloadsPlan') || 'Downloads Plan'} - {t('subscriptionPage.active') || 'Active'}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            
+                            {/* Plans from Subscriptions */}
+                            {subscribedPlans.length > 0 && (
+                                <div className="subscription-page__plans">
+                                    {subscribedPlans.map((plan, idx) => (
+                                        <motion.div
+                                            key={plan._id || plan.id || idx}
+                                            initial={{ y: 20, opacity: 0 }}
+                                            animate={{ y: 0, opacity: 1 }}
+                                            transition={{ duration: 0.5, delay: idx * 0.1 }}
+                                            className="subscription-page__plan-card subscription-page__plan-card--subscribed"
+                                        >
+                                            <div className="subscription-page__plan-badge">
+                                                <span className="subscription-page__plan-badge-text">
+                                                    {t('subscriptionPage.subscribed') || 'Subscribed'}
                                                 </span>
                                             </div>
-                                        </div>
-                                        <div className="subscription-page__plan-content">
-                                            <ul className="subscription-page__plan-features">
-                                                <li className="subscription-page__plan-feature">
-                                                    <HiClock className="subscription-page__plan-feature-icon" />
-                                                    <span>
-                                                        {plan.days || 30} {t('subscriptionPage.plan.days') || 'days'}
+                                            <div className="subscription-page__plan-header">
+                                                <h3 className="subscription-page__plan-title">
+                                                    {plan.name || t('subscriptionPage.plan.defaultName') || 'Subscription Plan'}
+                                                </h3>
+                                                <div className="subscription-page__plan-price">
+                                                    <HiCurrencyDollar className="subscription-page__plan-price-icon" />
+                                                    <span className="subscription-page__plan-amount">
+                                                        {plan.price || '0'}
                                                     </span>
-                                                </li>
-                                                {plan.description && (
+                                                    <span className="subscription-page__plan-currency">
+                                                        {plan.currency || 'USD'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="subscription-page__plan-content">
+                                                <ul className="subscription-page__plan-features">
                                                     <li className="subscription-page__plan-feature">
-                                                        <FaCheckCircle className="subscription-page__plan-feature-icon" />
-                                                        <span>{plan.description}</span>
+                                                        <HiClock className="subscription-page__plan-feature-icon" />
+                                                        <span>
+                                                            {plan.days || 30} {t('subscriptionPage.plan.days') || 'days'}
+                                                        </span>
                                                     </li>
-                                                )}
-                                            </ul>
-                                        </div>
-                                    </motion.div>
-                                ))}
-                            </div>
+                                                    {plan.description && (
+                                                        <li className="subscription-page__plan-feature">
+                                                            <FaCheckCircle className="subscription-page__plan-feature-icon" />
+                                                            <span>{plan.description}</span>
+                                                        </li>
+                                                    )}
+                                                </ul>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            )}
                         </motion.div>
                     )}
 
-                    {/* My Created Subscriptions Section */}
-                    {cookies.MegaBox && (
+                    {/* My Created Subscriptions Section - Only for Promoters */}
+                    {cookies.MegaBox && isPromoter && (
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -394,9 +430,14 @@ export default function Subscription() {
                             className="subscription-page__section subscription-page__my-subscriptions"
                         >
                             <div className="subscription-page__section-header">
-                                <h2 className="subscription-page__section-title">
-                                    {t('subscriptionPage.mySubscriptions') || 'My Created Subscriptions'}
-                                </h2>
+                                <div>
+                                    <h2 className="subscription-page__section-title">
+                                        {t('subscriptionPage.mySubscriptions') || 'My Created Subscriptions'}
+                                    </h2>
+                                    <p className="subscription-page__section-description">
+                                        {t('subscriptionPage.mySubscriptionsDescription') || 'Subscriptions you created for your subscribers'}
+                                    </p>
+                                </div>
                                 {mySubscriptions.length > 0 && (
                                     <span className="subscription-page__subscriptions-count">
                                         {mySubscriptions.length} {t('subscriptionPage.subscriptions') || 'subscriptions'}
@@ -408,75 +449,62 @@ export default function Subscription() {
                                     <Loading />
                                 </div>
                             ) : mySubscriptions.length > 0 ? (
-                                <div className="subscription-page__subscriptions-table-wrapper">
-                                    <table className="subscription-page__subscriptions-table">
-                                        <thead>
-                                            <tr>
-                                                <th>{t('subscriptionPage.table.subscriber') || 'Subscriber'}</th>
-                                                <th>{t('subscriptionPage.table.phone') || 'Phone'}</th>
-                                                <th>{t('subscriptionPage.table.plan') || 'Plan'}</th>
-                                                <th>{t('subscriptionPage.table.duration') || 'Duration'}</th>
-                                                <th>{t('subscriptionPage.table.status') || 'Status'}</th>
-                                                <th>{t('subscriptionPage.table.date') || 'Date'}</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {mySubscriptions.map((subscription, idx) => (
-                                                <motion.tr
-                                                    key={subscription.id || subscription._id || idx}
-                                                    initial={{ opacity: 0, x: -20 }}
-                                                    animate={{ opacity: 1, x: 0 }}
-                                                    transition={{ duration: 0.3, delay: idx * 0.05 }}
-                                                    className="subscription-page__subscription-row"
-                                                >
-                                                    <td>
-                                                        <div className="subscription-page__table-cell">
-                                                            <FaUser className="subscription-page__table-icon" />
-                                                            <span>{subscription.subscriberName || subscription.name || '-'}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div className="subscription-page__table-cell">
-                                                            <FaPhone className="subscription-page__table-icon" />
-                                                            <span>{subscription.phone || '-'}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div className="subscription-page__table-cell">
-                                                            <FaTag className="subscription-page__table-icon" />
-                                                            <span className="subscription-page__plan-name-badge">
-                                                                {subscription.planName || subscription.plan?.name || '-'}
-                                                            </span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div className="subscription-page__table-cell">
-                                                            <FaCalendar className="subscription-page__table-icon" />
-                                                            <span>
-                                                                {subscription.durationDays || subscription.days || subscription.duration || '-'} {t('subscriptionPage.plan.days') || 'days'}
-                                                            </span>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        {subscription.status ? (
-                                                            <span className={`subscription-page__subscription-status subscription-page__subscription-status--${(subscription.status || '').toLowerCase()}`}>
-                                                                {subscription.status}
-                                                            </span>
-                                                        ) : (
-                                                            <span className="subscription-page__subscription-status subscription-page__subscription-status--active">
-                                                                {t('subscriptionPage.active') || 'Active'}
-                                                            </span>
-                                                        )}
-                                                    </td>
-                                                    <td>
-                                                        <span className="subscription-page__date">
-                                                            {formatDate(subscription.createdAt || subscription.created || subscription.date)}
+                                <div className="subscription-page__plans">
+                                    {mySubscriptions.map((subscription, idx) => (
+                                        <motion.div
+                                            key={subscription.id || subscription._id || idx}
+                                            initial={{ y: 20, opacity: 0 }}
+                                            animate={{ y: 0, opacity: 1 }}
+                                            transition={{ duration: 0.5, delay: idx * 0.1 }}
+                                            className="subscription-page__plan-card"
+                                        >
+                                            <div className="subscription-page__plan-header">
+                                                <h3 className="subscription-page__plan-title">
+                                                    {subscription.planName || subscription.plan?.name || t('subscriptionPage.plan.defaultName') || 'Subscription Plan'}
+                                                </h3>
+                                                <div className="subscription-page__plan-price">
+                                                    {subscription.status ? (
+                                                        <span className={`subscription-page__subscription-status subscription-page__subscription-status--${(subscription.status || '').toLowerCase()}`}>
+                                                            {subscription.status}
                                                         </span>
-                                                    </td>
-                                                </motion.tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                                    ) : (
+                                                        <span className="subscription-page__subscription-status subscription-page__subscription-status--active">
+                                                            {t('subscriptionPage.active') || 'Active'}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div className="subscription-page__plan-content">
+                                                <ul className="subscription-page__plan-features">
+                                                    <li className="subscription-page__plan-feature">
+                                                        <FaUser className="subscription-page__plan-feature-icon" />
+                                                        <span>
+                                                            {t('subscriptionPage.table.subscriber') || 'Subscriber'}: <strong>{subscription.subscriberName || subscription.name || '-'}</strong>
+                                                        </span>
+                                                    </li>
+                                                    <li className="subscription-page__plan-feature">
+                                                        <FaPhone className="subscription-page__plan-feature-icon" />
+                                                        <span>
+                                                            {t('subscriptionPage.table.phone') || 'Phone'}: <strong>{subscription.phone || '-'}</strong>
+                                                        </span>
+                                                    </li>
+                                                    <li className="subscription-page__plan-feature">
+                                                        <HiClock className="subscription-page__plan-feature-icon" />
+                                                        <span>
+                                                            {subscription.durationDays || subscription.days || subscription.duration || '-'} {t('subscriptionPage.plan.days') || 'days'}
+                                                        </span>
+                                                    </li>
+                                                    <li className="subscription-page__plan-feature">
+                                                        <FaCalendar className="subscription-page__plan-feature-icon" />
+                                                        <span>
+                                                            {t('subscriptionPage.table.date') || 'Date'}: {formatDate(subscription.createdAt || subscription.created || subscription.date)}
+                                                        </span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </motion.div>
+                                    ))}
                                 </div>
                             ) : (
                                 <div className="subscription-page__no-subscriptions">
@@ -564,12 +592,13 @@ export default function Subscription() {
                                 <div className="subscription-page__form-group">
                                     <label>
                                         <FaFileInvoice className="subscription-page__form-icon" />
-                                        {t('subscriptionPage.modal.invoice') || 'Invoice (Optional)'}
+                                        {t('subscriptionPage.modal.invoice') || 'Invoice'} *
                                     </label>
                                     <input
                                         type="file"
                                         accept="image/*,.pdf"
                                         onChange={handleFileChange}
+                                        required
                                         disabled={isSubmitting}
                                     />
                                     {subscriptionForm.invoiceFile && (
