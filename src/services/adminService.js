@@ -498,6 +498,24 @@ export const adminService = {
             toast.error(error.response?.data?.message || "Failed to delete copyright report", ToastOptions("error"));
             throw error.response?.data || error.message;
         }
+    },
+
+    // Approve/Activate subscription (admin)
+    approveSubscription: async (subscriptionId, token) => {
+        try {
+            const response = await api.patch(`/auth/approveSubscription/${subscriptionId}`, {
+                status: 'approved'
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success("Subscription approved successfully!", ToastOptions("success"));
+            return response.data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to approve subscription", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
     }
 };
 

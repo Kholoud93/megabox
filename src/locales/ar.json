@@ -294,6 +294,7 @@
     "withdrawals": "السحوبات",
     "payments": "المدفوعات",
     "subscriptions": "الاشتراكات",
+    "plans": "الخطط",
     "storage": "التخزين",
     "downloadsViews": "التحميلات والمشاهدات",
     "more": "المزيد",
@@ -718,7 +719,50 @@
     "updating": "جارٍ التحديث...",
     "deleting": "جارٍ الحذف...",
     "deletePlanConfirm": "هل أنت متأكد من حذف هذه الخطة؟",
-    "deletePlanWarning": "لا يمكن التراجع عن هذا الإجراء."
+    "deletePlanWarning": "لا يمكن التراجع عن هذا الإجراء.",
+    "subscriptionApproved": "تم تفعيل الاشتراك بنجاح!",
+    "approveFailed": "فشل تفعيل الاشتراك",
+    "approve": "تفعيل الاشتراك",
+    "approving": "جارٍ التفعيل...",
+    "close": "إغلاق",
+    "userInfo": "معلومات المستخدم",
+    "planInfo": "معلومات الخطة",
+    "paymentInfo": "معلومات الدفع",
+    "dateInfo": "معلومات التاريخ",
+    "viewUserProfile": "عرض ملف المستخدم",
+    "viewInvoice": "عرض الفاتورة",
+    "paymentMethod": "طريقة الدفع",
+    "duration": "المدة",
+    "subscriberName": "اسم المشترك"
+  },
+  "adminPlans": {
+    "title": "إدارة الخطط",
+    "subtitle": "إدارة خطط الاشتراك"
+  },
+  "subscribe": {
+    "title": "الاشتراك في خطة",
+    "subtitle": "اختر خطة اشتراك واشترك",
+    "availablePlans": "الخطط المتاحة",
+    "noPlans": "لا توجد خطط اشتراك متاحة في الوقت الحالي.",
+    "subscribe": "اشترك",
+    "fillAllFields": "يرجى ملء جميع الحقول المطلوبة",
+    "success": "تم إرسال طلب الاشتراك بنجاح!",
+    "plan": {
+      "defaultName": "خطة اشتراك",
+      "days": "أيام"
+    },
+    "modal": {
+      "title": "الاشتراك في خطة",
+      "selectedPlan": "الخطة المختارة",
+      "phone": "رقم الهاتف",
+      "phonePlaceholder": "أدخل رقم هاتفك",
+      "paymentMethod": "طريقة الدفع",
+      "selectPaymentMethod": "اختر طريقة الدفع",
+      "invoice": "الفاتورة",
+      "submit": "إرسال الاشتراك",
+      "submitting": "جاري الإرسال..."
+    },
+    "bankTransfer": "تحويل بنكي"
   },
   "adminStorage": {
     "title": "إدارة التخزين",
@@ -1673,6 +1717,7 @@
     "noPlans": "لا توجد خطط اشتراك متاحة في الوقت الحالي.",
     "mySubscriptions": "الاشتراكات التي أنشأتها",
     "mySubscriptionsDescription": "الاشتراكات التي قمت بإنشائها لمشتركيك",
+    "createNewSubscription": "إنشاء اشتراك جديد",
     "mySubscribedPlans": "الخطط المشترك فيها",
     "watchingPlan": "خطة المشاهدات",
     "downloadsPlan": "خطة التحميلات",

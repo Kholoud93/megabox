@@ -17,7 +17,8 @@ import RoleProtector from './protectors/RoleProtector'
 import Users from './pages/OwnerPages/Users/Users'
 import Analasys from './pages/OwnerPages/Analasyis/Analasys'
 import Payments from './pages/OwnerPages/Payments/Payments'
-import Subscriptions from './pages/OwnerPages/Subscriptions/Subscriptions'
+import Plans from './pages/OwnerPages/Plans/Plans'
+import AdminSubscriptions from './pages/OwnerPages/Subscriptions/AdminSubscriptions'
 import Storage from './pages/OwnerPages/Storage/Storage'
 import Withdrawals from './pages/OwnerPages/Withdrawals/Withdrawals'
 import UserStats from './pages/OwnerPages/UserStats/UserStats'
@@ -49,6 +50,7 @@ const PrivacyPolicy = lazy(() => import('./pages/Privacy/Privacy'))
 const RemovalGuidelines = lazy(() => import('./pages/RemovalPolicy/RemovalPolicy'))
 const PromotersLanding = lazy(() => import('./pages/Promoters/Promoters'))
 const Subscription = lazy(() => import('./pages/Subscription/Subscription'))
+const Subscribe = lazy(() => import('./pages/Subscribe/Subscribe'))
 const Contact = lazy(() => import('./pages/Contact/Contact'))
 const TermsOfService = lazy(() => import('./pages/TermsOfService/TermsOfService'))
 const RewardsEligibility = lazy(() => import('./pages/RewardsEligibility/RewardsEligibility'))
@@ -105,6 +107,9 @@ const AppRouter = () => {
         },
         {
           path: "Subscription", element: <Suspense fallback={<Loading />}> <Subscription /></Suspense>
+        },
+        {
+          path: "Subscribe", element: <Suspense fallback={<Loading />}> <Subscribe /></Suspense>
         }
       ]
     },
@@ -507,9 +512,15 @@ const AppRouter = () => {
             </RoleProtector>
           </LoginProtector>
         }, {
+          path: "Plans", element: <LoginProtector>
+            <RoleProtector requiredRole="Owner">
+              <Plans />
+            </RoleProtector>
+          </LoginProtector>
+        }, {
           path: "Subscriptions", element: <LoginProtector>
             <RoleProtector requiredRole="Owner">
-              <Subscriptions />
+              <AdminSubscriptions />
             </RoleProtector>
           </LoginProtector>
         }, {

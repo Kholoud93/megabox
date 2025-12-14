@@ -325,7 +325,7 @@ export default function DashboardHeader() {
                                                     <span>{t("sidenav.subscription") || "Subscription"}</span>
                                                 </Link>
                                                 <Link
-                                                    to="/dashboard/subscription-plans"
+                                                    to="/Subscribe"
                                                     className="files-header__profile-item"
                                                     onClick={() => setProfileMenuOpen(false)}
                                                 >

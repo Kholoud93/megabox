@@ -144,6 +144,7 @@ export default function BottomNavigation({ role, isPromoter, userData }) {
                 { path: '/Owner/AllPromoters', icon: HiUserGroup, label: t("sidenav.promoters"), key: 'promoters' },
                 { path: '/Owner/Reports', icon: HiDocumentText, label: t("sidenav.reports"), key: 'reports' },
                 { path: '/Owner/Withdrawals', icon: HiCurrencyDollar, label: t("sidenav.withdrawals"), key: 'withdrawals' },
+                { path: '/Owner/Plans', icon: HiUserGroup, label: t("sidenav.plans") || "Plans", key: 'plans' },
                 { path: '/Owner/Subscriptions', icon: HiUserGroup, label: t("sidenav.subscriptions"), key: 'subscriptions' },
                 { path: '/Owner/Storage', icon: HiServer, label: t("sidenav.storage"), key: 'storage' },
                 { path: '/Owner/DownloadsViews', icon: HiArrowDownTray, label: t("sidenav.downloadsViews"), key: 'downloadsViews' },

@@ -31,12 +31,12 @@ export default function Subscription() {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Fetch plans from API using getAllPlans
+    // Fetch plans from API using getPlans
     const { data: plansData, isLoading: plansLoading } = useQuery(
         ['subscription-plans'],
         async () => {
             try {
-                const response = await adminService.getAllPlans(cookies.MegaBox);
+                const response = await adminService.getPlans();
                 if (response.plans) return response;
                 if (Array.isArray(response)) return { plans: response };
                 if (response.data) return { plans: response.data };
@@ -46,7 +46,7 @@ export default function Subscription() {
                 return { plans: [] };
             }
         },
-        { enabled: !!cookies.MegaBox }
+        { enabled: true } // getPlans doesn't require token
     );
 
     const plans = plansData?.plans || [];
@@ -68,7 +68,7 @@ export default function Subscription() {
     const hasWatchingPlan = userData?.watchingplan === "true" || userData?.watchingplan === true;
     const hasDownloadsPlan = userData?.Downloadsplan === "true" || userData?.Downloadsplan === true;
 
-    // Fetch all subscriptions using getAllSubscriptions API
+    // Fetch all subscriptions using getAllSubscriptions API - Only for Promoters (My Created Subscriptions)
     const { data: allSubscriptionsData, isLoading: subscriptionsLoading } = useQuery(
         ['allSubscriptions'],
         async () => {
@@ -76,7 +76,7 @@ export default function Subscription() {
                 const response = await adminService.getAllSubscriptions(cookies.MegaBox);
                 const userId = userData?._id || userData?.id;
                 
-                if (!userId) return { created: [], subscribed: [] };
+                if (!userId) return [];
                 
                 // Handle different response structures
                 let subscriptions = [];
@@ -88,8 +88,7 @@ export default function Subscription() {
                     subscriptions = response.data;
                 }
                 
-                // Separate subscriptions:
-                // 1. Created by current user (for subscribers) - these are subscriptions the promoter created for others
+                // Filter subscriptions created by current user (promoter)
                 const createdSubscriptions = subscriptions.filter(sub => {
                     // Check if this subscription was created by the current user (as promoter)
                     const subPromoterId = sub.promoterId?._id || sub.promoterId?.id || sub.promoterId;
@@ -103,60 +102,19 @@ export default function Subscription() {
                            subPromoter === userId;
                 });
 
-                // 2. Subscriptions where current user is the subscriber (user's own subscriptions)
-                // Since we don't have subscriberId, we'll use watchingplan/Downloadsplan from userData
-                // and match by plan name if available
-                const userSubscriptions = subscriptions.filter(sub => {
-                    // Check by subscriber name/email matching
-                    const subscriberName = (sub.subscriberName || sub.name || '').toLowerCase().trim();
-                    const userEmail = (userData?.email || '').toLowerCase().trim();
-                    const userName = (userData?.username || userData?.name || '').toLowerCase().trim();
-                    
-                    // Also check by subscriberId if available
-                    const hasMatchingName = subscriberName && (subscriberName === userEmail || subscriberName === userName);
-                    const hasMatchingId = sub.subscriberId === userId ||
-                                         sub.subscriber?._id === userId ||
-                                         sub.subscriber?.id === userId ||
-                                         sub.user?._id === userId ||
-                                         sub.user?.id === userId;
-                    
-                    return hasMatchingName || hasMatchingId;
-                });
-
-                return { created: createdSubscriptions, subscribed: userSubscriptions };
+                return createdSubscriptions;
             } catch (error) {
                 console.error('Error fetching subscriptions:', error);
-                return { created: [], subscribed: [] };
+                return [];
             }
         },
         {
-            enabled: !!cookies.MegaBox && !!userData,
+            enabled: !!cookies.MegaBox && !!userData && isPromoter, // Only for promoters
             retry: false
         }
     );
 
-    const mySubscriptions = allSubscriptionsData?.created || [];
-    const userSubscribedPlans = allSubscriptionsData?.subscribed || [];
-
-    // Get plans that user has subscribed to
-    const getUserSubscribedPlans = () => {
-        // Get plans from userSubscribedPlans (from getAllSubscriptions API)
-        const plansFromSubscriptions = plans.filter(plan => {
-            const planName = (plan.name || '').toLowerCase().trim();
-            const planId = plan._id || plan.id;
-            
-            return userSubscribedPlans.some(sub => {
-                const subPlanName = (sub.planName || sub.plan?.name || '').toLowerCase().trim();
-                const subPlanId = sub.planId || sub.plan?._id || sub.plan?.id;
-                
-                return subPlanName === planName || subPlanId === planId;
-            });
-        });
-
-        return plansFromSubscriptions;
-    };
-
-    const subscribedPlans = getUserSubscribedPlans();
+    const mySubscriptions = allSubscriptionsData || [];
     
     // Check if user has any legacy plans (watchingplan or Downloadsplan)
     const hasLegacyPlan = hasWatchingPlan || hasDownloadsPlan;
@@ -365,9 +323,9 @@ export default function Subscription() {
                                                 <button
                                                     onClick={() => handleSubscribeToPlan(plan)}
                                                     className="subscription-page__plan-button subscription-page__plan-button--subscribe"
-                                                    disabled={isSubmitting || subscribedPlans.some(sp => (sp._id || sp.id) === (plan._id || plan.id))}
+                                                    disabled={isSubmitting || hasLegacyPlan}
                                                 >
-                                                    {subscribedPlans.some(sp => (sp._id || sp.id) === (plan._id || plan.id))
+                                                    {hasLegacyPlan
                                                         ? (t('subscriptionPage.subscribed') || 'Subscribed')
                                                         : (t('subscriptionPage.subscribe') || 'Subscribe')
                                                     }
@@ -381,7 +339,7 @@ export default function Subscription() {
                                             </div>
                                         ) : (
                                             <button
-                                                onClick={() => navigate('/dashboard/subscription-plans')}
+                                                onClick={() => navigate('/Subscribe')}
                                                 className="subscription-page__plan-button"
                                             >
                                                 {t('subscriptionPage.subscribe') || 'Subscribe'}
@@ -399,7 +357,7 @@ export default function Subscription() {
                     </div>
 
                     {/* User's Subscribed Plans Section */}
-                    {cookies.MegaBox && (subscribedPlans.length > 0 || hasLegacyPlan) && (
+                    {cookies.MegaBox && hasLegacyPlan && (
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -411,73 +369,20 @@ export default function Subscription() {
                             </h2>
                             
                             {/* Legacy Plans Info */}
-                            {hasLegacyPlan && (
-                                <div className="subscription-page__legacy-plans">
-                                    {hasWatchingPlan && (
-                                        <div className="subscription-page__legacy-plan-item">
-                                            <FaCheckCircle className="subscription-page__legacy-plan-icon" />
-                                            <span>{t('subscriptionPage.watchingPlan') || 'Watching Plan'} - {t('subscriptionPage.active') || 'Active'}</span>
-                                        </div>
-                                    )}
-                                    {hasDownloadsPlan && (
-                                        <div className="subscription-page__legacy-plan-item">
-                                            <FaCheckCircle className="subscription-page__legacy-plan-icon" />
-                                            <span>{t('subscriptionPage.downloadsPlan') || 'Downloads Plan'} - {t('subscriptionPage.active') || 'Active'}</span>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                            
-                            {/* Plans from Subscriptions */}
-                            {subscribedPlans.length > 0 && (
-                                <div className="subscription-page__plans">
-                                    {subscribedPlans.map((plan, idx) => (
-                                        <motion.div
-                                            key={plan._id || plan.id || idx}
-                                            initial={{ y: 20, opacity: 0 }}
-                                            animate={{ y: 0, opacity: 1 }}
-                                            transition={{ duration: 0.5, delay: idx * 0.1 }}
-                                            className="subscription-page__plan-card subscription-page__plan-card--subscribed"
-                                        >
-                                            <div className="subscription-page__plan-badge">
-                                                <span className="subscription-page__plan-badge-text">
-                                                    {t('subscriptionPage.subscribed') || 'Subscribed'}
-                                                </span>
-                                            </div>
-                                            <div className="subscription-page__plan-header">
-                                                <h3 className="subscription-page__plan-title">
-                                                    {plan.name || t('subscriptionPage.plan.defaultName') || 'Subscription Plan'}
-                                                </h3>
-                                                <div className="subscription-page__plan-price">
-                                                    <HiCurrencyDollar className="subscription-page__plan-price-icon" />
-                                                    <span className="subscription-page__plan-amount">
-                                                        {plan.price || '0'}
-                                                    </span>
-                                                    <span className="subscription-page__plan-currency">
-                                                        {plan.currency || 'USD'}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div className="subscription-page__plan-content">
-                                                <ul className="subscription-page__plan-features">
-                                                    <li className="subscription-page__plan-feature">
-                                                        <HiClock className="subscription-page__plan-feature-icon" />
-                                                        <span>
-                                                            {plan.days || 30} {t('subscriptionPage.plan.days') || 'days'}
-                                                        </span>
-                                                    </li>
-                                                    {plan.description && (
-                                                        <li className="subscription-page__plan-feature">
-                                                            <FaCheckCircle className="subscription-page__plan-feature-icon" />
-                                                            <span>{plan.description}</span>
-                                                        </li>
-                                                    )}
-                                                </ul>
-                                            </div>
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            )}
+                            <div className="subscription-page__legacy-plans">
+                                {hasWatchingPlan && (
+                                    <div className="subscription-page__legacy-plan-item">
+                                        <FaCheckCircle className="subscription-page__legacy-plan-icon" />
+                                        <span>{t('subscriptionPage.watchingPlan') || 'Watching Plan'} - {t('subscriptionPage.active') || 'Active'}</span>
+                                    </div>
+                                )}
+                                {hasDownloadsPlan && (
+                                    <div className="subscription-page__legacy-plan-item">
+                                        <FaCheckCircle className="subscription-page__legacy-plan-icon" />
+                                        <span>{t('subscriptionPage.downloadsPlan') || 'Downloads Plan'} - {t('subscriptionPage.active') || 'Active'}</span>
+                                    </div>
+                                )}
+                            </div>
                         </motion.div>
                     )}
 
@@ -498,11 +403,27 @@ export default function Subscription() {
                                         {t('subscriptionPage.mySubscriptionsDescription') || 'Subscriptions you created for your subscribers'}
                                     </p>
                                 </div>
-                                {mySubscriptions.length > 0 && (
-                                    <span className="subscription-page__subscriptions-count">
-                                        {mySubscriptions.length} {t('subscriptionPage.subscriptions') || 'subscriptions'}
-                                    </span>
-                                )}
+                                <div className="subscription-page__section-header-actions">
+                                    {mySubscriptions.length > 0 && (
+                                        <span className="subscription-page__subscriptions-count">
+                                            {mySubscriptions.length} {t('subscriptionPage.subscriptions') || 'subscriptions'}
+                                        </span>
+                                    )}
+                                    {plans.length > 0 && (
+                                        <button
+                                            onClick={() => {
+                                                // Scroll to plans section
+                                                const plansSection = document.querySelector('.subscription-page__section');
+                                                if (plansSection) {
+                                                    plansSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                                }
+                                            }}
+                                            className="subscription-page__create-button"
+                                        >
+                                            {t('subscriptionPage.createNewSubscription') || 'Create New Subscription'}
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                             {subscriptionsLoading ? (
                                 <div className="subscription-page__loading">
