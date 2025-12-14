@@ -31,41 +31,6 @@ export const promoterService = {
         }
     },
 
-    // Request withdrawal
-    requestWithdrawal: async (amount, paymentMethod, whatsappNumber, details, token) => {
-        try {
-            const response = await api.post('/auth/requestWithdrawal', {
-                amount,
-                paymentMethod,
-                whatsappNumber,
-                details
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            toast.success("Withdrawal request submitted successfully!", ToastOptions("success"));
-            return response.data;
-        } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to request withdrawal", ToastOptions("error"));
-            throw error.response?.data || error.message;
-        }
-    },
-
-    // Get withdrawal history
-    getWithdrawalHistory: async (token) => {
-        try {
-            const response = await api.get('/auth/getWithdrawalHistory', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
-        } catch (error) {
-            throw error.response?.data || error.message;
-        }
-    },
-
     // Get all promoters
     getAllPromoters: async (token) => {
         try {

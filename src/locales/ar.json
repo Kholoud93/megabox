@@ -1514,7 +1514,11 @@
     "confirmedRewards": "الأرباح المؤكدة",
     "pendingRewards": "الأرباح المعلقة",
     "totalEarnings": "إجمالي الأرباح",
-    "withdrawable": "القابل للسحب"
+    "withdrawable": "القابل للسحب",
+    "allWithdrawals": "الكل",
+    "allWithdrawalsDesc": "عرض جميع طلبات السحب",
+    "approvedOnly": "الموافق عليها",
+    "approvedOnlyDesc": "عرض السحوبات الموافق عليها فقط"
   },
   "adminPagination": {
     "page": "صفحة",

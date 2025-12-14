@@ -262,8 +262,20 @@ export default function Sidenav({ role }) {
     const filesNotInFolders = filesData?.files?.filter(file => !file.folderId && !file.folder) || [];
 
     const Logout = async () => {
-        // Keep FCM token on logout so users can still receive notifications
-        // Token will be updated/reused when they log back in
+        try {
+            // Delete FCM token on logout to stop receiving notifications
+            if (Token.MegaBox) {
+                try {
+                    await notificationService.deleteFcmToken(Token.MegaBox);
+                } catch (error) {
+                    // Silently fail - FCM token deletion is optional
+                    console.warn('Failed to delete FCM token:', error);
+                }
+            }
+        } catch (error) {
+            // Continue with logout even if FCM token deletion fails
+            console.warn('Error during logout cleanup:', error);
+        }
         
         toast.success(t('common.logoutSuccess') || 'Logged out successfully', ToastOptions('success'));
         removeToken("MegaBox", {

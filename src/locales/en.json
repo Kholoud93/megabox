@@ -1515,7 +1515,11 @@
     "confirmedRewards": "Confirmed Rewards",
     "pendingRewards": "Pending Rewards",
     "totalEarnings": "Total Earnings",
-    "withdrawable": "Withdrawable"
+    "withdrawable": "Withdrawable",
+    "allWithdrawals": "All",
+    "allWithdrawalsDesc": "View all withdrawal requests",
+    "approvedOnly": "Approved",
+    "approvedOnlyDesc": "View approved withdrawals only"
   },
   "adminPagination": {
     "page": "Page",

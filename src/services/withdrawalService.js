@@ -51,7 +51,8 @@ export const withdrawalService = {
             toast.error(error.response?.data?.message || "Failed to withdraw earnings", ToastOptions("error"));
             throw error.response?.data || error.message;
         }
-    }
+    },
+
 };
 
 export default withdrawalService;

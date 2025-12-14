@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useLanguage } from '../../context/LanguageContext'
 import { toast } from 'react-toastify'
 import { ToastOptions } from '../../helpers/ToastOptions'
+import { notificationService } from '../../services/api'
 import ThemeToggle from '../ThemeToggle/ThemeToggle'
 
 const Navbar = () => {
@@ -65,7 +66,22 @@ const Navbar = () => {
     }
   }
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      // Delete FCM token on logout to stop receiving notifications
+      if (MegaBox.MegaBox) {
+        try {
+          await notificationService.deleteFcmToken(MegaBox.MegaBox);
+        } catch (error) {
+          // Silently fail - FCM token deletion is optional
+          console.warn('Failed to delete FCM token:', error);
+        }
+      }
+    } catch (error) {
+      // Continue with logout even if FCM token deletion fails
+      console.warn('Error during logout cleanup:', error);
+    }
+    
     toast.success(t('common.logoutSuccess') || 'Logged out successfully', ToastOptions('success'));
     removeToken("MegaBox", {
       path: '/',

@@ -76,6 +76,16 @@ export default function SharedFiles() {
 
     const { data: sharedFoldersData, isLoading: foldersLoading } = useQuery("GetSharedFolders", GetSharedFolders);
 
+    // Get shared files by user
+    const { data: sharedFilesByUserData, isLoading: sharedFilesByUserLoading } = useQuery(
+        ['sharedFilesByUser'],
+        () => fileService.getSharedFilesByUser(Token.MegaBox),
+        {
+            enabled: !!Token.MegaBox,
+            retry: 2,
+        }
+    );
+
     const Representation = (path, type, close) => {
         if (close) {
             setPath(null);
@@ -236,6 +246,51 @@ export default function SharedFiles() {
                             </div>
                         </div>
                     </motion.div>
+
+                    {/* Shared Files by User Section */}
+                    {sharedFilesByUserData?.files && sharedFilesByUserData.files.length > 0 && (
+                        <motion.div
+                            className="revenue-table-section"
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            <div className="revenue-table-container">
+                                <div className="shared-links-header">
+                                    <h2 className="shared-links-header__title">{t("sharedFiles.sharedFiles") || "Shared Files"}</h2>
+                                    <p className="shared-links-header__description">
+                                        {t("sharedFiles.sharedFilesDescription") || "Files you've shared with others"}
+                                    </p>
+                                </div>
+
+                                {sharedFilesByUserLoading ? (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+                                        {[...Array(4)].map((_, i) => (
+                                            <div key={i} className="animate-pulse bg-gray-200 rounded-lg h-32"></div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+                                        {sharedFilesByUserData.files.map((file, index) => (
+                                            <motion.div
+                                                key={file._id || file.id || index}
+                                                className="bg-white rounded-lg border-2 border-indigo-200 p-4 hover:shadow-lg transition-shadow"
+                                                initial={{ opacity: 0, scale: 0.9 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                transition={{ delay: index * 0.1 }}
+                                            >
+                                                <File
+                                                    Type={getFileCategory(file?.fileType)}
+                                                    data={file}
+                                                    viewMode="grid"
+                                                />
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+                    )}
 
                     {/* Shared Folders Section */}
                     {sharedFoldersData?.folders && sharedFoldersData.folders.length > 0 && (

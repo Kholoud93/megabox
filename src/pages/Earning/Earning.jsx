@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './Earning.scss';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
@@ -79,6 +79,7 @@ export default function Earning() {
     const [touched, setTouched] = useState({});
     const [showRecordModal, setShowRecordModal] = useState(false);
     const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
+    const [viewMode, setViewMode] = useState('all'); // 'all', 'approved'
     const queryClient = useQueryClient();
 
     // Payment methods details
@@ -107,7 +108,7 @@ export default function Earning() {
 
     const selectedPaymentDetails = paymentMethod ? paymentMethodsDetails[paymentMethod] : null;
 
-    // Fetch withdrawal history
+    // Fetch withdrawal history (promoter's own withdrawals)
     const { data: withdrawalHistory, isLoading: withdrawalHistoryLoading } = useQuery(
         ['withdrawalHistory'],
         async () => {
@@ -118,6 +119,21 @@ export default function Earning() {
             retry: false
         }
     );
+
+    // Filter withdrawals client-side based on view mode (promoter's own data only)
+    const displayWithdrawals = useMemo(() => {
+        const allWithdrawals = withdrawalHistory?.withdrawals || withdrawalHistory?.data || [];
+        
+        if (viewMode === 'approved') {
+            // Filter to show only approved withdrawals
+            return allWithdrawals.filter(w => w.status === 'approved' || w.status === 'Approved');
+        }
+        
+        // 'all' mode - show all withdrawals
+        return allWithdrawals;
+    }, [withdrawalHistory, viewMode]);
+
+    const isLoadingWithdrawals = withdrawalHistoryLoading;
 
     // Request withdrawal mutation
     const requestWithdrawalMutation = useMutation(
@@ -537,12 +553,40 @@ export default function Earning() {
                             </div>
 
                             <div className="withdraw-record-modal__content">
-                                {withdrawalHistoryLoading ? (
+                                {/* Filter Buttons */}
+                                <div className="withdraw-filters">
+                                    <button
+                                        type="button"
+                                        onClick={() => setViewMode('all')}
+                                        className={`withdraw-filter-btn ${viewMode === 'all' ? 'active' : ''}`}
+                                    >
+                                        <span className="filter-title">
+                                            {t('withdrawSection.allWithdrawals') || 'All'}
+                                        </span>
+                                        <span className="filter-desc">
+                                            {t('withdrawSection.allWithdrawalsDesc') || 'View all withdrawal requests'}
+                                        </span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setViewMode('approved')}
+                                        className={`withdraw-filter-btn ${viewMode === 'approved' ? 'active' : ''}`}
+                                    >
+                                        <span className="filter-title">
+                                            {t('withdrawSection.approvedOnly') || 'Approved'}
+                                        </span>
+                                        <span className="filter-desc">
+                                            {t('withdrawSection.approvedOnlyDesc') || 'View approved withdrawals only'}
+                                        </span>
+                                    </button>
+                                </div>
+
+                                {isLoadingWithdrawals ? (
                                     <div className="withdraw-record-modal__loading">
                                         <div className="withdraw-record-modal__spinner"></div>
                                         <p>{t('withdrawSection.loadingHistory') || 'Loading withdrawal history...'}</p>
                                     </div>
-                                ) : withdrawalHistory?.withdrawals?.length > 0 || withdrawalHistory?.data?.length > 0 ? (
+                                ) : displayWithdrawals.length > 0 ? (
                                     <div className="withdraw-table-container">
                                         <table className="withdraw-table">
                                             <thead>
@@ -554,7 +598,7 @@ export default function Earning() {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {(withdrawalHistory?.withdrawals || withdrawalHistory?.data || []).map((withdrawal, index) => (
+                                                {displayWithdrawals.map((withdrawal, index) => (
                                                     <tr key={withdrawal?._id || withdrawal?.id || index}>
                                                         <td className="withdraw-date">
                                                             {withdrawal?.createdAt 

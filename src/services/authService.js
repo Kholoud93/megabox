@@ -125,33 +125,6 @@ export const authService = {
         }
     },
 
-    // Promoter endpoints
-    getUserEarnings: async (token) => {
-        try {
-            const response = await api.get('/auth/getUserEarnings', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
-        } catch (error) {
-            throw error.response?.data || error.message;
-        }
-    },
-
-    getShareLinkAnalytics: async (token) => {
-        try {
-            const response = await api.get('/auth/getShareLinkAnalytics', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
-        } catch (error) {
-            throw error.response?.data || error.message;
-        }
-    },
-
     getUserAnalytics: async (token) => {
         try {
             const response = await api.get('/auth/getUserAnalytics', {
