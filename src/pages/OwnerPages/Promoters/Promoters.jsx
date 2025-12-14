@@ -4,14 +4,17 @@ import { useQuery, useQueryClient } from 'react-query';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { API_URL, adminService, promoterService } from '../../../services/api';
 import { Link, useNavigate } from 'react-router-dom';
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdClose } from "react-icons/md";
 import { MdAttachMoney } from "react-icons/md";
+import { FaCrown } from "react-icons/fa";
 import { useLanguage } from '../../../context/LanguageContext';
 import { useCookies } from 'react-cookie';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
 import Pagination from '../../../components/Pagination/Pagination';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 export default function Promoters() {
     const { t, language } = useLanguage();
@@ -21,6 +24,7 @@ export default function Promoters() {
     const itemsPerPage = 10;
     const [deleteConfirm, setDeleteConfirm] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [premiumModal, setPremiumModal] = useState(null);
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
     const queryClient = useQueryClient();
@@ -73,6 +77,16 @@ export default function Promoters() {
                     return false;
                 }
                 if (filters.downloadsPlan === 'unsubscribed' && hasDownloadsPlan) {
+                    return false;
+                }
+            }
+
+            // Premium status filter
+            if (filters.premiumStatus !== undefined) {
+                if (filters.premiumStatus === 'premium' && !promoter.isBrimume) {
+                    return false;
+                }
+                if (filters.premiumStatus === 'notPremium' && promoter.isBrimume) {
                     return false;
                 }
             }
@@ -172,6 +186,7 @@ export default function Promoters() {
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.email")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.watchingPlan")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.downloadsPlan")}</th>
+                                <th scope="col" className="px-6 py-3">{t("adminUsers.premiumStatus") || t("adminPromoters.premiumStatus")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.actions")}</th>
                             </tr>
                         </thead>
@@ -199,6 +214,17 @@ export default function Promoters() {
                                                 )}
                                             </td>
 
+                                            <td data-label={t("adminUsers.premiumStatus") || t("adminPromoters.premiumStatus")}>
+                                                {ele.isBrimume ? (
+                                                    <div className='flex items-center gap-3'>
+                                                        <span className='text-yellow-600 font-semibold'>{t("adminUsers.premium") || t("adminPromoters.premium")}</span>
+                                                        <FaCrown className='text-yellow-500' size={18} />
+                                                    </div>
+                                                ) : (
+                                                    <div className='text-gray-500'>{t("adminUsers.notPremium") || t("adminPromoters.notPremium")}</div>
+                                                )}
+                                            </td>
+
                                             <td data-label={t("adminPromoters.actions")}>
                                                 <div className="action-buttons">
                                                     <Link
@@ -221,7 +247,7 @@ export default function Promoters() {
                                     )
                                 })) : (
                                 <tr>
-                                    <td colSpan="5" className="text-center py-8 text-gray-500">
+                                    <td colSpan="6" className="text-center py-8 text-gray-500">
                                         {t('adminPromoters.noPromotersFound')}
                                     </td>
                                 </tr>
@@ -282,6 +308,107 @@ export default function Promoters() {
                             </div>
                         </motion.div>
                     </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Premium Modal */}
+            <AnimatePresence>
+                {premiumModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6"
+                        >
+                            <div className="flex justify-between items-center border-b pb-4 mb-4">
+                                <h3 className="text-xl font-bold text-gray-900">
+                                    {premiumModal.isBrimume ? (t("adminUsers.removePremium") || t("adminPromoters.removePremium")) : (t("adminUsers.makePremium") || t("adminPromoters.makePremium"))}
+                                </h3>
+                                <button
+                                    onClick={() => {
+                                        setPremiumModal(null);
+                                        premiumFormik.resetForm();
+                                    }}
+                                    className="text-gray-500 hover:text-gray-700"
+                                >
+                                    <MdClose size={24} />
+                                </button>
+                            </div>
+                            <div className="mb-4">
+                                <p className="text-gray-600 mb-4">
+                                    {t("adminPromoters.promoter") || t("adminUsers.user")}: <strong>{premiumModal.username}</strong> ({premiumModal.email})
+                                </p>
+                                {premiumModal.isBrimume && premiumModal.premiumExpiration && (
+                                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+                                        <p className="text-sm text-yellow-800">
+                                            {t("adminUsers.currentPremiumExpires") || t("adminPromoters.currentPremiumExpires")}: <strong>{new Date(premiumModal.premiumExpiration).toLocaleDateString()}</strong>
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                            {premiumModal.isBrimume ? (
+                                <div>
+                                    <p className="text-gray-600 mb-4">{t("adminUsers.removePremiumConfirm") || t("adminPromoters.removePremiumConfirm")}</p>
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={() => {
+                                                setPremiumModal(null);
+                                                premiumFormik.resetForm();
+                                            }}
+                                            className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                                        >
+                                            {t("adminUsers.cancel") || t("adminPromoters.cancel")}
+                                        </button>
+                                        <button
+                                            onClick={() => handleTogglePremium(premiumModal._id || premiumModal.id, premiumModal.isBrimume)}
+                                            className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                                        >
+                                            {t("adminUsers.removePremium") || t("adminPromoters.removePremium")}
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <form onSubmit={premiumFormik.handleSubmit}>
+                                    <div className="mb-4">
+                                        <label htmlFor="expirationDate" className="block mb-2 text-sm font-medium text-gray-900">
+                                            {t("adminUsers.premiumExpirationDate") || t("adminPromoters.premiumExpirationDate")}
+                                        </label>
+                                        <input
+                                            type="datetime-local"
+                                            id="expirationDate"
+                                            name="expirationDate"
+                                            value={premiumFormik.values.expirationDate}
+                                            onChange={premiumFormik.handleChange}
+                                            onBlur={premiumFormik.handleBlur}
+                                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5"
+                                        />
+                                        {premiumFormik.touched.expirationDate && premiumFormik.errors.expirationDate && (
+                                            <p className="mt-1 text-sm text-red-600">{premiumFormik.errors.expirationDate}</p>
+                                        )}
+                                    </div>
+                                    <div className="flex gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setPremiumModal(null);
+                                                premiumFormik.resetForm();
+                                            }}
+                                            className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                                        >
+                                            {t("adminUsers.cancel") || t("adminPromoters.cancel")}
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                                        >
+                                            {t("adminUsers.makePremium") || t("adminPromoters.makePremium")}
+                                        </button>
+                                    </div>
+                                </form>
+                            )}
+                        </motion.div>
+                    </div>
                 )}
             </AnimatePresence>
         </div>

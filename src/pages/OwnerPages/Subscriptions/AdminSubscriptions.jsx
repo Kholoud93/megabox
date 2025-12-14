@@ -53,9 +53,32 @@ export default function AdminSubscriptions() {
             return await adminService.approveSubscription(subscriptionId, token);
         },
         {
-            onSuccess: () => {
+            onSuccess: async () => {
                 queryClient.invalidateQueries('allSubscriptions');
-                toast.success(t('adminSubscriptions.subscriptionApproved') || 'Subscription approved successfully!', ToastOptions("success"));
+                
+                // Automatically activate premium for the user/promoter
+                if (selectedSubscription) {
+                    const userId = getUserIdFromSubscription(selectedSubscription);
+                    if (userId) {
+                        const durationDays = selectedSubscription.durationDays || selectedSubscription.days || 30;
+                        try {
+                            await adminService.toggleBrimumeByOwner(userId, true, durationDays, token);
+                            queryClient.invalidateQueries("getAllusers");
+                            queryClient.invalidateQueries("getAllPromoters");
+                            toast.success(t('adminSubscriptions.subscriptionApprovedAndPremium') || 'Subscription approved and premium activated successfully!', ToastOptions("success"));
+                        } catch (premiumError) {
+                            // Premium activation failed, but subscription was approved
+                            toast.success(t('adminSubscriptions.subscriptionApproved') || 'Subscription approved successfully!', ToastOptions("success"));
+                            toast.warning(t('adminSubscriptions.premiumActivationFailed') || 'Premium activation failed. Please activate manually.', ToastOptions("warning"));
+                        }
+                    } else {
+                        toast.success(t('adminSubscriptions.subscriptionApproved') || 'Subscription approved successfully!', ToastOptions("success"));
+                        toast.warning(t('adminSubscriptions.userNotFound') || 'User ID not found. Premium not activated.', ToastOptions("warning"));
+                    }
+                } else {
+                    toast.success(t('adminSubscriptions.subscriptionApproved') || 'Subscription approved successfully!', ToastOptions("success"));
+                }
+                
                 setSelectedSubscription(null);
             },
             onError: (error) => {
@@ -106,6 +129,16 @@ export default function AdminSubscriptions() {
             approveSubscriptionMutation.mutate(subscriptionId);
         }
     };
+
+    // Get user ID from subscription
+    const getUserIdFromSubscription = (subscription) => {
+        return subscription.userId?._id || subscription.userId?.id || subscription.userId ||
+               subscription.promoterId?._id || subscription.promoterId?.id || subscription.promoterId ||
+               subscription.createdBy?._id || subscription.createdBy?.id || subscription.createdBy ||
+               subscription.promoter?._id || subscription.promoter?.id ||
+               subscription.user?._id || subscription.user?.id;
+    };
+
 
     const getUserProfileLink = (subscription) => {
         const userId = subscription.userId?._id || subscription.userId?.id || subscription.userId ||
@@ -378,6 +411,7 @@ export default function AdminSubscriptions() {
                     </motion.div>
                 )}
             </AnimatePresence>
+
         </div>
     );
 }

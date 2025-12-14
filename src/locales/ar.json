@@ -733,7 +733,11 @@
     "viewInvoice": "عرض الفاتورة",
     "paymentMethod": "طريقة الدفع",
     "duration": "المدة",
-    "subscriberName": "اسم المشترك"
+    "subscriberName": "اسم المشترك",
+    "makePremium": "تحويل إلى بريميوم",
+    "premiumExpirationDate": "تاريخ انتهاء البريميوم",
+    "subscriptionApprovedAndPremium": "تم الموافقة على الاشتراك وتفعيل البريميوم بنجاح!",
+    "premiumActivationFailed": "فشل تفعيل البريميوم. يرجى التفعيل يدوياً."
   },
   "adminPlans": {
     "title": "إدارة الخطط",
@@ -948,7 +952,17 @@
     "deletePromoterConfirm": "هل أنت متأكد من حذف هذا المروج؟",
     "deletePromoterWarning": "لا يمكن التراجع عن هذا الإجراء.",
     "promoterDeletedSuccess": "تم حذف المروج بنجاح",
-    "deletePromoterFailed": "فشل في حذف المروج"
+    "deletePromoterFailed": "فشل في حذف المروج",
+    "premiumStatus": "حالة البريميوم",
+    "premium": "بريميوم",
+    "notPremium": "ليس بريميوم",
+    "makePremium": "تحويل إلى بريميوم",
+    "removePremium": "إزالة البريميوم",
+    "removePremiumConfirm": "هل أنت متأكد من إزالة حالة البريميوم من هذا المروج؟",
+    "premiumExpirationDate": "تاريخ انتهاء البريميوم",
+    "currentPremiumExpires": "البريميوم الحالي ينتهي",
+    "promoter": "المروج",
+    "cancel": "إلغاء"
   },
   "adminReports": {
     "title": "الشكاوى",

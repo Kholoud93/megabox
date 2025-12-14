@@ -736,7 +736,11 @@
     "viewInvoice": "View Invoice",
     "paymentMethod": "Payment Method",
     "duration": "Duration",
-    "subscriberName": "Subscriber Name"
+    "subscriberName": "Subscriber Name",
+    "makePremium": "Make Premium",
+    "premiumExpirationDate": "Premium Expiration Date",
+    "subscriptionApprovedAndPremium": "Subscription approved and premium activated successfully!",
+    "premiumActivationFailed": "Premium activation failed. Please activate manually."
   },
   "adminPlans": {
     "title": "Plans Management",
@@ -951,7 +955,17 @@
     "deletePromoterConfirm": "Are you sure you want to delete this promoter?",
     "deletePromoterWarning": "This action cannot be undone.",
     "promoterDeletedSuccess": "Promoter deleted successfully",
-    "deletePromoterFailed": "Failed to delete promoter"
+    "deletePromoterFailed": "Failed to delete promoter",
+    "premiumStatus": "Premium Status",
+    "premium": "Premium",
+    "notPremium": "Not Premium",
+    "makePremium": "Make Premium",
+    "removePremium": "Remove Premium",
+    "removePremiumConfirm": "Are you sure you want to remove premium status from this promoter?",
+    "premiumExpirationDate": "Premium Expiration Date",
+    "currentPremiumExpires": "Current Premium Expires",
+    "promoter": "Promoter",
+    "cancel": "Cancel"
   },
   "adminReports": {
     "title": "Complaints",

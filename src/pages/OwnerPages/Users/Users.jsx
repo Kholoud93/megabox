@@ -416,9 +416,12 @@ export default function Users() {
                                             <td className="px-6 py-4" data-label={t("adminUsers.email")}>{ele.email}</td>
                                             <td className="px-6 py-4" data-label={t("adminUsers.premiumStatus")}>
                                                 {ele.isBrimume ? (
-                                                    <div className='flex items-center gap-3'>{t("adminUsers.premium")} <FaCrown className='primcrown' /></div>
+                                                    <div className='flex items-center gap-3'>
+                                                        <span className='text-yellow-600 font-semibold'>{t("adminUsers.premium")}</span>
+                                                        <FaCrown className='text-yellow-500' size={18} />
+                                                    </div>
                                                 ) : (
-                                                    <div>{t("adminUsers.notPremium")}</div>
+                                                    <div className='text-gray-500'>{t("adminUsers.notPremium")}</div>
                                                 )}
                                             </td>
                                             <td className="px-6 py-4" data-label={t("adminUsers.status")}>
