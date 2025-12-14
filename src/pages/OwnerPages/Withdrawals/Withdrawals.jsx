@@ -275,7 +275,12 @@ export default function Withdrawals() {
                                         setShowApprovedOnly(false);
                                     }}
                                 >
-                                    {t('adminWithdrawals.allWithdrawals') || 'All Withdrawals'}
+                                    <span className="filter-title">
+                                        {t('adminWithdrawals.allWithdrawals') || 'All'}
+                                    </span>
+                                    <span className="filter-desc">
+                                        {t('adminWithdrawals.allWithdrawalsDesc') || 'View all withdrawal requests'}
+                                    </span>
                                 </button>
                                 <button
                                     className={`admin-withdrawals-toggle__btn ${viewMode === 'approved' ? 'active' : ''}`}
@@ -284,13 +289,23 @@ export default function Withdrawals() {
                                         setShowApprovedOnly(true);
                                     }}
                                 >
-                                    {t('adminWithdrawals.approvedOnly') || 'Approved Only'}
+                                    <span className="filter-title">
+                                        {t('adminWithdrawals.approvedOnly') || 'Approved'}
+                                    </span>
+                                    <span className="filter-desc">
+                                        {t('adminWithdrawals.approvedOnlyDesc') || 'View approved withdrawals only'}
+                                    </span>
                                 </button>
                                 <button
                                     className={`admin-withdrawals-toggle__btn ${viewMode === 'userWithdrawals' ? 'active' : ''}`}
                                     onClick={() => setViewMode('userWithdrawals')}
                                 >
-                                    {t('adminWithdrawals.userWithdrawals') || 'User Withdrawals'}
+                                    <span className="filter-title">
+                                        {t('adminWithdrawals.userWithdrawals') || 'User'}
+                                    </span>
+                                    <span className="filter-desc">
+                                        {t('adminWithdrawals.userWithdrawalsDesc') || 'View user withdrawals'}
+                                    </span>
                                 </button>
                             </div>
                         </div>

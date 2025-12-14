@@ -35,18 +35,24 @@
 
     &__title {
         @include mixins.responsive-font(vars.$text-4xl, vars.$text-3xl, vars.$text-2xl, vars.$text-xl);
-        font-weight: 800;
-        color: vars.$indigo-900;
-        margin-bottom: 1rem;
-        letter-spacing: -0.02em;
+        
+        & {
+            font-weight: 800;
+            color: vars.$indigo-900;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
     }
 
     &__subtitle {
         @include mixins.responsive-font(vars.$text-lg, vars.$text-base, vars.$text-base, vars.$text-sm);
-        color: vars.$indigo-700;
-        max-width: 700px;
-        margin: 0 auto;
-        line-height: 1.7;
+        
+        & {
+            color: vars.$indigo-700;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
     }
 
     &__content {
@@ -115,14 +121,20 @@
 
     &__stat-value {
         @include mixins.responsive-font(vars.$text-2xl, vars.$text-xl, vars.$text-lg, vars.$text-base);
-        font-weight: 800;
-        color: vars.$indigo-900;
-        margin-bottom: 0.25rem;
+        
+        & {
+            font-weight: 800;
+            color: vars.$indigo-900;
+            margin-bottom: 0.25rem;
+        }
     }
 
     &__stat-label {
         @include mixins.responsive-font(vars.$text-sm, vars.$text-xs, vars.$text-xs, vars.$text-xs);
-        color: vars.$indigo-700;
+        
+        & {
+            color: vars.$indigo-700;
+        }
     }
 
     // Chart
@@ -147,8 +159,11 @@
 
     &__chart-title {
         @include mixins.responsive-font(vars.$text-xl, vars.$text-lg, vars.$text-base, vars.$text-sm);
-        font-weight: 700;
-        color: vars.$indigo-900;
+        
+        & {
+            font-weight: 700;
+            color: vars.$indigo-900;
+        }
     }
 
     &__chart-content {
@@ -194,8 +209,11 @@
         flex: 1;
         text-align: center;
         @include mixins.responsive-font(vars.$text-xs, vars.$text-xs, vars.$text-xs, vars.$text-xs);
-        color: vars.$indigo-600;
-        font-weight: 500;
+        
+        & {
+            color: vars.$indigo-600;
+            font-weight: 500;
+        }
     }
 
     // Files Table
@@ -221,8 +239,11 @@
 
     &__files-title {
         @include mixins.responsive-font(vars.$text-xl, vars.$text-lg, vars.$text-base, vars.$text-sm);
-        font-weight: 700;
-        color: vars.$indigo-900;
+        
+        & {
+            font-weight: 700;
+            color: vars.$indigo-900;
+        }
     }
 
     &__files-table {
@@ -258,10 +279,13 @@
 
     &__files-cell {
         @include mixins.responsive-font(vars.$text-base, vars.$text-sm, vars.$text-sm, vars.$text-xs);
-        color: vars.$indigo-700;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
+        
+        & {
+            color: vars.$indigo-700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
         &--name {
             font-weight: 500;
@@ -285,9 +309,12 @@
 
     &__note-text {
         @include mixins.responsive-font(vars.$text-base, vars.$text-sm, vars.$text-sm, vars.$text-xs);
-        color: vars.$indigo-700;
-        font-style: italic;
-        margin: 0;
+        
+        & {
+            color: vars.$indigo-700;
+            font-style: italic;
+            margin: 0;
+        }
     }
 }
 

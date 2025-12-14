@@ -760,6 +760,11 @@
     "withdrawals": "سحوبات",
     "allWithdrawals": "جميع السحوبات",
     "approvedOnly": "الموافق عليها فقط",
+    "approvedOnlyDesc": "عرض السحوبات الموافق عليها فقط",
+    "userWithdrawals": "المستخدم",
+    "userWithdrawalsDesc": "عرض سحوبات المستخدم",
+    "allWithdrawals": "الكل",
+    "allWithdrawalsDesc": "عرض جميع طلبات السحب",
     "userWithdrawals": "سحوبات المستخدمين"
   },
   "adminUserStats": {

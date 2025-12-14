@@ -22,10 +22,13 @@
 
     &__title {
         @include mixins.responsive-font(vars.$text-4xl, vars.$text-3xl, vars.$text-2xl, vars.$text-xl);
-        font-weight: 800;
-        margin-bottom: 1rem;
-        color: vars.$indigo-900;
-        letter-spacing: -0.02em;
+        
+        & {
+            font-weight: 800;
+            margin-bottom: 1rem;
+            color: vars.$indigo-900;
+            letter-spacing: -0.02em;
+        }
 
         @include mixins.media-breakpoint-down(md) {
             margin-bottom: 0.75rem;
@@ -34,11 +37,14 @@
 
     &__subtitle {
         @include mixins.responsive-font(vars.$text-lg, vars.$text-base, vars.$text-base, vars.$text-sm);
-        color: vars.$indigo-700;
-        margin-bottom: 3rem;
-        max-width: 700px;
-        margin-left: auto;
-        margin-right: auto;
+        
+        & {
+            color: vars.$indigo-700;
+            margin-bottom: 3rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
 
         @include mixins.media-breakpoint-down(md) {
             margin-bottom: 2.5rem;
@@ -141,16 +147,22 @@
 
     &__card-title {
         @include mixins.responsive-font(vars.$text-2xl, vars.$text-xl, vars.$text-lg, vars.$text-base);
-        font-weight: 700;
-        margin-bottom: 1rem;
-        color: vars.$indigo-900;
+        
+        & {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: vars.$indigo-900;
+        }
     }
 
     &__card-description {
         @include mixins.responsive-font(vars.$text-base, vars.$text-sm, vars.$text-sm, vars.$text-xs);
-        color: vars.$indigo-700;
-        margin-bottom: 1.5rem;
-        line-height: 1.7;
+        
+        & {
+            color: vars.$indigo-700;
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
     }
 
     &__link {
@@ -159,8 +171,8 @@
         gap: 0.5rem;
         color: vars.$indigo-600;
         font-weight: 600;
-        @include mixins.responsive-font(vars.$text-base, vars.$text-sm, vars.$text-sm, vars.$text-xs);
         @include mixins.transition(all, 0.3s);
+        @include mixins.responsive-font(vars.$text-base, vars.$text-sm, vars.$text-sm, vars.$text-xs);
 
         &:hover {
             color: vars.$indigo-700;

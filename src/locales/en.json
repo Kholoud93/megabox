@@ -761,6 +761,11 @@
     "withdrawals": "withdrawals",
     "allWithdrawals": "All Withdrawals",
     "approvedOnly": "Approved Only",
+    "approvedOnlyDesc": "View approved withdrawals only",
+    "userWithdrawals": "User",
+    "userWithdrawalsDesc": "View user withdrawals",
+    "allWithdrawals": "All",
+    "allWithdrawalsDesc": "View all withdrawal requests",
     "userWithdrawals": "User Withdrawals"
   },
   "adminUserStats": {

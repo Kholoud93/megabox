@@ -8,7 +8,6 @@ import { usePageSEO } from '../../hooks/usePageSEO';
 import PartnerCTA from '../../components/PartnerCta/PartnerCta';
 import api from '../../services/api';
 import { FaShareAlt, FaUsers, FaDollarSign, FaChartLine, FaDownload, FaEye, FaUserPlus, FaCheckCircle, FaCloud, FaServer, FaCode, FaShieldAlt, FaLink, FaBullhorn, FaWallet } from 'react-icons/fa';
-import { Trophy, Star, CheckCircle } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, FreeMode } from 'swiper/modules';
 import 'swiper/css';
@@ -458,7 +457,7 @@ export default function PromotersPage() {
                                     className="promoters-features__card"
                                 >
                                     <div className="promoters-features__header">
-                                        <CheckCircle className="promoters-features__check-icon" />
+                                        <FaCheckCircle className="promoters-features__check-icon" />
                                         <h3 className="promoters-features__card-title">{feature.title}</h3>
                                     </div>
                                     <p className="promoters-features__card-desc">{feature.desc}</p>
