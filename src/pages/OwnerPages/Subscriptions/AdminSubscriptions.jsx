@@ -5,12 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import { adminService } from '../../../services/adminService';
 import { useLanguage } from '../../../context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaCrown, FaTimes, FaUser, FaPhone, FaCalendar, FaFileInvoice, FaCheckCircle, FaExternalLinkAlt, FaEye } from 'react-icons/fa';
+import { FaCrown, FaTimes, FaUser, FaPhone, FaCalendar, FaFileInvoice, FaExternalLinkAlt, FaEye } from 'react-icons/fa';
 import { HiArrowRight, HiArrowLeft, HiCurrencyDollar, HiClock } from 'react-icons/hi2';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
 import Loading from '../../../components/Loading/Loading';
 import Pagination from '../../../components/Pagination/Pagination';
+import SearchFilter from '../../../components/SearchFilter/SearchFilter';
 import './Subscriptions.scss';
 
 export default function AdminSubscriptions() {
@@ -188,6 +189,7 @@ export default function AdminSubscriptions() {
 
                 {/* Search */}
                 <div className="admin-subscriptions-search">
+                    <FiSearch className="admin-subscriptions-search__icon" />
                     <input
                         type="text"
                         placeholder={t('adminSubscriptions.searchSubscriptions') || 'Search by subscriber, plan, or phone...'}
@@ -260,24 +262,11 @@ export default function AdminSubscriptions() {
                                             <div className="action-buttons">
                                                 <button
                                                     onClick={() => handleViewDetails(subscription)}
-                                                    className="text-indigo-600 hover:text-indigo-800 transition-colors"
+                                                    className="action-buttons__view-btn"
                                                     title={t("adminSubscriptions.viewDetails") || "View Details"}
                                                 >
                                                     <FaEye size={20} />
                                                 </button>
-                                                {(subscription.status === 'pending' || !subscription.status) && (
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            handleApproveSubscription(subscription);
-                                                        }}
-                                                        disabled={isApproving}
-                                                        className="text-green-600 hover:text-green-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                                        title={t("adminSubscriptions.approve") || "Approve Subscription"}
-                                                    >
-                                                        <FaCheckCircle size={20} />
-                                                    </button>
-                                                )}
                                             </div>
                                         </td>
                                     </tr>

@@ -340,37 +340,44 @@
 }
 
 .admin-subscriptions-table-wrapper {
-    padding: 0 1rem;
+    padding: 1.5rem;
     background: white;
-    border-radius: 0.75rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.12), 
+                0 1px 3px rgba(0, 0, 0, 0.08);
     border: 1px solid #e0e7ff;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    position: relative;
 
     @include mix.media-breakpoint-down(md) {
-        padding: 0 0.5rem;
+        padding: 1rem;
         overflow-x: scroll;
     }
 
     .admin-users-table {
         width: 100%;
-        border-collapse: collapse;
+        border-collapse: separate;
+        border-spacing: 0;
         margin: 0;
 
         &__header {
-            background: #eef2ff;
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
             border-bottom: 2px solid #c7d2fe;
+            position: sticky;
+            top: 0;
+            z-index: 10;
 
             th {
-                padding: 1rem;
+                padding: 1.25rem 1rem;
                 text-align: left;
-                font-weight: 600;
+                font-weight: 700;
                 color: #4c1d95;
                 font-size: 0.875rem;
                 text-transform: uppercase;
-                letter-spacing: 0.5px;
+                letter-spacing: 0.8px;
                 border-bottom: 2px solid #c7d2fe;
+                background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
 
                 [dir="rtl"] & {
                     text-align: right;
@@ -385,33 +392,47 @@
         tbody {
             tr {
                 border-bottom: 1px solid #f3f4f6;
-                transition: background-color 0.2s;
+                transition: all 0.3s ease;
+                background: white;
 
                 &:hover {
-                    background: #eef2ff;
+                    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+                    transform: scale(1.01);
+                    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+                }
+
+                &:last-child {
+                    border-bottom: none;
                 }
 
                 @include mix.media-breakpoint-down(md) {
                     display: block;
                     margin-bottom: 1rem;
                     border: 1px solid #e0e7ff;
-                    border-radius: 0.5rem;
+                    border-radius: 0.75rem;
                     padding: 1rem;
                     background: white;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+                    
+                    &:hover {
+                        transform: none;
+                        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+                    }
                 }
             }
 
             td {
-                padding: 1rem;
+                padding: 1.25rem 1rem;
                 color: #5b21b6;
                 vertical-align: middle;
+                font-size: 0.95rem;
 
                 @include mix.media-breakpoint-down(md) {
                     display: block;
-                    margin-bottom: 0.5rem;
+                    margin-bottom: 0.75rem;
                     position: static;
                     text-align: left;
-                    padding: 0.5rem 0;
+                    padding: 0.75rem 0;
                     border-bottom: 1px solid #f3f4f6;
 
                     [dir="rtl"] & {
@@ -420,6 +441,7 @@
 
                     &:last-child {
                         border-bottom: none;
+                        margin-bottom: 0;
                     }
                 }
 
@@ -430,12 +452,12 @@
                     @include mix.media-breakpoint-down(md) {
                         display: block;
                         position: static;
-                        font-weight: 600;
-                        color: #5b21b6;
+                        font-weight: 700;
+                        color: #4c1d95;
                         font-size: 0.875rem;
                         text-transform: uppercase;
                         letter-spacing: 0.5px;
-                        margin-bottom: 0.25rem;
+                        margin-bottom: 0.5rem;
                     }
                 }
             }
@@ -489,6 +511,36 @@
         width: 100%;
         flex-direction: row;
         justify-content: center;
+    }
+    
+    &__view-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+        color: white;
+        border: none;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
+        
+        &:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+        }
+        
+        &:active {
+            transform: translateY(0) scale(1);
+        }
+        
+        @include mix.media-breakpoint-down(md) {
+            width: 36px;
+            height: 36px;
+        }
     }
 }
 
@@ -1047,19 +1099,65 @@
 // Admin Subscriptions List Styles
 .admin-subscriptions-search {
     margin-bottom: 2rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+    
+    &__icon {
+        position: absolute;
+        left: 1.25rem;
+        color: #9ca3af;
+        font-size: 1.25rem;
+        z-index: 1;
+        pointer-events: none;
+        transition: all 0.3s ease;
+        
+        [dir="rtl"] & {
+            left: auto;
+            right: 1.25rem;
+        }
+    }
     
     &__input {
         width: 100%;
-        padding: 0.875rem 1.25rem;
+        padding: 1rem 1.5rem;
+        padding-left: 3.5rem;
         border: 2px solid #e0e7ff;
-        border-radius: 0.75rem;
+        border-radius: 1rem;
         font-size: 1rem;
-        transition: all 0.2s ease;
+        background: white;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+        
+        [dir="rtl"] & {
+            padding-left: 1.5rem;
+            padding-right: 3.5rem;
+        }
+        
+        &::placeholder {
+            color: #9ca3af;
+        }
         
         &:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15), 
+                        0 4px 12px rgba(99, 102, 241, 0.2);
+            transform: translateY(-1px);
+            
+            ~ .admin-subscriptions-search__icon {
+                color: #667eea;
+                transform: scale(1.1);
+            }
+        }
+        
+        &:hover {
+            border-color: #c7d2fe;
+            box-shadow: 0 2px 12px rgba(99, 102, 241, 0.12);
+            
+            ~ .admin-subscriptions-search__icon {
+                color: #6366f1;
+            }
         }
     }
 }
