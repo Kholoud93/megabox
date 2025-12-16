@@ -680,7 +680,7 @@
   },
   "adminSubscriptions": {
     "title": "Subscriptions Management",
-    "subtitle": "View and manage all platform subscriptions",
+    "subtitle": "Manage and monitor all user subscriptions across the platform",
     "comingSoon": "Subscriptions management page coming soon...",
     "backToAnalytics": "Back to Analytics",
     "loading": "Loading subscriptions...",
@@ -705,6 +705,7 @@
     "createSubscription": "Create Subscription",
     "subscriberName": "Subscriber Name",
     "phone": "Phone Number",
+    "email": "Email",
     "planName": "Plan Name",
     "selectPlan": "Select Plan",
     "durationDays": "Duration (Days)",
@@ -717,12 +718,7 @@
     "selectedPlan": "Selected Plan",
     "submitSubscription": "Submit Subscription",
     "submitting": "Submitting...",
-    "days": "days",
-    "price": "price",
     "createdAt": "Created At",
-    "title": "Plans Management",
-    "subtitle": "Manage subscription plans",
-    "loading": "Loading plans...",
     "noPlans": "No plans available",
     "noPlansFound": "No plans found matching your criteria",
     "plans": "plans",
@@ -752,15 +748,14 @@
     "viewInvoice": "View Invoice",
     "paymentMethod": "Payment Method",
     "duration": "Duration",
-    "subscriberName": "Subscriber Name",
     "makePremium": "Make Premium",
     "premiumExpirationDate": "Premium Expiration Date",
     "subscriptionApprovedAndPremium": "Subscription approved and premium activated successfully!",
     "premiumActivationFailed": "Premium activation failed. Please activate manually."
   },
   "adminPlans": {
-    "title": "Plans Management",
-    "subtitle": "Manage subscription plans"
+    "title": "Subscription Plans Management",
+    "subtitle": "Create, edit, and manage subscription plans for your platform"
   },
   "subscribe": {
     "title": "Subscribe to a Plan",
@@ -856,6 +851,11 @@
     "whatsappNumber": "WhatsApp Number",
     "details": "Details",
     "rejectionReason": "Rejection Reason",
+    "reasonRequired": "Please provide a reason for rejection",
+    "enterRejectionReason": "Please provide a reason for rejecting this withdrawal request...",
+    "confirmReject": "Confirm Rejection",
+    "rejectWithdrawal": "Reject Withdrawal",
+    "cancel": "Cancel",
     "approvedSuccess": "Withdrawal approved successfully",
     "rejectedSuccess": "Withdrawal rejected successfully",
     "approveFailed": "Failed to approve withdrawal",
@@ -866,13 +866,11 @@
     "of": "of",
     "withdrawals": "withdrawals",
     "allWithdrawals": "All Withdrawals",
+    "allWithdrawalsDesc": "View all withdrawal requests",
     "approvedOnly": "Approved Only",
     "approvedOnlyDesc": "View approved withdrawals only",
-    "userWithdrawals": "User",
-    "userWithdrawalsDesc": "View user withdrawals",
-    "allWithdrawals": "All",
-    "allWithdrawalsDesc": "View all withdrawal requests",
-    "userWithdrawals": "User Withdrawals"
+    "userWithdrawals": "User Withdrawals",
+    "userWithdrawalsDesc": "View user withdrawals"
   },
   "adminUserStats": {
     "title": "User Statistics",
@@ -1745,8 +1743,8 @@
   },
   "subscriptionPage": {
     "title": "Subscription Plans",
-    "subtitle": "Choose a subscription plan and create a subscription for your subscribers",
-    "subtitleUser": "Browse available subscription plans",
+    "subtitle": "Browse available plans and create subscriptions for your subscribers",
+    "subtitleUser": "Browse and subscribe to available subscription plans",
     "createSubscription": "Create Subscription",
     "subscribe": "Subscribe",
     "alreadySubscribed": "Already Subscribed",
@@ -1763,10 +1761,6 @@
     "noSubscriptions": "You haven't created any subscriptions yet.",
     "createFirstSubscription": "Create your first subscription by selecting a plan above.",
     "subscriberName": "Subscriber Name",
-    "phone": "Phone",
-    "plan": "Plan",
-    "duration": "Duration",
-    "active": "Active",
     "table": {
       "subscriber": "Subscriber",
       "phone": "Phone",
@@ -1775,7 +1769,7 @@
       "status": "Status",
       "date": "Date"
     },
-    "plan": {
+    "planDetails": {
       "defaultName": "Subscription Plan",
       "days": "days"
     },

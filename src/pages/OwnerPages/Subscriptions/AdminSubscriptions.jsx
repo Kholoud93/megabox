@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { adminService } from '../../../services/adminService';
 import { useLanguage } from '../../../context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaCrown, FaTimes, FaUser, FaPhone, FaCalendar, FaFileInvoice, FaExternalLinkAlt, FaEye } from 'react-icons/fa';
+import { FaCrown, FaTimes, FaUser, FaPhone, FaCalendar, FaFileInvoice, FaEye } from 'react-icons/fa';
 import { HiArrowRight, HiArrowLeft, HiCurrencyDollar, HiClock } from 'react-icons/hi2';
 import { FiSearch, FiX } from 'react-icons/fi';
 import { toast } from 'react-toastify';
@@ -426,21 +426,17 @@ export default function AdminSubscriptions() {
                                             {selectedSubscription.phone || '-'}
                                         </span>
                                     </div>
-                                    {getUserProfileLink(selectedSubscription) && (
-                                        <div className="admin-subscription-details-row">
-                                            <a
-                                                href={getUserProfileLink(selectedSubscription)}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    navigate(getUserProfileLink(selectedSubscription));
-                                                }}
-                                                className="admin-subscription-details-link"
-                                            >
-                                                <FaExternalLinkAlt />
-                                                {t('adminSubscriptions.viewUserProfile') || 'View User Profile'}
-                                            </a>
-                                        </div>
-                                    )}
+                                    <div className="admin-subscription-details-row">
+                                        <span className="admin-subscription-details-label">
+                                            {t('adminSubscriptions.email') || 'Email'}:
+                                        </span>
+                                        <span className="admin-subscription-details-value" data-field="email">
+                                            {selectedSubscription.email || 
+                                             selectedSubscription.userId?.email || 
+                                             selectedSubscription.user?.email || 
+                                             '-'}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 {/* Plan Info */}
@@ -483,7 +479,7 @@ export default function AdminSubscriptions() {
                                         <span className="admin-subscription-details-label">
                                             {t('adminSubscriptions.paymentMethod') || 'Payment Method'}:
                                         </span>
-                                        <span className="admin-subscription-details-value">
+                                        <span className="admin-subscription-details-value" data-field="paymentMethod">
                                             {selectedSubscription.paymentMethod || '-'}
                                         </span>
                                     </div>

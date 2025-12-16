@@ -679,7 +679,7 @@
   },
   "adminSubscriptions": {
     "title": "إدارة الاشتراكات",
-    "subtitle": "عرض وإدارة جميع اشتراكات المنصة",
+    "subtitle": "إدارة ومراقبة جميع اشتراكات المستخدمين عبر المنصة",
     "comingSoon": "صفحة إدارة الاشتراكات قريباً...",
     "backToAnalytics": "العودة للتحليلات",
     "loading": "جارٍ تحميل الاشتراكات...",
@@ -704,6 +704,7 @@
     "createSubscription": "إنشاء اشتراك",
     "subscriberName": "اسم المشترك",
     "phone": "رقم الهاتف",
+    "email": "البريد الإلكتروني",
     "planName": "اسم الخطة",
     "selectPlan": "اختر الخطة",
     "durationDays": "المدة (بالأيام)",
@@ -717,9 +718,6 @@
     "submitSubscription": "إرسال الاشتراك",
     "submitting": "جاري الإرسال...",
     "createdAt": "تاريخ الإنشاء",
-    "title": "إدارة الخطط",
-    "subtitle": "إدارة خطط الاشتراك",
-    "loading": "جارٍ تحميل الخطط...",
     "noPlans": "لا توجد خطط متاحة",
     "noPlansFound": "لم يتم العثور على خطط تطابق معاييرك",
     "plans": "خطط",
@@ -749,15 +747,14 @@
     "viewInvoice": "عرض الفاتورة",
     "paymentMethod": "طريقة الدفع",
     "duration": "المدة",
-    "subscriberName": "اسم المشترك",
     "makePremium": "تحويل إلى بريميوم",
     "premiumExpirationDate": "تاريخ انتهاء البريميوم",
     "subscriptionApprovedAndPremium": "تم الموافقة على الاشتراك وتفعيل البريميوم بنجاح!",
     "premiumActivationFailed": "فشل تفعيل البريميوم. يرجى التفعيل يدوياً."
   },
   "adminPlans": {
-    "title": "إدارة الخطط",
-    "subtitle": "إدارة خطط الاشتراك"
+    "title": "إدارة خطط الاشتراك",
+    "subtitle": "إنشاء وتعديل وإدارة خطط الاشتراك لمنصتك"
   },
   "subscribe": {
     "title": "الاشتراك في خطة",
@@ -853,6 +850,11 @@
     "whatsappNumber": "رقم الواتساب",
     "details": "التفاصيل",
     "rejectionReason": "سبب الرفض",
+    "reasonRequired": "يرجى تقديم سبب للرفض",
+    "enterRejectionReason": "يرجى تقديم سبب لرفض طلب السحب هذا...",
+    "confirmReject": "تأكيد الرفض",
+    "rejectWithdrawal": "رفض السحب",
+    "cancel": "إلغاء",
     "approvedSuccess": "تم الموافقة على السحب بنجاح",
     "rejectedSuccess": "تم رفض السحب بنجاح",
     "approveFailed": "فشل في الموافقة على السحب",
@@ -863,13 +865,11 @@
     "of": "من",
     "withdrawals": "سحوبات",
     "allWithdrawals": "جميع السحوبات",
+    "allWithdrawalsDesc": "عرض جميع طلبات السحب",
     "approvedOnly": "الموافق عليها فقط",
     "approvedOnlyDesc": "عرض السحوبات الموافق عليها فقط",
-    "userWithdrawals": "المستخدم",
-    "userWithdrawalsDesc": "عرض سحوبات المستخدم",
-    "allWithdrawals": "الكل",
-    "allWithdrawalsDesc": "عرض جميع طلبات السحب",
-    "userWithdrawals": "سحوبات المستخدمين"
+    "userWithdrawals": "سحوبات المستخدمين",
+    "userWithdrawalsDesc": "عرض سحوبات المستخدم"
   },
   "adminUserStats": {
     "title": "إحصائيات المستخدمين",
@@ -1744,8 +1744,8 @@
   },
   "subscriptionPage": {
     "title": "خطط الاشتراك",
-    "subtitle": "اختر خطة اشتراك وأنشئ اشتراكاً لمشتركيك",
-    "subtitleUser": "تصفح خطط الاشتراك المتاحة",
+    "subtitle": "تصفح الخطط المتاحة وأنشئ اشتراكات لمشتركيك",
+    "subtitleUser": "تصفح واشترك في خطط الاشتراك المتاحة",
     "createSubscription": "إنشاء اشتراك",
     "subscribe": "اشترك",
     "alreadySubscribed": "مشترك بالفعل",
@@ -1762,10 +1762,6 @@
     "noSubscriptions": "لم تقم بإنشاء أي اشتراكات بعد.",
     "createFirstSubscription": "أنشئ أول اشتراك لك عن طريق اختيار خطة أعلاه.",
     "subscriberName": "اسم المشترك",
-    "phone": "الهاتف",
-    "plan": "الخطة",
-    "duration": "المدة",
-    "active": "نشط",
     "table": {
       "subscriber": "المشترك",
       "phone": "الهاتف",
@@ -1774,7 +1770,7 @@
       "status": "الحالة",
       "date": "التاريخ"
     },
-    "plan": {
+    "planDetails": {
       "defaultName": "خطة اشتراك",
       "days": "أيام"
     },
@@ -1801,7 +1797,7 @@
   },
   "subscriptionPlans": {
     "title": "خطط الاشتراك الخاصة بي",
-    "subtitle": "عرض وإدارة خطط الاشتراك النشطة",
+    "subtitle": "عرض وإدارة خطط الاشتراك والاشتراكات النشطة",
     "premiumPlan": "الاشتراك المميز",
     "premiumPlanDescription": "وصول كامل لجميع الميزات المميزة",
     "pendingApproval": "قيد الموافقة",
