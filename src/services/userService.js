@@ -1,4 +1,6 @@
 import { api } from './apiConfig';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../helpers/ToastOptions';
 
 export const userService = {
     getUserInfo: async (token) => {
@@ -215,8 +217,29 @@ export const userService = {
                     Authorization: `Bearer ${token}`
                 }
             });
+            // Show success toast if message indicates success
+            if (response.data?.message && (response.data.message.includes('نجاح') || response.data.message.includes('success') || response.data.shareUrl || response.data.shareLink)) {
+                toast.success(response.data.message || "Folder share link generated successfully", ToastOptions("success"));
+            }
             return response.data;
         } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to generate folder share link", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Disable folder share
+    disableFolderShare: async (folderId, token) => {
+        try {
+            const { data } = await api.patch(`/user/disableFolderShare/${folderId}`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success("Folder sharing disabled successfully", ToastOptions("success"));
+            return data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to disable folder sharing", ToastOptions("error"));
             throw error.response?.data || error.message;
         }
     },

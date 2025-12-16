@@ -332,11 +332,15 @@ export default function Files() {
                 }
             } else {
                 const response = await fileService.generateShareLink(id, Token.MegaBox);
-                const link = response.data?.shareUrl || response.data?.shareLink || response.data?.data?.shareLink || response.data?.data?.shareUrl;
+                // Handle different response structures
+                const link = response?.shareUrl || response?.shareLink || response?.data?.shareUrl || response?.data?.shareLink || response?.data?.data?.shareLink || response?.data?.data?.shareUrl;
                 if (link) {
                     setShareUrl(link);
                     setShareTitle("Share File");
                     setShowShareModal(true);
+                } else if (response?.message && (response.message.includes('نجاح') || response.message.includes('success'))) {
+                    // If success message but no link, still show success (link might be in different format)
+                    toast.success(response.message || "Share link generated successfully", ToastOptions("success"));
                 } else {
                     toast.error("Failed to generate share link", ToastOptions("error"));
                 }

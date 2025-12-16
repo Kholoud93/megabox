@@ -4,14 +4,19 @@ import { FiMoreVertical, FiArchive } from 'react-icons/fi';
 import { HiTrash, HiPencil, HiShare } from "react-icons/hi2";
 import { LuFolder } from "react-icons/lu";
 import { useLanguage } from '../../context/LanguageContext';
+import { useCookies } from 'react-cookie';
+import { useQueryClient } from 'react-query';
+import { userService } from '../../services/api';
 
-export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isSelectionMode, isSelected, onToggleSelect }) => {
+export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isSelectionMode, isSelected, onToggleSelect, refetch }) => {
     const [open, setOpen] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef(null);
     const buttonRef = useRef(null);
     const { t } = useLanguage();
     const { pathname } = useLocation();
+    const [Token] = useCookies(['MegaBox']);
+    const queryClient = useQueryClient();
     
     // Determine base path based on current location
     const getBasePath = () => {
@@ -47,7 +52,24 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isS
         };
     }, [showMenu]);
 
-    const handleAction = (action, e) => {
+    const handleDisableShare = async () => {
+        try {
+            await userService.disableFolderShare(data?._id || data?.id, Token.MegaBox);
+            // Invalidate shared files and folders queries to remove disabled items from shared lists
+            queryClient.invalidateQueries(['sharedFilesByUser']);
+            queryClient.invalidateQueries('GetSharedFolders');
+            // Also invalidate share link analytics to update the shared links table
+            queryClient.invalidateQueries(['shareLinkAnalytics']);
+            // Refetch current folder list if refetch function is provided
+            if (refetch) {
+                refetch();
+            }
+        } catch (error) {
+            // Error is handled in the service
+        }
+    };
+
+    const handleAction = async (action, e) => {
         e.preventDefault();
         e.stopPropagation();
         setShowMenu(false);
@@ -61,6 +83,9 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isS
                 break;
             case 'share':
                 onShare(data?._id);
+                break;
+            case 'disableShare':
+                await handleDisableShare();
                 break;
             case 'archive':
                 if (onArchive) {
@@ -143,13 +168,23 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isS
                         <HiPencil className='w-4 h-4 text-green-600 flex-shrink-0' />
                         <span className="font-medium">{t("folder.rename")}</span>
                     </button>
-                    <button
-                        onClick={(e) => handleAction('share', e)}
-                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
-                    >
-                        <HiShare className='w-4 h-4 text-blue-600 flex-shrink-0' />
-                        <span className="font-medium">{t("folder.share")}</span>
-                    </button>
+                    {(data?.shareLink || data?.shareUrl || data?.isShared === true || data?.isShared === "true" || data?.shared === true || data?.shared === "true") ? (
+                        <button
+                            onClick={(e) => handleAction('disableShare', e)}
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-orange-50 w-full text-left transition-colors text-orange-600"
+                        >
+                            <HiShare className='w-4 h-4 text-orange-600 rotate-180 flex-shrink-0' />
+                            <span className="font-medium">{t("folder.disableShare") || "Disable Share"}</span>
+                        </button>
+                    ) : (
+                        <button
+                            onClick={(e) => handleAction('share', e)}
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                        >
+                            <HiShare className='w-4 h-4 text-blue-600 flex-shrink-0' />
+                            <span className="font-medium">{t("folder.share")}</span>
+                        </button>
+                    )}
                     {onArchive && (
                         <button
                             onClick={(e) => handleAction('archive', e)}

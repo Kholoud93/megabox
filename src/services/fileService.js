@@ -72,6 +72,10 @@ export const fileService = {
                     Authorization: `Bearer ${token}`
                 }
             });
+            // Show success toast if message indicates success
+            if (data?.message && (data.message.includes('نجاح') || data.message.includes('success') || data.shareUrl || data.shareLink)) {
+                toast.success(data.message || "Share link generated successfully", ToastOptions("success"));
+            }
             return data;
         } catch (error) {
             toast.error(error.response?.data?.message || "Failed to generate share link", ToastOptions("error"));

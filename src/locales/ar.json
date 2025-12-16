@@ -274,6 +274,7 @@
       "link": "الرابط",
       "totalInstall": "إجمالي التثبيت",
       "totalViews": "إجمالي المشاهدات",
+      "fileName": "اسم الملف",
       "noData": "لا توجد روابط مشتركة",
       "noDataMessage": "لم تشارك أي روابط بعد"
     },
@@ -305,6 +306,7 @@
     "folder": "مجلد",
     "rename": "إعادة تسمية",
     "share": "مشاركة",
+    "disableShare": "تعطيل المشاركة",
     "archive": "أرشفة",
     "delete": "حذف"
   },
@@ -392,6 +394,9 @@
     "totalFiles": "إجمالي الملفات",
     "files": "ملفات",
     "file": "ملف",
+    "rename": "إعادة تسمية",
+    "share": "مشاركة",
+    "disableShare": "تعطيل المشاركة",
     "totalUsedMB": "إجمالي المستخدم بالميجابايت",
     "usernameUpdated": "تم تحديث اسم المستخدم بنجاح!",
     "usernameUpdateFailed": "فشل تحديث اسم المستخدم",

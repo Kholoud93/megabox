@@ -14,6 +14,8 @@ import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
 import axios from 'axios';
 import { API_URL, fileService } from '../../services/api';
+import { useQueryClient } from 'react-query';
+import { useLanguage } from '../../context/LanguageContext';
 
 // Helper function to get document icon based on file extension
 const getDocumentIcon = (fileName) => {
@@ -158,8 +160,10 @@ export default function File({ Type, data, Representation, onRename, refetch, on
     const config = typeConfig[Type];
     const menuRef = useRef(null);
     const buttonRef = useRef(null);
+    const { t } = useLanguage();
 
     const [MegaBox] = useCookies(['MegaBox'])
+    const queryClient = useQueryClient();
 
     const { DeleteFile } = useAuth();
 
@@ -219,7 +223,15 @@ export default function File({ Type, data, Representation, onRename, refetch, on
     const handleDisableShare = async () => {
         try {
             await fileService.disableFileShare(_id, MegaBox.MegaBox);
-            refetch();
+            // Invalidate shared files and folders queries to remove disabled items from shared lists
+            queryClient.invalidateQueries(['sharedFilesByUser']);
+            queryClient.invalidateQueries('GetSharedFolders');
+            // Also invalidate share link analytics to update the shared links table
+            queryClient.invalidateQueries(['shareLinkAnalytics']);
+            // Refetch current file list if refetch function is provided
+            if (refetch) {
+                refetch();
+            }
         } catch (error) {
             // Error is handled in the service
         }
@@ -273,7 +285,13 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                         onToggleSelect(_id, false);
                     }
                 } else {
-                    handleOpenFile();
+                    // If no URL but has sharedUrl, open shared link in new tab
+                    if (!url && data?._sharedUrl) {
+                        e.preventDefault();
+                        window.open(data._sharedUrl, '_blank', 'noopener,noreferrer');
+                    } else {
+                        handleOpenFile();
+                    }
                 }
             }}
         >
@@ -363,26 +381,9 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                         style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
                     >
                         <HiPencil className='w-4 h-4 text-green-600' />
-                        <span className="font-medium">Rename</span>
+                        <span className="font-medium">{t("file.rename") || "Rename"}</span>
                     </button>
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleAction('share');
-                        }}
-                        onTouchEnd={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleAction('share');
-                        }}
-                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
-                        style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
-                    >
-                        <HiShare className='w-4 h-4 text-blue-600' />
-                        <span className="font-medium">Share</span>
-                    </button>
-                    {(data?.shareLink || data?.shareUrl || data?.isShared === true || data?.isShared === "true" || data?.shared === true || data?.shared === "true") && (
+                    {(data?.shareLink || data?.shareUrl || data?.isShared === true || data?.isShared === "true" || data?.shared === true || data?.shared === "true") ? (
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
@@ -398,7 +399,25 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                             style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
                         >
                             <HiShare className='w-4 h-4 text-orange-600 rotate-180' />
-                            <span className="font-medium">Disable Share</span>
+                            <span className="font-medium">{t("file.disableShare") || "Disable Share"}</span>
+                        </button>
+                    ) : (
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAction('share');
+                            }}
+                            onTouchEnd={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAction('share');
+                            }}
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                            style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
+                        >
+                            <HiShare className='w-4 h-4 text-blue-600' />
+                            <span className="font-medium">{t("file.share") || "Share"}</span>
                         </button>
                     )}
                     <button

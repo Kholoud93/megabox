@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { motion } from 'framer-motion';
-import { fileService, userService } from '../../services/api';
+import { fileService, userService, promoterService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { getFileCategory } from '../../helpers/MimeType';
 import File from '../../components/File/File';
@@ -11,14 +11,177 @@ import EmptyState from '../../components/EmptyState/EmptyState';
 import { HiViewGrid, HiViewList } from "react-icons/hi";
 import { HiShare } from "react-icons/hi2";
 import { FaShare, FaFolder, FaLink, FaArrowUp, FaArrowDown, FaQuestionCircle } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
-import { promoterService } from '../../services/api';
+import { FiMoreVertical } from 'react-icons/fi';
+import { Folder } from '../../components/Folder/Folder';
+import { useQueryClient } from 'react-query';
+import { Link, useNavigate } from 'react-router-dom';
 import './SharedFiles.scss';
 import '../RevenueData/RevenueData.scss';
+
+// Shared Folder Card Component with Menu
+const SharedFolderCard = ({ folder, folderId, folderName, sharedUrl, files, index, navigate, t }) => {
+    const [Token] = useCookies(['MegaBox']);
+    const [showMenu, setShowMenu] = useState(false);
+    const menuRef = useRef(null);
+    const buttonRef = useRef(null);
+    const queryClient = useQueryClient();
+
+    // Close menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                showMenu &&
+                menuRef.current &&
+                buttonRef.current &&
+                !menuRef.current.contains(event.target) &&
+                !buttonRef.current.contains(event.target)
+            ) {
+                setShowMenu(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showMenu]);
+
+    const handleDisableShare = async () => {
+        try {
+            await userService.disableFolderShare(folderId, Token.MegaBox);
+            // Invalidate shared files and folders queries
+            queryClient.invalidateQueries(['sharedFilesByUser']);
+            queryClient.invalidateQueries('GetSharedFolders');
+            queryClient.invalidateQueries(['shareLinkAnalytics']);
+            setShowMenu(false);
+        } catch (error) {
+            // Error is handled in the service, but ensure menu closes
+            setShowMenu(false);
+            console.error('Error disabling folder share:', error);
+        }
+    };
+
+    const handleOpenFolder = async (e) => {
+        // Don't trigger if clicking on dropdown menu or button
+        if (menuRef.current?.contains(e.target) || buttonRef.current?.contains(e.target)) {
+            return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+        if (sharedUrl) {
+            // Open shared folder using the original Branch.io link directly
+            // If it's a Vercel URL, try to find the original Branch.io link
+            let urlToOpen = sharedUrl;
+            
+            // If it's a Vercel URL, we need to get the original Branch.io link
+            if (urlToOpen.includes('mega-box.vercel.app') || urlToOpen.includes('vercel.app')) {
+                // Try to find Branch.io link in folder data first
+                const branchLink = folder.branchUrl || 
+                                  folder.branchLink || 
+                                  folder.originalUrl || 
+                                  folder.originalLink ||
+                                  (folder.sharedUrl && folder.sharedUrl.includes('test-app.link') ? folder.sharedUrl : null) ||
+                                  (folder.shareLink && folder.shareLink.includes('test-app.link') ? folder.shareLink : null);
+                if (branchLink) {
+                    urlToOpen = branchLink;
+                } else {
+                    // If not found in folder data, try to fetch it from the backend
+                    try {
+                        const response = await userService.generateFolderShareLink(folderId, Token.MegaBox);
+                        const fetchedBranchLink = response?.shareUrl || response?.shareLink || response?.data?.shareUrl || response?.data?.shareLink;
+                        if (fetchedBranchLink && (fetchedBranchLink.includes('test-app.link') || fetchedBranchLink.includes('app.link') || fetchedBranchLink.includes('branch.io'))) {
+                            urlToOpen = fetchedBranchLink;
+                        }
+                    } catch (error) {
+                        console.error('Error fetching Branch.io link for folder:', error);
+                        // Fallback to opening the Vercel URL if we can't get Branch.io link
+                    }
+                }
+            }
+            
+            // Open in new tab - use location.href to bypass React Router
+            const newWindow = window.open('', '_blank', 'noopener,noreferrer');
+            if (newWindow) {
+                newWindow.location.href = urlToOpen;
+            } else {
+                // Fallback if popup blocked
+                window.location.href = urlToOpen;
+            }
+        } else if (folderId) {
+            // Navigate to folder preview if no shared URL
+            navigate(`/video-preview/${folderId}?type=folder`);
+        }
+    };
+
+    return (
+        <motion.div
+            className="bg-white rounded-lg border-2 border-indigo-200 p-4 hover:shadow-lg transition-shadow cursor-pointer relative"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: index * 0.1 }}
+            onClick={handleOpenFolder}
+        >
+            {/* Three dots menu button */}
+            <div
+                ref={buttonRef}
+                className="absolute top-2 right-2 z-10"
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowMenu(!showMenu);
+                }}
+                style={{ pointerEvents: 'auto', zIndex: 99998 }}
+            >
+                <FiMoreVertical className="w-5 h-5 text-indigo-600 cursor-pointer hover:text-indigo-800 transition-colors" />
+            </div>
+
+            {/* Dropdown menu */}
+            {showMenu && (
+                <div
+                    ref={menuRef}
+                    className="absolute top-8 right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 text-xs min-w-[160px] z-[99999]"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    {sharedUrl && (
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleDisableShare();
+                            }}
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-orange-50 w-full text-left transition-colors text-orange-600"
+                        >
+                            <HiShare className='w-4 h-4 text-orange-600 rotate-180 flex-shrink-0' />
+                            <span className="font-medium">{t("folder.disableShare") || "Disable Share"}</span>
+                        </button>
+                    )}
+                </div>
+            )}
+
+            <div className="flex items-center gap-3 mb-3">
+                <FaFolder className="text-indigo-600 text-2xl flex-shrink-0" />
+                <h3 className="font-semibold text-indigo-900 truncate flex-1">
+                    {folderName}
+                </h3>
+            </div>
+            {files && files.length > 0 && (
+                <div className="text-sm text-gray-600 mb-2">
+                    <span className="font-medium">{files.length}</span> {t("sharedFiles.files") || "files"}
+                </div>
+            )}
+            {sharedUrl && (
+                <div className="mt-2 inline-flex items-center gap-2 text-xs text-indigo-600 hover:text-indigo-800">
+                    <FaLink /> {t("sharedFiles.viewLink") || "View Link"}
+                </div>
+            )}
+        </motion.div>
+    );
+};
 
 export default function SharedFiles() {
     const { t } = useLanguage();
     const [Token] = useCookies(['MegaBox']);
+    const navigate = useNavigate();
     const [viewMode, setViewMode] = useState('grid');
     const [FilterKey, setFilterKey] = useState('All');
     const [ShowRepresent, setRepresents] = useState(false);
@@ -67,6 +230,12 @@ export default function SharedFiles() {
     const GetSharedFolders = async () => {
         try {
             const data = await userService.getSharedFoldersWithFiles(Token.MegaBox);
+            // Handle different response structures
+            if (data?.folders && Array.isArray(data.folders)) {
+                return data;
+            } else if (Array.isArray(data)) {
+                return { folders: data };
+            }
             return data || { folders: [] };
         } catch (error) {
             console.error('Error fetching shared folders:', error);
@@ -147,15 +316,40 @@ export default function SharedFiles() {
 
     // Get shared links data for table - use analytics data directly from getShareLinkAnalytics
     // API Response structure: { "analytics": [{ "fileId", "fileName", "sharedUrl", "downloads", "views", "lastUpdated", "viewsByCountry" }] }
-    const sharedLinksData = analyticsList.map(link => ({
-        id: link.fileId || link.id || link._id,
-        creationTime: link.lastUpdated || link.createdAt || link.date || link.uploadDate || new Date().toISOString(),
-        link: link.sharedUrl || link.shareLink || link.fileUrl || link.link || link.shareUrl || '',
-        totalInstall: link.downloads || link.totalDownloads || link.installs || 0,
-        totalViews: link.views || link.totalViews || 0,
-        fileName: link.fileName || link.name || 'Unknown',
-        viewsByCountry: link.viewsByCountry || []
-    }));
+    const sharedLinksData = analyticsList.map(link => {
+        // Prioritize Branch.io links (test-app.link) over Vercel URLs
+        const allPossibleLinks = [
+            link.branchUrl,
+            link.branchLink,
+            link.originalUrl,
+            link.originalLink,
+            link.sharedUrl,
+            link.shareLink,
+            link.shareUrl,
+            link.fileUrl,
+            link.link
+        ].filter(Boolean);
+        
+        // Find Branch.io link first, fallback to any other link
+        const branchLink = allPossibleLinks.find(url => 
+            url && (url.includes('test-app.link') || url.includes('app.link') || url.includes('branch.io'))
+        );
+        const finalLink = branchLink || allPossibleLinks[0] || '';
+        
+        return {
+            id: link.fileId || link.id || link._id,
+            fileId: link.fileId || link.id || link._id,
+            creationTime: link.lastUpdated || link.createdAt || link.date || link.uploadDate || new Date().toISOString(),
+            link: finalLink,
+            totalInstall: link.downloads || link.totalDownloads || link.installs || 0,
+            totalViews: link.views || link.totalViews || 0,
+            fileName: link.fileName || link.name || 'Unknown',
+            viewsByCountry: link.viewsByCountry || [],
+            downloads: link.downloads || link.totalDownloads || 0,
+            views: link.views || link.totalViews || 0,
+            lastUpdated: link.lastUpdated || link.createdAt || null
+        };
+    });
 
     // Sort by appropriate metric based on plan (descending) and take top 10
     const topSharedLinks = [...sharedLinksData]
@@ -271,21 +465,85 @@ export default function SharedFiles() {
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-                                        {sharedFilesByUserData.files.map((file, index) => (
-                                            <motion.div
-                                                key={file._id || file.id || index}
-                                                className="bg-white rounded-lg border-2 border-indigo-200 p-4 hover:shadow-lg transition-shadow"
-                                                initial={{ opacity: 0, scale: 0.9 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                transition={{ delay: index * 0.1 }}
-                                            >
-                                                <File
-                                                    Type={getFileCategory(file?.fileType)}
-                                                    data={file}
-                                                    viewMode="grid"
-                                                />
-                                            </motion.div>
-                                        ))}
+                                        {sharedFilesByUserData.files.map((file, index) => {
+                                            // Map file data to match File component's expected structure
+                                            // Response: {_id, fileName, sharedUrl, createdAt}
+                                            // Determine file type from fileName extension if not provided
+                                            const fileName = file.fileName || file.name || 'Unknown File';
+                                            const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
+                                            let inferredFileType = 'application/octet-stream';
+                                            
+                                            // Infer file type from extension
+                                            if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(fileExtension)) {
+                                                inferredFileType = 'image/' + (fileExtension === 'jpg' ? 'jpeg' : fileExtension);
+                                            } else if (['mp4', 'webm', 'ogg', 'mov', 'avi'].includes(fileExtension)) {
+                                                inferredFileType = 'video/' + (fileExtension === 'mp4' ? 'mp4' : fileExtension);
+                                            } else if (['pdf'].includes(fileExtension)) {
+                                                inferredFileType = 'application/pdf';
+                                            } else if (['zip', 'rar', '7z'].includes(fileExtension)) {
+                                                inferredFileType = 'application/zip';
+                                            }
+                                            
+                                            // For shared files, try to get the actual file URL for preview
+                                            // If we have a file ID, we might be able to construct a preview URL
+                                            // Otherwise, use sharedUrl as fallback
+                                            
+                                            // Prioritize Branch.io links (test-app.link) over Vercel URLs
+                                            const allPossibleShareUrls = [
+                                                file.branchUrl,
+                                                file.branchLink,
+                                                file.originalUrl,
+                                                file.originalLink,
+                                                file.sharedUrl,
+                                                file.shareLink,
+                                                file.shareURL,
+                                                file.shareUrl
+                                            ].filter(Boolean);
+                                            
+                                            // Find Branch.io link first, fallback to any other link
+                                            const branchShareUrl = allPossibleShareUrls.find(url => 
+                                                url && (url.includes('test-app.link') || url.includes('app.link') || url.includes('branch.io'))
+                                            );
+                                            const finalShareUrl = branchShareUrl || allPossibleShareUrls[0] || '';
+                                            
+                                            const fileData = {
+                                                _id: file._id || file.id,
+                                                id: file._id || file.id,
+                                                fileName: fileName,
+                                                fileType: file.fileType || file.type || file.mimeType || inferredFileType,
+                                                // Try to get file URL - prioritize actual file URL for preview
+                                                // If file has an ID, we can try to fetch it or construct preview URL
+                                                url: file.url || file.fileUrl || file.fileURL || file.previewUrl || '',
+                                                createdAt: file.createdAt || file.created || file.date || new Date().toISOString(),
+                                                shareLink: finalShareUrl,
+                                                sharedUrl: finalShareUrl,
+                                                shared: file.shared !== false,
+                                                isShared: true,
+                                                ...file // Include all other fields from response
+                                            };
+                                            
+                                            // If file has sharedUrl but no url, clicking should open the shared link
+                                            if (!fileData.url && fileData.sharedUrl) {
+                                                // Store sharedUrl for click handling
+                                                fileData._sharedUrl = fileData.sharedUrl;
+                                            }
+                                            
+                                            return (
+                                                <motion.div
+                                                    key={fileData._id || index}
+                                                    className="bg-white rounded-lg border-2 border-indigo-200 p-4 hover:shadow-lg transition-shadow"
+                                                    initial={{ opacity: 0, scale: 0.9 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    transition={{ delay: index * 0.1 }}
+                                                >
+                                                    <File
+                                                        Type={getFileCategory(fileData.fileType)}
+                                                        data={fileData}
+                                                        viewMode="grid"
+                                                    />
+                                                </motion.div>
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>
@@ -316,37 +574,88 @@ export default function SharedFiles() {
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-                                        {sharedFoldersData.folders.map((folder, index) => (
-                                            <motion.div
-                                                key={folder._id || folder.id || index}
-                                                className="bg-white rounded-lg border-2 border-indigo-200 p-4 hover:shadow-lg transition-shadow"
-                                                initial={{ opacity: 0, scale: 0.9 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                transition={{ delay: index * 0.1 }}
-                                            >
-                                                <div className="flex items-center gap-3 mb-3">
-                                                    <FaFolder className="text-indigo-600 text-2xl" />
-                                                    <h3 className="font-semibold text-indigo-900 truncate flex-1">
-                                                        {folder.name || folder.folderName || 'Unnamed Folder'}
-                                                    </h3>
-                                                </div>
-                                                {folder.files && folder.files.length > 0 && (
-                                                    <div className="text-sm text-gray-600">
-                                                        <span className="font-medium">{folder.files.length}</span> {t("sharedFiles.files") || "files"}
+                                        {sharedFoldersData.folders.map((item, index) => {
+                                            // Extract folder data from nested structure
+                                            const folder = item.folder || item;
+                                            const folderId = folder.id || folder._id || folder.folderId;
+                                            const folderName = folder.name || folder.folderName || 'Unnamed Folder';
+                                            const sharedUrl = folder.sharedUrl || folder.shareLink || item.sharedUrl;
+                                            const files = item.files || folder.files || [];
+                                            
+                                            return (
+                                                <motion.div
+                                                    key={folderId || index}
+                                                    className="bg-white rounded-lg border-2 border-indigo-200 p-4 hover:shadow-lg transition-shadow cursor-pointer"
+                                                    initial={{ opacity: 0, scale: 0.9 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    transition={{ delay: index * 0.1 }}
+                                                    onClick={async (e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        if (sharedUrl) {
+                                                            // Open shared folder using the original Branch.io link directly
+                                                            // If it's a Vercel URL, try to find the original Branch.io link
+                                                            let urlToOpen = sharedUrl;
+                                                            
+                                                            // If it's a Vercel URL, we need to get the original Branch.io link
+                                                            if (urlToOpen.includes('mega-box.vercel.app') || urlToOpen.includes('vercel.app')) {
+                                                                // Try to find Branch.io link in folder data first
+                                                                const branchLink = folder.branchUrl || 
+                                                                                  folder.branchLink || 
+                                                                                  folder.originalUrl || 
+                                                                                  folder.originalLink ||
+                                                                                  (folder.sharedUrl && folder.sharedUrl.includes('test-app.link') ? folder.sharedUrl : null) ||
+                                                                                  (folder.shareLink && folder.shareLink.includes('test-app.link') ? folder.shareLink : null);
+                                                                if (branchLink) {
+                                                                    urlToOpen = branchLink;
+                                                                } else {
+                                                                    // If not found in folder data, try to fetch it from the backend
+                                                                    try {
+                                                                        const response = await userService.generateFolderShareLink(folderId, Token.MegaBox);
+                                                                        const fetchedBranchLink = response?.shareUrl || response?.shareLink || response?.data?.shareUrl || response?.data?.shareLink;
+                                                                        if (fetchedBranchLink && (fetchedBranchLink.includes('test-app.link') || fetchedBranchLink.includes('app.link') || fetchedBranchLink.includes('branch.io'))) {
+                                                                            urlToOpen = fetchedBranchLink;
+                                                                        }
+                                                                    } catch (error) {
+                                                                        console.error('Error fetching Branch.io link for folder:', error);
+                                                                        // Fallback to opening the Vercel URL if we can't get Branch.io link
+                                                                    }
+                                                                }
+                                                            }
+                                                            
+                                                            // Open in new tab - use location.href to bypass React Router
+                                                            const newWindow = window.open('', '_blank', 'noopener,noreferrer');
+                                                            if (newWindow) {
+                                                                newWindow.location.href = urlToOpen;
+                                                            } else {
+                                                                // Fallback if popup blocked
+                                                                window.location.href = urlToOpen;
+                                                            }
+                                                        } else if (folderId) {
+                                                            // Navigate to folder preview if no shared URL
+                                                            navigate(`/video-preview/${folderId}?type=folder`);
+                                                        }
+                                                    }}
+                                                >
+                                                    <div className="flex items-center gap-3 mb-3">
+                                                        <FaFolder className="text-indigo-600 text-2xl flex-shrink-0" />
+                                                        <h3 className="font-semibold text-indigo-900 truncate flex-1">
+                                                            {folderName}
+                                                        </h3>
                                                     </div>
-                                                )}
-                                                {folder.shareLink && (
-                                                    <a
-                                                        href={folder.shareLink}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="mt-2 inline-flex items-center gap-2 text-xs text-indigo-600 hover:text-indigo-800"
-                                                    >
-                                                        <FaLink /> {t("sharedFiles.viewLink") || "View Link"}
-                                                    </a>
-                                                )}
-                                            </motion.div>
-                                        ))}
+                                                    {files && files.length > 0 && (
+                                                        <div className="text-sm text-gray-600 mb-2">
+                                                            <span className="font-medium">{files.length}</span> {t("sharedFiles.files") || "files"}
+                                                        </div>
+                                                    )}
+                                                    {sharedUrl && (
+                                                        <div className="mt-2 inline-flex items-center gap-2 text-xs text-indigo-600 hover:text-indigo-800">
+                                                            <FaLink /> {t("sharedFiles.viewLink") || "View Link"}
+                                                        </div>
+                                                    )}
+                                                </motion.div>
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>
@@ -372,25 +681,22 @@ export default function SharedFiles() {
                                 <table className="revenue-table">
                                     <thead>
                                         <tr>
-                                            <th>
-                                                <div className="table-header-sortable">
-                                                    {t("sidenav.linkDataSection.creationTime") || "Creation Time"}
-                                                </div>
-                                            </th>
+                                            <th>{t("sidenav.linkDataSection.fileName") || "File Name"}</th>
+                                            <th>{t("sidenav.linkDataSection.creationTime") || "Creation Time"}</th>
                                             <th>{t("sidenav.linkDataSection.link") || "Link"}</th>
-                                            <th>
-                                                <div className="table-header-sortable">
-                                                    {isDownloadsPlan 
-                                                        ? (t("sidenav.linkDataSection.totalInstall") || "Total Install")
-                                                        : (t("sidenav.linkDataSection.totalViews") || "Total Views")
-                                                    }
-                                                </div>
-                                            </th>
+                                            <th>{t("sidenav.linkDataSection.totalViews") || "Total Views"}</th>
+                                            <th>{t("sidenav.linkDataSection.totalInstall") || "Total Downloads"}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {[...Array(5)].map((_, i) => (
                                             <tr key={i}>
+                                                <td>
+                                                    <div className="loading-cell" style={{ height: '20px', background: 'var(--color-indigo-100)', borderRadius: '0.25rem', animation: 'pulse 1.5s ease-in-out infinite' }}></div>
+                                                </td>
+                                                <td>
+                                                    <div className="loading-cell" style={{ height: '20px', background: 'var(--color-indigo-100)', borderRadius: '0.25rem', animation: 'pulse 1.5s ease-in-out infinite' }}></div>
+                                                </td>
                                                 <td>
                                                     <div className="loading-cell" style={{ height: '20px', background: 'var(--color-indigo-100)', borderRadius: '0.25rem', animation: 'pulse 1.5s ease-in-out infinite' }}></div>
                                                 </td>
@@ -408,25 +714,16 @@ export default function SharedFiles() {
                                 <table className="revenue-table">
                                     <thead>
                                         <tr>
-                                            <th>
-                                                <div className="table-header-sortable">
-                                                    {t("sidenav.linkDataSection.creationTime") || "Creation Time"}
-                                                </div>
-                                            </th>
+                                            <th>{t("sidenav.linkDataSection.fileName") || "File Name"}</th>
+                                            <th>{t("sidenav.linkDataSection.creationTime") || "Creation Time"}</th>
                                             <th>{t("sidenav.linkDataSection.link") || "Link"}</th>
-                                            <th>
-                                                <div className="table-header-sortable">
-                                                    {isDownloadsPlan 
-                                                        ? (t("sidenav.linkDataSection.totalInstall") || "Total Install")
-                                                        : (t("sidenav.linkDataSection.totalViews") || "Total Views")
-                                                    }
-                                                </div>
-                                            </th>
+                                            <th>{t("sidenav.linkDataSection.totalViews") || "Total Views"}</th>
+                                            <th>{t("sidenav.linkDataSection.totalInstall") || "Total Downloads"}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td colSpan="3" style={{ textAlign: 'center', padding: '2rem' }}>
+                                            <td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>
                                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
                                                     <p style={{ color: '#6b7280', margin: 0 }}>
                                                         {t("sidenav.linkDataSection.noDataMessage") || "You haven't shared any links yet"}
@@ -449,6 +746,11 @@ export default function SharedFiles() {
                                         <tr>
                                             <th>
                                                 <div className="table-header-sortable">
+                                                    {t("sidenav.linkDataSection.fileName") || "File Name"}
+                                                </div>
+                                            </th>
+                                            <th>
+                                                <div className="table-header-sortable">
                                                     {t("sidenav.linkDataSection.creationTime") || "Creation Time"}
                                                     <div className="sort-icons">
                                                         <FaArrowUp className="sort-icon" />
@@ -459,10 +761,16 @@ export default function SharedFiles() {
                                             <th>{t("sidenav.linkDataSection.link") || "Link"}</th>
                                             <th>
                                                 <div className="table-header-sortable">
-                                                    {isDownloadsPlan 
-                                                        ? (t("sidenav.linkDataSection.totalInstall") || "Total Install")
-                                                        : (t("sidenav.linkDataSection.totalViews") || "Total Views")
-                                                    }
+                                                    {t("sidenav.linkDataSection.totalViews") || "Total Views"}
+                                                    <div className="sort-icons">
+                                                        <FaArrowUp className="sort-icon" />
+                                                        <FaArrowDown className="sort-icon" />
+                                                    </div>
+                                                </div>
+                                            </th>
+                                            <th>
+                                                <div className="table-header-sortable">
+                                                    {t("sidenav.linkDataSection.totalInstall") || "Total Downloads"}
                                                     <div className="sort-icons">
                                                         <FaArrowUp className="sort-icon" />
                                                         <FaArrowDown className="sort-icon" />
@@ -474,29 +782,71 @@ export default function SharedFiles() {
                                     <tbody>
                                         {topSharedLinks.map((link, index) => (
                                             <motion.tr
-                                                key={link.id}
+                                                key={link.id || link.fileId || index}
                                                 initial={{ opacity: 0, x: -20 }}
                                                 animate={{ opacity: 1, x: 0 }}
                                                 transition={{ delay: index * 0.05 }}
                                             >
                                                 <td>
-                                                    {new Date(link.creationTime).toLocaleDateString('en-CA')}
+                                                    <div className="font-medium text-indigo-900 truncate max-w-[200px]" title={link.fileName}>
+                                                        {link.fileName || 'Unknown'}
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    {link.creationTime ? new Date(link.creationTime).toLocaleDateString('en-CA', {
+                                                        year: 'numeric',
+                                                        month: 'short',
+                                                        day: 'numeric'
+                                                    }) : '-'}
                                                 </td>
                                                 <td>
                                                     <div className="link-cell">
                                                         <FaLink className="link-icon" />
-                                                        <a 
-                                                            href={link.link} 
-                                                            target="_blank" 
-                                                            rel="noopener noreferrer"
-                                                            className="link-text" 
+                                                        <button
+                                                            type="button"
+                                                            className="link-text text-left bg-transparent border-none cursor-pointer hover:text-indigo-800 underline"
                                                             title={link.link}
+                                                            onClick={async (e) => {
+                                                                e.preventDefault();
+                                                                e.stopPropagation();
+                                                                // Open the original Branch.io link directly without routing
+                                                                if (link.link) {
+                                                                    let urlToOpen = link.link;
+                                                                    
+                                                                    // If it's a Vercel URL, we need to get the original Branch.io link
+                                                                    // The backend might be returning Vercel URL, so we need to fetch the original
+                                                                    if (urlToOpen.includes('mega-box.vercel.app') || urlToOpen.includes('vercel.app')) {
+                                                                        try {
+                                                                            // Try to get the original Branch.io link by calling generateShareLink again
+                                                                            // This will return the Branch.io link from the backend
+                                                                            const response = await fileService.generateShareLink(link.fileId, Token.MegaBox);
+                                                                            const branchLink = response?.shareUrl || response?.shareLink || response?.data?.shareUrl || response?.data?.shareLink;
+                                                                            if (branchLink && (branchLink.includes('test-app.link') || branchLink.includes('app.link') || branchLink.includes('branch.io'))) {
+                                                                                urlToOpen = branchLink;
+                                                                            }
+                                                                        } catch (error) {
+                                                                            console.error('Error fetching Branch.io link:', error);
+                                                                            // Fallback to opening the Vercel URL if we can't get Branch.io link
+                                                                        }
+                                                                    }
+                                                                    
+                                                                    // Open in new tab - use location.href to bypass React Router
+                                                                    const newWindow = window.open('', '_blank', 'noopener,noreferrer');
+                                                                    if (newWindow) {
+                                                                        newWindow.location.href = urlToOpen;
+                                                                    } else {
+                                                                        // Fallback if popup blocked
+                                                                        window.location.href = urlToOpen;
+                                                                    }
+                                                                }
+                                                            }}
                                                         >
-                                                            {link.link.length > 30 ? `${link.link.substring(0, 30)}...` : link.link}
-                                                        </a>
+                                                            {link.link && link.link.length > 40 ? `${link.link.substring(0, 40)}...` : (link.link || '-')}
+                                                        </button>
                                                     </div>
                                                 </td>
-                                                <td>{isDownloadsPlan ? link.totalInstall : link.totalViews}</td>
+                                                <td>{link.totalViews || link.views || 0}</td>
+                                                <td>{link.totalInstall || link.downloads || 0}</td>
                                             </motion.tr>
                                         ))}
                                     </tbody>
