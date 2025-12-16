@@ -267,6 +267,7 @@ export default function Promoters() {
                             <tr>
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.username")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.email")}</th>
+                                <th scope="col" className="px-6 py-3">{t("adminPromoters.premiumStatus") || "Premium Status"}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.watchingPlan")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.downloadsPlan")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminPromoters.actions")}</th>
@@ -279,6 +280,19 @@ export default function Promoters() {
                                         <tr key={ele._id || ele.id || index}>
                                             <td data-label={t("adminPromoters.username")}>{ele.username}</td>
                                             <td data-label={t("adminPromoters.email")}>{ele.email}</td>
+
+                                            <td data-label={t("adminPromoters.premiumStatus") || "Premium Status"}>
+                                                {ele?.isBrimume ? (
+                                                    <span className="premium-badge premium-badge--active">
+                                                        <FaCrown className="premium-badge__icon" />
+                                                        {t("adminPromoters.premium") || t("adminUsers.premium") || "Premium"}
+                                                    </span>
+                                                ) : (
+                                                    <span className="premium-badge premium-badge--inactive">
+                                                        {t("adminPromoters.notPremium") || t("adminUsers.notPremium") || "Not Premium"}
+                                                    </span>
+                                                )}
+                                            </td>
 
                                             <td data-label={t("adminPromoters.watchingPlan")}>
                                                 {ele?.watchingplan ? (
