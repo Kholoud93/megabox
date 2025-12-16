@@ -46,10 +46,20 @@ export default function Feedback() {
 
     const SendComp = async (values) => {
         try {
+            console.log('Form submission started with values:', values);
+            
+            if (!MegaBox.MegaBox) {
+                toast.error(t('feedback.loginRequired'), ToastOptions("error"));
+                return;
+            }
 
-            if (!MegaBox.MegaBox) return toast.error(t('feedback.loginRequired'), ToastOptions("error"));
+            // Validate required fields
+            if (!values.file) {
+                toast.error(t('feedback.fileRequired') || 'Please upload a file', ToastOptions("error"));
+                return;
+            }
 
-            setSendDataLoading(true)
+            setSendDataLoading(true);
 
             const formData = new FormData();
 
@@ -70,24 +80,30 @@ export default function Feedback() {
 
             const { data } = await axios.post(`${API_URL}/auth/report`, formData, {
                 headers: {
-                    Authorization: `Bearer ${MegaBox.MegaBox}`
+                    Authorization: `Bearer ${MegaBox.MegaBox}`,
+                    'Content-Type': 'multipart/form-data'
                 }
             });
 
             console.log(data);
 
-            if (data?.message === "✅ تم إرسال البلاغ وحفظ الملف بنجاح.") {
+            if (data?.message === "✅ تم إرسال البلاغ وحفظ الملف بنجاح." || data?.message?.includes("نجاح") || data?.message?.includes("success")) {
                 formik.resetForm();
                 toast.success(t('feedback.success'), ToastOptions("success"));
             } else {
-                toast.error(t('feedback.error'), ToastOptions("error"));
+                toast.error(data?.message || t('feedback.error'), ToastOptions("error"));
             }
 
-            setSendDataLoading(false)
+            setSendDataLoading(false);
 
         } catch (err) {
-            console.log(err);
-            setSendDataLoading(false)
+            console.error('Error submitting report:', err);
+            const errorMessage = err?.response?.data?.message || 
+                                err?.message || 
+                                t('feedback.error') || 
+                                'Failed to submit report. Please try again.';
+            toast.error(errorMessage, ToastOptions("error"));
+            setSendDataLoading(false);
         }
     }
 
@@ -153,7 +169,10 @@ export default function Feedback() {
                         </div>
                     </div>
 
-                    <form onSubmit={formik.handleSubmit} className="p-8 space-y-6">
+                    <form onSubmit={(e) => {
+                        e.preventDefault();
+                        formik.handleSubmit(e);
+                    }} className="p-8 space-y-6">
                         {/* Type of Infringement */}
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-gray-700 flex items-center">
@@ -545,8 +564,19 @@ export default function Feedback() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                             type="submit"
-                            disabled={SendDataLoading}
-                            className="feedback-submit-btn"
+                            disabled={SendDataLoading || !formik.isValid}
+                            className={`feedback-submit-btn ${(SendDataLoading || !formik.isValid) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            onClick={(e) => {
+                                // Validate form before submission
+                                if (!formik.isValid) {
+                                    e.preventDefault();
+                                    formik.validateForm().then(() => {
+                                        if (Object.keys(formik.errors).length > 0) {
+                                            toast.error(t('feedback.fillAllFields') || 'Please fill all required fields correctly', ToastOptions("error"));
+                                        }
+                                    });
+                                }
+                            }}
                         >
                             <FiSend className="h-5 w-5" />
                             {SendDataLoading ? t('feedback.submitting') : t('feedback.submit')}
