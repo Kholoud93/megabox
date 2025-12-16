@@ -18,6 +18,25 @@ import * as Yup from 'yup';
 
 export default function Promoters() {
     const { t, language } = useLanguage();
+    // --- Premium Formik and Validation ---
+    const premiumValidation = Yup.object({
+        expirationDate: Yup.date()
+            .min(new Date(), t("adminUsers.expirationDateMustBeFuture") || t("adminPromoters.expirationDateMustBeFuture"))
+            .required(t("adminUsers.expirationDateRequired") || t("adminPromoters.expirationDateRequired")),
+    });
+    const premiumFormik = useFormik({
+        initialValues: {
+            expirationDate: '',
+        },
+        validationSchema: premiumValidation,
+        onSubmit: (values) => {
+            if (premiumModal && (premiumModal._id || premiumModal.id)) {
+                handleSetPremium(premiumModal._id || premiumModal.id, values.expirationDate);
+            }
+        },
+        enableReinitialize: true,
+    });
+
     const [searchTerm, setSearchTerm] = useState('');
     const [filters, setFilters] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
@@ -120,6 +139,41 @@ export default function Promoters() {
             toast.error(error.response?.data?.message || t("adminPromoters.deletePromoterFailed") || "Failed to delete promoter", ToastOptions("error"));
         } finally {
             setIsDeleting(false);
+        }
+    };
+
+    // Handle toggle premium status (remove premium)
+    const handleTogglePremium = async (userId, currentPremiumStatus) => {
+        try {
+            // Toggle: if currently premium, deactivate; if not premium, activate
+            await adminService.toggleBrimumeByOwner(userId, !currentPremiumStatus, undefined, token);
+            queryClient.invalidateQueries("getAllPromoters");
+            setPremiumModal(null);
+            premiumFormik.resetForm();
+        } catch (error) {
+            // Error is handled in the service
+        }
+    };
+
+    // Set promoter premium with expiration date
+    const handleSetPremium = async (userId, expirationDate) => {
+        try {
+            // Calculate duration in days from expiration date
+            const now = new Date();
+            const expiration = new Date(expirationDate);
+            const durationDays = Math.ceil((expiration - now) / (1000 * 60 * 60 * 24));
+            
+            if (durationDays <= 0) {
+                toast.error(t("adminUsers.expirationDateMustBeFuture") || t("adminPromoters.expirationDateMustBeFuture") || "Expiration date must be in the future", ToastOptions("error"));
+                return;
+            }
+
+            await adminService.toggleBrimumeByOwner(userId, true, durationDays, token);
+            queryClient.invalidateQueries("getAllPromoters");
+            setPremiumModal(null);
+            premiumFormik.resetForm();
+        } catch (error) {
+            // Error is handled in the service
         }
     };
 

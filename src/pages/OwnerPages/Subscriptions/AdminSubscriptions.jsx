@@ -7,6 +7,7 @@ import { useLanguage } from '../../../context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaCrown, FaTimes, FaUser, FaPhone, FaCalendar, FaFileInvoice, FaExternalLinkAlt, FaEye } from 'react-icons/fa';
 import { HiArrowRight, HiArrowLeft, HiCurrencyDollar, HiClock } from 'react-icons/hi2';
+import { FiSearch, FiX } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
 import Loading from '../../../components/Loading/Loading';
