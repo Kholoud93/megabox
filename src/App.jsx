@@ -62,22 +62,234 @@ import Reports from './pages/OwnerPages/Reports/Reports'
 
 // AuthWrapper component - must be used within Router and AuthProvider context
 // This component will be rendered by RouterProvider, so hooks will work
+// IMPORTANT: This component is only instantiated when the route is rendered, not during router configuration
 const AuthWrapper = ({ children }) => {
-  try {
-    const navigate = useNavigate();
-    const auth = useAuth();
-    const [Token] = useCookies(['MegaBox']);
+  const navigate = useNavigate();
+  const auth = useAuth();
+  const [Token] = useCookies(['MegaBox']);
 
-    if (typeof children === 'function') {
-      return children({ navigate, auth, Token });
-    }
-    return children;
-  } catch (error) {
-    // If hooks fail, it means we're not in the right context
-    console.error('AuthWrapper error:', error);
-    throw error;
+  if (typeof children === 'function') {
+    return children({ navigate, auth, Token });
   }
+  return children;
 };
+
+// Route components that use AuthWrapper - these are only instantiated when routes are rendered
+const LoginRoute = () => (
+  <AuthWrapper>
+    {({ navigate, auth, Token }) => (
+      <Login
+        onSignup={() => navigate('/signup')}
+        onForgot={() => navigate('/forgot-password')}
+        onSubmit={async (values) => {
+          let success = await auth.login(values.email, values.password)
+          const tokenStr = Token.MegaBox;
+          console.log(tokenStr);
+          if (success) {
+            const { role } = jwtDecode(success);
+            console.log(role);
+            switch (role) {
+              case 'User':
+                navigate('/dashboard');
+                break;
+              case 'Owner':
+                navigate('/Owner/profile');
+                break;
+              default:
+                navigate('/dashboard');
+            }
+          }
+        }}
+        loading={auth.loading}
+        error={auth.error}
+      />
+    )}
+  </AuthWrapper>
+);
+
+const SignupRoute = () => (
+  <AuthWrapper>
+    {({ navigate, auth }) => (
+      <Signup
+        onLogin={() => navigate('/login')}
+        onConfirmMail={async (values) => {
+          const success = await auth.signup(
+            values.username,
+            values.email,
+            values.password,
+            values.confirmationPassword
+          );
+          if (success) {
+            navigate('/confirm-email');
+          }
+        }}
+        loading={auth.loading}
+        error={auth.error}
+      />
+    )}
+  </AuthWrapper>
+);
+
+const ConfirmEmailRoute = () => (
+  <AuthWrapper>
+    {({ navigate, auth }) => (
+      <ConfirmEmail
+        onResend={async () => {
+          await auth.resendConfirmationEmail();
+        }}
+        onBack={() => navigate('/login')}
+        loading={auth.loading}
+        error={auth.error}
+      />
+    )}
+  </AuthWrapper>
+);
+
+const ForgotPasswordEmailRoute = () => (
+  <AuthWrapper>
+    {({ navigate, auth }) => (
+      <ForgotPasswordEmail
+        onSubmit={async (values) => {
+          await auth.sendPasswordResetEmail(values.email);
+          navigate('/forgot-password-reset');
+        }}
+        onBack={() => navigate('/login')}
+        loading={auth.loading}
+        error={auth.error}
+      />
+    )}
+  </AuthWrapper>
+);
+
+const ForgotPasswordResetRoute = () => (
+  <AuthWrapper>
+    {({ navigate, auth }) => (
+      <ForgotPasswordReset
+        onSubmit={async (values) => {
+          const success = await auth.resetPassword(values.token, values.password);
+          if (success) {
+            navigate('/login');
+          }
+        }}
+        onBack={() => navigate('/forgot-password')}
+        loading={auth.loading}
+        error={auth.error}
+      />
+    )}
+  </AuthWrapper>
+);
+
+const SignupForMoneyRoute = () => (
+  <AuthWrapper>
+    {({ navigate, auth }) => (
+      <SignupForMoney
+        onLogin={() => navigate('/login')}
+        onSignup={async (values) => {
+          const success = await auth.signup(
+            values.username,
+            values.email,
+            values.password
+          );
+          if (success) {
+            navigate('/confirm-email');
+          }
+        }}
+        loading={auth.loading}
+        error={auth.error}
+      />
+    )}
+  </AuthWrapper>
+);
+
+const RegisterRoute = () => (
+  <AuthWrapper>
+    {({ navigate, auth }) => {
+      const location = window.location;
+      const params = new URLSearchParams(location.search);
+      const ref = params.get("ref");
+
+      return (
+        <SignupForMoney
+          refCode={ref}
+          onLogin={() => navigate('/login')}
+          onConfirmMail={async (values) => {
+            const success = await auth.signupWithRef(
+              values.username,
+              values.email,
+              values.password,
+              values.confirmationPassword,
+              ref
+            );
+            console.log(success);
+
+            if (success) {
+              navigate('/confirm-email');
+            }
+          }}
+          loading={auth.loading}
+          error={auth.error}
+        />
+      );
+    }}
+  </AuthWrapper>
+);
+
+const ConfirmEmailRouteWithTemp = () => (
+  <AuthWrapper>
+    {({ navigate, auth }) => (
+      <ConfirmEmail
+        email={auth.tempEmail}
+        onConfirm={async (code) => {
+          const success = await auth.confirmOTP(code, auth.tempEmail);
+          if (success) {
+            navigate('/login');
+          }
+        }}
+        onResend={async () => {
+          await auth.sendResetCode(auth.tempEmail);
+        }}
+        loading={auth.loading}
+        error={auth.error}
+      />
+    )}
+  </AuthWrapper>
+);
+
+const ForgotPasswordEmailRouteWithCode = () => (
+  <AuthWrapper>
+    {({ navigate, auth }) => (
+      <ForgotPasswordEmail
+        onSendCode={async (email) => {
+          const success = await auth.forgotPassword(email);
+          if (success) {
+            navigate('/reset-password');
+          }
+        }}
+        onBackToLogin={() => navigate('/login')}
+        loading={auth.loading}
+        error={auth.error}
+      />
+    )}
+  </AuthWrapper>
+);
+
+const ResetPasswordRoute = () => (
+  <AuthWrapper>
+    {({ navigate, auth }) => (
+      <ForgotPasswordReset
+        onSubmit={async (values) => {
+          const success = await auth.resetPassword(values.token, values.password);
+          if (success) {
+            navigate('/login');
+          }
+        }}
+        onBack={() => navigate('/forgot-password')}
+        loading={auth.loading}
+        error={auth.error}
+      />
+    )}
+  </AuthWrapper>
+);
 
 const AppRouter = () => {
   // Router must be created inside AppRouter which is wrapped by AuthProvider
@@ -130,145 +342,23 @@ const AppRouter = () => {
     },
     {
       path: "/login",
-      element: (
-        <AuthWrapper>
-          {({ navigate, auth, Token }) => (
-            <Login
-              onSignup={() => navigate('/signup')}
-              onForgot={() => navigate('/forgot-password')}
-
-              onSubmit={async (values) => {
-                let success = await auth.login(values.email, values.password)
-
-                const tokenStr = Token.MegaBox;
-                console.log(tokenStr);
-
-
-                if (success) {
-                  const { role } = jwtDecode(success);
-                  console.log(role);
-                  switch (role) {
-                    case 'User':
-                      navigate('/dashboard');
-                      break;
-                    case 'Owner':
-                      navigate('/Owner/profile');
-                      break;
-                    default:
-                      navigate('/dashboard');
-                  }
-                }
-
-              }}
-              loading={auth.loading}
-              error={auth.error}
-            />
-          )}
-        </AuthWrapper>
-      )
+      element: <LoginRoute />
     },
     {
       path: "/signup",
-      element: (
-        <AuthWrapper>
-          {({ navigate, auth }) => (
-            <Signup
-              onLogin={() => navigate('/login')}
-              onConfirmMail={async (values) => {
-                const success = await auth.signup(
-                  values.username,
-                  values.email,
-                  values.password,
-                  values.confirmationPassword
-                );
-                if (success) {
-                  navigate('/confirm-email');
-                }
-              }}
-              loading={auth.loading}
-              error={auth.error}
-            />
-          )}
-        </AuthWrapper>
-      )
+      element: <SignupRoute />
     },
     {
       path: "/register",
-      element: (
-        <AuthWrapper>
-          {({ navigate, auth }) => {
-            const location = window.location;
-            const params = new URLSearchParams(location.search);
-            const ref = params.get("ref");
-
-            return (
-              <SignupForMoney
-                refCode={ref}
-                onLogin={() => navigate('/login')}
-                onConfirmMail={async (values) => {
-                  const success = await auth.signupWithRef(
-                    values.username,
-                    values.email,
-                    values.password,
-                    values.confirmationPassword,
-                    ref
-                  );
-                  console.log(success);
-
-                  if (success) {
-                    navigate('/confirm-email');
-                  }
-                }}
-                loading={auth.loading}
-                error={auth.error}
-              />
-            );
-          }}
-        </AuthWrapper>
-      )
+      element: <RegisterRoute />
     },
     {
       path: "/confirm-email",
-      element: (
-        <AuthWrapper>
-          {({ navigate, auth }) => (
-            <ConfirmEmail
-              email={auth.tempEmail}
-              onConfirm={async (code) => {
-                const success = await auth.confirmOTP(code, auth.tempEmail);
-                if (success) {
-                  navigate('/login');
-                }
-              }}
-              onResend={async () => {
-                await auth.sendResetCode(auth.tempEmail);
-              }}
-              loading={auth.loading}
-              error={auth.error}
-            />
-          )}
-        </AuthWrapper>
-      )
+      element: <ConfirmEmailRouteWithTemp />
     },
     {
       path: "/forgot-password",
-      element: (
-        <AuthWrapper>
-          {({ navigate, auth }) => (
-            <ForgotPasswordEmail
-              onSendCode={async (email) => {
-                const success = await auth.forgotPassword(email);
-                if (success) {
-                  navigate('/reset-password');
-                }
-              }}
-              onBackToLogin={() => navigate('/login')}
-              loading={auth.loading}
-              error={auth.error}
-            />
-          )}
-        </AuthWrapper>
-      )
+      element: <ForgotPasswordEmailRouteWithCode />
     },
     {
       path: "/reset-password",

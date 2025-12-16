@@ -164,20 +164,23 @@ export default function Earning() {
             // If a payment service is selected, include its details
             if (formData.paymentServiceId) {
                 const service = activePaymentServices.find(s => (s._id || s.id) === formData.paymentServiceId);
-                if (service) {
-                    // Include payment service details in the request
-                    return withdrawalService.requestWithdrawal(
-                        formData.amount,
-                        formData.paymentMethod,
-                        formData.whatsappNumber,
-                        formData.details,
-                        token,
-                        {
-                            paymentServiceId: formData.paymentServiceId,
-                            paymentService: service
-                        }
-                    );
+                if (!service) {
+                    // Payment service was selected but not found - this is an error
+                    // This can happen if payment services were refetched/filtered after selection
+                    throw new Error(t('withdrawSection.paymentServiceNotFound') || 'Selected payment service is no longer available. Please select a different payment method.');
                 }
+                // Include payment service details in the request
+                return withdrawalService.requestWithdrawal(
+                    formData.amount,
+                    formData.paymentMethod,
+                    formData.whatsappNumber,
+                    formData.details,
+                    token,
+                    {
+                        paymentServiceId: formData.paymentServiceId,
+                        paymentService: service
+                    }
+                );
             }
             // Standard withdrawal without payment service
             return withdrawalService.requestWithdrawal(

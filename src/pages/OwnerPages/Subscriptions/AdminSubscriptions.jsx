@@ -53,6 +53,73 @@ export default function AdminSubscriptions() {
     );
 
     const [isApproving, setIsApproving] = useState(false);
+    const [enrichedSubscription, setEnrichedSubscription] = useState(null);
+
+    // Debug and enrich subscription data when selected
+    useEffect(() => {
+        if (selectedSubscription) {
+            console.log('=== Subscription Details Debug ===');
+            console.log('Selected Subscription Object:', selectedSubscription);
+            console.log('Email fields:', {
+                email: selectedSubscription.email,
+                userIdEmail: selectedSubscription.userId?.email,
+                userEmail: selectedSubscription.user?.email,
+                subscriberEmail: selectedSubscription.subscriberEmail,
+                userId: selectedSubscription.userId
+            });
+            console.log('Payment Method:', selectedSubscription.paymentMethod);
+            console.log('Payment fields:', {
+                paymentMethod: selectedSubscription.paymentMethod,
+                payment: selectedSubscription.payment,
+                paymentType: selectedSubscription.paymentType,
+                paymentDetails: selectedSubscription.paymentDetails
+            });
+            console.log('All subscription keys:', Object.keys(selectedSubscription));
+            console.log('userId object:', selectedSubscription.userId);
+            console.log('user object:', selectedSubscription.user);
+            console.log('===================================');
+
+            // Try to fetch user data if email is missing and we have a userId
+            const userId = selectedSubscription.userId?._id || 
+                          selectedSubscription.userId?.id || 
+                          selectedSubscription.userId ||
+                          selectedSubscription.promoterId?._id ||
+                          selectedSubscription.promoterId?.id ||
+                          selectedSubscription.promoterId;
+
+            if (userId && !selectedSubscription.email && !selectedSubscription.userId?.email) {
+                // Fetch user data to get email
+                adminService.getAllUsers(token)
+                    .then(response => {
+                        const users = response?.users || response?.data?.users || response || [];
+                        const user = users.find(u => 
+                            (u._id || u.id) === userId || 
+                            String(u._id || u.id) === String(userId)
+                        );
+                        if (user) {
+                            setEnrichedSubscription({
+                                ...selectedSubscription,
+                                email: user.email || selectedSubscription.email,
+                                userId: {
+                                    ...selectedSubscription.userId,
+                                    email: user.email
+                                }
+                            });
+                        } else {
+                            setEnrichedSubscription(selectedSubscription);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching user data:', error);
+                        setEnrichedSubscription(selectedSubscription);
+                    });
+            } else {
+                setEnrichedSubscription(selectedSubscription);
+            }
+        } else {
+            setEnrichedSubscription(null);
+        }
+    }, [selectedSubscription, token]);
 
     // Filter subscriptions
     const filteredSubscriptions = useMemo(() => {
@@ -405,117 +472,173 @@ export default function AdminSubscriptions() {
                             </div>
 
                             <div className="admin-subscription-details-modal__body">
-                                {/* User Info */}
-                                <div className="admin-subscription-details-section">
-                                    <h3 className="admin-subscription-details-section__title">
-                                        {t('adminSubscriptions.userInfo') || 'User Information'}
-                                    </h3>
-                                    <div className="admin-subscription-details-row">
-                                        <span className="admin-subscription-details-label">
-                                            {t('adminSubscriptions.subscriberName') || 'Subscriber Name'}:
-                                        </span>
-                                        <span className="admin-subscription-details-value">
-                                            {selectedSubscription.subscriberName || selectedSubscription.name || '-'}
-                                        </span>
-                                    </div>
-                                    <div className="admin-subscription-details-row">
-                                        <span className="admin-subscription-details-label">
-                                            {t('adminSubscriptions.phone') || 'Phone'}:
-                                        </span>
-                                        <span className="admin-subscription-details-value">
-                                            {selectedSubscription.phone || '-'}
-                                        </span>
-                                    </div>
-                                    <div className="admin-subscription-details-row">
-                                        <span className="admin-subscription-details-label">
-                                            {t('adminSubscriptions.email') || 'Email'}:
-                                        </span>
-                                        <span className="admin-subscription-details-value" data-field="email">
-                                            {selectedSubscription.email || 
-                                             selectedSubscription.userId?.email || 
-                                             selectedSubscription.user?.email || 
-                                             '-'}
-                                        </span>
-                                    </div>
-                                </div>
+                                {(() => {
+                                    const subscription = enrichedSubscription || selectedSubscription;
+                                    return (
+                                        <>
+                                            {/* User Info */}
+                                            <div className="admin-subscription-details-section">
+                                                <h3 className="admin-subscription-details-section__title">
+                                                    {t('adminSubscriptions.userInfo') || 'User Information'}
+                                                </h3>
+                                                <div className="admin-subscription-details-row">
+                                                    <span className="admin-subscription-details-label">
+                                                        {t('adminSubscriptions.id') || 'ID'}:
+                                                    </span>
+                                                    <span className="admin-subscription-details-value">
+                                                        {subscription.id || subscription._id || '-'}
+                                                    </span>
+                                                </div>
+                                                <div className="admin-subscription-details-row">
+                                                    <span className="admin-subscription-details-label">
+                                                        {t('adminSubscriptions.subscriberName') || 'Subscriber Name'}:
+                                                    </span>
+                                                    <span className="admin-subscription-details-value">
+                                                        {subscription.subscriberName || subscription.name || '-'}
+                                                    </span>
+                                                </div>
+                                                <div className="admin-subscription-details-row">
+                                                    <span className="admin-subscription-details-label">
+                                                        {t('adminSubscriptions.phone') || 'Phone'}:
+                                                    </span>
+                                                    <span className="admin-subscription-details-value">
+                                                        {subscription.phone || '-'}
+                                                    </span>
+                                                </div>
+                                                <div className="admin-subscription-details-row">
+                                                    <span className="admin-subscription-details-label">
+                                                        {t('adminSubscriptions.email') || 'Email'}:
+                                                    </span>
+                                                    <span className="admin-subscription-details-value" data-field="email">
+                                                        {subscription.email || 
+                                                         subscription.userId?.email || 
+                                                         subscription.user?.email || 
+                                                         subscription.subscriberEmail ||
+                                                         '-'}
+                                                    </span>
+                                                </div>
+                                                <div className="admin-subscription-details-row">
+                                                    <span className="admin-subscription-details-label">
+                                                        {t('adminSubscriptions.createdBy') || 'Created By'}:
+                                                    </span>
+                                                    <span className="admin-subscription-details-value">
+                                                        {subscription.createdBy 
+                                                            ? (typeof subscription.createdBy === 'object' 
+                                                                ? (subscription.createdBy.name || 
+                                                                   subscription.createdBy.username || 
+                                                                   subscription.createdBy.email || 
+                                                                   subscription.createdBy._id || 
+                                                                   subscription.createdBy.id ||
+                                                                   '-')
+                                                                : String(subscription.createdBy))
+                                                            : '-'}
+                                                    </span>
+                                                </div>
+                                            </div>
 
-                                {/* Plan Info */}
-                                <div className="admin-subscription-details-section">
-                                    <h3 className="admin-subscription-details-section__title">
-                                        {t('adminSubscriptions.planInfo') || 'Plan Information'}
-                                    </h3>
-                                    <div className="admin-subscription-details-row">
-                                        <span className="admin-subscription-details-label">
-                                            {t('adminSubscriptions.planName') || 'Plan Name'}:
-                                        </span>
-                                        <span className="admin-subscription-details-value">
-                                            {selectedSubscription.planName || selectedSubscription.plan?.name || '-'}
-                                        </span>
-                                    </div>
-                                    <div className="admin-subscription-details-row">
-                                        <span className="admin-subscription-details-label">
-                                            {t('adminSubscriptions.duration') || 'Duration'}:
-                                        </span>
-                                        <span className="admin-subscription-details-value">
-                                            {selectedSubscription.durationDays || selectedSubscription.days || '-'} {t('adminSubscriptions.days') || 'days'}
-                                        </span>
-                                    </div>
-                                    <div className="admin-subscription-details-row">
-                                        <span className="admin-subscription-details-label">
-                                            {t('adminSubscriptions.status') || 'Status'}:
-                                        </span>
-                                        <span className={`admin-subscription-details-status admin-subscription-details-status--${(selectedSubscription.status || 'pending').toLowerCase()}`}>
-                                            {selectedSubscription.status || 'Pending'}
-                                        </span>
-                                    </div>
-                                </div>
+                                            {/* Plan Info */}
+                                            <div className="admin-subscription-details-section">
+                                                <h3 className="admin-subscription-details-section__title">
+                                                    {t('adminSubscriptions.planInfo') || 'Plan Information'}
+                                                </h3>
+                                                <div className="admin-subscription-details-row">
+                                                    <span className="admin-subscription-details-label">
+                                                        {t('adminSubscriptions.planName') || 'Plan Name'}:
+                                                    </span>
+                                                    <span className="admin-subscription-details-value">
+                                                        {subscription.planName || subscription.plan?.name || '-'}
+                                                    </span>
+                                                </div>
+                                                <div className="admin-subscription-details-row">
+                                                    <span className="admin-subscription-details-label">
+                                                        {t('adminSubscriptions.duration') || 'Duration'}:
+                                                    </span>
+                                                    <span className="admin-subscription-details-value">
+                                                        {subscription.durationDays || subscription.days || '-'} {t('adminSubscriptions.days') || 'days'}
+                                                    </span>
+                                                </div>
+                                                <div className="admin-subscription-details-row">
+                                                    <span className="admin-subscription-details-label">
+                                                        {t('adminSubscriptions.status') || 'Status'}:
+                                                    </span>
+                                                    <span className={`admin-subscription-details-status admin-subscription-details-status--${(subscription.status || 'pending').toLowerCase()}`}>
+                                                        {subscription.status || 'Pending'}
+                                                    </span>
+                                                </div>
+                                            </div>
 
-                                {/* Payment Info */}
-                                <div className="admin-subscription-details-section">
-                                    <h3 className="admin-subscription-details-section__title">
-                                        {t('adminSubscriptions.paymentInfo') || 'Payment Information'}
-                                    </h3>
-                                    <div className="admin-subscription-details-row">
-                                        <span className="admin-subscription-details-label">
-                                            {t('adminSubscriptions.paymentMethod') || 'Payment Method'}:
-                                        </span>
-                                        <span className="admin-subscription-details-value" data-field="paymentMethod">
-                                            {selectedSubscription.paymentMethod || '-'}
-                                        </span>
-                                    </div>
-                                    {(selectedSubscription.invoice || selectedSubscription.invoiceFile || selectedSubscription.invoiceUrl) && (
-                                        <div className="admin-subscription-details-row">
-                                            <span className="admin-subscription-details-label">
-                                                {t('adminSubscriptions.invoice') || 'Invoice'}:
-                                            </span>
-                                            <a
-                                                href={selectedSubscription.invoice || selectedSubscription.invoiceUrl || (selectedSubscription.invoiceFile?.url || selectedSubscription.invoiceFile)}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="admin-subscription-details-link"
-                                                onClick={(e) => e.stopPropagation()}
-                                            >
-                                                <FaFileInvoice />
-                                                {t('adminSubscriptions.viewInvoice') || 'View Invoice'}
-                                            </a>
-                                        </div>
-                                    )}
-                                </div>
+                                            {/* Payment Info */}
+                                            <div className="admin-subscription-details-section">
+                                                <h3 className="admin-subscription-details-section__title">
+                                                    {t('adminSubscriptions.paymentInfo') || 'Payment Information'}
+                                                </h3>
+                                                <div className="admin-subscription-details-row">
+                                                    <span className="admin-subscription-details-label">
+                                                        {t('adminSubscriptions.paymentMethod') || 'Payment Method'}:
+                                                    </span>
+                                                    <span className="admin-subscription-details-value" data-field="paymentMethod">
+                                                        {subscription.paymentMethod || 
+                                                         subscription.payment?.method ||
+                                                         subscription.paymentType ||
+                                                         subscription.paymentDetails?.method ||
+                                                         '-'}
+                                                    </span>
+                                                </div>
+                                                {(subscription.invoicePic || subscription.invoice || subscription.invoiceFile || subscription.invoiceUrl) && (
+                                                    <div className="admin-subscription-details-row">
+                                                        <span className="admin-subscription-details-label">
+                                                            {t('adminSubscriptions.invoice') || 'Invoice'}:
+                                                        </span>
+                                                        <a
+                                                            href={subscription.invoicePic || 
+                                                                  subscription.invoice || 
+                                                                  subscription.invoiceUrl || 
+                                                                  (subscription.invoiceFile?.url || subscription.invoiceFile)}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="admin-subscription-details-link"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                        >
+                                                            <FaFileInvoice />
+                                                            {t('adminSubscriptions.viewInvoice') || 'View Invoice'}
+                                                        </a>
+                                                    </div>
+                                                )}
+                                            </div>
 
-                                {/* Date Info */}
-                                <div className="admin-subscription-details-section">
-                                    <h3 className="admin-subscription-details-section__title">
-                                        {t('adminSubscriptions.dateInfo') || 'Date Information'}
-                                    </h3>
-                                    <div className="admin-subscription-details-row">
-                                        <span className="admin-subscription-details-label">
-                                            {t('adminSubscriptions.createdAt') || 'Created At'}:
-                                        </span>
-                                        <span className="admin-subscription-details-value">
-                                            {formatDate(selectedSubscription.createdAt || selectedSubscription.created)}
-                                        </span>
-                                    </div>
-                                </div>
+                                            {/* Date Info */}
+                                            <div className="admin-subscription-details-section">
+                                                <h3 className="admin-subscription-details-section__title">
+                                                    {t('adminSubscriptions.dateInfo') || 'Date Information'}
+                                                </h3>
+                                                <div className="admin-subscription-details-row">
+                                                    <span className="admin-subscription-details-label">
+                                                        {t('adminSubscriptions.startDate') || 'Start Date'}:
+                                                    </span>
+                                                    <span className="admin-subscription-details-value">
+                                                        {subscription.startDate ? formatDate(subscription.startDate) : '-'}
+                                                    </span>
+                                                </div>
+                                                <div className="admin-subscription-details-row">
+                                                    <span className="admin-subscription-details-label">
+                                                        {t('adminSubscriptions.endDate') || 'End Date'}:
+                                                    </span>
+                                                    <span className="admin-subscription-details-value">
+                                                        {subscription.endDate ? formatDate(subscription.endDate) : '-'}
+                                                    </span>
+                                                </div>
+                                                <div className="admin-subscription-details-row">
+                                                    <span className="admin-subscription-details-label">
+                                                        {t('adminSubscriptions.createdAt') || 'Created At'}:
+                                                    </span>
+                                                    <span className="admin-subscription-details-value">
+                                                        {formatDate(subscription.createdAt || subscription.created)}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </>
+                                    );
+                                })()}
                             </div>
 
                             <div className="admin-subscription-details-modal__actions">
@@ -525,7 +648,7 @@ export default function AdminSubscriptions() {
                                 >
                                     {t('adminSubscriptions.close') || 'Close'}
                                 </button>
-                                {(selectedSubscription.status === 'pending' || !selectedSubscription.status) && (
+                                {((enrichedSubscription || selectedSubscription).status === 'pending' || !(enrichedSubscription || selectedSubscription).status) && (
                                     <button
                                         onClick={() => handleApproveSubscription(selectedSubscription)}
                                         disabled={isApproving}
