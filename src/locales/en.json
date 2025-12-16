@@ -533,6 +533,7 @@
     "title": "Shared Files",
     "subtitle": "View all your shared files",
     "sharedFiles": "Shared Files",
+    "sharedFilesDescription": "Files you've shared with others",
     "sharedFolders": "Shared Folders",
     "sharedFoldersDescription": "Folders you've shared with others",
     "loadingFiles": "Loading files...",

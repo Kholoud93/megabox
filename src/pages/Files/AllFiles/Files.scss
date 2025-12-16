@@ -1484,6 +1484,13 @@ div[class*="relative"][class*="bg-white"] {
   }
 }
 
+// Exception: File dropdown menu must have high z-index (override the rule above)
+.files-content .file-dropdown-menu,
+.files-content * .file-dropdown-menu {
+  z-index: 99999 !important;
+  position: absolute !important;
+}
+
 // 6. Fix any grid/container stacking issues
 .grid,
 .files-grid,
@@ -1582,6 +1589,15 @@ body.profile-menu-open {
 .files-content,
 .files-content * {
   z-index: auto !important;
+}
+
+// Exception: File dropdown menu and button must have high z-index (override the rule above)
+.files-content .file-dropdown-menu,
+.files-content * .file-dropdown-menu,
+.files-content .file-menu-button,
+.files-content * .file-menu-button {
+  z-index: 99999 !important;
+  position: absolute !important;
 }
 
 // Only apply z-index to file/folder cards, keep them low

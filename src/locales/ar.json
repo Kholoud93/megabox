@@ -533,6 +533,7 @@
     "title": "الملفات المشتركة",
     "subtitle": "عرض جميع ملفاتك المشتركة",
     "sharedFiles": "الملفات المشتركة",
+    "sharedFilesDescription": "الملفات التي شاركتها مع الآخرين",
     "sharedFolders": "المجلدات المشتركة",
     "sharedFoldersDescription": "المجلدات التي شاركتها مع الآخرين",
     "loadingFiles": "جارٍ تحميل الملفات...",
