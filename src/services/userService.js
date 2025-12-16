@@ -252,6 +252,20 @@ export const userService = {
         } catch (error) {
             throw error.response?.data || error.message;
         }
+    },
+
+    // Update profile (general profile update)
+    updateProfile: async (profileData, token) => {
+        try {
+            const response = await api.patch('/auth/updateProfile', profileData, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
     }
 };
 

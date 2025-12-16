@@ -1,4 +1,5 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react'
+
 import "./Promoters.scss"
 import { useQuery, useQueryClient } from 'react-query';
 import { motion, useInView, AnimatePresence } from 'framer-motion';
@@ -18,25 +19,6 @@ import * as Yup from 'yup';
 
 export default function Promoters() {
     const { t, language } = useLanguage();
-    // --- Premium Formik and Validation ---
-    const premiumValidation = Yup.object({
-        expirationDate: Yup.date()
-            .min(new Date(), t("adminUsers.expirationDateMustBeFuture") || t("adminPromoters.expirationDateMustBeFuture"))
-            .required(t("adminUsers.expirationDateRequired") || t("adminPromoters.expirationDateRequired")),
-    });
-    const premiumFormik = useFormik({
-        initialValues: {
-            expirationDate: '',
-        },
-        validationSchema: premiumValidation,
-        onSubmit: (values) => {
-            if (premiumModal && (premiumModal._id || premiumModal.id)) {
-                handleSetPremium(premiumModal._id || premiumModal.id, values.expirationDate);
-            }
-        },
-        enableReinitialize: true,
-    });
-
     const [searchTerm, setSearchTerm] = useState('');
     const [filters, setFilters] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
@@ -145,8 +127,13 @@ export default function Promoters() {
     // Handle toggle premium status (remove premium)
     const handleTogglePremium = async (userId, currentPremiumStatus) => {
         try {
+            if (!userId) {
+                toast.error(t("adminPromoters.invalidUserId") || "Invalid user ID", ToastOptions("error"));
+                return;
+            }
+            
             // Toggle: if currently premium, deactivate; if not premium, activate
-            await adminService.toggleBrimumeByOwner(userId, !currentPremiumStatus, undefined, token);
+            await adminService.toggleBrimumeByOwner(String(userId), !currentPremiumStatus, undefined, token);
             queryClient.invalidateQueries("getAllPromoters");
             setPremiumModal(null);
             premiumFormik.resetForm();
@@ -158,6 +145,11 @@ export default function Promoters() {
     // Set promoter premium with expiration date
     const handleSetPremium = async (userId, expirationDate) => {
         try {
+            if (!userId) {
+                toast.error(t("adminPromoters.invalidUserId") || "Invalid user ID", ToastOptions("error"));
+                return;
+            }
+            
             // Calculate duration in days from expiration date
             const now = new Date();
             const expiration = new Date(expirationDate);
@@ -168,7 +160,7 @@ export default function Promoters() {
                 return;
             }
 
-            await adminService.toggleBrimumeByOwner(userId, true, durationDays, token);
+            await adminService.toggleBrimumeByOwner(String(userId), true, durationDays, token);
             queryClient.invalidateQueries("getAllPromoters");
             setPremiumModal(null);
             premiumFormik.resetForm();
@@ -176,6 +168,43 @@ export default function Promoters() {
             // Error is handled in the service
         }
     };
+
+    // Memoize the validation schema to prevent recreation on every render
+    // Use .test() for dynamic date validation to check against current date at validation time
+    const premiumValidation = useMemo(() => {
+        const futureDateMessage = t("adminUsers.expirationDateMustBeFuture") || t("adminPromoters.expirationDateMustBeFuture");
+        const requiredMessage = t("adminUsers.expirationDateRequired") || t("adminPromoters.expirationDateRequired");
+        
+        return Yup.object({
+            expirationDate: Yup.date()
+                .required(requiredMessage)
+                .test(
+                    'is-future-date',
+                    futureDateMessage,
+                    function(value) {
+                        if (!value) return true; // Let required() handle empty values
+                        return new Date(value) > new Date();
+                    }
+                ),
+        });
+    }, [t]);
+
+    // Initialize formik after handleSetPremium is defined
+    const premiumFormik = useFormik({
+        initialValues: {
+            expirationDate: '',
+        },
+        validationSchema: premiumValidation,
+        onSubmit: (values) => {
+            if (premiumModal) {
+                const userId = premiumModal._id || premiumModal.id;
+                if (userId) {
+                    handleSetPremium(String(userId), values.expirationDate);
+                }
+            }
+        },
+        enableReinitialize: true,
+    });
 
     // Filter configuration
     const filterConfig = [
@@ -410,7 +439,12 @@ export default function Promoters() {
                                             {t("adminUsers.cancel") || t("adminPromoters.cancel")}
                                         </button>
                                         <button
-                                            onClick={() => handleTogglePremium(premiumModal._id || premiumModal.id, premiumModal.isBrimume)}
+                                            onClick={() => {
+                                                const userId = premiumModal?._id || premiumModal?.id;
+                                                if (userId) {
+                                                    handleTogglePremium(String(userId), premiumModal.isBrimume);
+                                                }
+                                            }}
                                             className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                                         >
                                             {t("adminUsers.removePremium") || t("adminPromoters.removePremium")}

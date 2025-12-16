@@ -51,6 +51,17 @@ export const adminService = {
                     Authorization: `Bearer ${token}`
                 }
             });
+            
+            // Log to verify if reason field is included in backend response
+            // TODO: Remove this console.log after confirming backend response structure
+            if (response.data?.withdrawals) {
+                const rejectedWithdrawals = response.data.withdrawals.filter(w => w.status === 'rejected');
+                if (rejectedWithdrawals.length > 0) {
+                    console.log('Sample rejected withdrawal from getAllWithdrawals:', rejectedWithdrawals[0]);
+                    console.log('Reason field exists:', 'reason' in rejectedWithdrawals[0]);
+                }
+            }
+            
             return response.data;
         } catch (error) {
             throw error.response?.data || error.message;
@@ -69,6 +80,14 @@ export const adminService = {
                     Authorization: `Bearer ${token}`
                 }
             });
+            
+            // Log response to verify if reason is included in backend response
+            // TODO: Remove this console.log after confirming backend response structure
+            if (status === 'rejected' && reason) {
+                console.log('UpdateWithdrawalStatus Response:', response.data);
+                console.log('Reason in response:', response.data?.withdrawal?.reason || response.data?.reason);
+            }
+            
             toast.success(
                 status === 'approved' 
                     ? "Withdrawal approved successfully!" 
@@ -159,6 +178,16 @@ export const adminService = {
             });
             return response.data;
         } catch (error) {
+            // Handle 404 gracefully - user may not have shared files (this is expected for users without shared files)
+            if (error.response?.status === 404 || error.status === 404) {
+                // Return empty analytics array instead of throwing error
+                // This prevents console errors for expected cases where users have no shared files
+                return {
+                    message: error.response?.data?.message || 'No shared files found',
+                    analytics: []
+                };
+            }
+            // For other errors, still throw but don't log 404s
             throw error.response?.data || error.message;
         }
     },
@@ -468,12 +497,12 @@ export const adminService = {
         }
     },
 
-    // Get user withdrawals (admin) - POST method
-    // NOTE: This endpoint doesn't exist on the backend (returns 404)
+    // Get user withdrawals (admin) - GET method
+    // NOTE: Changed from POST to GET as this is a read operation
     // Currently filtering client-side from getAllWithdrawals instead
     getUserWithdrawals: async (token) => {
         try {
-            const response = await api.post('/auth/getUserWithdrawals', {}, {
+            const response = await api.get('/auth/getUserWithdrawals', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

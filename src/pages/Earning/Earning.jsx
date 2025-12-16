@@ -5,7 +5,7 @@ import { useCookies } from 'react-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaDollarSign, FaTimes } from 'react-icons/fa';
 import { HiArrowRight, HiArrowLeft, HiChevronDown } from 'react-icons/hi2';
-import { promoterService } from '../../services/api';
+import { promoterService, paymentService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { withdrawalService } from '../../services/withdrawalService';
 import { useMutation, useQueryClient } from 'react-query';
@@ -80,33 +80,41 @@ export default function Earning() {
     const [showRecordModal, setShowRecordModal] = useState(false);
     const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
     const [viewMode, setViewMode] = useState('all'); // 'all', 'approved', 'pending', 'rejected'
+    const [selectedPaymentServiceId, setSelectedPaymentServiceId] = useState(null);
     const queryClient = useQueryClient();
 
-    // Payment methods details
-    const paymentMethodsDetails = {
-        'USDT': {
-            min: 10,
-            fees: t('withdrawSection.free') || 'Free',
-            time: t('withdrawSection.within24Hours') || 'Within 24 hours'
-        },
-        'PayPal': {
-            min: 10,
-            fees: t('withdrawSection.free') || 'Free',
-            time: t('withdrawSection.within24Hours') || 'Within 24 hours'
-        },
-        'Payoneer': {
-            min: 10,
-            fees: t('withdrawSection.free') || 'Free',
-            time: t('withdrawSection.within24Hours') || 'Within 24 hours'
-        },
-        'Bank Transfer': {
-            min: 10,
-            fees: t('withdrawSection.free') || 'Free',
-            time: t('withdrawSection.threeToFiveDays') || '3-5 days'
+    // Fetch payment services
+    const { data: paymentServicesData } = useQuery(
+        ['paymentServices'],
+        () => paymentService.getPaymentServices(token),
+        {
+            enabled: !!token,
+            retry: 2,
+            onError: (error) => {
+                // Silently handle errors - payment services are optional
+                console.error('Error fetching payment services:', error);
+            }
         }
-    };
+    );
 
-    const selectedPaymentDetails = paymentMethod ? paymentMethodsDetails[paymentMethod] : null;
+    const paymentServices = paymentServicesData?.paymentServices || paymentServicesData?.data || paymentServicesData || [];
+    const activePaymentServices = paymentServices.filter(service => service.isActive !== false);
+
+    // Get selected payment details from payment services only
+    const selectedPaymentDetails = useMemo(() => {
+        if (selectedPaymentServiceId) {
+            const service = activePaymentServices.find(s => s._id === selectedPaymentServiceId || s.id === selectedPaymentServiceId);
+            if (service) {
+                return {
+                    min: service.minAmount || 10,
+                    fees: t('withdrawSection.free') || 'Free',
+                    time: t('withdrawSection.within24Hours') || 'Within 24 hours',
+                    service: service
+                };
+            }
+        }
+        return null;
+    }, [selectedPaymentServiceId, activePaymentServices, t]);
 
     // Fetch withdrawal history using getUserWithdrawals API
     const { data: withdrawalHistory, isLoading: withdrawalHistoryLoading } = useQuery(
@@ -152,13 +160,34 @@ export default function Earning() {
 
     // Request withdrawal mutation
     const requestWithdrawalMutation = useMutation(
-        (formData) => withdrawalService.requestWithdrawal(
-            formData.amount,
-            formData.paymentMethod,
-            formData.whatsappNumber,
-            formData.details,
-            token
-        ),
+        (formData) => {
+            // If a payment service is selected, include its details
+            if (formData.paymentServiceId) {
+                const service = activePaymentServices.find(s => (s._id || s.id) === formData.paymentServiceId);
+                if (service) {
+                    // Include payment service details in the request
+                    return withdrawalService.requestWithdrawal(
+                        formData.amount,
+                        formData.paymentMethod,
+                        formData.whatsappNumber,
+                        formData.details,
+                        token,
+                        {
+                            paymentServiceId: formData.paymentServiceId,
+                            paymentService: service
+                        }
+                    );
+                }
+            }
+            // Standard withdrawal without payment service
+            return withdrawalService.requestWithdrawal(
+                formData.amount,
+                formData.paymentMethod,
+                formData.whatsappNumber,
+                formData.details,
+                token
+            );
+        },
         {
             onSuccess: () => {
                 queryClient.invalidateQueries('userWithdrawals');
@@ -166,6 +195,7 @@ export default function Earning() {
                 queryClient.invalidateQueries('userEarnings');
                 setWithdrawalAmount('');
                 setPaymentMethod('');
+                setSelectedPaymentServiceId(null);
                 setWhatsappTelegram('');
                 setErrors({});
                 setTouched({});
@@ -212,7 +242,8 @@ export default function Earning() {
     };
 
     const validatePaymentMethod = (value) => {
-        if (!value || value.trim() === '') {
+        // Payment method is valid if a payment service is selected
+        if (!selectedPaymentServiceId) {
             return t('withdrawSection.paymentMethodRequired') || 'Payment method is required';
         }
         return '';
@@ -279,7 +310,8 @@ export default function Earning() {
                 amount: parseFloat(withdrawalAmount),
                 paymentMethod: paymentMethod,
                 whatsappNumber: whatsappTelegram,
-                details: details
+                details: details,
+                paymentServiceId: selectedPaymentServiceId
             });
         }
     };
@@ -442,51 +474,73 @@ export default function Earning() {
                                     tabIndex={0}
                                 >
                                     <span className="withdraw-payment-dropdown__selected">
-                                        {paymentMethod 
-                                            ? (paymentMethodsDetails[paymentMethod] 
-                                                ? `${paymentMethod} | ${t('withdrawSection.minAmount') || 'Min'}: ${paymentMethodsDetails[paymentMethod].min} ${currency} | ${t('withdrawSection.fees') || 'Fees'}: ${paymentMethodsDetails[paymentMethod].fees} | ${t('withdrawSection.processingTime') || 'Time'}: ${paymentMethodsDetails[paymentMethod].time}`
-                                                : paymentMethod)
-                                            : (t('withdrawSection.paymentMethodPlaceholder') || 'Please enter the payment method')}
+                                        {(() => {
+                                            if (selectedPaymentServiceId) {
+                                                const service = activePaymentServices.find(s => (s._id || s.id) === selectedPaymentServiceId);
+                                                if (service) {
+                                                    const serviceName = service.accountName || service.paymentType || 'Payment Service';
+                                                    const credentials = service.credentials || {};
+                                                    const credentialValue = credentials.email || credentials.phone || credentials.accountNumber || credentials.walletAddress || '';
+                                                    return `${serviceName}${credentialValue ? ` (${credentialValue})` : ''} | ${t('withdrawSection.minAmount') || 'Min'}: ${service.minAmount || 10} ${currency}`;
+                                                }
+                                            }
+                                            return t('withdrawSection.paymentMethodPlaceholder') || 'Please select a payment method';
+                                        })()}
                                     </span>
                                     <HiChevronDown className={`withdraw-form-select-arrow ${showPaymentDropdown ? 'withdraw-form-select-arrow--open' : ''}`} />
                                 </div>
                                 {showPaymentDropdown && (
                                     <div className="withdraw-payment-dropdown__menu">
-                                        {Object.keys(paymentMethodsDetails).map((method) => {
-                                            const details = paymentMethodsDetails[method];
-                                            const methodLabel = method === 'USDT' ? t('withdrawSection.usdt') || 'USDT' :
-                                                               method === 'PayPal' ? t('withdrawSection.paypal') || 'PayPal' :
-                                                               method === 'Payoneer' ? t('withdrawSection.payoneer') || 'Payoneer' :
-                                                               t('withdrawSection.bankTransfer') || 'Bank transfer (personal)';
-                                            return (
-                                                <div
-                                                    key={method}
-                                                    className={`withdraw-payment-dropdown__option ${paymentMethod === method ? 'withdraw-payment-dropdown__option--selected' : ''}`}
-                                                    onClick={() => {
-                                                        setPaymentMethod(method);
-                                                        setShowPaymentDropdown(false);
-                                                        if (touched.paymentMethod) {
-                                                            validateField('paymentMethod');
-                                                        }
-                                                    }}
-                                                >
-                                                    <div className="withdraw-payment-dropdown__option-header">
-                                                        <span className="withdraw-payment-dropdown__option-name">{methodLabel}</span>
+                                        {/* Payment Services from API */}
+                                        {activePaymentServices.length > 0 ? (
+                                            activePaymentServices.map((service) => {
+                                                const serviceId = service._id || service.id;
+                                                const isSelected = selectedPaymentServiceId === serviceId;
+                                                const serviceName = service.accountName || service.paymentType || 'Payment Service';
+                                                const credentials = service.credentials || {};
+                                                const credentialValue = credentials.email || credentials.phone || credentials.accountNumber || credentials.walletAddress || '';
+                                                
+                                                return (
+                                                    <div
+                                                        key={`service-${serviceId}`}
+                                                        className={`withdraw-payment-dropdown__option ${isSelected ? 'withdraw-payment-dropdown__option--selected' : ''}`}
+                                                        onClick={() => {
+                                                            setSelectedPaymentServiceId(serviceId);
+                                                            setPaymentMethod(service.paymentType || serviceName);
+                                                            setShowPaymentDropdown(false);
+                                                            if (touched.paymentMethod) {
+                                                                validateField('paymentMethod');
+                                                            }
+                                                        }}
+                                                    >
+                                                        <div className="withdraw-payment-dropdown__option-header">
+                                                            <span className="withdraw-payment-dropdown__option-name">
+                                                                {serviceName} {service.isDefault && <span style={{ color: '#fbbf24', fontSize: '0.75rem' }}>({t('withdrawSection.default') || 'Default'})</span>}
+                                                            </span>
+                                                        </div>
+                                                        <div className="withdraw-payment-dropdown__option-details">
+                                                            <span className="withdraw-payment-dropdown__option-detail">
+                                                                {t('withdrawSection.type') || 'Type'}: <strong>{service.paymentType || 'N/A'}</strong>
+                                                            </span>
+                                                            {credentialValue && (
+                                                                <span className="withdraw-payment-dropdown__option-detail">
+                                                                    {t('withdrawSection.account') || 'Account'}: <strong>{credentialValue}</strong>
+                                                                </span>
+                                                            )}
+                                                            <span className="withdraw-payment-dropdown__option-detail">
+                                                                {t('withdrawSection.minAmount') || 'Min'}: <strong>{service.minAmount || 10} {currency}</strong>
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                    <div className="withdraw-payment-dropdown__option-details">
-                                                        <span className="withdraw-payment-dropdown__option-detail">
-                                                            {t('withdrawSection.minAmount') || 'Min'}: <strong>{details.min} {currency}</strong>
-                                                        </span>
-                                                        <span className="withdraw-payment-dropdown__option-detail">
-                                                            {t('withdrawSection.fees') || 'Fees'}: <strong>{details.fees}</strong>
-                                                        </span>
-                                                        <span className="withdraw-payment-dropdown__option-detail">
-                                                            {t('withdrawSection.processingTime') || 'Time'}: <strong>{details.time}</strong>
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
+                                                );
+                                            })
+                                        ) : (
+                                            <div className="withdraw-payment-dropdown__empty">
+                                                <p style={{ padding: '1rem', textAlign: 'center', color: '#6b7280', fontSize: '0.875rem' }}>
+                                                    {t('withdrawSection.noPaymentServices') || 'No payment methods available. Please add a payment method first.'}
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -537,144 +591,163 @@ export default function Earning() {
                         <div className="withdraw-notice__text">{t('withdrawSection.noticeText') || 'The amount of cash withdrawal must be ≥ 10 US dollars If not please go ahead and share the link'}</div>
                     </div>
                 </motion.div>
-            </div>
 
-            {/* Withdrawal Record Modal */}
-            <AnimatePresence>
-                {showRecordModal && (
-                    <motion.div
-                        className="withdraw-record-modal-backdrop"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={() => setShowRecordModal(false)}
-                    >
+                {/* Withdrawal Record Modal */}
+                <AnimatePresence>
+                    {showRecordModal && (
                         <motion.div
-                            className="withdraw-record-modal"
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            onClick={(e) => e.stopPropagation()}
+                            className="withdraw-record-modal-backdrop"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowRecordModal(false)}
                         >
-                            <div className="withdraw-record-modal__header">
-                                <h3 className="withdraw-record-modal__title">
-                                    {t('withdrawSection.record') || 'Withdrawal Record'}
-                                </h3>
-                                <button
-                                    type="button"
-                                    onClick={() => setShowRecordModal(false)}
-                                    className="withdraw-record-modal__close"
-                                >
-                                    <FaTimes />
-                                </button>
-                            </div>
-
-                            <div className="withdraw-record-modal__content">
-                                {/* Filter Buttons */}
-                                <div className="withdraw-filters">
+                            <motion.div
+                                className="withdraw-record-modal"
+                                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <div className="withdraw-record-modal__header">
+                                    <h3 className="withdraw-record-modal__title">
+                                        {t('withdrawSection.record') || 'Withdrawal Record'}
+                                    </h3>
                                     <button
                                         type="button"
-                                        onClick={() => setViewMode('all')}
-                                        className={`withdraw-filter-btn ${viewMode === 'all' ? 'active' : ''}`}
+                                        onClick={() => setShowRecordModal(false)}
+                                        className="withdraw-record-modal__close"
                                     >
-                                        <span className="filter-title">
-                                            {t('withdrawSection.allWithdrawals') || 'All'}
-                                        </span>
-                                        <span className="filter-desc">
-                                            {t('withdrawSection.allWithdrawalsDesc') || 'View all withdrawal requests'}
-                                        </span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setViewMode('pending')}
-                                        className={`withdraw-filter-btn ${viewMode === 'pending' ? 'active' : ''}`}
-                                    >
-                                        <span className="filter-title">
-                                            {t('withdrawSection.pending') || 'Pending'}
-                                        </span>
-                                        <span className="filter-desc">
-                                            {t('withdrawSection.pendingDesc') || 'View pending withdrawals'}
-                                        </span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setViewMode('approved')}
-                                        className={`withdraw-filter-btn ${viewMode === 'approved' ? 'active' : ''}`}
-                                    >
-                                        <span className="filter-title">
-                                            {t('withdrawSection.approvedOnly') || 'Approved'}
-                                        </span>
-                                        <span className="filter-desc">
-                                            {t('withdrawSection.approvedOnlyDesc') || 'View approved withdrawals only'}
-                                        </span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setViewMode('rejected')}
-                                        className={`withdraw-filter-btn ${viewMode === 'rejected' ? 'active' : ''}`}
-                                    >
-                                        <span className="filter-title">
-                                            {t('withdrawSection.rejected') || 'Rejected'}
-                                        </span>
-                                        <span className="filter-desc">
-                                            {t('withdrawSection.rejectedDesc') || 'View rejected withdrawals'}
-                                        </span>
+                                        <FaTimes />
                                     </button>
                                 </div>
 
-                                {isLoadingWithdrawals ? (
-                                    <div className="withdraw-record-modal__loading">
-                                        <div className="withdraw-record-modal__spinner"></div>
-                                        <p>{t('withdrawSection.loadingHistory') || 'Loading withdrawal history...'}</p>
+                                <div className="withdraw-record-modal__content">
+                                    {/* Filter Buttons */}
+                                    <div className="withdraw-filters">
+                                        <button
+                                            type="button"
+                                            onClick={() => setViewMode('all')}
+                                            className={`withdraw-filter-btn ${viewMode === 'all' ? 'active' : ''}`}
+                                        >
+                                            <span className="filter-title">
+                                                {t('withdrawSection.allWithdrawals') || 'All'}
+                                            </span>
+                                            <span className="filter-desc">
+                                                {t('withdrawSection.allWithdrawalsDesc') || 'View all withdrawal requests'}
+                                            </span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setViewMode('pending')}
+                                            className={`withdraw-filter-btn ${viewMode === 'pending' ? 'active' : ''}`}
+                                        >
+                                            <span className="filter-title">
+                                                {t('withdrawSection.pending') || 'Pending'}
+                                            </span>
+                                            <span className="filter-desc">
+                                                {t('withdrawSection.pendingDesc') || 'View pending withdrawals'}
+                                            </span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setViewMode('approved')}
+                                            className={`withdraw-filter-btn ${viewMode === 'approved' ? 'active' : ''}`}
+                                        >
+                                            <span className="filter-title">
+                                                {t('withdrawSection.approvedOnly') || 'Approved'}
+                                            </span>
+                                            <span className="filter-desc">
+                                                {t('withdrawSection.approvedOnlyDesc') || 'View approved withdrawals only'}
+                                            </span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setViewMode('rejected')}
+                                            className={`withdraw-filter-btn ${viewMode === 'rejected' ? 'active' : ''}`}
+                                        >
+                                            <span className="filter-title">
+                                                {t('withdrawSection.rejected') || 'Rejected'}
+                                            </span>
+                                            <span className="filter-desc">
+                                                {t('withdrawSection.rejectedDesc') || 'View rejected withdrawals'}
+                                            </span>
+                                        </button>
                                     </div>
-                                ) : displayWithdrawals.length > 0 ? (
-                                    <div className="withdraw-table-container">
-                                        <table className="withdraw-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>{t('withdrawSection.tableDate') || 'Date'}</th>
-                                                    <th>{t('withdrawSection.tableAmount') || 'Amount'}</th>
-                                                    <th>{t('withdrawSection.tableMethod') || 'Payment Method'}</th>
-                                                    <th>{t('withdrawSection.tableStatus') || 'Status'}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {displayWithdrawals.map((withdrawal, index) => (
-                                                    <tr key={withdrawal?._id || withdrawal?.id || index}>
-                                                        <td className="withdraw-date">
-                                                            {withdrawal?.createdAt 
-                                                                ? new Date(withdrawal.createdAt).toLocaleDateString()
-                                                                : withdrawal?.date || '-'}
-                                                        </td>
-                                                        <td className="withdraw-amount">
-                                                            {withdrawal?.amount || '-'} {withdrawal?.currency || currency}
-                                                        </td>
-                                                        <td className="withdraw-payment-method">
-                                                            {withdrawal?.paymentMethod || '-'}
-                                                        </td>
-                                                        <td>
-                                                            <span className={`withdraw-status withdraw-status--${(withdrawal?.status || 'pending').toLowerCase()}`}>
-                                                                {withdrawal?.status || 'Pending'}
-                                                            </span>
-                                                        </td>
+
+                                    {isLoadingWithdrawals ? (
+                                        <div className="withdraw-record-modal__loading">
+                                            <div className="withdraw-record-modal__spinner"></div>
+                                            <p>{t('withdrawSection.loadingHistory') || 'Loading withdrawal history...'}</p>
+                                        </div>
+                                    ) : displayWithdrawals.length > 0 ? (
+                                        <div className="withdraw-table-container">
+                                            <table className="withdraw-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>{t('withdrawSection.tableDate') || 'Date'}</th>
+                                                        <th>{t('withdrawSection.tableAmount') || 'Amount'}</th>
+                                                        <th>{t('withdrawSection.tableMethod') || 'Payment Method'}</th>
+                                                        <th>{t('withdrawSection.tableStatus') || 'Status'}</th>
+                                                        <th>{t('withdrawSection.tableReason') || 'Reason'}</th>
                                                     </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                ) : (
-                                    <div className="withdraw-table-empty">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
-                                        <p>{t('withdrawSection.noWithdrawalHistory') || 'No withdrawal history found'}</p>
-                                    </div>
-                                )}
-                            </div>
+                                                </thead>
+                                                <tbody>
+                                                    {displayWithdrawals.map((withdrawal, index) => (
+                                                        <tr key={withdrawal?._id || withdrawal?.id || index}>
+                                                            <td className="withdraw-date">
+                                                                {withdrawal?.createdAt 
+                                                                    ? new Date(withdrawal.createdAt).toLocaleDateString()
+                                                                    : withdrawal?.date || '-'}
+                                                            </td>
+                                                            <td className="withdraw-amount">
+                                                                {withdrawal?.amount || '-'} {withdrawal?.currency || currency}
+                                                            </td>
+                                                            <td className="withdraw-payment-method">
+                                                                {withdrawal?.paymentMethod || '-'}
+                                                            </td>
+                                                            <td>
+                                                                <span className={`withdraw-status withdraw-status--${(withdrawal?.status || 'pending').toLowerCase()}`}>
+                                                                    {withdrawal?.status || 'Pending'}
+                                                                </span>
+                                                            </td>
+                                                            <td className="withdraw-reason">
+                                                                {withdrawal?.status === 'rejected' ? (() => {
+                                                                    // Check for reason in various possible field names
+                                                                    const rejectionReason = withdrawal?.reason || 
+                                                                                           withdrawal?.rejectionReason || 
+                                                                                           withdrawal?.rejectReason ||
+                                                                                           withdrawal?.rejection_reason;
+                                                                    return rejectionReason ? (
+                                                                        <span className="withdraw-reason__text" title={rejectionReason}>
+                                                                            {rejectionReason}
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span className="withdraw-reason__empty">-</span>
+                                                                    );
+                                                                })() : (
+                                                                    <span className="withdraw-reason__empty">-</span>
+                                                                )}
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    ) : (
+                                        <div className="withdraw-table-empty">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            <p>{t('withdrawSection.noWithdrawalHistory') || 'No withdrawal history found'}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </motion.div>
                         </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                    )}
+                </AnimatePresence>
+            </div>
         </motion.div>
     );
 }

@@ -25,6 +25,8 @@ export default function Withdrawals() {
     const [processingWithdrawals, setProcessingWithdrawals] = useState(new Set());
     const [selectedWithdrawal, setSelectedWithdrawal] = useState(null);
     const [rejectionModal, setRejectionModal] = useState({ isOpen: false, withdrawalId: null, reason: '' });
+    // Store rejection reasons locally since backend doesn't return them in getAllWithdrawals
+    const [rejectionReasons, setRejectionReasons] = useState(new Map());
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
     const [showApprovedOnly, setShowApprovedOnly] = useState(false);
@@ -66,8 +68,20 @@ export default function Withdrawals() {
         const withdrawalsArray = Array.isArray(withdrawalsToFilter) 
             ? withdrawalsToFilter 
             : (withdrawalsToFilter.withdrawals || []);
+        
+        // Merge rejection reasons from local storage into withdrawals
+        const withdrawalsWithReasons = withdrawalsArray.map(withdrawal => {
+            if (withdrawal.status === 'rejected') {
+                const withdrawalId = withdrawal._id || withdrawal.id;
+                const storedReason = rejectionReasons.get(withdrawalId);
+                if (storedReason && !withdrawal.reason) {
+                    return { ...withdrawal, reason: storedReason };
+                }
+            }
+            return withdrawal;
+        });
 
-        return withdrawalsArray.filter((withdrawal) => {
+        return withdrawalsWithReasons.filter((withdrawal) => {
             // Search filter
             if (searchTerm) {
                 const userInfo = typeof withdrawal.userId === 'object' && withdrawal.userId !== null
@@ -102,7 +116,7 @@ export default function Withdrawals() {
 
             return true;
         });
-    }, [withdrawalsToFilter, searchTerm, filters]);
+    }, [withdrawalsToFilter, searchTerm, filters, rejectionReasons]);
 
     // Pagination logic
     const totalPages = Math.ceil(filteredWithdrawals.length / itemsPerPage);
@@ -202,22 +216,37 @@ export default function Withdrawals() {
 
         setProcessingWithdrawals(prev => new Set(prev).add(withdrawalId));
         try {
-            await adminService.updateWithdrawalStatus(withdrawalId, 'rejected', reason.trim(), token);
+            const response = await adminService.updateWithdrawalStatus(withdrawalId, 'rejected', reason.trim(), token);
+            
+            // Check if response includes updated withdrawal with reason
+            const updatedWithdrawal = response?.withdrawal || response?.data?.withdrawal || response?.data;
+            
+            // Store the rejection reason locally (since backend doesn't return it in getAllWithdrawals)
+            const rejectionReason = updatedWithdrawal?.reason || 
+                                   updatedWithdrawal?.rejectionReason || 
+                                   reason.trim();
+            setRejectionReasons(prev => new Map(prev).set(withdrawalId, rejectionReason));
+            
             toast.success(t('adminWithdrawals.rejectedSuccess') || 'Withdrawal rejected successfully', ToastOptions("success"));
-            queryClient.invalidateQueries(['allWithdrawals']);
-            queryClient.invalidateQueries(['approvedWithdrawals']);
-            // Optimistic update
+            
+            // Update query data optimistically with the reason
             queryClient.setQueryData(['allWithdrawals'], (oldData) => {
                 if (!oldData?.withdrawals) return oldData;
                 return {
                     ...oldData,
-                    withdrawals: oldData.withdrawals.map(w => 
-                        (w._id === withdrawalId || w.id === withdrawalId) 
-                            ? { ...w, status: 'rejected', reason: reason.trim() }
-                            : w
-                    )
+                    withdrawals: oldData.withdrawals.map(w => {
+                        if (w._id === withdrawalId || w.id === withdrawalId) {
+                            return { ...w, status: 'rejected', reason: rejectionReason };
+                        }
+                        return w;
+                    })
                 };
             });
+            
+            // Invalidate and refetch
+            queryClient.invalidateQueries(['allWithdrawals']);
+            queryClient.invalidateQueries(['approvedWithdrawals']);
+            
             setRejectionModal({ isOpen: false, withdrawalId: null, reason: '' });
         } catch (error) {
             toast.error(error.response?.data?.message || t('adminWithdrawals.rejectFailed') || 'Failed to reject withdrawal', ToastOptions("error"));
@@ -350,7 +379,18 @@ export default function Withdrawals() {
                                                     <div className="action-buttons">
                                                         <motion.button
                                                             className="admin-withdrawals-actions__btn admin-withdrawals-actions__btn--view"
-                                                            onClick={() => setSelectedWithdrawal(withdrawal)}
+                                                            onClick={() => {
+                                                                // Ensure withdrawal has reason from local storage if it's rejected
+                                                                const withdrawalId = withdrawal._id || withdrawal.id;
+                                                                if (withdrawal.status === 'rejected' && !withdrawal.reason) {
+                                                                    const storedReason = rejectionReasons.get(withdrawalId);
+                                                                    if (storedReason) {
+                                                                        setSelectedWithdrawal({ ...withdrawal, reason: storedReason });
+                                                                        return;
+                                                                    }
+                                                                }
+                                                                setSelectedWithdrawal(withdrawal);
+                                                            }}
                                                             whileHover={{ scale: 1.05 }}
                                                             whileTap={{ scale: 0.95 }}
                                                             title={t('adminWithdrawals.viewDetails')}
@@ -506,17 +546,33 @@ export default function Withdrawals() {
                                     </div>
                                 )}
 
-                                {selectedWithdrawal.details && (
-                                    <div className="admin-withdrawal-modal__row admin-withdrawal-modal__row--full">
-                                        <strong>{t('adminWithdrawals.details')}:</strong>
-                                        <p>
-                                            {typeof selectedWithdrawal.details === 'object' && selectedWithdrawal.details !== null
-                                                ? JSON.stringify(selectedWithdrawal.details)
-                                                : String(selectedWithdrawal.details || '-')
-                                            }
-                                        </p>
-                                    </div>
-                                )}
+                                {selectedWithdrawal.status === 'rejected' && (() => {
+                                    // Check for reason in various possible field names
+                                    const withdrawalId = selectedWithdrawal._id || selectedWithdrawal.id;
+                                    const rejectionReason = selectedWithdrawal.reason || 
+                                                           selectedWithdrawal.rejectionReason || 
+                                                           selectedWithdrawal.rejectReason ||
+                                                           selectedWithdrawal.rejection_reason ||
+                                                           rejectionReasons.get(withdrawalId);
+                                    
+                                    // Always show rejection reason section for rejected withdrawals
+                                    return (
+                                        <div className="admin-withdrawal-modal__row admin-withdrawal-modal__row--full">
+                                            <strong>{t('adminWithdrawals.rejectionReason') || 'Rejection Reason'}:</strong>
+                                            <p style={{ 
+                                                color: rejectionReason ? '#dc2626' : '#94a3b8',
+                                                fontWeight: 500,
+                                                padding: '0.5rem',
+                                                background: rejectionReason ? '#fee2e2' : '#f1f5f9',
+                                                borderRadius: '0.375rem',
+                                                borderLeft: `3px solid ${rejectionReason ? '#dc2626' : '#94a3b8'}`,
+                                                fontStyle: rejectionReason ? 'normal' : 'italic'
+                                            }}>
+                                                {rejectionReason || 'No reason provided'}
+                                            </p>
+                                        </div>
+                                    );
+                                })()}
                             </div>
 
                             {selectedWithdrawal.status === 'pending' && (

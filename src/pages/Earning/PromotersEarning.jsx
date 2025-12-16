@@ -630,7 +630,10 @@ export default function PromotersEarning() {
             enabled: !!token && !!id,
             retry: 2,
             onError: (error) => {
-                console.error('Error fetching share links:', error);
+                // Only log non-404 errors (404 means user has no shared files, which is expected)
+                if (error?.response?.status !== 404 && error?.status !== 404) {
+                    console.error('Error fetching share links:', error);
+                }
             }
         }
     );

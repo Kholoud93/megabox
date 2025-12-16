@@ -167,7 +167,10 @@ export default function Analasys() {
 
                                 return { downloads: promoterDownloads, views: promoterViews };
                             } catch (error) {
-                                console.error(`Error fetching analytics for promoter ${userId}:`, error);
+                                // Only log non-404 errors (404 means user has no shared files, which is expected)
+                                if (error?.response?.status !== 404 && error?.status !== 404) {
+                                    console.error(`Error fetching analytics for promoter ${userId}:`, error);
+                                }
                                 return { downloads: 0, views: 0 };
                             }
                         });

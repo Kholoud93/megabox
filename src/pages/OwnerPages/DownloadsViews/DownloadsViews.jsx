@@ -85,7 +85,10 @@ export default function DownloadsViews() {
                                 fileId: item.fileId || item.id || item._id
                             }));
                         } catch (error) {
-                            console.error(`Error fetching analytics for promoter ${userId}:`, error);
+                            // Only log non-404 errors (404 means user has no shared files, which is expected)
+                            if (error?.response?.status !== 404 && error?.status !== 404) {
+                                console.error(`Error fetching analytics for promoter ${userId}:`, error);
+                            }
                             // Return empty array if fetch fails for this promoter
                             return [];
                         }

@@ -60,16 +60,28 @@ import SignupForMoney from './pages/Auth/SignupForMoney'
 import Reports from './pages/OwnerPages/Reports/Reports'
 
 
+// AuthWrapper component - must be used within Router and AuthProvider context
+// This component will be rendered by RouterProvider, so hooks will work
 const AuthWrapper = ({ children }) => {
-  const navigate = useNavigate();
-  const auth = useAuth();
-  const [Token] = useCookies(['MegaBox']);
+  try {
+    const navigate = useNavigate();
+    const auth = useAuth();
+    const [Token] = useCookies(['MegaBox']);
 
-
-  return children({ navigate, auth, Token });
+    if (typeof children === 'function') {
+      return children({ navigate, auth, Token });
+    }
+    return children;
+  } catch (error) {
+    // If hooks fail, it means we're not in the right context
+    console.error('AuthWrapper error:', error);
+    throw error;
+  }
 };
 
 const AppRouter = () => {
+  // Router must be created inside AppRouter which is wrapped by AuthProvider
+  // Components in router config will have access to AuthProvider context when rendered
   const router = useMemo(() => createBrowserRouter([
     {
       path: "/",

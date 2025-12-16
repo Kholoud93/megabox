@@ -12,6 +12,7 @@ export { notificationService } from './notificationService';
 export { adminService } from './adminService';
 export { promoterService } from './promoterService';
 export { channelService } from './channelService';
+export { paymentService } from './paymentService';
 
 // Default export for backward compatibility
 import { api as defaultApi } from './apiConfig';

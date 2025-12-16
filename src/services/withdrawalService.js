@@ -3,14 +3,28 @@ import { ToastOptions } from '../helpers/ToastOptions';
 import { api } from './apiConfig';
 
 export const withdrawalService = {
-    requestWithdrawal: async (amount, paymentMethod, whatsappNumber, details, token) => {
+    requestWithdrawal: async (amount, paymentMethod, whatsappNumber, details, token, paymentServiceData = null) => {
         try {
-            const response = await api.post('/auth/requestWithdrawal', {
+            const requestData = {
                 amount,
                 paymentMethod,
                 whatsappNumber,
                 details
-            }, {
+            };
+            
+            // Include payment service data if provided
+            if (paymentServiceData) {
+                requestData.paymentServiceId = paymentServiceData.paymentServiceId;
+                if (paymentServiceData.paymentService) {
+                    requestData.paymentServiceType = paymentServiceData.paymentService.paymentType;
+                    requestData.paymentServiceAccount = paymentServiceData.paymentService.accountName;
+                    if (paymentServiceData.paymentService.credentials) {
+                        requestData.paymentServiceCredentials = paymentServiceData.paymentService.credentials;
+                    }
+                }
+            }
+            
+            const response = await api.post('/auth/requestWithdrawal', requestData, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

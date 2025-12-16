@@ -81,14 +81,25 @@ export const promoterService = {
         }
     },
 
-    // Get user withdrawals (for promoters)
+    // Get user withdrawals (for promoters) - GET method
+    // Changed from POST to GET as this is a read operation
     getUserWithdrawals: async (token) => {
         try {
-            const response = await api.post('/auth/getUserWithdrawals', {}, {
+            const response = await api.get('/auth/getUserWithdrawals', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
+            
+            // Log to verify if reason field is included in backend response
+            // TODO: Remove this console.log after confirming backend response structure
+            const withdrawals = response.data?.withdrawals || response.data?.data || response.data || [];
+            const rejectedWithdrawals = Array.isArray(withdrawals) ? withdrawals.filter(w => w.status === 'rejected') : [];
+            if (rejectedWithdrawals.length > 0) {
+                console.log('Sample rejected withdrawal from getUserWithdrawals:', rejectedWithdrawals[0]);
+                console.log('Reason field exists:', 'reason' in rejectedWithdrawals[0]);
+            }
+            
             return response.data;
         } catch (error) {
             throw error.response?.data || error.message;

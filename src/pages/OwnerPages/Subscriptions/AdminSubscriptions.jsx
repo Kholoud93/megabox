@@ -123,26 +123,96 @@ export default function AdminSubscriptions() {
 
     // Get user ID from subscription
     const getUserIdFromSubscription = (subscription) => {
-        return subscription.userId?._id || subscription.userId?.id || subscription.userId ||
-               subscription.promoterId?._id || subscription.promoterId?.id || subscription.promoterId ||
-               subscription.createdBy?._id || subscription.createdBy?.id || subscription.createdBy ||
-               subscription.promoter?._id || subscription.promoter?.id ||
-               subscription.user?._id || subscription.user?.id;
+        if (!subscription) return null;
+        
+        // Try to extract ID from various possible locations
+        // Check direct ID fields first
+        let userId = subscription.userId?._id || subscription.userId?.id || subscription.userId ||
+                     subscription.promoterId?._id || subscription.promoterId?.id || subscription.promoterId ||
+                     subscription.createdBy?._id || subscription.createdBy?.id || subscription.createdBy ||
+                     subscription.promoter?._id || subscription.promoter?.id || subscription.promoter ||
+                     subscription.user?._id || subscription.user?.id || subscription.user ||
+                     subscription.subscriber?._id || subscription.subscriber?.id || subscription.subscriber ||
+                     subscription.subscriberId?._id || subscription.subscriberId?.id || subscription.subscriberId;
+        
+        // If still not found, check if subscription itself has an _id that might be the user ID
+        // (though this is less likely, it's a fallback)
+        if (!userId && subscription._id) {
+            // Only use subscription._id if it's clearly a user ID (not a subscription ID)
+            // This is a last resort and might not be correct
+        }
+        
+        // Ensure we return a string, not an object
+        if (!userId) return null;
+        
+        // If userId is an object, try to extract _id or id from it
+        if (typeof userId === 'object' && userId !== null) {
+            const extractedId = userId._id || userId.id;
+            if (extractedId) {
+                return String(extractedId);
+            }
+            return null;
+        }
+        
+        // Convert to string to ensure it's not an ObjectId or other type
+        return String(userId);
+    };
+
+    // Find user by phone number
+    const findUserByPhone = async (phone) => {
+        if (!phone) return null;
+        
+        try {
+            const response = await adminService.getAllUsers(token);
+            const users = response?.users || response?.data?.users || response || [];
+            
+            // Search for user by phone number
+            const user = users.find(u => {
+                const userPhone = u.phone || u.phoneNumber || '';
+                // Remove any formatting (spaces, dashes, etc.) for comparison
+                const normalizedPhone = phone.replace(/[\s\-\(\)]/g, '');
+                const normalizedUserPhone = userPhone.replace(/[\s\-\(\)]/g, '');
+                return normalizedUserPhone === normalizedPhone || 
+                       normalizedUserPhone.endsWith(normalizedPhone) ||
+                       normalizedPhone.endsWith(normalizedUserPhone);
+            });
+            
+            if (user) {
+                return user._id || user.id || null;
+            }
+            return null;
+        } catch (error) {
+            console.error('Error searching for user by phone:', error);
+            return null;
+        }
     };
 
     // Set premium for user/promoter
     const handleSetPremium = async (subscription) => {
         if (!subscription) return;
         
-        const userId = getUserIdFromSubscription(subscription);
+        let userId = getUserIdFromSubscription(subscription);
+        
+        // If user ID not found, try to find user by phone number
+        if (!userId && subscription.phone) {
+            userId = await findUserByPhone(subscription.phone);
+        }
+        
         if (!userId) {
-            toast.warning(t('adminSubscriptions.userNotFound') || 'User ID not found. Premium not activated.', ToastOptions("warning"));
+            // Log subscription structure for debugging
+            console.warn('User ID not found in subscription:', subscription);
+            toast.warning(
+                t('adminSubscriptions.userNotFound') || 
+                `User ID not found for subscriber "${subscription.subscriberName || subscription.phone}". Premium not activated.`, 
+                ToastOptions("warning")
+            );
             return;
         }
 
         try {
             const durationDays = subscription.durationDays || subscription.days || 30;
-            await adminService.toggleBrimumeByOwner(userId, true, durationDays, token);
+            // Ensure userId is a string before passing to API
+            await adminService.toggleBrimumeByOwner(String(userId), true, durationDays, token);
             queryClient.invalidateQueries("getAllusers");
             queryClient.invalidateQueries("getAllPromoters");
             toast.success(t('adminSubscriptions.premiumActivated') || 'Premium activated successfully!', ToastOptions("success"));
