@@ -190,14 +190,26 @@ export default function AdminSubscriptions() {
 
                 {/* Search */}
                 <div className="admin-subscriptions-search">
-                    <FiSearch className="admin-subscriptions-search__icon" />
-                    <input
-                        type="text"
-                        placeholder={t('adminSubscriptions.searchSubscriptions') || 'Search by subscriber, plan, or phone...'}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="admin-subscriptions-search__input"
-                    />
+                    <div className="admin-subscriptions-search__wrapper">
+                        <FiSearch className="admin-subscriptions-search__icon" />
+                        <input
+                            type="text"
+                            placeholder={t('adminSubscriptions.searchSubscriptions') || 'Search by subscriber, plan, or phone...'}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="admin-subscriptions-search__input"
+                        />
+                        {searchTerm && (
+                            <button
+                                type="button"
+                                onClick={() => setSearchTerm('')}
+                                className="admin-subscriptions-search__clear"
+                                title={t('adminSubscriptions.clearSearch') || 'Clear search'}
+                            >
+                                <FiX />
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {subscriptionsLoading ? (
