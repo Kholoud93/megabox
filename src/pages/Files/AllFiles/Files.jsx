@@ -23,8 +23,9 @@ import ShareLinkModal from '../../../components/ShareLinkModal/ShareLinkModal';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { HiUserCircle, HiArrowRightOnRectangle, HiUserGroup, HiCurrencyDollar, HiArrowUp, HiArrowDown, HiBell, HiShare, HiTicket } from 'react-icons/hi2';
-import { FiGlobe } from 'react-icons/fi';
+import { FiGlobe, FiArchive } from 'react-icons/fi';
 import { FaUser } from 'react-icons/fa';
+import { LuFileArchive } from 'react-icons/lu';
 import './Files.scss';
 
 export default function Files() {
@@ -405,6 +406,88 @@ export default function Files() {
         }
     }
 
+    // Archive multiple items
+    const archiveMultipleItems = async () => {
+        if (selectedItems.files.length === 0 && selectedItems.folders.length === 0) {
+            toast.error("Please select at least one item to archive", ToastOptions("error"));
+            return;
+        }
+
+        try {
+            // Archive files
+            for (const fileId of selectedItems.files) {
+                await fileService.archiveFile(fileId, Token.MegaBox);
+            }
+            // Archive folders
+            for (const folderId of selectedItems.folders) {
+                await userService.archiveFolder(folderId, Token.MegaBox);
+            }
+            
+            toast.success(`Archived ${selectedItems.files.length + selectedItems.folders.length} item(s) successfully`, ToastOptions("success"));
+            setIsSelectionMode(false);
+            setSelectedItems({ files: [], folders: [] });
+            refetch();
+            refFolders();
+            queryClient.invalidateQueries("GetArchivedFilesCount");
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to archive items", ToastOptions("error"));
+        }
+    }
+
+    // Unarchive multiple items
+    const unarchiveMultipleItems = async () => {
+        if (selectedItems.files.length === 0 && selectedItems.folders.length === 0) {
+            toast.error("Please select at least one item to unarchive", ToastOptions("error"));
+            return;
+        }
+
+        try {
+            // Unarchive files
+            for (const fileId of selectedItems.files) {
+                await fileService.unarchiveFile(fileId, Token.MegaBox);
+            }
+            // Unarchive folders
+            for (const folderId of selectedItems.folders) {
+                await userService.unarchiveFolder(folderId, Token.MegaBox);
+            }
+            
+            toast.success(`Unarchived ${selectedItems.files.length + selectedItems.folders.length} item(s) successfully`, ToastOptions("success"));
+            setIsSelectionMode(false);
+            setSelectedItems({ files: [], folders: [] });
+            refetch();
+            refFolders();
+            queryClient.invalidateQueries("GetArchivedFilesCount");
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to unarchive items", ToastOptions("error"));
+        }
+    }
+
+    // Create zip from selected items
+    const createZipFromSelected = async () => {
+        if (selectedItems.files.length === 0 && selectedItems.folders.length === 0) {
+            toast.error("Please select at least one item to create zip", ToastOptions("error"));
+            return;
+        }
+
+        try {
+            const zipName = `archive_${Date.now()}.zip`;
+            await fileService.createZip(
+                selectedItems.files,
+                selectedItems.folders,
+                zipName,
+                Token.MegaBox
+            );
+            
+            toast.success("Zip file created successfully", ToastOptions("success"));
+            setIsSelectionMode(false);
+            setSelectedItems({ files: [], folders: [] });
+            refetch();
+            refFolders();
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to create zip file", ToastOptions("error"));
+        }
+    }
+
     const GetArchivedFilesCount = async () => {
         try {
             const data = await fileService.getArchivedFiles(Token.MegaBox);
@@ -712,15 +795,43 @@ export default function Files() {
                             </p>
                         </div>
 
-                        <div className="flex items-center space-x-2 flex-shrink-0 gap-2">
+                        <div className="flex items-center space-x-2 flex-shrink-0 gap-2 flex-wrap">
                             {isSelectionMode && (selectedItems.files.length > 0 || selectedItems.folders.length > 0) && (
-                                <button
-                                    onClick={shareMultipleItems}
-                                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-indigo-700 transition-all flex items-center gap-2"
-                                >
-                                    <HiShare className="h-4 w-4" />
-                                    Share ({selectedItems.files.length + selectedItems.folders.length})
-                                </button>
+                                <>
+                                    {FilterKey === 'archived' ? (
+                                        <button
+                                            onClick={unarchiveMultipleItems}
+                                            className="px-3 py-1.5 sm:px-4 sm:py-2 bg-green-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-green-700 transition-all flex items-center gap-2"
+                                        >
+                                            <FiArchive className="h-4 w-4" />
+                                            Unarchive ({selectedItems.files.length + selectedItems.folders.length})
+                                        </button>
+                                    ) : (
+                                        <>
+                                            <button
+                                                onClick={createZipFromSelected}
+                                                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-amber-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-amber-700 transition-all flex items-center gap-2"
+                                            >
+                                                <LuFileArchive className="h-4 w-4" />
+                                                Create Zip ({selectedItems.files.length + selectedItems.folders.length})
+                                            </button>
+                                            <button
+                                                onClick={archiveMultipleItems}
+                                                className="px-3 py-1.5 sm:px-4 sm:py-2 bg-purple-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-purple-700 transition-all flex items-center gap-2"
+                                            >
+                                                <FiArchive className="h-4 w-4" />
+                                                Archive ({selectedItems.files.length + selectedItems.folders.length})
+                                            </button>
+                                        </>
+                                    )}
+                                    <button
+                                        onClick={shareMultipleItems}
+                                        className="px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-indigo-700 transition-all flex items-center gap-2"
+                                    >
+                                        <HiShare className="h-4 w-4" />
+                                        Share ({selectedItems.files.length + selectedItems.folders.length})
+                                    </button>
+                                </>
                             )}
                             <button
                                 onClick={toggleSelectionMode}

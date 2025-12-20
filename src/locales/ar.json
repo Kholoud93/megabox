@@ -308,6 +308,17 @@
     "share": "مشاركة",
     "disableShare": "تعطيل المشاركة",
     "archive": "أرشفة",
+    "unarchive": "إلغاء الأرشفة",
+    "createZip": "إنشاء ملف مضغوط",
+    "delete": "حذف"
+  },
+  "file": {
+    "rename": "إعادة تسمية",
+    "share": "مشاركة",
+    "disableShare": "تعطيل المشاركة",
+    "archive": "أرشفة",
+    "unarchive": "إلغاء الأرشفة",
+    "createZip": "إنشاء ملف مضغوط",
     "delete": "حذف"
   },
   "fileDetails": {

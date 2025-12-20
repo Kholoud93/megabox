@@ -308,6 +308,17 @@
     "share": "Share",
     "disableShare": "Disable Share",
     "archive": "Archive",
+    "unarchive": "Unarchive",
+    "createZip": "Create Zip",
+    "delete": "Delete"
+  },
+  "file": {
+    "rename": "Rename",
+    "share": "Share",
+    "disableShare": "Disable Share",
+    "archive": "Archive",
+    "unarchive": "Unarchive",
+    "createZip": "Create Zip",
     "delete": "Delete"
   },
   "fileDetails": {

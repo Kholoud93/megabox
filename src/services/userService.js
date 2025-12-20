@@ -111,6 +111,22 @@ export const userService = {
         }
     },
 
+    // Unarchive folder
+    unarchiveFolder: async (folderId, token) => {
+        try {
+            const response = await api.patch(`/user/archiveFolder/${folderId}`, {
+                archived: false
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
     // Create folder
     createFolder: async (name, parentFolder, token) => {
         try {

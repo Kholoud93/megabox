@@ -263,6 +263,40 @@ export const fileService = {
         }
     },
 
+    // Unarchive file
+    unarchiveFile: async (fileId, token) => {
+        try {
+            const { data } = await api.patch(`/auth/archiveFile/${fileId}`, {
+                archived: false
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Create zip from files and folders
+    createZip: async (fileIds, folderIds, zipName, token) => {
+        try {
+            const { data } = await api.post('/auth/createZip', {
+                fileIds: fileIds || [],
+                folderIds: folderIds || [],
+                zipName: zipName || `archive_${Date.now()}.zip`
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
     // Get shared files by user
     getSharedFilesByUser: async (token) => {
         try {

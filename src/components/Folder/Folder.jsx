@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FiMoreVertical, FiArchive } from 'react-icons/fi';
 import { HiTrash, HiPencil, HiShare } from "react-icons/hi2";
-import { LuFolder } from "react-icons/lu";
+import { LuFolder, LuFileArchive } from "react-icons/lu";
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../helpers/ToastOptions';
 import { useLanguage } from '../../context/LanguageContext';
 import { useCookies } from 'react-cookie';
 import { useQueryClient } from 'react-query';
-import { userService } from '../../services/api';
+import { userService, fileService } from '../../services/api';
 
 export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isSelectionMode, isSelected, onToggleSelect, refetch }) => {
     const [open, setOpen] = useState(false);
@@ -64,8 +66,33 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isS
             if (refetch) {
                 refetch();
             }
-        } catch (error) {
+        } catch {
             // Error is handled in the service
+        }
+    };
+
+    const handleUnarchive = async () => {
+        try {
+            await userService.unarchiveFolder(data?._id || data?.id, Token.MegaBox);
+            toast.success("Folder unarchived successfully", ToastOptions("success"));
+            if (refetch) {
+                refetch();
+            }
+        } catch {
+            toast.error("Failed to unarchive folder", ToastOptions("error"));
+        }
+    };
+
+    const handleCreateZip = async () => {
+        try {
+            const zipName = `${name || 'folder'}_${Date.now()}.zip`;
+            await fileService.createZip([], [data?._id || data?.id], zipName, Token.MegaBox);
+            toast.success("Zip file created successfully", ToastOptions("success"));
+            if (refetch) {
+                refetch();
+            }
+        } catch {
+            toast.error("Failed to create zip file", ToastOptions("error"));
         }
     };
 
@@ -91,6 +118,12 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isS
                 if (onArchive) {
                     onArchive(data?._id);
                 }
+                break;
+            case 'unarchive':
+                await handleUnarchive();
+                break;
+            case 'createZip':
+                await handleCreateZip();
                 break;
             default:
                 break;
@@ -185,14 +218,33 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isS
                             <span className="font-medium">{t("folder.share")}</span>
                         </button>
                     )}
-                    {onArchive && (
+                    {(data?.archived === true || data?.isArchived === true) ? (
                         <button
-                            onClick={(e) => handleAction('archive', e)}
-                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                            onClick={(e) => handleAction('unarchive', e)}
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-green-50 w-full text-left transition-colors text-green-600"
                         >
-                            <FiArchive className='w-4 h-4 text-purple-600 flex-shrink-0' />
-                            <span className="font-medium">{t("folder.archive")}</span>
+                            <FiArchive className='w-4 h-4 text-green-600 flex-shrink-0' />
+                            <span className="font-medium">{t("folder.unarchive") || "Unarchive"}</span>
                         </button>
+                    ) : (
+                        <>
+                            <button
+                                onClick={(e) => handleAction('createZip', e)}
+                                className="flex items-center gap-2 px-3 py-1.5 hover:bg-amber-50 w-full text-left transition-colors text-amber-600"
+                            >
+                                <LuFileArchive className='w-4 h-4 text-amber-600 flex-shrink-0' />
+                                <span className="font-medium">{t("folder.createZip") || "Create Zip"}</span>
+                            </button>
+                            {onArchive && (
+                                <button
+                                    onClick={(e) => handleAction('archive', e)}
+                                    className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                                >
+                                    <FiArchive className='w-4 h-4 text-purple-600 flex-shrink-0' />
+                                    <span className="font-medium">{t("folder.archive")}</span>
+                                </button>
+                            )}
+                        </>
                     )}
                     <div className="border-t border-gray-200 my-1"></div>
                     <button

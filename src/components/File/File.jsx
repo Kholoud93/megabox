@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { RiFolderVideoFill } from "react-icons/ri";
 import { IoImageSharp, IoDocumentsSharp } from "react-icons/io5";
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { AgoFormatter } from '../../helpers/DateFormates';
 import { FiArchive, FiMoreVertical, FiFolder } from 'react-icons/fi';
@@ -39,7 +40,7 @@ const typeConfig = {
     },
     video: {
         icon: <RiFolderVideoFill className='text-secondary-600 w-[25px] h-[25px]' />,
-        previewStyle: (url) => ({
+        previewStyle: () => ({
             background: '#000',
             position: 'relative',
             display: 'flex',
@@ -111,14 +112,14 @@ const typeConfig = {
     },
     zip: {
         icon: <FiFolder className='text-secondary-600 w-[25px] h-[25px]' />,
-        previewStyle: (url) => ({
+        previewStyle: () => ({
             background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             position: 'relative'
         }),
-        previewComponent: (url) => (
+        previewComponent: () => (
             <div className="w-full h-full relative bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 flex items-start justify-start p-3" style={{ zIndex: 1, position: 'relative', pointerEvents: 'none' }}>
                 {/* Folder tab */}
                 <div className="absolute top-2 left-3 w-12 h-2 bg-amber-400 rounded-t-sm" style={{ zIndex: 2, position: 'absolute', pointerEvents: 'none' }}></div>
@@ -220,6 +221,27 @@ export default function File({ Type, data, Representation, onRename, refetch, on
         }
     };
 
+    const handleUnarchive = async () => {
+        try {
+            await fileService.unarchiveFile(_id, MegaBox.MegaBox);
+            toast.success("File unarchived successfully", ToastOptions("success"));
+            refetch();
+        } catch (error) {
+            toast.error("Failed to unarchive file", ToastOptions("error"));
+        }
+    };
+
+    const handleCreateZip = async () => {
+        try {
+            const zipName = `${fileName || 'file'}_${Date.now()}.zip`;
+            await fileService.createZip([_id], [], zipName, MegaBox.MegaBox);
+            toast.success("Zip file created successfully", ToastOptions("success"));
+            refetch();
+        } catch (error) {
+            toast.error("Failed to create zip file", ToastOptions("error"));
+        }
+    };
+
     const handleDisableShare = async () => {
         try {
             await fileService.disableFileShare(_id, MegaBox.MegaBox);
@@ -261,6 +283,12 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                 break;
             case "archive":
                 await handleArchive();
+                break;
+            case "unarchive":
+                await handleUnarchive();
+                break;
+            case "createZip":
+                await handleCreateZip();
                 break;
             default:
                 break;
@@ -420,23 +448,62 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                             <span className="font-medium">{t("file.share") || "Share"}</span>
                         </button>
                     )}
-                    <button
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleAction('archive');
-                        }}
-                        onTouchEnd={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            handleAction('archive');
-                        }}
-                        className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
-                        style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
-                    >
-                        <FiArchive className='w-4 h-4 text-purple-600' />
-                        <span className="font-medium">Archive</span>
-                    </button>
+                    {(data?.archived === true || data?.isArchived === true) ? (
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAction('unarchive');
+                            }}
+                            onTouchEnd={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                handleAction('unarchive');
+                            }}
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-green-50 w-full text-left transition-colors text-green-600"
+                            style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
+                        >
+                            <FiArchive className='w-4 h-4 text-green-600' />
+                            <span className="font-medium">{t("file.unarchive") || "Unarchive"}</span>
+                        </button>
+                    ) : (
+                        <>
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleAction('createZip');
+                                }}
+                                onTouchEnd={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleAction('createZip');
+                                }}
+                                className="flex items-center gap-2 px-3 py-1.5 hover:bg-amber-50 w-full text-left transition-colors text-amber-600"
+                                style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
+                            >
+                                <LuFileArchive className='w-4 h-4 text-amber-600' />
+                                <span className="font-medium">{t("file.createZip") || "Create Zip"}</span>
+                            </button>
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleAction('archive');
+                                }}
+                                onTouchEnd={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleAction('archive');
+                                }}
+                                className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
+                                style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
+                            >
+                                <FiArchive className='w-4 h-4 text-purple-600' />
+                                <span className="font-medium">{t("file.archive") || "Archive"}</span>
+                            </button>
+                        </>
+                    )}
                     <div className="border-t border-gray-200 my-1"></div>
                     <button
                         onClick={(e) => {
