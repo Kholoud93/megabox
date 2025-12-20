@@ -85,14 +85,15 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isS
 
     const handleCreateZip = async () => {
         try {
-            const zipName = `${name || 'folder'}_${Date.now()}.zip`;
-            await fileService.createZip([], [data?._id || data?.id], zipName, Token.MegaBox);
-            toast.success("Zip file created successfully", ToastOptions("success"));
+            const items = [{ type: "folder", id: data?._id || data?.id }];
+            await fileService.createZip(items, Token.MegaBox);
+            // Invalidate queries to refresh the file list
+            queryClient.invalidateQueries(["GetUserFiles"]);
             if (refetch) {
                 refetch();
             }
         } catch {
-            toast.error("Failed to create zip file", ToastOptions("error"));
+            // Error is handled in the service
         }
     };
 

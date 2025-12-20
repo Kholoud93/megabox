@@ -100,7 +100,7 @@ export const fileService = {
         }
     },
 
-    // Get all files (excluding archived)
+    // Get all files (excluding archived) - includes created zip files
     getAllFiles: async (token) => {
         try {
             const { data } = await api.get('/auth/getUserFiles', {
@@ -112,6 +112,49 @@ export const fileService = {
             if (data?.files) {
                 data.files = data.files.filter(file => !file.archived && !file.isArchived);
             }
+            
+            // Also include created zip files from getMyZips (call API directly to avoid circular dependency)
+            try {
+                const zipResponse = await api.get('/auth/getMyZips', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                const createdZips = zipResponse.data?.zips || zipResponse.data?.files || [];
+                if (createdZips.length > 0) {
+                    // Merge created zips with regular files, avoiding duplicates
+                    // Use a more robust duplicate check that includes both _id and id fields
+                    const existingIds = new Set();
+                    (data?.files || []).forEach(f => {
+                        if (f._id) existingIds.add(String(f._id));
+                        if (f.id) existingIds.add(String(f.id));
+                    });
+                    
+                    const newZips = createdZips
+                        .filter(zip => {
+                            const zipId = zip._id || zip.id;
+                            // Also filter out archived zips
+                            const isArchived = zip.archived === true || zip.isArchived === true;
+                            return zipId && !existingIds.has(String(zipId)) && !isArchived;
+                        })
+                        .map(zip => {
+                            const zipId = zip._id || zip.id;
+                            if (zipId) existingIds.add(String(zipId)); // Track added IDs
+                            return {
+                                ...zip,
+                                fileType: zip.fileType || 'application/zip', // Ensure zip type is set
+                                fileName: zip.fileName || zip.name || 'zip_file.zip'
+                            };
+                        });
+                    if (newZips.length > 0) {
+                        data.files = [...(data?.files || []), ...newZips];
+                    }
+                }
+            } catch (zipError) {
+                // Silently fail - created zips are optional
+                console.warn('Failed to fetch created zips:', zipError);
+            }
+            
             return data;
         } catch (error) {
             throw error.response?.data || error.message;
@@ -247,18 +290,48 @@ export const fileService = {
         }
     },
 
-    // Archive file
+    // Archive file - Use createArchive (POST) for archiving individual files
     archiveFile: async (fileId, token) => {
         try {
-            const { data } = await api.patch(`/auth/archiveFile/${fileId}`, {
-                archived: true
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
+            // Try PATCH endpoints first
+            let data;
+            try {
+                const response = await api.patch(`/user/archiveFile/${fileId}`, {
+                    archived: true
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                data = response.data;
+                toast.success("File archived successfully", ToastOptions("success"));
+                return data;
+            } catch (userError) {
+                // If /user/archiveFile fails, try /auth/archiveFile
+                if (userError.response?.status === 404) {
+                    try {
+                        const response = await api.patch(`/auth/archiveFile/${fileId}`, {
+                            archived: true
+                        }, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        });
+                        data = response.data;
+                        toast.success("File archived successfully", ToastOptions("success"));
+                        return data;
+                    } catch (authError) {
+                        // If both PATCH endpoints fail, the archive endpoint doesn't exist
+                        console.error('Archive file endpoint not available:', authError.response?.status || authError.message);
+                        throw new Error('Archive endpoint not available. Please use the bulk archive feature to archive files.');
+                    }
+                } else {
+                    throw userError;
                 }
-            });
-            return data;
+            }
         } catch (error) {
+            console.error('Archive file error:', error.response?.data || error.message);
+            toast.error(error.response?.data?.message || "Failed to archive file", ToastOptions("error"));
             throw error.response?.data || error.message;
         }
     },
@@ -266,9 +339,90 @@ export const fileService = {
     // Unarchive file
     unarchiveFile: async (fileId, token) => {
         try {
-            const { data } = await api.patch(`/auth/archiveFile/${fileId}`, {
-                archived: false
+            // Try /user/archiveFile first (matches folder pattern)
+            let data;
+            try {
+                const response = await api.patch(`/user/archiveFile/${fileId}`, {
+                    archived: false
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                data = response.data;
+                toast.success("File unarchived successfully", ToastOptions("success"));
+                return data;
+            } catch (userError) {
+                // If /user/archiveFile fails, try /auth/archiveFile
+                if (userError.response?.status === 404) {
+                    try {
+                        const response = await api.patch(`/auth/archiveFile/${fileId}`, {
+                            archived: false
+                        }, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        });
+                        data = response.data;
+                        toast.success("File unarchived successfully", ToastOptions("success"));
+                        return data;
+                    } catch (authError) {
+                        // If both endpoints fail, the unarchive endpoint doesn't exist
+                        console.warn('Unarchive file endpoint not available:', authError.response?.status || authError.message);
+                        toast.error("Unarchive endpoint not available", ToastOptions("error"));
+                        throw new Error('Unarchive endpoint not available.');
+                    }
+                } else {
+                    throw userError;
+                }
+            }
+        } catch (error) {
+            console.error('Unarchive file error:', error.response?.data || error.message);
+            toast.error(error.response?.data?.message || "Failed to unarchive file", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Create zip from files and folders (Postman collection format)
+    createZip: async (items, token) => {
+        try {
+            // items format: [{ type: "file", id: "..." }, { type: "folder", id: "..." }]
+            const { data } = await api.post('/auth/createZip', {
+                items: items || []
             }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success("Zip file created successfully", ToastOptions("success"));
+            return data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to create zip file", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Create zip from files and folders (legacy format - for backward compatibility)
+    createZipLegacy: async (fileIds, folderIds, zipName, token) => {
+        try {
+            // Convert legacy format to Postman format
+            const items = [];
+            if (fileIds && fileIds.length > 0) {
+                fileIds.forEach(id => items.push({ type: "file", id }));
+            }
+            if (folderIds && folderIds.length > 0) {
+                folderIds.forEach(id => items.push({ type: "folder", id }));
+            }
+            return await fileService.createZip(items, token);
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Get user's zip files
+    getMyZips: async (token) => {
+        try {
+            const { data } = await api.get('/auth/getMyZips', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -279,20 +433,95 @@ export const fileService = {
         }
     },
 
-    // Create zip from files and folders
-    createZip: async (fileIds, folderIds, zipName, token) => {
+    // Download zip file by ID
+    downloadZip: async (zipId, items, token, fileName) => {
         try {
-            const { data } = await api.post('/auth/createZip', {
-                fileIds: fileIds || [],
-                folderIds: folderIds || [],
-                zipName: zipName || `archive_${Date.now()}.zip`
+            const response = await api.post(`/auth/downloadZip/${zipId}`, {
+                items: items || []
             }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                responseType: 'blob' // Important for file downloads
+            });
+            
+            // Get filename from response headers or use provided/default
+            const contentDisposition = response.headers['content-disposition'];
+            let downloadFileName = fileName || 'download.zip';
+            if (contentDisposition) {
+                const fileNameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+                if (fileNameMatch && fileNameMatch[1]) {
+                    downloadFileName = fileNameMatch[1].replace(/['"]/g, '');
+                }
+            }
+            
+            // Create download link for blob
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', downloadFileName);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+            
+            toast.success("Zip file downloaded successfully", ToastOptions("success"));
+            return response.data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to download zip file", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Create archive with files and folders
+    createArchive: async (files, folders, token) => {
+        try {
+            const { data } = await api.post('/auth/createArchive', {
+                files: files || [],
+                folders: folders || []
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success("Archive created successfully", ToastOptions("success"));
+            return data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to create archive", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Get user's archives
+    getMyArchives: async (token) => {
+        try {
+            const { data } = await api.get('/auth/getMyArchives', {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
             return data;
         } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Remove items from archive
+    removeFromArchive: async (itemId, files, folders, token) => {
+        try {
+            const { data } = await api.delete(`/auth/removeFromArchive/${itemId}`, {
+                data: {
+                    files: files || [],
+                    folders: folders || []
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            toast.success("Items removed from archive successfully", ToastOptions("success"));
+            return data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to remove items from archive", ToastOptions("error"));
             throw error.response?.data || error.message;
         }
     },

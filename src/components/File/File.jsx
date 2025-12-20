@@ -13,7 +13,6 @@ import { useAuth } from '../../context/AuthContext';
 import { useCookies } from 'react-cookie';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
-import axios from 'axios';
 import { API_URL, fileService } from '../../services/api';
 import { useQueryClient } from 'react-query';
 import { useLanguage } from '../../context/LanguageContext';
@@ -171,8 +170,6 @@ export default function File({ Type, data, Representation, onRename, refetch, on
     const truncateString = (str) =>
         str?.length <= 20 ? str : str?.slice(0, 20) + '...';
 
-    if (!config) return null;
-
     // Close menu when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -214,31 +211,38 @@ export default function File({ Type, data, Representation, onRename, refetch, on
     const handleArchive = async () => {
         try {
             await fileService.archiveFile(_id, MegaBox.MegaBox);
-            toast.success("File archived successfully", ToastOptions("success"));
+            // Invalidate queries to refresh the file list - file should disappear from All Files and appear in Archive
+            queryClient.invalidateQueries(["GetUserFiles"]); // Invalidate all GetUserFiles queries (All, archived, etc.)
+            queryClient.invalidateQueries("GetArchivedFilesCount");
             refetch();
         } catch (error) {
-            toast.error("Failed to archive file", ToastOptions("error"));
+            // Error is handled in the service with toast
+            console.error("Archive error:", error);
         }
     };
 
     const handleUnarchive = async () => {
         try {
             await fileService.unarchiveFile(_id, MegaBox.MegaBox);
-            toast.success("File unarchived successfully", ToastOptions("success"));
+            // Invalidate queries to refresh the file list - file should appear in All Files and disappear from Archive
+            queryClient.invalidateQueries(["GetUserFiles"]); // Invalidate all GetUserFiles queries (All, archived, etc.)
+            queryClient.invalidateQueries("GetArchivedFilesCount");
             refetch();
         } catch (error) {
-            toast.error("Failed to unarchive file", ToastOptions("error"));
+            // Error is handled in the service with toast
+            console.error("Unarchive error:", error);
         }
     };
 
     const handleCreateZip = async () => {
         try {
-            const zipName = `${fileName || 'file'}_${Date.now()}.zip`;
-            await fileService.createZip([_id], [], zipName, MegaBox.MegaBox);
-            toast.success("Zip file created successfully", ToastOptions("success"));
+            const items = [{ type: "file", id: _id }];
+            await fileService.createZip(items, MegaBox.MegaBox);
+            // Invalidate queries to refresh the file list
+            queryClient.invalidateQueries(["GetUserFiles"]);
             refetch();
-        } catch (error) {
-            toast.error("Failed to create zip file", ToastOptions("error"));
+        } catch {
+            // Error is handled in the service
         }
     };
 
@@ -254,7 +258,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             if (refetch) {
                 refetch();
             }
-        } catch (error) {
+        } catch {
             // Error is handled in the service
         }
     };
@@ -265,13 +269,14 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             case 'open':
                 handleOpenFile();
                 break;
-            case 'delete':
+            case 'delete': {
                 const DeleteRes = await DeleteFile(_id, MegaBox.MegaBox);
 
                 if (DeleteRes)
                     toast.success("File deleted successfully", ToastOptions("success"));
                 refetch();
                 break;
+            }
             case 'rename':
                 onRename(fileName, false, _id);
                 break;
@@ -294,6 +299,9 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                 break;
         }
     };
+
+    // Early return after all hooks
+    if (!config) return null;
 
     return (
         <motion.div
