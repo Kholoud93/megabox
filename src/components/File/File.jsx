@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { RiFolderVideoFill } from "react-icons/ri";
 import { IoImageSharp, IoDocumentsSharp } from "react-icons/io5";
-// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { AgoFormatter } from '../../helpers/DateFormates';
 import { FiArchive, FiMoreVertical, FiFolder } from 'react-icons/fi';
@@ -210,38 +209,57 @@ export default function File({ Type, data, Representation, onRename, refetch, on
 
     const handleArchive = async () => {
         try {
-            await fileService.archiveFile(_id, MegaBox.MegaBox);
-            // Close the menu first
             setShowMenu(false);
             
-            // Invalidate all GetUserFiles queries (All, archived, image, video, document, zip, etc.)
-            queryClient.invalidateQueries(["GetUserFiles"], { exact: false });
-            queryClient.invalidateQueries("GetArchivedFilesCount");
+            // Call API
+            await fileService.archiveFile(_id, MegaBox.MegaBox);
             
-            // Refetch all queries (not just active ones) to ensure UI updates
-            await queryClient.refetchQueries(["GetUserFiles"], { exact: false });
-            await queryClient.refetchQueries("GetArchivedFilesCount");
-            
-            // Also call the local refetch to update current view immediately
+            // Immediately call refetch to remove from UI
             if (refetch) {
                 await refetch();
             }
+            
         } catch (error) {
-            // Error is handled in the service with toast
             console.error("Archive error:", error);
         }
     };
 
     const handleUnarchive = async () => {
         try {
+            setShowMenu(false);
+            
+            // Remove from archived cache
+            queryClient.setQueryData(["GetUserFiles", "archived"], (oldData) => {
+                if (!oldData?.files) return oldData;
+                return {
+                    ...oldData,
+                    files: oldData.files.filter(f => (f._id || f.id) !== _id)
+                };
+            });
+            
+            // Add back to All cache
+            queryClient.setQueryData(["GetUserFiles", "All"], (oldData) => {
+                const unarchivedFile = { ...data, archived: false, isArchived: false };
+                return {
+                    ...oldData,
+                    files: [...(oldData?.files || []), unarchivedFile]
+                };
+            });
+            
+            // Update count
+            queryClient.setQueryData("GetArchivedFilesCount", (oldCount) => {
+                return Math.max(0, (oldCount || 0) - 1);
+            });
+            
             await fileService.unarchiveFile(_id, MegaBox.MegaBox);
-            // Invalidate queries to refresh the file list - file should appear in All Files and disappear from Archive
-            queryClient.invalidateQueries(["GetUserFiles"]); // Invalidate all GetUserFiles queries (All, archived, etc.)
-            queryClient.invalidateQueries("GetArchivedFilesCount");
-            refetch();
+            
+            // Only invalidate
+            queryClient.invalidateQueries({ queryKey: ["GetUserFiles"] }, { refetchActive: false });
+            queryClient.invalidateQueries({ queryKey: ["GetArchivedFilesCount"] }, { refetchActive: false });
+            
         } catch (error) {
-            // Error is handled in the service with toast
             console.error("Unarchive error:", error);
+            await queryClient.refetchQueries({ queryKey: ["GetUserFiles"] });
         }
     };
 

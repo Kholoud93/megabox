@@ -311,46 +311,21 @@ export const fileService = {
         }
     },
 
-    // Unarchive file
+    // Unarchive file - use removeFromArchive endpoint
     unarchiveFile: async (fileId, token) => {
         try {
-            // Try /user/archiveFile first (matches folder pattern)
-            let data;
-            try {
-                const response = await api.patch(`/user/archiveFile/${fileId}`, {
-                    archived: false
-                }, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                data = response.data;
-                toast.success("File unarchived successfully", ToastOptions("success"));
-                return data;
-            } catch (userError) {
-                // If /user/archiveFile fails, try /auth/archiveFile
-                if (userError.response?.status === 404) {
-                    try {
-                        const response = await api.patch(`/auth/archiveFile/${fileId}`, {
-                            archived: false
-                        }, {
-                            headers: {
-                                Authorization: `Bearer ${token}`
-                            }
-                        });
-                        data = response.data;
-                        toast.success("File unarchived successfully", ToastOptions("success"));
-                        return data;
-                    } catch (authError) {
-                        // If both endpoints fail, the unarchive endpoint doesn't exist
-                        console.warn('Unarchive file endpoint not available:', authError.response?.status || authError.message);
-                        toast.error("Unarchive endpoint not available", ToastOptions("error"));
-                        throw new Error('Unarchive endpoint not available.');
-                    }
-                } else {
-                    throw userError;
+            // Use DELETE /auth/removeFromArchive/:itemId endpoint (from Postman)
+            const { data } = await api.delete(`/auth/removeFromArchive/${fileId}`, {
+                data: {
+                    files: [fileId],
+                    folders: []
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`
                 }
-            }
+            });
+            toast.success("File unarchived successfully", ToastOptions("success"));
+            return data;
         } catch (error) {
             console.error('Unarchive file error:', error.response?.data || error.message);
             toast.error(error.response?.data?.message || "Failed to unarchive file", ToastOptions("error"));
@@ -475,7 +450,78 @@ export const fileService = {
                     Authorization: `Bearer ${token}`
                 }
             });
-            return data;
+            
+            // Transform response: extract all files and folders from all archives
+            // Response structure: { message, count, data: [{ files: [], folders: [] }, ...] }
+            const archives = data?.data || [];
+            
+            console.log('📦 Total archives:', archives.length);
+            console.log('📦 API count:', data?.count);
+            
+            // Flatten all files and folders from all archives
+            const allFiles = [];
+            const allFolders = [];
+            const seenFileIds = new Set();
+            const seenFolderIds = new Set();
+            let totalFilesProcessed = 0;
+            let totalFoldersProcessed = 0;
+            let filesWithoutId = 0;
+            let foldersWithoutId = 0;
+            
+            archives.forEach((archive, archiveIdx) => {
+                // Add files from this archive
+                if (archive.files && Array.isArray(archive.files)) {
+                    console.log(`📦 Archive ${archiveIdx + 1}: ${archive.files.length} files`);
+                    archive.files.forEach(file => {
+                        totalFilesProcessed++;
+                        const fileId = file._id || file.id;
+                        if (!fileId) {
+                            filesWithoutId++;
+                            console.warn('⚠️ File without ID:', file.fileName);
+                        }
+                        if (fileId && !seenFileIds.has(String(fileId))) {
+                            seenFileIds.add(String(fileId));
+                            // Mark as archived
+                            allFiles.push({
+                                ...file,
+                                archived: true,
+                                isArchived: true
+                            });
+                        } else if (fileId) {
+                            console.log(`🔄 Duplicate file skipped: ${file.fileName} (${fileId})`);
+                        }
+                    });
+                }
+                
+                // Add folders from this archive
+                if (archive.folders && Array.isArray(archive.folders)) {
+                    console.log(`📦 Archive ${archiveIdx + 1}: ${archive.folders.length} folders`);
+                    archive.folders.forEach(folder => {
+                        totalFoldersProcessed++;
+                        const folderId = folder._id || folder.id;
+                        if (!folderId) {
+                            foldersWithoutId++;
+                            console.warn('⚠️ Folder without ID:', folder.name);
+                        }
+                        if (folderId && !seenFolderIds.has(String(folderId))) {
+                            seenFolderIds.add(String(folderId));
+                            // Mark as archived
+                            allFolders.push({
+                                ...folder,
+                                archived: true,
+                                isArchived: true
+                            });
+                        } else if (folderId) {
+                            console.log(`🔄 Duplicate folder skipped: ${folder.name} (${folderId})`);
+                        }
+                    });
+                }
+            });
+            
+            console.log(`📊 Summary: ${totalFilesProcessed} total files processed, ${allFiles.length} unique files, ${filesWithoutId} files without ID`);
+            console.log(`📊 Summary: ${totalFoldersProcessed} total folders processed, ${allFolders.length} unique folders, ${foldersWithoutId} folders without ID`);
+            
+            return { files: allFiles, folders: allFolders };
         } catch (error) {
             throw error.response?.data || error.message;
         }

@@ -215,18 +215,47 @@ export default function Files() {
         const [, filterKey] = queryKey;
         const token = Token.MegaBox;
 
+        console.log('🔍 GetFiles called with filterKey:', filterKey);
+
         try {
             let data;
 
             switch (filterKey.toLowerCase()) {
                 case 'image':
                     data = await fileService.getImageFiles(token);
+                    console.log('📸 Image files before filter:', data?.files?.length);
+                    if (data?.files) {
+                        data.files = data.files.filter(file => {
+                            const isArchived = file.archived === true || file.isArchived === true;
+                            if (isArchived) console.log('   ❌ Filtering out archived image:', file.fileName);
+                            return !isArchived;
+                        });
+                    }
+                    console.log('📸 Image files after filter:', data?.files?.length);
                     break;
                 case 'video':
                     data = await fileService.getVideoFiles(token);
+                    console.log('🎥 Video files before filter:', data?.files?.length);
+                    if (data?.files) {
+                        data.files = data.files.filter(file => {
+                            const isArchived = file.archived === true || file.isArchived === true;
+                            if (isArchived) console.log('   ❌ Filtering out archived video:', file.fileName);
+                            return !isArchived;
+                        });
+                    }
+                    console.log('🎥 Video files after filter:', data?.files?.length);
                     break;
                 case 'document':
                     data = await fileService.getDocumentFiles(token);
+                    console.log('📄 Document files before filter:', data?.files?.length);
+                    if (data?.files) {
+                        data.files = data.files.filter(file => {
+                            const isArchived = file.archived === true || file.isArchived === true;
+                            if (isArchived) console.log('   ❌ Filtering out archived document:', file.fileName);
+                            return !isArchived;
+                        });
+                    }
+                    console.log('📄 Document files after filter:', data?.files?.length);
                     break;
                 case 'zip':
                     // Get zip files and extract their contents (files and folders inside)
@@ -235,10 +264,12 @@ export default function Files() {
                         const myZips = await fileService.getMyZips(token);
                         const createdZips = myZips?.zips || myZips?.files || [];
                         
-                        // Merge both types of zips
-                        const allZips = [...(uploadedZips?.files || [])];
+                        // Merge both types of zips and filter out archived zips
+                        const allZips = [...(uploadedZips?.files || [])].filter(zip => !zip.archived && !zip.isArchived);
                         const existingIds = new Set(allZips.map(f => f._id || f.id));
-                        const newZips = createdZips.filter(zip => !existingIds.has(zip._id || zip.id));
+                        const newZips = createdZips.filter(zip => 
+                            !existingIds.has(zip._id || zip.id) && !zip.archived && !zip.isArchived
+                        );
                         allZips.push(...newZips);
                         
                         // Extract files and folders from zip contents
@@ -314,42 +345,70 @@ export default function Files() {
                             
                             data = { files: matchedFiles, folders: matchedFolders };
                         } else {
-                            // If no contents, just show zip files themselves
+                            // If no contents, just show zip files themselves (already filtered for archived)
                             data = { files: allZips, folders: [] };
                         }
                     } catch {
                         // Fallback to just uploaded zips
                         data = await fileService.getZipFiles(token);
+                        // Filter out archived files (defensive check)
+                        if (data?.files) {
+                            data.files = data.files.filter(file => !file.archived && !file.isArchived);
+                        }
                     }
                     break;
-                case 'archived':
-                    // Get all archived files using getArchivedFiles and remove duplicates
-                    try {
-                        const archivedData = await fileService.getArchivedFiles(token);
-                        // Remove duplicates by tracking IDs
-                        const seenIds = new Set();
-                        const uniqueFiles = (archivedData?.files || []).filter(file => {
-                            const fileId = file._id || file.id;
-                            if (fileId && !seenIds.has(String(fileId))) {
-                                seenIds.add(String(fileId));
-                                return true;
-                            }
-                            return false;
-                        });
-                        data = { files: uniqueFiles };
-                    } catch {
+                case 'archived': {
+                    data = await fileService.getMyArchives(token);
+                    console.log('🗄️  Archived files from service:', data?.files?.length);
+                    console.log('🗄️  Archived folders from service:', data?.folders?.length);
+                    // Service already handles duplicate removal and marking as archived
+                    // Just ensure we have the right structure
+                    if (!data?.files) {
                         data = { files: [] };
                     }
+                    if (!data?.folders) {
+                        data = { ...data, folders: [] };
+                    }
+                    console.log('🗄️  Final archived files:', data?.files?.length);
+                    console.log('🗄️  Final archived folders:', data?.folders?.length);
                     break;
+                }
                 case 'all':
                 default:
                     data = await fileService.getAllFiles(token);
+                    console.log('📁 All files before filter:', data?.files?.length);
+                    if (data?.files) {
+                        data.files = data.files.filter(file => {
+                            const isArchived = file.archived === true || file.isArchived === true;
+                            if (isArchived) console.log('   ❌ Filtering out archived file:', file.fileName);
+                            return !isArchived;
+                        });
+                    }
+                    console.log('📁 All files after filter:', data?.files?.length);
                     break;
             }
 
+            // Final safety check with detailed logging
+            if (filterKey.toLowerCase() !== 'archived' && data?.files) {
+                console.log('🔒 Final safety check for', filterKey);
+                const beforeCount = data.files.length;
+                data.files = data.files.filter(file => {
+                    const isArchived = file.archived === true || file.isArchived === true;
+                    if (isArchived) {
+                        console.log('   ⚠️  CAUGHT IN SAFETY CHECK:', file.fileName, 'archived:', file.archived, 'isArchived:', file.isArchived);
+                    }
+                    return !isArchived;
+                });
+                const afterCount = data.files.length;
+                if (beforeCount !== afterCount) {
+                    console.log(`   🛡️  Safety check removed ${beforeCount - afterCount} files`);
+                }
+            }
+
+            console.log('✅ Final result:', filterKey, '-', data?.files?.length, 'files');
             return data || { files: [] };
         } catch (error) {
-            console.error('Error fetching files:', error);
+            console.error('❌ Error fetching files:', error);
             return { files: [] };
         }
     };
@@ -357,7 +416,15 @@ export default function Files() {
     const { data, refetch, isLoading: filesLoading } = useQuery(["GetUserFiles", FilterKey], GetFiles);
 
     const Getfolders = async () => {
-        return await userService.getUserFolders(Token.MegaBox);
+        const data = await userService.getUserFolders(Token.MegaBox);
+        // Filter out archived folders
+        if (data?.folders) {
+            data.folders = data.folders.filter(folder => {
+                const isArchived = folder.archived === true || folder.isArchived === true;
+                return !isArchived;
+            });
+        }
+        return data;
     };
 
     const { data: folders, refetch: refFolders, isLoading: foldersLoading } = useQuery("GetUserFolders", Getfolders);
@@ -522,7 +589,7 @@ export default function Files() {
         }
 
         try {
-            // Use createArchive endpoint for multiple items
+            // Call API
             await fileService.createArchive(
                 selectedItems.files,
                 selectedItems.folders,
@@ -532,19 +599,16 @@ export default function Files() {
             setIsSelectionMode(false);
             setSelectedItems({ files: [], folders: [] });
             
-            // Invalidate all queries to ensure UI updates
-            queryClient.invalidateQueries("GetArchivedFilesCount");
-            queryClient.invalidateQueries(["GetUserFiles"], { exact: false });
-            
-            // Refetch all queries (not just active ones) to ensure UI updates immediately
-            await queryClient.refetchQueries(["GetUserFiles"], { exact: false });
-            await queryClient.refetchQueries("GetArchivedFilesCount");
-            
-            // Also call local refetch functions
+            // Refetch to update UI
             await refetch();
             await refFolders();
-        } catch {
-            // Error is handled in the service
+            
+            // Update counts
+            queryClient.invalidateQueries("GetArchivedFilesCount");
+            await queryClient.refetchQueries("GetArchivedFilesCount");
+            
+        } catch (error) {
+            console.error("Archive error:", error);
         }
     }
 
@@ -610,7 +674,7 @@ export default function Files() {
 
     const GetArchivedFilesCount = async () => {
         try {
-            const data = await fileService.getArchivedFiles(Token.MegaBox);
+            const data = await fileService.getMyArchives(Token.MegaBox);
             return data?.files?.length || 0;
         } catch {
             return 0;
@@ -858,7 +922,7 @@ export default function Files() {
                         <div>
                             <h2 className="text-xl sm:text-2xl font-semibold text-indigo-900 drop-shadow-md" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>{t("files.folders")}</h2>
                             <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-indigo-700" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
-                                {foldersLoading ? t("files.loadingFolders") : `${FilterKey === 'zip' ? (data?.folders?.length || 0) : (folders?.folders?.length || 0)} ${t("files.foldersCount")}`}
+                                {foldersLoading ? t("files.loadingFolders") : `${(FilterKey === 'zip' || FilterKey === 'archived') ? (data?.folders?.length || 0) : (folders?.folders?.length || 0)} ${t("files.foldersCount")}`}
                             </p>
                         </div>
                     </div>
@@ -872,7 +936,7 @@ export default function Files() {
                                 </div>
                             ))}
                         </div>
-                    ) : (FilterKey === 'zip' ? data?.folders : folders?.folders)?.length === 0 ? (
+                    ) : ((FilterKey === 'zip' || FilterKey === 'archived') ? data?.folders : folders?.folders)?.length === 0 ? (
                         <div className="text-center py-8 sm:py-10 md:py-12 px-4">
                             <LuFolder className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-indigo-400" style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }} />
                             <h3 className="mt-2 text-sm font-medium text-indigo-900 drop-shadow-md" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.1)' }}>{t("files.noFolders")}</h3>
@@ -890,7 +954,7 @@ export default function Files() {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 md:gap-6">
-                            {(FilterKey === 'zip' ? data?.folders : folders?.folders)?.map((ele, index) => (
+                            {((FilterKey === 'zip' || FilterKey === 'archived') ? data?.folders : folders?.folders)?.map((ele, index) => (
                                 <Folder
                                     key={`${ele?._id || ele?.id || `folder-${index}`}-${index}`}
                                     name={ele?.name}

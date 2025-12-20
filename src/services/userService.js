@@ -1,6 +1,7 @@
 import { api } from './apiConfig';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../helpers/ToastOptions';
+import { fileService } from './fileService';
 
 export const userService = {
     getUserInfo: async (token) => {
@@ -98,30 +99,18 @@ export const userService = {
     // Archive folder
     archiveFolder: async (folderId, token) => {
         try {
-            const response = await api.patch(`/user/archiveFolder/${folderId}`, {
-                archived: true
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
+            // Use the same createArchive endpoint as files
+            return await fileService.createArchive([], [folderId], token);
         } catch (error) {
             throw error.response?.data || error.message;
         }
     },
 
-    // Unarchive folder
+    // Unarchive folder - use removeFromArchive endpoint
     unarchiveFolder: async (folderId, token) => {
         try {
-            const response = await api.patch(`/user/archiveFolder/${folderId}`, {
-                archived: false
-            }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
+            // Use the same removeFromArchive endpoint as files
+            return await fileService.removeFromArchive(folderId, [], [folderId], token);
         } catch (error) {
             throw error.response?.data || error.message;
         }
