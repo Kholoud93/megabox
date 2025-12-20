@@ -531,10 +531,18 @@ export default function Files() {
             
             setIsSelectionMode(false);
             setSelectedItems({ files: [], folders: [] });
-            refetch();
-            refFolders();
+            
+            // Invalidate all queries to ensure UI updates
             queryClient.invalidateQueries("GetArchivedFilesCount");
-            queryClient.invalidateQueries(["GetUserFiles"]);
+            queryClient.invalidateQueries(["GetUserFiles"], { exact: false });
+            
+            // Refetch all queries (not just active ones) to ensure UI updates immediately
+            await queryClient.refetchQueries(["GetUserFiles"], { exact: false });
+            await queryClient.refetchQueries("GetArchivedFilesCount");
+            
+            // Also call local refetch functions
+            await refetch();
+            await refFolders();
         } catch {
             // Error is handled in the service
         }

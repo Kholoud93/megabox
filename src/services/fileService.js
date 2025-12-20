@@ -290,45 +290,20 @@ export const fileService = {
         }
     },
 
-    // Archive file - Use createArchive (POST) for archiving individual files
+    // Archive file - Use createArchive (POST) endpoint for archiving individual files
     archiveFile: async (fileId, token) => {
         try {
-            // Try PATCH endpoints first
-            let data;
-            try {
-                const response = await api.patch(`/user/archiveFile/${fileId}`, {
-                    archived: true
-                }, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                data = response.data;
-                toast.success("File archived successfully", ToastOptions("success"));
-                return data;
-            } catch (userError) {
-                // If /user/archiveFile fails, try /auth/archiveFile
-                if (userError.response?.status === 404) {
-                    try {
-                        const response = await api.patch(`/auth/archiveFile/${fileId}`, {
-                            archived: true
-                        }, {
-                            headers: {
-                                Authorization: `Bearer ${token}`
-                            }
-                        });
-                        data = response.data;
-                        toast.success("File archived successfully", ToastOptions("success"));
-                        return data;
-                    } catch (authError) {
-                        // If both PATCH endpoints fail, the archive endpoint doesn't exist
-                        console.error('Archive file endpoint not available:', authError.response?.status || authError.message);
-                        throw new Error('Archive endpoint not available. Please use the bulk archive feature to archive files.');
-                    }
-                } else {
-                    throw userError;
+            // Use POST /auth/createArchive endpoint (the only available endpoint)
+            const { data } = await api.post('/auth/createArchive', {
+                files: [fileId],
+                folders: []
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
                 }
-            }
+            });
+            toast.success("File archived successfully", ToastOptions("success"));
+            return data;
         } catch (error) {
             console.error('Archive file error:', error.response?.data || error.message);
             toast.error(error.response?.data?.message || "Failed to archive file", ToastOptions("error"));

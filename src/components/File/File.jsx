@@ -211,10 +211,21 @@ export default function File({ Type, data, Representation, onRename, refetch, on
     const handleArchive = async () => {
         try {
             await fileService.archiveFile(_id, MegaBox.MegaBox);
-            // Invalidate queries to refresh the file list - file should disappear from All Files and appear in Archive
-            queryClient.invalidateQueries(["GetUserFiles"]); // Invalidate all GetUserFiles queries (All, archived, etc.)
+            // Close the menu first
+            setShowMenu(false);
+            
+            // Invalidate all GetUserFiles queries (All, archived, image, video, document, zip, etc.)
+            queryClient.invalidateQueries(["GetUserFiles"], { exact: false });
             queryClient.invalidateQueries("GetArchivedFilesCount");
-            refetch();
+            
+            // Refetch all queries (not just active ones) to ensure UI updates
+            await queryClient.refetchQueries(["GetUserFiles"], { exact: false });
+            await queryClient.refetchQueries("GetArchivedFilesCount");
+            
+            // Also call the local refetch to update current view immediately
+            if (refetch) {
+                await refetch();
+            }
         } catch (error) {
             // Error is handled in the service with toast
             console.error("Archive error:", error);
