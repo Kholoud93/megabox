@@ -488,7 +488,37 @@ export default function Files() {
         try {
             await userService.archiveFolder(folderId, Token.MegaBox);
             toast.success("Folder archived successfully", ToastOptions("success"));
-            refFolders();
+            
+            // Remove from current folder cache immediately
+            queryClient.setQueryData("GetUserFolders", (oldData) => {
+                if (!oldData?.folders) return oldData;
+                return {
+                    ...oldData,
+                    folders: oldData.folders.filter(f => (f._id || f.id) !== folderId)
+                };
+            });
+            
+            // Remove from zip filter cache if present
+            queryClient.setQueryData(["GetUserFiles", "zip"], (oldData) => {
+                if (!oldData?.folders) return oldData;
+                return {
+                    ...oldData,
+                    folders: (oldData.folders || []).filter(f => (f._id || f.id) !== folderId)
+                };
+            });
+            
+            // Invalidate all queries to force refetch
+            queryClient.invalidateQueries({ queryKey: ["GetUserFolders"] });
+            queryClient.invalidateQueries({ queryKey: ["GetUserFiles"] });
+            queryClient.invalidateQueries({ queryKey: ["GetArchivedFilesCount"] });
+            queryClient.invalidateQueries({ queryKey: ["userFolders"] });
+            
+            // Update archived count
+            queryClient.setQueryData("GetArchivedFilesCount", (oldCount) => {
+                return (oldCount || 0) + 1;
+            });
+            
+            await refFolders();
         } catch {
             toast.error("Failed to archive folder", ToastOptions("error"));
         }
@@ -596,19 +626,91 @@ export default function Files() {
                 Token.MegaBox
             );
             
+            // Remove files from ALL filter caches immediately
+            const filterKeys = ["All", "all", "image", "video", "document", "zip"];
+            const fileIdSet = new Set(selectedItems.files.map(id => String(id)));
+            const folderIdSet = new Set(selectedItems.folders.map(id => String(id)));
+            
+            filterKeys.forEach(key => {
+                queryClient.setQueryData(["GetUserFiles", key], (oldData) => {
+                    if (!oldData?.files) return oldData;
+                    return {
+                        ...oldData,
+                        files: oldData.files.filter(f => {
+                            const fileId = String(f._id || f.id);
+                            return !fileIdSet.has(fileId);
+                        })
+                    };
+                });
+            });
+            
+            // Remove folders from current cache immediately
+            queryClient.setQueryData("GetUserFolders", (oldData) => {
+                if (!oldData?.folders) return oldData;
+                return {
+                    ...oldData,
+                    folders: oldData.folders.filter(f => {
+                        const folderId = String(f._id || f.id);
+                        return !folderIdSet.has(folderId);
+                    })
+                };
+            });
+            
+            // Remove folders from zip filter if present
+            queryClient.setQueryData(["GetUserFiles", "zip"], (oldData) => {
+                if (!oldData?.folders) return oldData;
+                return {
+                    ...oldData,
+                    folders: (oldData.folders || []).filter(f => {
+                        const folderId = String(f._id || f.id);
+                        return !folderIdSet.has(folderId);
+                    })
+                };
+            });
+            
+            // Also remove from getMyZips cache if any zips were archived
+            queryClient.setQueryData("getMyZips", (oldData) => {
+                if (!oldData?.zips && !oldData?.files) return oldData;
+                const zips = oldData?.zips || oldData?.files || [];
+                return {
+                    ...oldData,
+                    zips: zips.filter(zip => {
+                        const zipId = String(zip._id || zip.id);
+                        return !fileIdSet.has(zipId) && !folderIdSet.has(zipId);
+                    }),
+                    files: zips.filter(zip => {
+                        const zipId = String(zip._id || zip.id);
+                        return !fileIdSet.has(zipId) && !folderIdSet.has(zipId);
+                    })
+                };
+            });
+            
+            toast.success(`Archived ${selectedItems.files.length + selectedItems.folders.length} item(s) successfully`, ToastOptions("success"));
+            
             setIsSelectionMode(false);
             setSelectedItems({ files: [], folders: [] });
+            
+            // Invalidate all queries to force refetch
+            queryClient.invalidateQueries({ queryKey: ["GetUserFiles"] });
+            queryClient.invalidateQueries({ queryKey: ["GetUserFolders"] });
+            queryClient.invalidateQueries({ queryKey: ["userFolders"] });
+            queryClient.invalidateQueries({ queryKey: ["GetArchivedFilesCount"] });
+            // CRITICAL: Invalidate getMyArchives to add items to archived list
+            queryClient.invalidateQueries({ queryKey: ["getMyArchives"] });
+            
+            // Update archived count
+            const totalArchived = selectedItems.files.length + selectedItems.folders.length;
+            queryClient.setQueryData("GetArchivedFilesCount", (oldCount) => {
+                return (oldCount || 0) + totalArchived;
+            });
             
             // Refetch to update UI
             await refetch();
             await refFolders();
             
-            // Update counts
-            queryClient.invalidateQueries("GetArchivedFilesCount");
-            await queryClient.refetchQueries("GetArchivedFilesCount");
-            
         } catch (error) {
             console.error("Archive error:", error);
+            toast.error("Failed to archive items", ToastOptions("error"));
         }
     }
 
@@ -622,23 +724,91 @@ export default function Files() {
         }
 
         try {
+            let successCount = 0;
+            let errorCount = 0;
+            
             // Unarchive files
             for (const fileId of selectedItems.files) {
-                await fileService.unarchiveFile(fileId, Token.MegaBox);
-            }
-            // Unarchive folders
-            for (const folderId of selectedItems.folders) {
-                await userService.unarchiveFolder(folderId, Token.MegaBox);
+                try {
+                    await fileService.unarchiveFile(fileId, Token.MegaBox);
+                    successCount++;
+                } catch (error) {
+                    console.error(`Failed to unarchive file ${fileId}:`, error);
+                    // Continue with other files even if one fails
+                    if (error?.response?.status !== 404) {
+                        errorCount++;
+                    }
+                }
             }
             
-            toast.success(`Unarchived ${selectedItems.files.length + selectedItems.folders.length} item(s) successfully`, ToastOptions("success"));
+            // Unarchive folders
+            for (const folderId of selectedItems.folders) {
+                try {
+                    await userService.unarchiveFolder(folderId, Token.MegaBox);
+                    successCount++;
+                } catch (error) {
+                    console.error(`Failed to unarchive folder ${folderId}:`, error);
+                    // Continue with other folders even if one fails
+                    if (error?.response?.status !== 404) {
+                        errorCount++;
+                    }
+                }
+            }
+            
+            // Remove from archived cache
+            queryClient.setQueryData(["GetUserFiles", "archived"], (oldData) => {
+                if (!oldData?.files && !oldData?.folders) return oldData;
+                return {
+                    ...oldData,
+                    files: (oldData.files || []).filter(f => !selectedItems.files.includes(f._id || f.id)),
+                    folders: (oldData.folders || []).filter(f => !selectedItems.folders.includes(f._id || f.id))
+                };
+            });
+            
+            // Update archived count
+            queryClient.setQueryData("GetArchivedFilesCount", (oldCount) => {
+                return Math.max(0, (oldCount || 0) - successCount);
+            });
+            
+            // Invalidate all queries to force refetch
+            queryClient.invalidateQueries({ queryKey: ["GetUserFiles"] });
+            queryClient.invalidateQueries({ queryKey: ["GetUserFolders"] });
+            queryClient.invalidateQueries({ queryKey: ["userFolders"] });
+            queryClient.invalidateQueries({ queryKey: ["GetArchivedFilesCount"] });
+            // CRITICAL: Invalidate getMyArchives to remove items from archived list
+            queryClient.invalidateQueries({ queryKey: ["getMyArchives"] });
+            
             setIsSelectionMode(false);
             setSelectedItems({ files: [], folders: [] });
-            refetch();
-            refFolders();
-            queryClient.invalidateQueries("GetArchivedFilesCount");
+            
+            // Show appropriate message
+            if (successCount > 0 && errorCount === 0) {
+                toast.success(`Unarchived ${successCount} item(s) successfully`, ToastOptions("success"));
+            } else if (successCount > 0 && errorCount > 0) {
+                toast.warning(`Unarchived ${successCount} item(s), ${errorCount} failed`, ToastOptions("warning"));
+            } else {
+                toast.error("Failed to unarchive items", ToastOptions("error"));
+            }
+            
+            // Refetch to update UI
+            await refetch();
+            await refFolders();
+            
         } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to unarchive items", ToastOptions("error"));
+            console.error("Unarchive error:", error);
+            const errorMessage = error?.response?.data?.message || error?.message || "Failed to unarchive items";
+            
+            // If 404, refresh to sync with server
+            if (error?.response?.status === 404) {
+                toast.warning("Some archives not found. Refreshing...", ToastOptions("warning"));
+                queryClient.invalidateQueries({ queryKey: ["GetUserFiles"] });
+                queryClient.invalidateQueries({ queryKey: ["GetUserFolders"] });
+                queryClient.invalidateQueries({ queryKey: ["GetArchivedFilesCount"] });
+                await refetch();
+                await refFolders();
+            } else {
+                toast.error(errorMessage, ToastOptions("error"));
+            }
         }
     }
 

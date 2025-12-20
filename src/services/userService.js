@@ -107,10 +107,12 @@ export const userService = {
     },
 
     // Unarchive folder - use removeFromArchive endpoint
+    // Backend expects Archive ID in URL, not Folder ID
     unarchiveFolder: async (folderId, token) => {
         try {
             // Use the same removeFromArchive endpoint as files
-            return await fileService.removeFromArchive(folderId, [], [folderId], token);
+            // It will automatically find the archive containing this folder
+            return await fileService.removeFromArchive(null, [], [folderId], token);
         } catch (error) {
             throw error.response?.data || error.message;
         }

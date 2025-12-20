@@ -211,8 +211,57 @@ export default function File({ Type, data, Representation, onRename, refetch, on
         try {
             setShowMenu(false);
             
-            // Call API
+            // Call API first
             await fileService.archiveFile(_id, MegaBox.MegaBox);
+            
+            const fileIdStr = String(_id);
+            
+            // Remove from ALL filter caches immediately (including "All" with capital A)
+            const filterKeys = ["All", "all", "image", "video", "document", "zip"];
+            filterKeys.forEach(key => {
+                queryClient.setQueryData(["GetUserFiles", key], (oldData) => {
+                    if (!oldData?.files) return oldData;
+                    return {
+                        ...oldData,
+                        files: oldData.files.filter(f => {
+                            const fId = String(f._id || f.id);
+                            return fId !== fileIdStr;
+                        })
+                    };
+                });
+            });
+            
+            // Also remove from getMyZips cache if this is a zip file
+            queryClient.setQueryData("getMyZips", (oldData) => {
+                if (!oldData?.zips && !oldData?.files) return oldData;
+                const zips = oldData?.zips || oldData?.files || [];
+                return {
+                    ...oldData,
+                    zips: zips.filter(zip => {
+                        const zipId = String(zip._id || zip.id);
+                        return zipId !== fileIdStr;
+                    }),
+                    files: zips.filter(zip => {
+                        const zipId = String(zip._id || zip.id);
+                        return zipId !== fileIdStr;
+                    })
+                };
+            });
+            
+            // Invalidate all file queries to force refetch on next access
+            queryClient.invalidateQueries({ queryKey: ["GetUserFiles"] });
+            queryClient.invalidateQueries({ queryKey: ["GetArchivedFilesCount"] });
+            queryClient.invalidateQueries({ queryKey: ["getMyZips"] });
+            // CRITICAL: Invalidate getMyArchives to add file to archived list
+            queryClient.invalidateQueries({ queryKey: ["getMyArchives"] });
+            
+            // Update archived count
+            queryClient.setQueryData("GetArchivedFilesCount", (oldCount) => {
+                return (oldCount || 0) + 1;
+            });
+            
+            // Show success message
+            toast.success("File archived successfully", ToastOptions("success"));
             
             // Immediately call refetch to remove from UI
             if (refetch) {
@@ -221,12 +270,16 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             
         } catch (error) {
             console.error("Archive error:", error);
+            toast.error("Failed to archive file", ToastOptions("error"));
         }
     };
 
     const handleUnarchive = async () => {
         try {
             setShowMenu(false);
+            
+            // Call API first
+            await fileService.unarchiveFile(_id, MegaBox.MegaBox);
             
             // Remove from archived cache
             queryClient.setQueryData(["GetUserFiles", "archived"], (oldData) => {
@@ -237,29 +290,62 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                 };
             });
             
-            // Add back to All cache
-            queryClient.setQueryData(["GetUserFiles", "All"], (oldData) => {
-                const unarchivedFile = { ...data, archived: false, isArchived: false };
-                return {
-                    ...oldData,
-                    files: [...(oldData?.files || []), unarchivedFile]
-                };
+            // Add back to all filter caches (All, image, video, document, zip)
+            const filterKeys = ["All", "all", "image", "video", "document", "zip"];
+            const unarchivedFile = { ...data, archived: false, isArchived: false };
+            
+            filterKeys.forEach(key => {
+                queryClient.setQueryData(["GetUserFiles", key], (oldData) => {
+                    if (!oldData?.files) {
+                        return { files: [unarchivedFile] };
+                    }
+                    // Check if file already exists to avoid duplicates
+                    const exists = oldData.files.some(f => (f._id || f.id) === _id);
+                    if (exists) {
+                        return oldData;
+                    }
+                    return {
+                        ...oldData,
+                        files: [...oldData.files, unarchivedFile]
+                    };
+                });
             });
             
-            // Update count
+            // Update archived count
             queryClient.setQueryData("GetArchivedFilesCount", (oldCount) => {
                 return Math.max(0, (oldCount || 0) - 1);
             });
             
-            await fileService.unarchiveFile(_id, MegaBox.MegaBox);
+            // Invalidate all queries to force refetch - including getMyArchives
+            queryClient.invalidateQueries({ queryKey: ["GetUserFiles"] });
+            queryClient.invalidateQueries({ queryKey: ["GetArchivedFilesCount"] });
+            // CRITICAL: Invalidate getMyArchives to remove file from archived list
+            queryClient.invalidateQueries({ queryKey: ["getMyArchives"] });
             
-            // Only invalidate
-            queryClient.invalidateQueries({ queryKey: ["GetUserFiles"] }, { refetchActive: false });
-            queryClient.invalidateQueries({ queryKey: ["GetArchivedFilesCount"] }, { refetchActive: false });
+            // Show success message
+            toast.success("File unarchived successfully", ToastOptions("success"));
+            
+            // Refetch to update UI
+            if (refetch) {
+                await refetch();
+            }
             
         } catch (error) {
             console.error("Unarchive error:", error);
-            await queryClient.refetchQueries({ queryKey: ["GetUserFiles"] });
+            const errorMessage = error?.response?.data?.message || error?.message || "Failed to unarchive file";
+            
+            // If 404, the archive might not exist - still try to refresh
+            if (error?.response?.status === 404) {
+                toast.warning("Archive not found. Refreshing file list...", ToastOptions("warning"));
+                // Invalidate and refetch to sync with server
+                queryClient.invalidateQueries({ queryKey: ["GetUserFiles"] });
+                queryClient.invalidateQueries({ queryKey: ["GetArchivedFilesCount"] });
+                if (refetch) {
+                    await refetch();
+                }
+            } else {
+                toast.error(errorMessage, ToastOptions("error"));
+            }
         }
     };
 
@@ -299,10 +385,45 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                 handleOpenFile();
                 break;
             case 'delete': {
-                const DeleteRes = await DeleteFile(_id, MegaBox.MegaBox);
+                // Check if this is a zip file - zip files need special handling
+                const isZipFile = Type === 'zip' || fileType === 'application/zip' || fileType?.includes('zip');
+                
+                let DeleteRes;
+                if (isZipFile) {
+                    // Use deleteZip for zip files (created via createZip)
+                    DeleteRes = await fileService.deleteZip(_id, MegaBox.MegaBox);
+                } else {
+                    // Use regular deleteFile for normal files
+                    DeleteRes = await DeleteFile(_id, MegaBox.MegaBox);
+                }
 
-                if (DeleteRes)
+                if (DeleteRes) {
                     toast.success("File deleted successfully", ToastOptions("success"));
+                    // Remove from cache immediately
+                    const fileIdStr = String(_id);
+                    queryClient.setQueryData(["GetUserFiles", "All"], (oldData) => {
+                        if (!oldData?.files) return oldData;
+                        return {
+                            ...oldData,
+                            files: oldData.files.filter(f => String(f._id || f.id) !== fileIdStr)
+                        };
+                    });
+                    // Also remove from getMyZips if it's a zip
+                    if (isZipFile) {
+                        queryClient.setQueryData("getMyZips", (oldData) => {
+                            if (!oldData?.zips && !oldData?.files) return oldData;
+                            const zips = oldData?.zips || oldData?.files || [];
+                            return {
+                                ...oldData,
+                                zips: zips.filter(zip => String(zip._id || zip.id) !== fileIdStr),
+                                files: zips.filter(zip => String(zip._id || zip.id) !== fileIdStr)
+                            };
+                        });
+                    }
+                    // Invalidate all queries
+                    queryClient.invalidateQueries({ queryKey: ["GetUserFiles"] });
+                    queryClient.invalidateQueries({ queryKey: ["getMyZips"] });
+                }
                 refetch();
                 break;
             }

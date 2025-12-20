@@ -292,6 +292,15 @@ const ResetPasswordRoute = () => (
   </AuthWrapper>
 );
 
+// Wrapper component to ensure RoleProtector has access to AuthProvider context
+const RoleProtectorWrapper = ({ requiredRole, children }) => {
+  return (
+    <RoleProtector requiredRole={requiredRole}>
+      {children}
+    </RoleProtector>
+  );
+};
+
 const AppRouter = () => {
   // Router must be created inside AppRouter which is wrapped by AuthProvider
   // Components in router config will have access to AuthProvider context when rendered
@@ -396,59 +405,59 @@ const AppRouter = () => {
         {
           path: "files", element:
             <LoginProtector>
-              <RoleProtector requiredRole="User">
+              <RoleProtectorWrapper requiredRole="User">
                 <Files />
-              </RoleProtector>
+              </RoleProtectorWrapper>
             </LoginProtector>
         },
         {
           path: "file/:fileName/:fileId", element:
             <LoginProtector>
-              <RoleProtector requiredRole="User">
+              <RoleProtectorWrapper requiredRole="User">
                 <UploadFiles />
-              </RoleProtector>
+              </RoleProtectorWrapper>
             </LoginProtector>
         },
         {
           path: "profile", element:
             <LoginProtector>
-              <RoleProtector requiredRole="User">
+              <RoleProtectorWrapper requiredRole="User">
                 <Profile />
-              </RoleProtector>
+              </RoleProtectorWrapper>
             </LoginProtector>
         },
         {
           path: "notifications", element:
             <LoginProtector>
-              <RoleProtector requiredRole="User">
+              <RoleProtectorWrapper requiredRole="User">
                 <Notifications />
-              </RoleProtector>
+              </RoleProtectorWrapper>
             </LoginProtector>
         },
         {
           path: "subscription-plans", element:
             <LoginProtector>
-              <RoleProtector requiredRole="User">
+              <RoleProtectorWrapper requiredRole="User">
                 <Suspense fallback={<Loading />}>
                   <SubscriptionPlans />
                 </Suspense>
-              </RoleProtector>
+              </RoleProtectorWrapper>
             </LoginProtector>
         },
         {
           path: "channels", element:
             <LoginProtector>
-              <RoleProtector requiredRole="User">
+              <RoleProtectorWrapper requiredRole="User">
                 <Channels />
-              </RoleProtector>
+              </RoleProtectorWrapper>
             </LoginProtector>
         },
         {
           path: "channels/:channelId/files", element:
             <LoginProtector>
-              <RoleProtector requiredRole="User">
+              <RoleProtectorWrapper requiredRole="User">
                 <ChannelFiles />
-              </RoleProtector>
+              </RoleProtectorWrapper>
             </LoginProtector>
         }
       ]
@@ -570,91 +579,91 @@ const AppRouter = () => {
         {
           index: true, element:
             <LoginProtector>
-              <RoleProtector requiredRole="Owner">
+              <RoleProtectorWrapper requiredRole="Owner">
                 <Analasys />
-              </RoleProtector >
+              </RoleProtectorWrapper>
             </LoginProtector>
         },
         {
           path: "Users", element:
-            <RoleProtector requiredRole="Owner">
+            <RoleProtectorWrapper requiredRole="Owner">
               <LoginProtector>
                 <Users />
               </LoginProtector>
-            </RoleProtector>
+            </RoleProtectorWrapper>
         },
         {
           path: "profile", element:
             <LoginProtector>
-              <RoleProtector requiredRole="Owner">
+              <RoleProtectorWrapper requiredRole="Owner">
                 <Profile />
-              </RoleProtector>
+              </RoleProtectorWrapper>
             </LoginProtector>
         }, {
           path: "AllPromoters", element: <LoginProtector>
-            <RoleProtector requiredRole="Owner">
+            <RoleProtectorWrapper requiredRole="Owner">
               <Promoters />
-            </RoleProtector>
+            </RoleProtectorWrapper>
           </LoginProtector>
         }, {
           path: "Promoter/:id", element: <LoginProtector>
-            <RoleProtector requiredRole="Owner">
+            <RoleProtectorWrapper requiredRole="Owner">
               <PromotersEarning />
-            </RoleProtector>
+            </RoleProtectorWrapper>
           </LoginProtector>
         }, {
           path: "Reports", element: <LoginProtector>
-            <RoleProtector requiredRole="Owner">
+            <RoleProtectorWrapper requiredRole="Owner">
               <Reports />
-            </RoleProtector>
+            </RoleProtectorWrapper>
           </LoginProtector>
         }, {
           path: "Payments", element: <LoginProtector>
-            <RoleProtector requiredRole="Owner">
+            <RoleProtectorWrapper requiredRole="Owner">
               <Payments />
-            </RoleProtector>
+            </RoleProtectorWrapper>
           </LoginProtector>
         }, {
           path: "PaymentServices", element: <LoginProtector>
-            <RoleProtector requiredRole="Owner">
+            <RoleProtectorWrapper requiredRole="Owner">
               <AdminPaymentServices />
-            </RoleProtector>
+            </RoleProtectorWrapper>
           </LoginProtector>
         }, {
           path: "Plans", element: <LoginProtector>
-            <RoleProtector requiredRole="Owner">
+            <RoleProtectorWrapper requiredRole="Owner">
               <Plans />
-            </RoleProtector>
+            </RoleProtectorWrapper>
           </LoginProtector>
         }, {
           path: "Subscriptions", element: <LoginProtector>
-            <RoleProtector requiredRole="Owner">
+            <RoleProtectorWrapper requiredRole="Owner">
               <AdminSubscriptions />
-            </RoleProtector>
+            </RoleProtectorWrapper>
           </LoginProtector>
         }, {
           path: "Storage", element: <LoginProtector>
-            <RoleProtector requiredRole="Owner">
+            <RoleProtectorWrapper requiredRole="Owner">
               <Storage />
-            </RoleProtector>
+            </RoleProtectorWrapper>
           </LoginProtector>
         }, {
           path: "Withdrawals", element: <LoginProtector>
-            <RoleProtector requiredRole="Owner">
+            <RoleProtectorWrapper requiredRole="Owner">
               <Withdrawals />
-            </RoleProtector>
+            </RoleProtectorWrapper>
           </LoginProtector>
         }, {
           path: "UserStats", element: <LoginProtector>
-            <RoleProtector requiredRole="Owner">
+            <RoleProtectorWrapper requiredRole="Owner">
               <UserStats />
-            </RoleProtector>
+            </RoleProtectorWrapper>
           </LoginProtector>
         }, {
           path: "DownloadsViews", element: <LoginProtector>
-            <RoleProtector requiredRole="Owner">
+            <RoleProtectorWrapper requiredRole="Owner">
               <DownloadsViews />
-            </RoleProtector>
+            </RoleProtectorWrapper>
           </LoginProtector>
         }
       ]
@@ -673,5 +682,8 @@ function App() {
     </AuthProvider>
   );
 }
+
+// Export AppRouter separately to ensure it's only created after AuthProvider
+export { AppRouter };
 
 export default App
