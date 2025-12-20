@@ -7,7 +7,7 @@ import { adminService } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
 import Pagination from '../../../components/Pagination/Pagination';
-import { FaMoneyBillWave, FaCheck, FaTimes, FaEye } from 'react-icons/fa';
+import { FaMoneyBillWave, FaCheck, FaTimes, FaEye, FaCreditCard } from 'react-icons/fa';
 import { HiArrowRight, HiArrowLeft } from 'react-icons/hi2';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
@@ -276,10 +276,18 @@ export default function Withdrawals() {
                             {language === 'ar' ? <HiArrowRight size={24} /> : <HiArrowLeft size={24} />}
                         </button>
                         <FaMoneyBillWave className="admin-withdrawals-header__icon" />
-                        <div>
+                        <div className="admin-withdrawals-header__text">
                             <h1 className="admin-withdrawals-header__title">{t('adminWithdrawals.title')}</h1>
                             <p className="admin-withdrawals-header__subtitle">{t('adminWithdrawals.subtitle')}</p>
                         </div>
+                        <button
+                            onClick={() => navigate('/Owner/PaymentServices')}
+                            className="admin-withdrawals-header__payment-services-btn"
+                            title={t('adminWithdrawals.managePaymentServices')}
+                        >
+                            <FaCreditCard />
+                            <span>{t('adminWithdrawals.managePaymentServices')}</span>
+                        </button>
                     </div>
                 </div>
 

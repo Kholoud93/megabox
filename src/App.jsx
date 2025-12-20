@@ -17,6 +17,7 @@ import RoleProtector from './protectors/RoleProtector'
 import Users from './pages/OwnerPages/Users/Users'
 import Analasys from './pages/OwnerPages/Analasyis/Analasys'
 import Payments from './pages/OwnerPages/Payments/Payments'
+import AdminPaymentServices from './pages/OwnerPages/PaymentServices/AdminPaymentServices'
 import Plans from './pages/OwnerPages/Plans/Plans'
 import AdminSubscriptions from './pages/OwnerPages/Subscriptions/AdminSubscriptions'
 import Storage from './pages/OwnerPages/Storage/Storage'
@@ -611,6 +612,12 @@ const AppRouter = () => {
           path: "Payments", element: <LoginProtector>
             <RoleProtector requiredRole="Owner">
               <Payments />
+            </RoleProtector>
+          </LoginProtector>
+        }, {
+          path: "PaymentServices", element: <LoginProtector>
+            <RoleProtector requiredRole="Owner">
+              <AdminPaymentServices />
             </RoleProtector>
           </LoginProtector>
         }, {

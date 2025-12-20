@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
-import { paymentService } from '../../services/paymentService';
+import { adminService } from '../../services/adminService';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
 import { useLanguage } from '../../context/LanguageContext';
@@ -21,11 +22,12 @@ const PAYMENT_TYPES = [
 export default function PaymentServices() {
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
-    const { t, language } = useLanguage();
+    const { t } = useLanguage();
     const queryClient = useQueryClient();
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editingService, setEditingService] = useState(null);
+    const [serviceToDelete, setServiceToDelete] = useState(null);
     const [formData, setFormData] = useState({
         paymentType: '',
         accountName: '',
@@ -35,10 +37,10 @@ export default function PaymentServices() {
         note: ''
     });
 
-    // Fetch payment services
+    // Fetch payment services (using adminService for admin management)
     const { data: paymentServicesData, isLoading } = useQuery(
         ['paymentServices'],
-        () => paymentService.getPaymentServices(token),
+        () => adminService.getPaymentServices(token),
         {
             enabled: !!token,
             retry: 2
@@ -47,9 +49,9 @@ export default function PaymentServices() {
 
     const paymentServices = paymentServicesData?.paymentServices || paymentServicesData?.data || paymentServicesData || [];
 
-    // Create payment service mutation
+    // Create payment service mutation (Admin only)
     const createMutation = useMutation(
-        (data) => paymentService.createPaymentService(data, token),
+        (data) => adminService.createPaymentService(data, token),
         {
             onSuccess: () => {
                 queryClient.invalidateQueries('paymentServices');
@@ -59,9 +61,9 @@ export default function PaymentServices() {
         }
     );
 
-    // Update payment service mutation
+    // Update payment service mutation (Admin only)
     const updateMutation = useMutation(
-        ({ id, data }) => paymentService.updatePaymentService(id, data, token),
+        ({ id, data }) => adminService.updatePaymentService(id, data, token),
         {
             onSuccess: () => {
                 queryClient.invalidateQueries('paymentServices');
@@ -72,9 +74,9 @@ export default function PaymentServices() {
         }
     );
 
-    // Delete payment service mutation
+    // Delete payment service mutation (Admin only)
     const deleteMutation = useMutation(
-        (id) => paymentService.deletePaymentService(id, token),
+        (id) => adminService.deletePaymentService(id, token),
         {
             onSuccess: () => {
                 queryClient.invalidateQueries('paymentServices');
@@ -111,9 +113,14 @@ export default function PaymentServices() {
         setShowEditModal(true);
     };
 
-    const handleDeleteClick = async (id) => {
-        if (window.confirm(t('paymentServices.confirmDelete') || 'Are you sure you want to delete this payment service?')) {
-            await deleteMutation.mutateAsync(id);
+    const handleDeleteClick = (service) => {
+        setServiceToDelete(service);
+    };
+
+    const confirmDelete = async () => {
+        if (serviceToDelete) {
+            await deleteMutation.mutateAsync(serviceToDelete._id || serviceToDelete.id);
+            setServiceToDelete(null);
         }
     };
 
@@ -122,21 +129,21 @@ export default function PaymentServices() {
             case 'PayPal':
             case 'Payoneer':
                 return [
-                    { key: 'email', label: 'Email', type: 'email', required: true },
-                    { key: 'accountId', label: 'Account ID', type: 'text', required: false }
+                    { key: 'email', label: t('earning.paymentServices.email') || 'Email', type: 'email', required: true },
+                    { key: 'accountId', label: t('earning.paymentServices.accountId') || 'Account ID', type: 'text', required: false }
                 ];
             case 'VodafoneCash':
                 return [
-                    { key: 'phoneNumber', label: 'Phone Number', type: 'tel', required: true }
+                    { key: 'phoneNumber', label: t('earning.paymentServices.phoneNumber') || 'Phone Number', type: 'tel', required: true }
                 ];
             case 'USDT_TRC20':
                 return [
-                    { key: 'walletAddress', label: 'Wallet Address', type: 'text', required: true }
+                    { key: 'walletAddress', label: t('earning.paymentServices.walletAddress') || 'Wallet Address', type: 'text', required: true }
                 ];
             case 'Payeer':
             case 'WebMoney':
                 return [
-                    { key: 'accountId', label: 'Account ID', type: 'text', required: true }
+                    { key: 'accountId', label: t('earning.paymentServices.accountId') || 'Account ID', type: 'text', required: true }
                 ];
             default:
                 return [];
@@ -158,7 +165,7 @@ export default function PaymentServices() {
         
         // Validate required fields
         if (!formData.paymentType) {
-            toast.error(t('paymentServices.paymentTypeRequired') || 'Please select a payment type', ToastOptions("error"));
+            toast.error(t('earning.paymentServices.paymentTypeRequired'), ToastOptions("error"));
             return;
         }
 
@@ -167,7 +174,8 @@ export default function PaymentServices() {
         
         for (const field of requiredFields) {
             if (!formData.credentials[field.key]) {
-                toast.error(t('paymentServices.fieldRequired', { field: field.label }) || `${field.label} is required`, ToastOptions("error"));
+                const errorMsg = t('earning.paymentServices.fieldRequired').replace('{{field}}', field.label);
+                toast.error(errorMsg, ToastOptions("error"));
                 return;
             }
         }
@@ -202,28 +210,28 @@ export default function PaymentServices() {
     return (
         <div className="payment-services-container">
             <div className="payment-services-header">
-                <h2>{t('paymentServices.title') || 'Payment Services'}</h2>
+                <h2>{t('earning.paymentServices.title')}</h2>
                 <motion.button
                     className="add-payment-btn"
                     onClick={handleAddClick}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                 >
-                    <FaPlus /> {t('paymentServices.addPayment') || 'Add Payment Method'}
+                    <FaPlus /> {t('earning.paymentServices.addPayment')}
                 </motion.button>
             </div>
 
             {isLoading ? (
                 <div className="loading-state">
                     <div className="spinner"></div>
-                    <p>{t('paymentServices.loading') || 'Loading payment services...'}</p>
+                    <p>{t('earning.paymentServices.loading')}</p>
                 </div>
             ) : paymentServices.length === 0 ? (
                 <div className="empty-state">
                     <FaCreditCard className="empty-icon" />
-                    <p>{t('paymentServices.noPaymentMethods') || 'No payment methods added yet'}</p>
+                    <p>{t('earning.paymentServices.noPaymentMethods')}</p>
                     <button onClick={handleAddClick} className="add-first-btn">
-                        <FaPlus /> {t('paymentServices.addFirst') || 'Add Your First Payment Method'}
+                        <FaPlus /> {t('earning.paymentServices.addFirst')}
                     </button>
                 </div>
             ) : (
@@ -245,10 +253,10 @@ export default function PaymentServices() {
                                     <div className="card-title">
                                         <h3>{getPaymentLabel(service.paymentType)}</h3>
                                         {service.isDefault && (
-                                            <span className="default-badge">{t('paymentServices.default') || 'Default'}</span>
+                                            <span className="default-badge">{t('earning.paymentServices.default')}</span>
                                         )}
                                         {!service.isActive && (
-                                            <span className="inactive-badge">{t('paymentServices.inactive') || 'Inactive'}</span>
+                                            <span className="inactive-badge">{t('earning.paymentServices.inactive')}</span>
                                         )}
                                     </div>
                                 </div>
@@ -256,21 +264,28 @@ export default function PaymentServices() {
                                 <div className="card-body">
                                     {service.accountName && (
                                         <div className="info-row">
-                                            <span className="label">{t('paymentServices.accountName') || 'Account Name'}:</span>
+                                            <span className="label">{t('earning.paymentServices.accountName')}:</span>
                                             <span className="value">{service.accountName}</span>
                                         </div>
                                     )}
                                     
-                                    {service.credentials && Object.entries(service.credentials).map(([key, value]) => (
-                                        <div key={key} className="info-row">
-                                            <span className="label">{key}:</span>
-                                            <span className="value">{value}</span>
-                                        </div>
-                                    ))}
+                                    {service.credentials && Object.entries(service.credentials).map(([key, value]) => {
+                                        // Get translated label for credential field
+                                        const credentialFields = getCredentialsFields(service.paymentType);
+                                        const field = credentialFields.find(f => f.key === key);
+                                        const label = field ? field.label : key;
+                                        
+                                        return (
+                                            <div key={key} className="info-row">
+                                                <span className="label">{label}:</span>
+                                                <span className="value">{value}</span>
+                                            </div>
+                                        );
+                                    })}
                                     
                                     {service.note && (
                                         <div className="info-row">
-                                            <span className="label">{t('paymentServices.note') || 'Note'}:</span>
+                                            <span className="label">{t('earning.paymentServices.note')}:</span>
                                             <span className="value">{service.note}</span>
                                         </div>
                                     )}
@@ -283,16 +298,16 @@ export default function PaymentServices() {
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                     >
-                                        <FaEdit /> {t('paymentServices.edit') || 'Edit'}
+                                        <FaEdit /> {t('earning.paymentServices.edit')}
                                     </motion.button>
                                     <motion.button
                                         className="delete-btn"
-                                        onClick={() => handleDeleteClick(service._id || service.id)}
+                                        onClick={() => handleDeleteClick(service)}
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                         disabled={deleteMutation.isLoading}
                                     >
-                                        <FaTrash /> {t('paymentServices.delete') || 'Delete'}
+                                        <FaTrash /> {t('earning.paymentServices.delete')}
                                     </motion.button>
                                 </div>
                             </motion.div>
@@ -305,34 +320,39 @@ export default function PaymentServices() {
             <AnimatePresence>
                 {(showAddModal || showEditModal) && (
                     <motion.div
-                        className="modal-overlay"
+                        className="modal-overlay edit-modal-overlay"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={() => {
-                            setShowAddModal(false);
-                            setShowEditModal(false);
-                            setEditingService(null);
-                            resetForm();
+                            if (!createMutation.isLoading && !updateMutation.isLoading) {
+                                setShowAddModal(false);
+                                setShowEditModal(false);
+                                setEditingService(null);
+                                resetForm();
+                            }
                         }}
                     >
                         <motion.div
-                            className="modal-content"
+                            className="modal-content edit-modal-content"
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="modal-header">
-                                <h3>{editingService ? (t('paymentServices.editPayment') || 'Edit Payment Method') : (t('paymentServices.addPayment') || 'Add Payment Method')}</h3>
+                                <h3>{editingService ? t('earning.paymentServices.editPayment') : t('earning.paymentServices.addPayment')}</h3>
                                 <button
                                     className="close-btn"
                                     onClick={() => {
-                                        setShowAddModal(false);
-                                        setShowEditModal(false);
-                                        setEditingService(null);
-                                        resetForm();
+                                        if (!createMutation.isLoading && !updateMutation.isLoading) {
+                                            setShowAddModal(false);
+                                            setShowEditModal(false);
+                                            setEditingService(null);
+                                            resetForm();
+                                        }
                                     }}
+                                    disabled={createMutation.isLoading || updateMutation.isLoading}
                                 >
                                     <FaTimes />
                                 </button>
@@ -340,7 +360,7 @@ export default function PaymentServices() {
 
                             <form onSubmit={handleSubmit} className="payment-form">
                                 <div className="form-group">
-                                    <label>{t('paymentServices.paymentType') || 'Payment Type'} *</label>
+                                    <label>{t('earning.paymentServices.paymentType')} *</label>
                                     <select
                                         value={formData.paymentType}
                                         onChange={(e) => {
@@ -349,7 +369,7 @@ export default function PaymentServices() {
                                         required
                                         disabled={!!editingService}
                                     >
-                                        <option value="">{t('paymentServices.selectType') || 'Select Payment Type'}</option>
+                                        <option value="">{t('earning.paymentServices.selectType')}</option>
                                         {PAYMENT_TYPES.map(type => (
                                             <option key={type.value} value={type.value}>{type.label}</option>
                                         ))}
@@ -359,12 +379,12 @@ export default function PaymentServices() {
                                 {formData.paymentType && (
                                     <>
                                         <div className="form-group">
-                                            <label>{t('paymentServices.accountName') || 'Account Name'}</label>
+                                            <label>{t('earning.paymentServices.accountName')}</label>
                                             <input
                                                 type="text"
                                                 value={formData.accountName}
                                                 onChange={(e) => setFormData(prev => ({ ...prev, accountName: e.target.value }))}
-                                                placeholder={t('paymentServices.accountNamePlaceholder') || 'e.g., Ahmed Ali'}
+                                                placeholder={t('earning.paymentServices.accountNamePlaceholder')}
                                             />
                                         </div>
 
@@ -383,34 +403,38 @@ export default function PaymentServices() {
                                             </div>
                                         ))}
 
-                                        <div className="form-group">
-                                            <label>
+                                        <div className="form-group checkbox-group">
+                                            <label className="styled-checkbox-label">
                                                 <input
                                                     type="checkbox"
+                                                    className="styled-checkbox"
                                                     checked={formData.isDefault}
                                                     onChange={(e) => setFormData(prev => ({ ...prev, isDefault: e.target.checked }))}
                                                 />
-                                                {t('paymentServices.setAsDefault') || 'Set as default payment method'}
+                                                <span className="checkbox-custom"></span>
+                                                <span className="checkbox-text">{t('earning.paymentServices.setAsDefault')}</span>
                                             </label>
                                         </div>
 
-                                        <div className="form-group">
-                                            <label>
+                                        <div className="form-group checkbox-group">
+                                            <label className="styled-checkbox-label">
                                                 <input
                                                     type="checkbox"
+                                                    className="styled-checkbox"
                                                     checked={formData.isActive}
                                                     onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.checked }))}
                                                 />
-                                                {t('paymentServices.isActive') || 'Active'}
+                                                <span className="checkbox-custom"></span>
+                                                <span className="checkbox-text">{t('earning.paymentServices.isActive')}</span>
                                             </label>
                                         </div>
 
                                         <div className="form-group">
-                                            <label>{t('paymentServices.note') || 'Note'}</label>
+                                            <label>{t('earning.paymentServices.note')}</label>
                                             <textarea
                                                 value={formData.note}
                                                 onChange={(e) => setFormData(prev => ({ ...prev, note: e.target.value }))}
-                                                placeholder={t('paymentServices.notePlaceholder') || 'Optional note...'}
+                                                placeholder={t('earning.paymentServices.notePlaceholder')}
                                                 rows="3"
                                             />
                                         </div>
@@ -430,22 +454,90 @@ export default function PaymentServices() {
                                         ) : (
                                             <FaCheck />
                                         )}
-                                        {editingService ? (t('paymentServices.update') || 'Update') : (t('paymentServices.create') || 'Create')}
+                                        {editingService ? t('earning.paymentServices.update') : t('earning.paymentServices.create')}
                                     </motion.button>
                                     <button
                                         type="button"
                                         className="cancel-btn"
                                         onClick={() => {
-                                            setShowAddModal(false);
-                                            setShowEditModal(false);
-                                            setEditingService(null);
-                                            resetForm();
+                                            if (!createMutation.isLoading && !updateMutation.isLoading) {
+                                                setShowAddModal(false);
+                                                setShowEditModal(false);
+                                                setEditingService(null);
+                                                resetForm();
+                                            }
                                         }}
+                                        disabled={createMutation.isLoading || updateMutation.isLoading}
                                     >
-                                        <FaTimes /> {t('paymentServices.cancel') || 'Cancel'}
+                                        <FaTimes /> {t('earning.paymentServices.cancel')}
                                     </button>
                                 </div>
                             </form>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Delete Confirmation Modal */}
+            <AnimatePresence>
+                {serviceToDelete && (
+                    <motion.div
+                        className="modal-overlay delete-modal-overlay"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => !deleteMutation.isLoading && setServiceToDelete(null)}
+                    >
+                        <motion.div
+                            className="modal-content delete-modal-content"
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="modal-header delete-modal-header">
+                                <h3>{t('earning.paymentServices.delete')}</h3>
+                                <button
+                                    className="close-btn"
+                                    onClick={() => !deleteMutation.isLoading && setServiceToDelete(null)}
+                                    disabled={deleteMutation.isLoading}
+                                >
+                                    <FaTimes />
+                                </button>
+                            </div>
+
+                            <div className="payment-form delete-modal-body">
+                                <div className="delete-confirm-message">
+                                    <FaTrash className="delete-icon" />
+                                    <p>{t('earning.paymentServices.confirmDelete')}</p>
+                                </div>
+
+                                <div className="form-actions delete-modal-actions">
+                                    <motion.button
+                                        type="button"
+                                        className="delete-btn confirm-delete-btn"
+                                        onClick={confirmDelete}
+                                        disabled={deleteMutation.isLoading}
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        {deleteMutation.isLoading ? (
+                                            <span className="spinner-small"></span>
+                                        ) : (
+                                            <FaTrash />
+                                        )}
+                                        {t('earning.paymentServices.delete')}
+                                    </motion.button>
+                                    <button
+                                        type="button"
+                                        className="cancel-btn"
+                                        onClick={() => setServiceToDelete(null)}
+                                        disabled={deleteMutation.isLoading}
+                                    >
+                                        <FaTimes /> {t('earning.paymentServices.cancel')}
+                                    </button>
+                                </div>
+                            </div>
                         </motion.div>
                     </motion.div>
                 )}
