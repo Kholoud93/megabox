@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useState } from 'react'
 import { useCookies } from 'react-cookie';
 import { useQuery, useQueryClient } from 'react-query';
@@ -7,7 +6,7 @@ import { API_URL, userService, fileService } from '../../../services/api';
 import { getFileCategory } from '../../../helpers/MimeType';
 import File from '../../../components/File/File';
 import { Folder } from '../../../components/Folder/Folder';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import UploadFile from '../../../components/Upload/UploadFile/UploadFile';
 import UploadOptions from '../../../components/Upload/UploadOptions/UploadOptions';
 import UploadFromMegaBox from '../../../components/Upload/UploadFromMegaBox/UploadFromMegaBox';
@@ -15,7 +14,8 @@ import AddFolder from '../../../components/Upload/AddFolder/AddFolder';
 import { HiOutlinePlus } from 'react-icons/hi2';
 import { LuFolderPlus } from 'react-icons/lu';
 import { HiViewGrid, HiViewList } from "react-icons/hi";
-import { HiArrowLeft, HiArrowRight } from 'react-icons/hi2';
+import { HiArrowLeft, HiArrowRight, HiUserGroup } from 'react-icons/hi2';
+import { FaTimes } from 'react-icons/fa';
 import Represents from '../../../components/Represents/Represents';
 import ChangeName from '../../../components/ChangeName/ChangeName';
 import { useLanguage } from '../../../context/LanguageContext';
@@ -23,7 +23,7 @@ import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
 import ShareLinkModal from '../../../components/ShareLinkModal/ShareLinkModal';
 
-export default function fileDetails() {
+export default function FileDetails() {
     const { t, language } = useLanguage();
     const navigate = useNavigate();
     const location = useLocation();
@@ -31,7 +31,7 @@ export default function fileDetails() {
     const Active = "inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
     const InActive = "inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-700 bg-white border border-indigo-300 rounded-lg shadow-sm transition-all duration-200 hover:bg-indigo-50 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
 
-    const { fileId, fileName } = useParams();
+    const { fileId } = useParams();
     
     // Determine the files route based on current path
     const getFilesRoute = () => {
@@ -59,7 +59,7 @@ export default function fileDetails() {
         try {
             const foldersData = await userService.getUserFolders(Token.MegaBox);
             return foldersData || { folders: [] };
-        } catch (error) {
+        } catch {
             return { folders: [] };
         }
     };
@@ -166,6 +166,7 @@ export default function fileDetails() {
     const [showShareModal, setShowShareModal] = useState(false);
     const [shareUrl, setShareUrl] = useState('');
     const [shareTitle, setShareTitle] = useState('');
+    const [showPromoterModal, setShowPromoterModal] = useState(false);
 
     const ToggleNameChange = (name, close, id, isFolder = false) => {
         if (close) {
@@ -179,6 +180,12 @@ export default function fileDetails() {
     };
 
     const ShareFile = async (id, isFolder = true) => {
+        // Check if user is promoter - only promoters can share
+        if (!isPromoter) {
+            setShowPromoterModal(true);
+            return;
+        }
+
         try {
             if (isFolder) {
                 // Share folder
@@ -446,7 +453,7 @@ export default function fileDetails() {
                                             await userService.deleteFolder(folderId, Token.MegaBox);
                                             toast.success(t("files.folderDeletedSuccess") || "Folder deleted successfully", ToastOptions("success"));
                                             refetchFolderData();
-                                        } catch (error) {
+                                        } catch {
                                             toast.error(t("files.folderDeleteFailed") || "Failed to delete folder", ToastOptions("error"));
                                         }
                                     }}
@@ -456,7 +463,7 @@ export default function fileDetails() {
                                             await userService.archiveFolder(folderId, Token.MegaBox);
                                             toast.success("Folder archived successfully", ToastOptions("success"));
                                             refetchFolderData();
-                                        } catch (error) {
+                                        } catch {
                                             toast.error("Failed to archive folder", ToastOptions("error"));
                                         }
                                     }}
@@ -522,6 +529,73 @@ export default function fileDetails() {
                     shareUrl={shareUrl}
                     title={shareTitle}
                 />
+            )}
+            {showPromoterModal && (
+                <motion.div
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setShowPromoterModal(false)}
+                >
+                    <motion.div
+                        className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border-2 border-indigo-100"
+                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-amber-100 p-2 rounded-lg">
+                                    <HiUserGroup className="text-amber-600 text-xl" />
+                                </div>
+                                <h3 className="text-xl font-bold text-indigo-900">
+                                    {t("files.bePromoter") || "Be a Promoter"}
+                                </h3>
+                            </div>
+                            <button
+                                onClick={() => setShowPromoterModal(false)}
+                                className="text-gray-400 hover:text-gray-600 transition-colors p-1 hover:bg-gray-100 rounded-full"
+                            >
+                                <FaTimes />
+                            </button>
+                        </div>
+
+                        {/* Message */}
+                        <div className="mb-6">
+                            <p className="text-gray-700 mb-4">
+                                {t("files.shareRequiresPromoter") || "Sharing is only available for promoters. Please become a promoter to share files."}
+                            </p>
+                            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                                <p className="text-sm text-indigo-800">
+                                    {t("files.promoterBenefits") || "As a promoter, you can share files and folders, track analytics, and earn from your content."}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Buttons */}
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowPromoterModal(false)}
+                                className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                            >
+                                {t("common.cancel") || "Cancel"}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowPromoterModal(false);
+                                    navigate('/Partners');
+                                }}
+                                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium flex items-center justify-center gap-2"
+                            >
+                                <HiUserGroup className="w-5 h-5" />
+                                {t("files.viewPlans") || "View Plans"}
+                            </button>
+                        </div>
+                    </motion.div>
+                </motion.div>
             )}
         </AnimatePresence>
     </>

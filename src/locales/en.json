@@ -351,6 +351,7 @@
     "loadingFiles": "Loading files...",
     "foldersCount": "folders",
     "filesCount": "files",
+    "shareRequiresPromoter": "Sharing is only available for promoters. Please become a promoter to share files and folders.",
     "view": "View:",
     "allFiles": "All Files",
     "image": "Image",
@@ -381,7 +382,10 @@
     "emptyZip": "This zip file is empty",
     "zipContents": "Zip Contents",
     "zipFileNotFound": "Zip file not found",
-    "failedToLoadZip": "Failed to load zip contents"
+    "failedToLoadZip": "Failed to load zip contents",
+    "bePromoter": "Be a Promoter",
+    "promoterBenefits": "As a promoter, you can share files and folders, track analytics, and earn from your content.",
+    "viewPlans": "View Plans"
   },
   "profile": {
     "profileInformation": "Profile Information",

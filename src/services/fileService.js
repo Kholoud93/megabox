@@ -214,6 +214,7 @@ export const fileService = {
                 }
             });
             // Filter for documents only, excluding archived
+            // This list must match getFileCategory in MimeType.js
             const documentTypes = [
                 'application/pdf',
                 'application/msword',
@@ -227,6 +228,7 @@ export const fileService = {
                 'application/vnd.oasis.opendocument.presentation',
                 'application/vnd.oasis.opendocument.graphics',
                 'application/odf',
+                'application/json',
                 'text/plain'
             ];
             if (data?.files) {

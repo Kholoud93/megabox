@@ -7,7 +7,7 @@ import { HiViewGrid, HiViewList } from "react-icons/hi";
 import UploadFile from '../../../components/Upload/UploadFile/UploadFile';
 import UploadOptions from '../../../components/Upload/UploadOptions/UploadOptions';
 import UploadFromMegaBox from '../../../components/Upload/UploadFromMegaBox/UploadFromMegaBox';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import AddFolder from '../../../components/Upload/AddFolder/AddFolder';
 import { API_URL } from '../../../services/api';
 import { api } from '../../../services/apiConfig';
@@ -25,7 +25,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { HiUserCircle, HiArrowRightOnRectangle, HiUserGroup, HiCurrencyDollar, HiArrowUp, HiBell, HiShare, HiTicket, HiTrash } from 'react-icons/hi2';
 import { FiGlobe, FiArchive } from 'react-icons/fi';
-import { FaUser } from 'react-icons/fa';
+import { FaUser, FaTimes } from 'react-icons/fa';
 import { LuFileArchive } from 'react-icons/lu';
 import './Files.scss';
 
@@ -137,6 +137,7 @@ export default function Files() {
     const [showShareModal, setShowShareModal] = useState(false);
     const [shareUrl, setShareUrl] = useState('');
     const [shareTitle, setShareTitle] = useState('');
+    const [showPromoterModal, setShowPromoterModal] = useState(false);
     const [selectedItems, setSelectedItems] = useState({ files: [], folders: [] });
     const [isSelectionMode, setIsSelectionMode] = useState(false);
 
@@ -576,6 +577,12 @@ export default function Files() {
     }
 
     const ShareFile = async (id, isFolder = false) => {
+        // Check if user is promoter - only promoters can share
+        if (!isPromoter) {
+            setShowPromoterModal(true);
+            return;
+        }
+
         try {
             if (isFolder) {
                 const response = await userService.generateFolderShareLink(id, Token.MegaBox);
@@ -653,6 +660,12 @@ export default function Files() {
 
     // Share multiple items
     const shareMultipleItems = async () => {
+        // Check if user is promoter - only promoters can share
+        if (!isPromoter) {
+            setShowPromoterModal(true);
+            return;
+        }
+
         if (selectedItems.files.length === 0 && selectedItems.folders.length === 0) {
             toast.error("Please select at least one item to share", ToastOptions("error"));
             return;
@@ -1446,6 +1459,73 @@ export default function Files() {
                     shareUrl={shareUrl}
                     title={shareTitle}
                 />
+            )}
+            {showPromoterModal && (
+                <motion.div
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setShowPromoterModal(false)}
+                >
+                    <motion.div
+                        className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 border-2 border-indigo-100"
+                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-amber-100 p-2 rounded-lg">
+                                    <HiUserGroup className="text-amber-600 text-xl" />
+                                </div>
+                                <h3 className="text-xl font-bold text-indigo-900">
+                                    {t("files.bePromoter") || "Be a Promoter"}
+                                </h3>
+                            </div>
+                            <button
+                                onClick={() => setShowPromoterModal(false)}
+                                className="text-gray-400 hover:text-gray-600 transition-colors p-1 hover:bg-gray-100 rounded-full"
+                            >
+                                <FaTimes />
+                            </button>
+                        </div>
+
+                        {/* Message */}
+                        <div className="mb-6">
+                            <p className="text-gray-700 mb-4">
+                                {t("files.shareRequiresPromoter") || "Sharing is only available for promoters. Please become a promoter to share files."}
+                            </p>
+                            <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3">
+                                <p className="text-sm text-indigo-800">
+                                    {t("files.promoterBenefits") || "As a promoter, you can share files and folders, track analytics, and earn from your content."}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Buttons */}
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowPromoterModal(false)}
+                                className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                            >
+                                {t("common.cancel") || "Cancel"}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowPromoterModal(false);
+                                    navigate('/Partners');
+                                }}
+                                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium flex items-center justify-center gap-2"
+                            >
+                                <HiUserGroup className="w-5 h-5" />
+                                {t("files.viewPlans") || "View Plans"}
+                            </button>
+                        </div>
+                    </motion.div>
+                </motion.div>
             )}
         </AnimatePresence>
     </>
