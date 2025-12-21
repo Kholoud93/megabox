@@ -1,6 +1,8 @@
 import './Features.scss';
 
 import { useEffect, useRef } from 'react';
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion';
 import uploadingSvgContent from '../../assets/animations/uploading-animate.svg?raw';
 import pressPlaySvgContent from '../../assets/animations/press-play-animate.svg?raw';
 import mobileEncryptionSvgContent from '../../assets/animations/mobile-encryption-animate.svg?raw';

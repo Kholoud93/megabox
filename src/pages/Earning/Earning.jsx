@@ -2,7 +2,8 @@ import React, { useState, useMemo } from 'react';
 import './Earning.scss';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
-import { AnimatePresence } from 'framer-motion';
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from 'framer-motion';
 import { FaDollarSign, FaTimes } from 'react-icons/fa';
 import { HiArrowRight, HiArrowLeft, HiChevronDown } from 'react-icons/hi2';
 import { promoterService, paymentService } from '../../services/api';

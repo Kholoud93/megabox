@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion';
 import './ChangeName.scss'
 import { useFormik } from 'formik'
 import { HiX } from "react-icons/hi";

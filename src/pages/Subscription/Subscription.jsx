@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from 'framer-motion';
 import { FaCheckCircle, FaTimes, FaUser, FaPhone, FaCalendar, FaTag, FaFileInvoice } from 'react-icons/fa';
 import { HiCurrencyDollar, HiClock } from 'react-icons/hi2';
 import { promoterService, userService, adminService } from '../../services/api';

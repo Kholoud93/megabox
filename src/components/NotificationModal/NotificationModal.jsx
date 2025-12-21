@@ -1,5 +1,6 @@
 import React from 'react';
-import { AnimatePresence } from 'framer-motion';
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from 'framer-motion';
 import { MdClose } from "react-icons/md";
 import { useLanguage } from '../../context/LanguageContext';
 

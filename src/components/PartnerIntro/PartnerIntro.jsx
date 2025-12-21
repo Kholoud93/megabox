@@ -1,5 +1,6 @@
 import React from "react";
-
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 import PartnerCards from "./PartnerCards";
 import './PartnerIntro.scss'
 import { BsUpload } from "react-icons/bs";

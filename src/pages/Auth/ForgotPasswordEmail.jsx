@@ -1,7 +1,8 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 import "./Auth.scss";
 
 const ForgotPasswordEmail = ({ onSendCode, onBackToLogin, loading, error }) => {

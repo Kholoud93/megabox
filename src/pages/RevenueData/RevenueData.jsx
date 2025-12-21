@@ -1,4 +1,6 @@
 import React from 'react';
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion';
 import { useLanguage } from '../../context/LanguageContext';
 import { FaQuestionCircle, FaArrowUp, FaArrowDown, FaLink, FaEye, FaDownload } from 'react-icons/fa';
 import { HiShare } from 'react-icons/hi2';

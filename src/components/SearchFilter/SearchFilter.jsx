@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from 'framer-motion';
 import { FiSearch, FiX, FiFilter } from 'react-icons/fi';
 import { useLanguage } from '../../context/LanguageContext';
 import './SearchFilter.scss';

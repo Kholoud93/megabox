@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
-
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion';
 import { adminService } from '../../services/adminService';
 import { useLanguage } from '../../context/LanguageContext';
 import { FaCrown, FaEdit, FaTrash, FaPlus, FaTimes, FaCheckCircle } from 'react-icons/fa';

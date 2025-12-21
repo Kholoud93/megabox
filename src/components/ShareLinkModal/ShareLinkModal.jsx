@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from 'framer-motion';
 import { FaTimes, FaCopy, FaCheck, FaLink } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';

@@ -1,7 +1,8 @@
 import React, { useRef, useState, useMemo } from 'react'
 import "./Users.scss"
 import { useQuery } from 'react-query';
-import { AnimatePresence, useInView } from 'framer-motion';
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { adminService } from '../../../services/adminService';
 import { useCookies } from 'react-cookie';
 import { useQueryClient } from 'react-query';

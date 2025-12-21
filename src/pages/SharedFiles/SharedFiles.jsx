@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
-
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion';
 import { fileService, userService, promoterService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { getFileCategory } from '../../helpers/MimeType';

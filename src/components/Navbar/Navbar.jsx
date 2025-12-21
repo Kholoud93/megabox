@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { AnimatePresence } from 'framer-motion'
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { FiMenu, FiX, FiGlobe } from 'react-icons/fi'
 import './Navbar.scss'

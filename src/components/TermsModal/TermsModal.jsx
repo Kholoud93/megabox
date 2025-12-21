@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
 import { useLanguage } from '../../context/LanguageContext';

@@ -1,5 +1,6 @@
 import React from 'react';
-
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion';
 import { HiX } from "react-icons/hi";
 import { HiComputerDesktop, HiCloud } from "react-icons/hi2";
 import { PreventFunction } from '../../../helpers/Prevent';

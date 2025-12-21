@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from 'framer-motion';
 import { FiDownload, FiUser, FiMail, FiMapPin, FiFileText } from 'react-icons/fi';
 import { format } from 'date-fns';
 import { MdDelete } from "react-icons/md";

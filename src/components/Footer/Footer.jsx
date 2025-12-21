@@ -1,7 +1,8 @@
 import React from "react";
 import "./Footer.scss";
 import { Link } from "react-router-dom";
-
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 import { FiMail, FiPhone, FiMapPin, FiTwitter, FiFacebook, FiInstagram, FiLinkedin } from "react-icons/fi";
 import { useLanguage } from "../../context/LanguageContext";
 

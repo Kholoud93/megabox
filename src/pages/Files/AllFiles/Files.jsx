@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from 'framer-motion';
 import { Folder } from '../../../components/Folder/Folder'
 import File from '../../../components/File/File'
 import { HiOutlinePlus } from "react-icons/hi2";
@@ -7,7 +9,6 @@ import { HiViewGrid, HiViewList } from "react-icons/hi";
 import UploadFile from '../../../components/Upload/UploadFile/UploadFile';
 import UploadOptions from '../../../components/Upload/UploadOptions/UploadOptions';
 import UploadFromMegaBox from '../../../components/Upload/UploadFromMegaBox/UploadFromMegaBox';
-import { AnimatePresence } from 'framer-motion';
 import AddFolder from '../../../components/Upload/AddFolder/AddFolder';
 import { API_URL } from '../../../services/api';
 import { api } from '../../../services/apiConfig';

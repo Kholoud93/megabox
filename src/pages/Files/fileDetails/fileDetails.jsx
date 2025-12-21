@@ -2,11 +2,12 @@ import React, { useState } from 'react'
 import { useCookies } from 'react-cookie';
 import { useQuery, useQueryClient } from 'react-query';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from 'framer-motion';
 import { API_URL, userService, fileService } from '../../../services/api';
 import { getFileCategory } from '../../../helpers/MimeType';
 import File from '../../../components/File/File';
 import { Folder } from '../../../components/Folder/Folder';
-import { AnimatePresence } from 'framer-motion';
 import UploadFile from '../../../components/Upload/UploadFile/UploadFile';
 import UploadOptions from '../../../components/Upload/UploadOptions/UploadOptions';
 import UploadFromMegaBox from '../../../components/Upload/UploadFromMegaBox/UploadFromMegaBox';

@@ -1,5 +1,6 @@
 import React from "react";
-
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { FiMail, FiAlertTriangle, FiShield, FiFileText } from "react-icons/fi";
 import Footer from "../../components/Footer/Footer";

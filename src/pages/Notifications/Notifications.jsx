@@ -1,7 +1,8 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
-import { AnimatePresence } from 'framer-motion';
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from 'framer-motion';
 import { FaBell, FaCheck, FaCheckDouble, FaTimes, FaTrash } from 'react-icons/fa';
 import { notificationService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';

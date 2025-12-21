@@ -2,9 +2,10 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from 'framer-motion';
 import { adminService } from '../../../services/adminService';
 import { useLanguage } from '../../../context/LanguageContext';
-import { AnimatePresence } from 'framer-motion';
 import { FaCrown, FaTimes, FaUser, FaPhone, FaCalendar, FaFileInvoice, FaEye } from 'react-icons/fa';
 import { HiArrowRight, HiArrowLeft, HiCurrencyDollar, HiClock } from 'react-icons/hi2';
 import { FiSearch, FiX } from 'react-icons/fi';

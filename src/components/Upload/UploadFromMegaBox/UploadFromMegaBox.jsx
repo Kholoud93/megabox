@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { HiX } from "react-icons/hi";
 import { HiCheckCircle, HiTrash, HiArrowPath } from "react-icons/hi2";
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion';
 import { PreventFunction } from '../../../helpers/Prevent';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useCookies } from 'react-cookie';

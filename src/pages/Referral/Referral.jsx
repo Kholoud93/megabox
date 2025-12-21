@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
-import { AnimatePresence } from 'framer-motion';
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from 'framer-motion';
 import { userService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import EmptyState from '../../components/EmptyState/EmptyState';
