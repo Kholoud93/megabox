@@ -31,28 +31,13 @@ export default function PartnerCTA({ isModal = false, onClose }) {
     const [cookies] = useCookies(["MegaBox"]);
     const { t } = useLanguage();
 
-    // Fetch plans from API
-    const { data: plansData, isLoading: plansLoading } = useQuery(
-        ['plans'],
-        async () => {
-            try {
-                const response = await promoterService.getPlans();
-                if (response.plans) return response;
-                if (Array.isArray(response)) return { plans: response };
-                if (response.data) return { plans: response.data };
-                return { plans: [] };
-            } catch (error) {
-                console.error('Error fetching plans:', error);
-                return { plans: [] };
-            }
-        },
-        { enabled: true }
-    );
-
-    const plans = plansData?.plans || [];
-
-    // Fallback cards if no plans from API
-    const fallbackCards = [
+    // Always use fallback cards for promoter plans (watching and download)
+    // This ensures we only show promoter plans, not subscription plans
+    // The "Start as Promoter" button should show watching and download plans only
+    const plansLoading = false; // No need to load plans, we use fallback cards
+    
+    // Promoter plans cards (watching and download only)
+    const cards = [
         {
             title: t('partners.plans.viewsPlan.title'),
             features: [
@@ -80,22 +65,6 @@ export default function PartnerCTA({ isModal = false, onClose }) {
             planKey: "Downloadsplan"
         }
     ];
-
-    // Use API plans if available, otherwise use fallback
-    const cards = plans.length > 0 
-        ? plans.map(plan => ({
-            title: plan.name || t('partners.plans.defaultTitle'),
-            features: [
-                `${plan.days} ${t('partners.plans.days') || 'days'}`,
-                `${plan.price} ${t('partners.plans.price') || 'price'}`
-            ],
-            smallDesc: `${plan.days} ${t('partners.plans.days') || 'days'} - ${plan.price}`,
-            planKey: plan.name,
-            planId: plan._id || plan.id,
-            planDays: plan.days,
-            planPrice: plan.price
-        }))
-        : fallbackCards;
 
     useEffect(() => {
         const isLoggedIn = cookies.MegaBox && cookies.MegaBox !== 'undefined' && cookies.MegaBox !== 'null' && cookies.MegaBox.trim() !== '';

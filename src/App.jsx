@@ -342,10 +342,10 @@ const AppRouter = () => {
           path: "Partners", element: <Suspense fallback={<Loading />}> <PromotersLanding /></Suspense>
         },
         {
-          path: "Subscription", element: <Suspense fallback={<Loading />}> <Subscription /></Suspense>
+          path: "Subscribe", element: <Suspense fallback={<Loading />}> <Subscribe /></Suspense>
         },
         {
-          path: "Subscribe", element: <Suspense fallback={<Loading />}> <Subscribe /></Suspense>
+          path: "Subscription", element: <Suspense fallback={<Loading />}> <Subscribe /></Suspense>
         }
       ]
     },

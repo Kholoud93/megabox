@@ -315,30 +315,20 @@ export default function DashboardHeader() {
                                         
                                         {/* Subscribe - for regular users without plans */}
                                         {!isOwner && !isPromoter && !isUserWithPlan && (
-                                            <>
-                                                <Link
-                                                    to="/Subscription"
-                                                    className="files-header__profile-item"
-                                                    onClick={() => setProfileMenuOpen(false)}
-                                                >
-                                                    <HiTicket className="files-header__profile-item-icon" />
-                                                    <span>{t("sidenav.subscription") || "Subscription"}</span>
-                                                </Link>
-                                                <Link
-                                                    to="/Subscribe"
-                                                    className="files-header__profile-item"
-                                                    onClick={() => setProfileMenuOpen(false)}
-                                                >
-                                                    <HiCurrencyDollar className="files-header__profile-item-icon" />
-                                                    <span>{t("sidenav.subscribe") || "Subscribe"}</span>
-                                                </Link>
-                                            </>
+                                            <Link
+                                                to="/Subscribe"
+                                                className="files-header__profile-item"
+                                                onClick={() => setProfileMenuOpen(false)}
+                                            >
+                                                <HiCurrencyDollar className="files-header__profile-item-icon" />
+                                                <span>{t("sidenav.subscribe") || "Subscribe"}</span>
+                                            </Link>
                                         )}
                                         
-                                        {/* Subscription - for promoters OR users with plans */}
+                                        {/* Subscribe - for promoters OR users with plans */}
                                         {!isOwner && (isPromoter || isUserWithPlan) && (
                                             <Link
-                                                to="/Subscription"
+                                                to="/Subscribe"
                                                 className="files-header__profile-item"
                                                 onClick={() => setProfileMenuOpen(false)}
                                             >

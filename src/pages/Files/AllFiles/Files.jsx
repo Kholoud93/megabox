@@ -1088,15 +1088,7 @@ export default function Files() {
                                                     <span>{t("sidenav.partners") || "Partners"}</span>
                                                 </Link>
                                                 <Link
-                                                    to="/Subscription"
-                                                    className="files-header__profile-item"
-                                                    onClick={() => setProfileMenuOpen(false)}
-                                                >
-                                                    <HiTicket className="files-header__profile-item-icon" />
-                                                    <span>{t("sidenav.subscription") || "Subscription"}</span>
-                                                </Link>
-                                                <Link
-                                                    to="/dashboard/subscription-plans"
+                                                    to="/Subscribe"
                                                     className="files-header__profile-item"
                                                     onClick={() => setProfileMenuOpen(false)}
                                                 >
@@ -1109,7 +1101,7 @@ export default function Files() {
                                         {isPromoter && (
                                             <>
                                                 <Link
-                                                    to="/Subscription"
+                                                    to="/Subscribe"
                                                     className="files-header__profile-item"
                                                     onClick={() => setProfileMenuOpen(false)}
                                                 >
