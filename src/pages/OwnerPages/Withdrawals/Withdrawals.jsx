@@ -445,16 +445,18 @@ export default function Withdrawals() {
                         </div>
 
                         {/* Pagination */}
-                        <Pagination
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            onPageChange={setCurrentPage}
-                            showCount={true}
-                            startIndex={startIndex}
-                            endIndex={Math.min(endIndex, filteredWithdrawals.length)}
-                            totalItems={filteredWithdrawals.length}
-                            itemsLabel={t('adminWithdrawals.withdrawals')}
-                        />
+                        {filteredWithdrawals.length > 0 && (
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={setCurrentPage}
+                                showCount={true}
+                                startIndex={startIndex}
+                                endIndex={Math.min(endIndex, filteredWithdrawals.length)}
+                                totalItems={filteredWithdrawals.length}
+                                itemsLabel={t('adminWithdrawals.withdrawals')}
+                            />
+                        )}
                     </>
                 ) : (
                     <div className="admin-withdrawals-empty">

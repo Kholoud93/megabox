@@ -1328,13 +1328,14 @@
         align-items: center;
         padding: 2rem 2.5rem;
         border-bottom: 2px solid #e2e8f0;
-        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 50%, #f8fafc 100%);
+        background: linear-gradient(135deg, rgba(248, 250, 252, 0.95) 0%, rgba(255, 255, 255, 0.95) 50%, rgba(248, 250, 252, 0.95) 100%);
         position: sticky;
         top: 0;
         z-index: 10;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        flex-shrink: 0;
         
         &::before {
             content: '';
@@ -1404,7 +1405,29 @@
         gap: 2rem;
         padding: 2.5rem;
         overflow-y: auto;
+        overflow-x: hidden;
         flex: 1;
+        min-height: 0;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(99, 102, 241, 0.3) transparent;
+        
+        &::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        &::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: 4px;
+            
+            &:hover {
+                background: rgba(99, 102, 241, 0.5);
+            }
+        }
         
         @include mix.media-breakpoint-down(md) {
             padding: 1.5rem;
@@ -1418,6 +1441,7 @@
         padding: 1.5rem 2.5rem;
         border-top: 2px solid #e2e8f0;
         background: #f8fafc;
+        flex-shrink: 0;
         
         @include mix.media-breakpoint-down(md) {
             padding: 1.25rem 1.5rem;

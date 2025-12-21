@@ -11,9 +11,13 @@
         max-width: 1400px;
         margin: 0 auto;
         padding: 0 1rem;
+        padding-bottom: 4rem;
+        margin-bottom: 2rem;
 
         @include mix.media-breakpoint-down(md) {
             padding: 0 0.75rem;
+            padding-bottom: 3rem;
+            margin-bottom: 1.5rem;
         }
     }
 }
