@@ -15,7 +15,7 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isS
     const [showMenu, setShowMenu] = useState(false);
     const menuRef = useRef(null);
     const buttonRef = useRef(null);
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const { pathname } = useLocation();
     const [Token] = useCookies(['MegaBox']);
     const queryClient = useQueryClient();
@@ -178,7 +178,7 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isS
 
             <div
                 ref={buttonRef}
-                className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 z-10"
+                className={`absolute top-1.5 sm:top-2 z-10 ${language === 'ar' ? 'left-1.5 sm:left-2' : 'right-1.5 sm:right-2'}`}
                 onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -191,7 +191,7 @@ export const Folder = ({ name, data, onRename, onDelete, onShare, onArchive, isS
             {showMenu && (
                 <div
                     ref={menuRef}
-                    className="absolute top-8 sm:top-10 right-1.5 sm:right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 text-xs min-w-[160px] max-h-[280px] overflow-y-auto file-dropdown-menu"
+                    className={`absolute top-8 sm:top-10 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 text-xs min-w-[160px] max-h-[280px] overflow-y-auto file-dropdown-menu ${language === 'ar' ? 'left-1.5 sm:left-2' : 'right-1.5 sm:right-2'}`}
                     style={{ zIndex: 999999 }}
                     onClick={(e) => e.stopPropagation()}
                 >

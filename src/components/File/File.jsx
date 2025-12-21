@@ -159,7 +159,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
     const config = typeConfig[Type];
     const menuRef = useRef(null);
     const buttonRef = useRef(null);
-    const { t } = useLanguage();
+    const { t, language } = useLanguage();
     const navigate = useNavigate();
 
     const [MegaBox] = useCookies(['MegaBox'])
@@ -509,7 +509,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             )}
             <div
                 ref={buttonRef}
-                className="absolute top-2 right-2 z-[100] file-menu-button"
+                className={`absolute top-2 z-[100] file-menu-button ${language === 'ar' ? 'left-2' : 'right-2'}`}
                 onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -528,7 +528,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             {showMenu && (
                 <div
                     ref={menuRef}
-                    className="absolute top-10 right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 text-xs min-w-[160px] max-h-[280px] overflow-y-auto file-dropdown-menu"
+                    className={`absolute top-10 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 text-xs min-w-[160px] max-h-[280px] overflow-y-auto file-dropdown-menu ${language === 'ar' ? 'left-2' : 'right-2'}`}
                     style={{ zIndex: 99999, position: 'absolute', pointerEvents: 'auto', touchAction: 'manipulation' }}
                     onClick={(e) => e.stopPropagation()}
                     onTouchStart={(e) => e.stopPropagation()}
