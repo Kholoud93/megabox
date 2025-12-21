@@ -116,6 +116,73 @@ export default function Subscription() {
 
     const mySubscriptions = allSubscriptionsData || [];
     
+    // Fetch user subscriptions to check status (for regular users)
+    const { data: userSubscriptionsData } = useQuery(
+        ['userSubscriptions'],
+        async () => {
+            try {
+                const response = await adminService.getAllSubscriptions(cookies.MegaBox);
+                const userId = userData?._id || userData?.id;
+                
+                if (!userId) return [];
+                
+                let subscriptions = [];
+                if (response.subscriptions && Array.isArray(response.subscriptions)) {
+                    subscriptions = response.subscriptions;
+                } else if (Array.isArray(response)) {
+                    subscriptions = response;
+                } else if (response.data && Array.isArray(response.data)) {
+                    subscriptions = response.data;
+                }
+                
+                // Filter subscriptions for current user (not created by them)
+                return subscriptions.filter(sub => {
+                    const subUserId = sub.userId?._id || sub.userId?.id || sub.userId;
+                    const subSubscriberId = sub.subscriberId?._id || sub.subscriberId?.id || sub.subscriberId;
+                    const subCreatedBy = sub.createdBy?._id || sub.createdBy?.id || sub.createdBy;
+                    return (subUserId === userId || subSubscriberId === userId) && subCreatedBy !== userId;
+                });
+            } catch (error) {
+                console.error('Error fetching user subscriptions:', error);
+                return [];
+            }
+        },
+        {
+            enabled: !!cookies.MegaBox && !!userData && !isPromoter, // Only for regular users
+            retry: false
+        }
+    );
+
+    const userSubscriptions = userSubscriptionsData || [];
+
+    // Check subscription status for a plan
+    const getSubscriptionStatus = (planName) => {
+        if (!planName || !userSubscriptions.length) return null;
+        const subscription = userSubscriptions.find(sub => {
+            const subPlanName = sub.planName || sub.plan?.name || '';
+            return subPlanName === planName || subPlanName.toLowerCase() === planName.toLowerCase();
+        });
+        if (!subscription) return null;
+        return subscription.status || 'pending';
+    };
+
+    // Check if user has subscribed to a plan (approved)
+    const hasSubscribedToPlan = (planName) => {
+        if (!planName) return false;
+        const status = getSubscriptionStatus(planName);
+        return status === 'approved' || status === 'subscribed';
+    };
+
+    // Check if user has pending subscription
+    const hasPendingSubscription = (planName) => {
+        if (!planName) return false;
+        const status = getSubscriptionStatus(planName);
+        return status === 'pending' || (!status && userSubscriptions.some(sub => {
+            const subPlanName = sub.planName || sub.plan?.name || '';
+            return subPlanName === planName || subPlanName.toLowerCase() === planName.toLowerCase();
+        }));
+    };
+    
     // Check if user has any legacy plans (watchingplan or Downloadsplan)
     const hasLegacyPlan = hasWatchingPlan || hasDownloadsPlan;
 
@@ -181,8 +248,9 @@ export default function Subscription() {
             queryClient.invalidateQueries(['subscription-plans']);
             queryClient.invalidateQueries(['userAccount']);
             queryClient.invalidateQueries(['allSubscriptions']);
+            queryClient.invalidateQueries(['userSubscriptions']);
             
-            toast.success(t('subscriptionPage.success.subscribed') || "Successfully subscribed to plan!", ToastOptions("success"));
+            toast.success(t('subscriptionPage.waitingForApproval') || "Subscription request submitted successfully! Waiting for approval.", ToastOptions("success"));
         } catch (error) {
             console.error('Error subscribing to plan:', error);
         } finally {
@@ -323,10 +391,12 @@ export default function Subscription() {
                                                 <button
                                                     onClick={() => handleSubscribeToPlan(plan)}
                                                     className="subscription-page__plan-button subscription-page__plan-button--subscribe"
-                                                    disabled={isSubmitting || hasLegacyPlan}
+                                                    disabled={isSubmitting || hasSubscribedToPlan(plan.name || plan.planName) || hasPendingSubscription(plan.name || plan.planName)}
                                                 >
-                                                    {hasLegacyPlan
+                                                    {hasSubscribedToPlan(plan.name || plan.planName)
                                                         ? (t('subscriptionPage.subscribed') || 'Subscribed')
+                                                        : hasPendingSubscription(plan.name || plan.planName)
+                                                        ? (t('subscriptionPage.waitingForApproval') || 'Waiting for Approval')
                                                         : (t('subscriptionPage.subscribe') || 'Subscribe')
                                                     }
                                                 </button>
@@ -338,12 +408,30 @@ export default function Subscription() {
                                                 </button>
                                             </div>
                                         ) : (
-                                            <button
-                                                onClick={() => navigate('/Subscribe')}
-                                                className="subscription-page__plan-button"
-                                            >
-                                                {t('subscriptionPage.subscribe') || 'Subscribe'}
-                                            </button>
+                                            <>
+                                                {hasSubscribedToPlan(plan.name || plan.planName) ? (
+                                                    <button
+                                                        disabled
+                                                        className="subscription-page__plan-button subscription-page__plan-button--subscribed"
+                                                    >
+                                                        {t('subscriptionPage.subscribed') || 'Subscribed'}
+                                                    </button>
+                                                ) : hasPendingSubscription(plan.name || plan.planName) ? (
+                                                    <button
+                                                        disabled
+                                                        className="subscription-page__plan-button subscription-page__plan-button--pending"
+                                                    >
+                                                        {t('subscriptionPage.waitingForApproval') || 'Waiting for Approval'}
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => navigate('/Subscribe')}
+                                                        className="subscription-page__plan-button"
+                                                    >
+                                                        {t('subscriptionPage.subscribe') || 'Subscribe'}
+                                                    </button>
+                                                )}
+                                            </>
                                         )}
                                         </div>
                                     </motion.div>

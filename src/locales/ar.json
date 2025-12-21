@@ -824,6 +824,8 @@
     "availablePlans": "الخطط المتاحة",
     "noPlans": "لا توجد خطط اشتراك متاحة في الوقت الحالي.",
     "subscribe": "اشترك",
+    "subscribed": "مشترك",
+    "waitingForApproval": "في انتظار الموافقة",
     "fillAllFields": "يرجى ملء جميع الحقول المطلوبة",
     "success": "تم إرسال طلب الاشتراك بنجاح!",
     "plan": {
@@ -1819,6 +1821,7 @@
     "subscribe": "اشترك",
     "alreadySubscribed": "مشترك بالفعل",
     "subscribed": "مشترك",
+    "waitingForApproval": "في انتظار الموافقة",
     "availablePlans": "الخطط المتاحة",
     "noPlans": "لا توجد خطط اشتراك متاحة في الوقت الحالي.",
     "mySubscriptions": "الاشتراكات التي أنشأتها",

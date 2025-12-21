@@ -825,6 +825,8 @@
     "availablePlans": "Available Plans",
     "noPlans": "No subscription plans available at the moment.",
     "subscribe": "Subscribe",
+    "subscribed": "Subscribed",
+    "waitingForApproval": "Waiting for Approval",
     "fillAllFields": "Please fill all required fields",
     "success": "Subscription request submitted successfully!",
     "plan": {
@@ -1818,6 +1820,7 @@
     "subscribe": "Subscribe",
     "alreadySubscribed": "Already Subscribed",
     "subscribed": "Subscribed",
+    "waitingForApproval": "Waiting for Approval",
     "availablePlans": "Available Plans",
     "noPlans": "No subscription plans available at the moment.",
     "mySubscriptions": "My Created Subscriptions",

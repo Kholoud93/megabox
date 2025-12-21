@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useQuery, useQueryClient, useMutation } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { adminService } from '../../../services/adminService';
@@ -173,16 +173,42 @@ export default function AdminSubscriptions() {
 
         setIsApproving(true);
         try {
-            // Activate premium using toggleBrimumeByOwner
+            console.log('Approving subscription:', {
+                subscription: subToApprove,
+                token: token ? 'Token exists' : 'No token'
+            });
+            
+            // Activate premium using toggleBrimumeByOwner (this also approves the subscription)
             await handleSetPremium(subToApprove);
             
-            // Invalidate queries to refresh data
+            // Optimistically update the subscription status in the cache
+            queryClient.setQueryData(['allSubscriptions'], (oldData) => {
+                if (!oldData) return oldData;
+                
+                const subscriptions = Array.isArray(oldData) 
+                    ? oldData 
+                    : (oldData.subscriptions || oldData.data || []);
+                
+                return subscriptions.map(sub => {
+                    const subId = sub.id || sub._id;
+                    const targetId = subToApprove.id || subToApprove._id;
+                    if (subId === targetId) {
+                        return { ...sub, status: 'approved' };
+                    }
+                    return sub;
+                });
+            });
+            
+            // Invalidate queries to refresh data from server
             queryClient.invalidateQueries('allSubscriptions');
+            queryClient.invalidateQueries(['allSubscriptions']);
             
             toast.success(t('adminSubscriptions.subscriptionApprovedAndPremium') || 'Subscription approved and premium activated successfully!', ToastOptions("success"));
             setSelectedSubscription(null);
         } catch (error) {
-            toast.error(error.message || t('adminSubscriptions.approveFailed') || 'Failed to approve subscription', ToastOptions("error"));
+            console.error('Error approving subscription:', error);
+            const errorMessage = error?.response?.data?.message || error?.message || t('adminSubscriptions.approveFailed') || 'Failed to approve subscription';
+            toast.error(errorMessage, ToastOptions("error"));
         } finally {
             setIsApproving(false);
         }
@@ -237,8 +263,8 @@ export default function AdminSubscriptions() {
             const user = users.find(u => {
                 const userPhone = u.phone || u.phoneNumber || '';
                 // Remove any formatting (spaces, dashes, etc.) for comparison
-                const normalizedPhone = phone.replace(/[\s\-\(\)]/g, '');
-                const normalizedUserPhone = userPhone.replace(/[\s\-\(\)]/g, '');
+                const normalizedPhone = phone.replace(/[\s\-()]/g, '');
+                const normalizedUserPhone = userPhone.replace(/[\s\-()]/g, '');
                 return normalizedUserPhone === normalizedPhone || 
                        normalizedUserPhone.endsWith(normalizedPhone) ||
                        normalizedPhone.endsWith(normalizedUserPhone);
@@ -491,14 +517,6 @@ export default function AdminSubscriptions() {
                                                 </div>
                                                 <div className="admin-subscription-details-row">
                                                     <span className="admin-subscription-details-label">
-                                                        {t('adminSubscriptions.subscriberName') || 'Subscriber Name'}:
-                                                    </span>
-                                                    <span className="admin-subscription-details-value">
-                                                        {subscription.subscriberName || subscription.name || '-'}
-                                                    </span>
-                                                </div>
-                                                <div className="admin-subscription-details-row">
-                                                    <span className="admin-subscription-details-label">
                                                         {t('adminSubscriptions.phone') || 'Phone'}:
                                                     </span>
                                                     <span className="admin-subscription-details-value">
@@ -507,26 +525,13 @@ export default function AdminSubscriptions() {
                                                 </div>
                                                 <div className="admin-subscription-details-row">
                                                     <span className="admin-subscription-details-label">
-                                                        {t('adminSubscriptions.email') || 'Email'}:
-                                                    </span>
-                                                    <span className="admin-subscription-details-value" data-field="email">
-                                                        {subscription.email || 
-                                                         subscription.userId?.email || 
-                                                         subscription.user?.email || 
-                                                         subscription.subscriberEmail ||
-                                                         '-'}
-                                                    </span>
-                                                </div>
-                                                <div className="admin-subscription-details-row">
-                                                    <span className="admin-subscription-details-label">
-                                                        {t('adminSubscriptions.createdBy') || 'Created By'}:
+                                                        {t('adminSubscriptions.createdBy') || 'Created By'}: {t('adminSubscriptions.name') || 'Name'}
                                                     </span>
                                                     <span className="admin-subscription-details-value">
                                                         {subscription.createdBy 
                                                             ? (typeof subscription.createdBy === 'object' 
                                                                 ? (subscription.createdBy.name || 
                                                                    subscription.createdBy.username || 
-                                                                   subscription.createdBy.email || 
                                                                    subscription.createdBy._id || 
                                                                    subscription.createdBy.id ||
                                                                    '-')
@@ -534,6 +539,16 @@ export default function AdminSubscriptions() {
                                                             : '-'}
                                                     </span>
                                                 </div>
+                                                {subscription.createdBy && typeof subscription.createdBy === 'object' && subscription.createdBy.email && (
+                                                    <div className="admin-subscription-details-row">
+                                                        <span className="admin-subscription-details-label">
+                                                            {t('adminSubscriptions.createdBy') || 'Created By'}: {t('adminSubscriptions.email') || 'Email'}
+                                                        </span>
+                                                        <span className="admin-subscription-details-value">
+                                                            {subscription.createdBy.email}
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
 
                                             {/* Plan Info */}

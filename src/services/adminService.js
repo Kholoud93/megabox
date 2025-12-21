@@ -532,18 +532,43 @@ export const adminService = {
     // Approve/Activate subscription (admin)
     approveSubscription: async (subscriptionId, token) => {
         try {
+            if (!subscriptionId) {
+                throw new Error('Subscription ID is required');
+            }
+            if (!token) {
+                throw new Error('Authentication token is required');
+            }
+
+            console.log('Calling approveSubscription API:', {
+                subscriptionId,
+                endpoint: `/auth/approveSubscription/${subscriptionId}`,
+                hasToken: !!token
+            });
+
             const response = await api.patch(`/auth/approveSubscription/${subscriptionId}`, {
                 status: 'approved'
             }, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
                 }
             });
-            toast.success("Subscription approved successfully!", ToastOptions("success"));
+
+            console.log('Approve subscription API response:', response.data);
+            
+            // Don't show toast here - let the caller handle it
             return response.data;
         } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to approve subscription", ToastOptions("error"));
-            throw error.response?.data || error.message;
+            console.error('Approve subscription API error:', {
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+                data: error.response?.data,
+                message: error.message
+            });
+            
+            const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || "Failed to approve subscription";
+            // Don't show toast here - let the caller handle it
+            throw new Error(errorMessage);
         }
     },
 
