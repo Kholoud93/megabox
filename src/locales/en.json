@@ -375,7 +375,13 @@
     "folderDeletedSuccess": "Folder deleted successfully",
     "folderDeleteFailed": "Failed to delete folder",
     "selectFiles": "Select Files",
-    "fileName": "File Name"
+    "fileName": "File Name",
+    "back": "Back",
+    "loadingZipContents": "Loading zip contents...",
+    "emptyZip": "This zip file is empty",
+    "zipContents": "Zip Contents",
+    "zipFileNotFound": "Zip file not found",
+    "failedToLoadZip": "Failed to load zip contents"
   },
   "profile": {
     "profileInformation": "Profile Information",

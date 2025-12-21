@@ -375,7 +375,13 @@
     "folderDeletedSuccess": "تم حذف المجلد بنجاح",
     "folderDeleteFailed": "فشل حذف المجلد",
     "selectFiles": "تحديد الملفات",
-    "fileName": "اسم الملف"
+    "fileName": "اسم الملف",
+    "back": "رجوع",
+    "loadingZipContents": "جارٍ تحميل محتويات الملف المضغوط...",
+    "emptyZip": "هذا الملف المضغوط فارغ",
+    "zipContents": "محتويات الملف المضغوط",
+    "zipFileNotFound": "الملف المضغوط غير موجود",
+    "failedToLoadZip": "فشل تحميل محتويات الملف المضغوط"
   },
   "profile": {
     "profileInformation": "معلومات الملف الشخصي",

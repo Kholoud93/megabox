@@ -4,7 +4,6 @@ import { IoImageSharp, IoDocumentsSharp } from "react-icons/io5";
 import { motion } from 'framer-motion';
 import { AgoFormatter } from '../../helpers/DateFormates';
 import { FiArchive, FiMoreVertical, FiFolder } from 'react-icons/fi';
-import { downloadCloudinaryFile } from '../../helpers/DownLoadCloudnairy';
 import { HiTrash, HiPencil, HiShare, HiFolderOpen, HiEye } from "react-icons/hi2";
 import { FaFilePdf, FaFileWord, FaFileExcel, FaFilePowerpoint, FaFileAlt, FaPlay } from 'react-icons/fa';
 import { LuFileArchive } from 'react-icons/lu';
@@ -15,6 +14,7 @@ import { ToastOptions } from '../../helpers/ToastOptions';
 import { API_URL, fileService } from '../../services/api';
 import { useQueryClient } from 'react-query';
 import { useLanguage } from '../../context/LanguageContext';
+import { useNavigate } from 'react-router-dom';
 
 // Helper function to get document icon based on file extension
 const getDocumentIcon = (fileName) => {
@@ -160,6 +160,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
     const menuRef = useRef(null);
     const buttonRef = useRef(null);
     const { t } = useLanguage();
+    const navigate = useNavigate();
 
     const [MegaBox] = useCookies(['MegaBox'])
     const queryClient = useQueryClient();
@@ -193,19 +194,28 @@ export default function File({ Type, data, Representation, onRename, refetch, on
         };
     }, [showMenu]);
 
-    const handleOpenFile = () => {
+    const handleOpenFile = async () => {
         if (Type === 'image') {
             Representation(url, fileType);
         } else if (Type === 'zip') {
-            // For zip files, download them so user can open/extract
-            downloadCloudinaryFile(url, fileName);
-            toast.info("Downloading zip file...", ToastOptions("info"));
+            // For zip files, navigate to zip contents view
+            setShowMenu(false);
+            // Navigate to zip view - similar to folder view
+            const currentPath = window.location.pathname;
+            let basePath = '/dashboard';
+            if (currentPath.startsWith('/Promoter')) {
+                basePath = '/Promoter';
+            } else if (currentPath.startsWith('/Owner')) {
+                basePath = '/Owner';
+            }
+            navigate(`${basePath}/zip/${encodeURIComponent(fileName)}/${_id}`);
         } else if (Type === 'video') {
             Representation(url, fileType);
         } else if (Type === 'document') {
             Representation(url, fileType);
         }
     };
+
 
     const handleArchive = async () => {
         try {
@@ -626,23 +636,26 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                         </button>
                     ) : (
                         <>
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleAction('createZip');
-                                }}
-                                onTouchEnd={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    handleAction('createZip');
-                                }}
-                                className="flex items-center gap-2 px-3 py-1.5 hover:bg-amber-50 w-full text-left transition-colors text-amber-600"
-                                style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
-                            >
-                                <LuFileArchive className='w-4 h-4 text-amber-600' />
-                                <span className="font-medium">{t("file.createZip") || "Create Zip"}</span>
-                            </button>
+                            {/* Don't show "Create Zip" option for zip files */}
+                            {Type !== 'zip' && (
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleAction('createZip');
+                                    }}
+                                    onTouchEnd={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleAction('createZip');
+                                    }}
+                                    className="flex items-center gap-2 px-3 py-1.5 hover:bg-amber-50 w-full text-left transition-colors text-amber-600"
+                                    style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
+                                >
+                                    <LuFileArchive className='w-4 h-4 text-amber-600' />
+                                    <span className="font-medium">{t("file.createZip") || "Create Zip"}</span>
+                                </button>
+                            )}
                             <button
                                 onClick={(e) => {
                                     e.preventDefault();

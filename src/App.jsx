@@ -12,6 +12,7 @@ import GoogleCallback from './pages/Auth/GoogleCallback'
 import DashboardLayout from './pages/Dashboard.Layout'
 import Files from './pages/Files/AllFiles/Files'
 import UploadFiles from './pages/Files/fileDetails/fileDetails'
+import ZipContents from './pages/Files/ZipContents/ZipContents'
 import LoginProtector from './protectors/LoginProtector'
 import Profile from './pages/profile/Profile'
 import RoleProtector from './protectors/RoleProtector'
@@ -424,6 +425,14 @@ const AppRouter = () => {
             </LoginProtector>
         },
         {
+          path: "zip/:zipName/:zipId", element:
+            <LoginProtector>
+              <RoleProtectorWrapper requiredRole="User">
+                <ZipContents />
+              </RoleProtectorWrapper>
+            </LoginProtector>
+        },
+        {
           path: "profile", element:
             <LoginProtector>
               <RoleProtectorWrapper requiredRole="User">
@@ -509,6 +518,14 @@ const AppRouter = () => {
             <LoginProtector>
               <PromoterProtector>
                 <UploadFiles />
+              </PromoterProtector>
+            </LoginProtector>
+        },
+        {
+          path: "zip/:zipName/:zipId", element:
+            <LoginProtector>
+              <PromoterProtector>
+                <ZipContents />
               </PromoterProtector>
             </LoginProtector>
         },
