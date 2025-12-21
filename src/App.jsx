@@ -8,6 +8,7 @@ import Signup from './pages/Auth/Signup'
 import ConfirmEmail from './pages/Auth/ConfirmEmail'
 import ForgotPasswordEmail from './pages/Auth/ForgotPasswordEmail'
 import ForgotPasswordReset from './pages/Auth/ForgotPasswordReset'
+import GoogleCallback from './pages/Auth/GoogleCallback'
 import DashboardLayout from './pages/Dashboard.Layout'
 import Files from './pages/Files/AllFiles/Files'
 import UploadFiles from './pages/Files/fileDetails/fileDetails'
@@ -357,6 +358,10 @@ const AppRouter = () => {
     {
       path: "/signup",
       element: <SignupRoute />
+    },
+    {
+      path: "/auth/callback",
+      element: <GoogleCallback />
     },
     {
       path: "/register",
