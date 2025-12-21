@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { useQuery, useQueryClient, useMutation } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaCheckCircle, FaTimes, FaFileInvoice, FaPhone } from 'react-icons/fa';
 import { HiCurrencyDollar, HiClock } from 'react-icons/hi2';
-import { adminService } from '../../services/api';
-import { promoterService } from '../../services/api';
+import { adminService, promoterService, userService } from '../../services/api';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
 import { useLanguage } from '../../context/LanguageContext';
@@ -49,6 +48,16 @@ export default function Subscribe() {
 
     const plans = plansData?.plans || [];
 
+    // Fetch user data to get name/username
+    const { data: userData } = useQuery(
+        ['userAccount'],
+        () => userService.getUserInfo(cookies.MegaBox),
+        {
+            enabled: !!cookies.MegaBox,
+            retry: false
+        }
+    );
+
     // Payment methods
     const paymentMethods = [
         { value: 'USDT', label: 'USDT' },
@@ -89,15 +98,61 @@ export default function Subscribe() {
             return;
         }
 
+        // Validate all required fields
+        const phone = subscriptionForm.phone?.trim();
+        const paymentMethod = subscriptionForm.paymentMethod?.trim();
+        const invoiceFile = subscriptionForm.invoiceFile;
+        const durationDays = selectedPlan.days || selectedPlan.durationDays || 30;
+        const planName = selectedPlan.name || selectedPlan.planName || selectedPlan.planKey || selectedPlan.title || '';
+
+        // Debug: Log selected plan data
+        console.log('Selected Plan:', selectedPlan);
+        console.log('Form Data:', {
+            phone,
+            paymentMethod,
+            hasInvoice: !!invoiceFile,
+            durationDays,
+            planName
+        });
+
+        if (!phone || !paymentMethod || !invoiceFile || !planName) {
+            const missingFields = [];
+            if (!phone) missingFields.push('Phone');
+            if (!paymentMethod) missingFields.push('Payment Method');
+            if (!invoiceFile) missingFields.push('Invoice File');
+            if (!planName) missingFields.push('Plan Name');
+            
+            toast.error(
+                `${t('subscribe.fillAllFields') || 'Please fill all required fields'}: ${missingFields.join(', ')}`,
+                ToastOptions("error")
+            );
+            return;
+        }
+
         setIsSubmitting(true);
         try {
+            // Get user name/username if available
+            const subscriberName = userData?.name || userData?.username || userData?.user?.name || userData?.user?.username || '';
+            
+            console.log('User data for subscriberName:', {
+                userData,
+                subscriberName,
+                extractedFrom: {
+                    name: userData?.name,
+                    username: userData?.username,
+                    user_name: userData?.user?.name,
+                    user_username: userData?.user?.username
+                }
+            });
+            
             await promoterService.createSubscription(
-                subscriptionForm.invoiceFile,
-                subscriptionForm.phone,
-                '', // subscriberName - can be empty for self-subscription
-                selectedPlan.days || 30,
-                selectedPlan.name || selectedPlan.planName,
-                cookies.MegaBox
+                invoiceFile,
+                phone,
+                subscriberName, // Use user's name if available
+                durationDays,
+                planName,
+                cookies.MegaBox,
+                paymentMethod // Add payment method
             );
 
             setShowSubscriptionModal(false);

@@ -56,16 +56,49 @@ export const promoterService = {
     },
 
     // Create subscription (for promoters)
-    createSubscription: async (invoiceFile, phone, subscriberName, durationDays, planName, token) => {
+    createSubscription: async (invoiceFile, phone, subscriberName, durationDays, planName, token, paymentMethod = null) => {
         try {
-            const formData = new FormData();
-            if (invoiceFile) {
-                formData.append('invoice', invoiceFile);
+            // Validate required fields
+            if (!phone || !phone.trim()) {
+                throw new Error('Phone number is required');
             }
-            formData.append('phone', phone);
-            formData.append('subscriberName', subscriberName);
-            formData.append('durationDays', durationDays);
-            formData.append('planName', planName);
+            if (!planName || !planName.trim()) {
+                throw new Error('Plan name is required');
+            }
+            if (!durationDays || isNaN(durationDays)) {
+                throw new Error('Duration days is required and must be a number');
+            }
+            if (!invoiceFile) {
+                throw new Error('Invoice file is required');
+            }
+
+            const formData = new FormData();
+            formData.append('invoice', invoiceFile);
+            formData.append('phone', phone.trim());
+            formData.append('subscriberName', subscriberName && subscriberName.trim() ? subscriberName.trim() : '');
+            formData.append('durationDays', String(durationDays));
+            formData.append('planName', planName.trim());
+            
+            // Add payment method if provided
+            if (paymentMethod && paymentMethod.trim()) {
+                formData.append('paymentMethod', paymentMethod.trim());
+            }
+
+            // Log form data for debugging (remove in production)
+            console.log('Creating subscription with:', {
+                phone: phone.trim(),
+                subscriberName: subscriberName && subscriberName.trim() ? subscriberName.trim() : '',
+                durationDays: String(durationDays),
+                planName: planName.trim(),
+                paymentMethod: paymentMethod || 'not provided',
+                hasInvoice: !!invoiceFile
+            });
+
+            // Log FormData contents
+            console.log('FormData entries:');
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+            }
 
             const response = await api.post('/auth/createSubscription', formData, {
                 headers: {
@@ -76,8 +109,9 @@ export const promoterService = {
             toast.success("Subscription created successfully!", ToastOptions("success"));
             return response.data;
         } catch (error) {
-            toast.error(error.response?.data?.message || "Failed to create subscription", ToastOptions("error"));
-            throw error.response?.data || error.message;
+            const errorMessage = error.response?.data?.message || error.message || "Failed to create subscription";
+            toast.error(errorMessage, ToastOptions("error"));
+            throw error.response?.data || error;
         }
     },
 
