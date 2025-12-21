@@ -6,7 +6,6 @@ import { useCookies } from "react-cookie";
 import { FaCheckCircle } from "react-icons/fa";
 import api from "../../services/api";
 import { promoterService } from "../../services/api";
-import { useQuery } from "react-query";
 import Loading from "../Loading/Loading";
 import { useLanguage } from "../../context/LanguageContext";
 import TermsModal from "../TermsModal/TermsModal";

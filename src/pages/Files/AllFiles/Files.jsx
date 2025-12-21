@@ -167,15 +167,10 @@ export default function Files() {
     
     const isPromoter = userData?.isPromoter === "true" || userData?.isPromoter === true;
     
-    // Handle upload button click - show options for promoters, direct upload for regular users
-    // Defined after isPromoter to ensure it has the correct value
+    // Handle upload button click - show options for both promoters and users
+    // Both get the same upload options (desktop upload and upload from MegaBox)
     const handleUploadClick = () => {
-        if (isPromoter) {
-            ToggleUploadOptions();
-        } else {
-            // Regular users go directly to desktop upload
-            handleSelectDesktop();
-        }
+        ToggleUploadOptions();
     };
     
     const Logout = async () => {
