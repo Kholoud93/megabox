@@ -384,8 +384,14 @@ export default function Files() {
                             
                             data = { files: matchedFiles, folders: matchedFolders };
                         } else {
-                            // If no contents, just show zip files themselves (already filtered for archived)
-                            data = { files: allZips, folders: [] };
+                            // If no contents, just show zip files themselves (already filtered for archived and formatted)
+                            // Ensure all zip files have proper fileType for display
+                            const formattedZips = allZips.map(zip => ({
+                                ...zip,
+                                fileType: zip.fileType || 'application/zip',
+                                fileName: zip.fileName || zip.name || 'zip_file.zip'
+                            }));
+                            data = { files: formattedZips, folders: [] };
                         }
                     } catch {
                         // Fallback to just uploaded zips
@@ -1355,12 +1361,42 @@ export default function Files() {
                             : 'grid-cols-1'
                             }`}>
                             {data?.files?.map((ele, index) => {
+                                // Determine file type - ensure zip and json files are properly identified
+                                let fileType = ele?.fileType;
+                                const fileName = ele?.fileName || ele?.name || '';
+                                
+                                // Fallback: check file extension if fileType is missing or unknown
+                                if (!fileType || fileType === 'unknown' || !getFileCategory(fileType)) {
+                                    const fileExt = fileName.split('.').pop()?.toLowerCase();
+                                    if (fileExt === 'zip') {
+                                        fileType = 'application/zip';
+                                    } else if (fileExt === 'json') {
+                                        fileType = 'application/json';
+                                    }
+                                }
+                                
+                                // Ensure zip files always have the correct fileType
+                                if (fileName.toLowerCase().endsWith('.zip') && fileType !== 'application/zip') {
+                                    fileType = 'application/zip';
+                                }
+                                
+                                // Ensure json files always have the correct fileType
+                                if (fileName.toLowerCase().endsWith('.json') && fileType !== 'application/json') {
+                                    fileType = 'application/json';
+                                }
+                                
                                 // Regular file display
+                                const fileData = { ...ele, fileType: fileType || ele?.fileType };
+                                const fileCategory = getFileCategory(fileData.fileType);
+                                
+                                // If category is still unknown, treat as document for display purposes
+                                const displayType = fileCategory === 'unknown' ? 'document' : fileCategory;
+                                
                                 return (
                                     <File
                                         key={`${ele?._id || ele?.id || `file-${index}`}-${index}`}
-                                        Type={getFileCategory(ele?.fileType)}
-                                        data={ele}
+                                        Type={displayType}
+                                        data={fileData}
                                         Representation={Representation}
                                         refetch={() => {
                                             refetch();

@@ -22,6 +22,7 @@ export function getFileCategory(mimeType) {
         'application/vnd.oasis.opendocument.presentation',
         'application/vnd.oasis.opendocument.graphics',
         'application/odf',
+        'application/json',
         'text/plain'
     ];
 
@@ -49,7 +50,7 @@ export function getFileCategoryByExtension(extension) {
     const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
     const videoExtensions = ['mp4', 'avi', 'mov', 'wmv', 'webm', 'flv', 'mkv'];
     const documentExtensions = [
-        'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'rtf', 'odt',
+        'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'rtf', 'odt', 'json',
         'zip', 'rar'
     ];
 
