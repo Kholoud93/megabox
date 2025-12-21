@@ -7,7 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useCookies } from 'react-cookie';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
-import { motion } from 'framer-motion';
+
 import { PreventFunction } from '../../helpers/Prevent';
 import { HiArrowPath } from 'react-icons/hi2';
 import { userService, fileService } from '../../services/api';

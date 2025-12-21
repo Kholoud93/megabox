@@ -7,7 +7,7 @@ import { HiViewGrid, HiViewList } from "react-icons/hi";
 import UploadFile from '../../../components/Upload/UploadFile/UploadFile';
 import UploadOptions from '../../../components/Upload/UploadOptions/UploadOptions';
 import UploadFromMegaBox from '../../../components/Upload/UploadFromMegaBox/UploadFromMegaBox';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import AddFolder from '../../../components/Upload/AddFolder/AddFolder';
 import { API_URL } from '../../../services/api';
 import { api } from '../../../services/apiConfig';
@@ -180,11 +180,11 @@ export default function Files() {
             if (Token.MegaBox) {
                 try {
                     await notificationService.deleteFcmToken(Token.MegaBox);
-                } catch (error) {
+                } catch {
                     // Silently fail - FCM token deletion is optional
                 }
             }
-        } catch (error) {
+        } catch {
             // Continue with logout even if FCM token deletion fails
         }
         
@@ -415,7 +415,7 @@ export default function Files() {
             }
 
             return data || { files: [] };
-        } catch (error) {
+        } catch {
             return { files: [] };
         }
     };
@@ -755,7 +755,7 @@ export default function Files() {
             await refetch();
             await refFolders();
             
-        } catch (error) {
+        } catch {
             toast.error("Failed to archive items", ToastOptions("error"));
         }
     }
@@ -778,9 +778,9 @@ export default function Files() {
                 try {
                     await fileService.unarchiveFile(fileId, Token.MegaBox);
                     successCount++;
-                } catch (error) {
+                } catch (err) {
                     // Continue with other files even if one fails
-                    if (error?.response?.status !== 404) {
+                    if (err?.response?.status !== 404) {
                         errorCount++;
                     }
                 }
@@ -791,9 +791,9 @@ export default function Files() {
                 try {
                     await userService.unarchiveFolder(folderId, Token.MegaBox);
                     successCount++;
-                } catch (error) {
+                } catch (err) {
                     // Continue with other folders even if one fails
-                    if (error?.response?.status !== 404) {
+                    if (err?.response?.status !== 404) {
                         errorCount++;
                     }
                 }

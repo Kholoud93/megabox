@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { FaBell, FaCheck, FaCheckDouble, FaTimes, FaTrash } from 'react-icons/fa';
 import { notificationService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
-import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
 import './Notifications.scss';
 

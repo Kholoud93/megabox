@@ -29,7 +29,6 @@ import { useTheme } from '../../context/ThemeContext';
 import { useQuery, useQueryClient } from 'react-query';
 import { notificationService, userService } from '../../services';
 import { fileService } from '../../services/api';
-import axios from 'axios';
 import { API_URL } from '../../services/api';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
@@ -42,7 +41,6 @@ export default function Sidenav({ role }) {
     const [expandedFolders, setExpandedFolders] = useState({});
     const [folderFiles, setFolderFiles] = useState({});
     const [allFilesOpen, setAllFilesOpen] = useState(false);
-    const [userMenuOpen, setUserMenuOpen] = useState(false);
     const [ShowRepresent, setRepresents] = useState(false);
     const [Path, setPath] = useState();
     const [fileType, setfileType] = useState();
@@ -69,7 +67,7 @@ export default function Sidenav({ role }) {
     };
 
     // Get unread notifications count
-    const { data: notificationsData } = useQuery(
+    useQuery(
         ['userNotifications'],
         () => notificationService.getUserNotifications(Token.MegaBox),
         {
@@ -79,10 +77,6 @@ export default function Sidenav({ role }) {
         }
     );
 
-    const unreadCount = notificationsData?.notifications?.filter(n => !n.read).length ||
-        notificationsData?.data?.filter(n => !n.read).length || 0;
-
-    // Get user data to check if user is promoter
     const { data: userData } = useQuery(
         ['userAccount'],
         () => userService.getUserInfo(Token.MegaBox),
@@ -94,13 +88,12 @@ export default function Sidenav({ role }) {
 
     const isPromoter = userData?.isPromoter === "true" || userData?.isPromoter === true;
 
-    // Get folders for User role
     const GetFolders = async () => {
         if (!Token.MegaBox || role !== "User") return { folders: [] };
         try {
             const data = await userService.getUserFolders(Token.MegaBox);
             return data || { folders: [] };
-        } catch (error) {
+        } catch {
             return { folders: [] };
         }
     };
@@ -117,13 +110,12 @@ export default function Sidenav({ role }) {
         }
     );
 
-    // Get files for User role
     const GetFiles = async () => {
         if (!Token.MegaBox || role !== "User") return { files: [] };
         try {
             const data = await fileService.getAllFiles(Token.MegaBox);
             return data || { files: [] };
-        } catch (error) {
+        } catch {
             return { files: [] };
         }
     };
@@ -166,7 +158,6 @@ export default function Sidenav({ role }) {
         closeSidebar();
     };
 
-    // Recursive function to render folders and their subfolders
     const renderFolder = (folder, level = 0) => {
         const folderId = folder?._id || folder?.id;
         const isExpanded = expandedFolders[folderId] === true;
@@ -206,7 +197,6 @@ export default function Sidenav({ role }) {
                     }));
                     
                     if (open) {
-                        // Always refetch folder files when opening to get latest data
                         userService.getFolderFiles(folderId, null, Token.MegaBox)
                         .then((data) => {
                             setFolderFiles(prev => ({
@@ -221,16 +211,13 @@ export default function Sidenav({ role }) {
                             }));
                         });
                         
-                        // Refetch folders and files to update sidebar
                         queryClient.invalidateQueries(['userFolders']);
                         queryClient.invalidateQueries(['userFiles']);
                     }
                 }}
             >
-                {/* Render subfolders first */}
                 {subfolders.length > 0 && subfolders.map((subfolder) => renderFolder(subfolder, level + 1))}
                 
-                {/* Then render files */}
                 {files.length > 0 ? (
                     files.map((file) => (
                         <MenuItem
@@ -258,22 +245,18 @@ export default function Sidenav({ role }) {
         );
     };
 
-    // Filter files that are not in any folder
     const filesNotInFolders = filesData?.files?.filter(file => !file.folderId && !file.folder) || [];
 
     const Logout = async () => {
         try {
-            // Delete FCM token on logout to stop receiving notifications
             if (Token.MegaBox) {
                 try {
                     await notificationService.deleteFcmToken(Token.MegaBox);
                 } catch (error) {
-                    // Silently fail - FCM token deletion is optional
                     console.warn('Failed to delete FCM token:', error);
                 }
             }
         } catch (error) {
-            // Continue with logout even if FCM token deletion fails
             console.warn('Error during logout cleanup:', error);
         }
         
@@ -294,17 +277,13 @@ export default function Sidenav({ role }) {
         changeLanguage(newLang);
     }
 
-    // Toggle sidebar open/close
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
     }
 
-    // Close sidebar (for mobile)
     const closeSidebar = () => {
         setSidebarOpen(false);
     }
-
-    // Listen for custom event to close sidebar
     useEffect(() => {
         const handleCloseSidebar = () => {
             closeSidebar();
@@ -319,12 +298,10 @@ export default function Sidenav({ role }) {
         setcollapsed(!collapsed);
     }
 
-    // Close submenus when sidebar is collapsed
     useEffect(() => {
         if (collapsed) {
             setAllFilesOpen(false);
             setExpandedFolders({});
-            setUserMenuOpen(false);
         }
     }, [collapsed]);
     
@@ -334,7 +311,6 @@ export default function Sidenav({ role }) {
         }
     }, [allFilesOpen]);
 
-    // Apply folder styles after render
     useEffect(() => {
         if (collapsed || !allFilesOpen) return;
 
@@ -446,7 +422,6 @@ export default function Sidenav({ role }) {
                                         }
                                         setAllFilesOpen(open);
                                         
-                                        // Refetch data when opening All Files to get latest changes
                                         if (open) {
                                             queryClient.invalidateQueries(['userFolders']);
                                             queryClient.invalidateQueries(['userFiles']);

@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion'
 import './Hero.scss'
-import heroImage from "../../assets/undraw_sync-files_64mj.svg"; // Replace with your actual image path
 import { useCookies } from 'react-cookie';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -144,16 +144,6 @@ const Hero = () => {
 
 export const HeroForSubscription = () => {
   const { t } = useLanguage();
-
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    }
-  };
 
   return (
     <section className="HeroForSubscription">

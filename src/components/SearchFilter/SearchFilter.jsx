@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { FiSearch, FiX, FiFilter } from 'react-icons/fi';
 import { useLanguage } from '../../context/LanguageContext';
 import './SearchFilter.scss';

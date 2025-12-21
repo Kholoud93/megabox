@@ -86,7 +86,7 @@ export default function ZipContents() {
         navigate(getFilesRoute());
     };
 
-    const Representation = (url, type) => {
+    const Representation = () => {
         // Handle file preview - similar to Files page
     };
 

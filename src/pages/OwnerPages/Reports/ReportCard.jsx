@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { FiDownload, FiUser, FiMail, FiMapPin, FiFileText } from 'react-icons/fi';
 import { format } from 'date-fns';
 import { MdDelete } from "react-icons/md";

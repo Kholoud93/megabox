@@ -2,6 +2,7 @@ import React, { useRef, useState, useMemo, useEffect } from 'react'
 
 import "./Promoters.scss"
 import { useQuery, useQueryClient } from 'react-query';
+// eslint-disable-next-line no-unused-vars
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { API_URL, adminService, promoterService } from '../../../services/api';
 import { Link, useNavigate } from 'react-router-dom';
@@ -18,7 +19,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
 export default function Promoters() {
-    const { t, language } = useLanguage();
+    const { t } = useLanguage();
     const [searchTerm, setSearchTerm] = useState('');
     const [filters, setFilters] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
@@ -137,7 +138,7 @@ export default function Promoters() {
             queryClient.invalidateQueries("getAllPromoters");
             setPremiumModal(null);
             premiumFormik.resetForm();
-        } catch (error) {
+        } catch {
             // Error is handled in the service
         }
     };
@@ -164,7 +165,7 @@ export default function Promoters() {
             queryClient.invalidateQueries("getAllPromoters");
             setPremiumModal(null);
             premiumFormik.resetForm();
-        } catch (error) {
+        } catch {
             // Error is handled in the service
         }
     };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Outlet, useNavigate, useLocation } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import Sidenav from '../components/Sidenav/Sidenav'
 import BottomNavigation from '../components/BottomNavigation/BottomNavigation'
 import DashboardHeader from '../components/DashboardHeader/DashboardHeader'
@@ -30,28 +30,26 @@ export default function DashboardLayout({ role }) {
 
     const isPromoter = userData?.isPromoter === "true" || userData?.isPromoter === true;
 
-    const idTracker = () => {
-        let id;
-
-        if (Token.MegaBox) {
-            id = jwtDecode(Token.MegaBox).id;
-            return id
-        } else {
-            return false
-        }
-    }
-
     const navigate = useNavigate();
-    const location = useLocation();
 
     useEffect(() => {
+        const idTracker = () => {
+            let id;
+
+            if (Token.MegaBox) {
+                id = jwtDecode(Token.MegaBox).id;
+                return id
+            } else {
+                return false
+            }
+        }
+
         if (!auth) {
             navigate("/login");
             return;
         }
 
         if (idTracker() && auth.getUserRole) {
-            // Get role from JWT token first for immediate check
             let tokenRole = null;
             try {
                 const decoded = jwtDecode(Token.MegaBox);
@@ -60,20 +58,17 @@ export default function DashboardLayout({ role }) {
                 console.error('Error decoding token:', error);
             }
 
-            // If user is Owner but on wrong route, redirect immediately
             if (tokenRole === "Owner" && role !== "Owner") {
                 navigate("/Owner/profile", { replace: true });
                 return;
             }
 
-            // If user is not Owner but on Owner route, redirect based on their actual role
             if (tokenRole !== "Owner" && role === "Owner") {
                 navigate("/dashboard", { replace: true });
                 return;
             }
 
             auth.getUserRole(idTracker()).then(fetchedRole => {
-                // Double-check with API role and redirect if mismatch
                 if (fetchedRole === "Owner" && role !== "Owner") {
                     navigate("/Owner/profile", { replace: true });
                     return;
@@ -89,10 +84,6 @@ export default function DashboardLayout({ role }) {
         }
 
     }, [auth, navigate, role, Token]);
-
-    // Ensure /dashboard shows Files (via index route in App.jsx)
-    // The index route already handles this correctly
-
 
     if (RoleLoading)
         return <Loading />

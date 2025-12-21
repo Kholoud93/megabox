@@ -6,7 +6,7 @@ import { adminService } from '../../../services/adminService';
 import { useLanguage } from '../../../context/LanguageContext';
 import SearchFilter from '../../../components/SearchFilter/SearchFilter';
 import Pagination from '../../../components/Pagination/Pagination';
-import { motion } from 'framer-motion';
+
 import { FaCrown, FaEye, FaPlus, FaEdit, FaTrash, FaCheckCircle } from 'react-icons/fa';
 import { HiArrowRight, HiArrowLeft, HiCurrencyDollar, HiClock } from 'react-icons/hi2';
 import { toast } from 'react-toastify';
@@ -172,7 +172,7 @@ export default function Subscriptions() {
 
             return true;
         });
-    }, [plansData?.plans, searchTerm, filters]);
+    }, [plansData?.plans, searchTerm]);
 
     // Pagination logic
     const totalPages = Math.ceil(filteredPlans.length / itemsPerPage);

@@ -150,7 +150,7 @@ export const fileService = {
                         data.files = [...(data?.files || []), ...newZips];
                     }
                 }
-            } catch (zipError) {
+            } catch {
                 // Silently fail - created zips are optional
             }
             

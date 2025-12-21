@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './PromoterDashboard.scss';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import {
     FaTimes, FaHistory, FaMoneyBillWave, FaWallet, FaShare, FaChartLine, FaDollarSign, FaDownload
 } from 'react-icons/fa';
@@ -14,21 +14,8 @@ import { useLanguage } from '../../context/LanguageContext';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
 import EmptyState from '../../components/EmptyState/EmptyState';
-import { useNavigate } from 'react-router-dom';
 
-const USE_MOCK_DATA = false; // Use real API data
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.08,
-            delayChildren: 0.15,
-            ease: [0.25, 0.46, 0.45, 0.94]
-        }
-    }
-};
 
 const statsVariants = {
     hidden: { opacity: 0, x: -30, scale: 0.9 },
@@ -186,7 +173,6 @@ function StatCard({ label, value, icon, color, index, onClick }) {
 export default function PromoterDashboard() {
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
-    const navigate = useNavigate();
     const [showWithdrawalModal, setShowWithdrawalModal] = useState(false);
     const [withdrawalForm, setWithdrawalForm] = useState({
         amount: '',
@@ -202,7 +188,7 @@ export default function PromoterDashboard() {
     const queryClient = useQueryClient();
 
     // Fetch promoter earnings (financial data: pending, confirmed, total earnings)
-    const { data: earningsData, isLoading: earningsLoading, error: earningsError } = useQuery(
+    const { data: earningsData, isLoading: earningsLoading } = useQuery(
         ['promoterEarnings'],
         () => promoterService.getUserEarnings(token),
         {
@@ -215,18 +201,14 @@ export default function PromoterDashboard() {
         }
     );
 
-    const isLoading = earningsLoading;
 
     // Fetch user data to check if user has a plan
-    const { data: userData } = useQuery(
+    useQuery(
         ['userAccount'],
         () => userService.getUserInfo(token),
         { enabled: !!token, retry: false }
     );
 
-    // Check if user has a plan (Downloadsplan or watchingplan)
-    const hasPlan = userData?.Downloadsplan === "true" || userData?.Downloadsplan === true ||
-        userData?.watchingplan === "true" || userData?.watchingplan === true;
 
     // Fetch share link analytics (contains revenue and link data)
     const { data: shareLinkAnalyticsData, isLoading: shareLinkAnalyticsLoading, error: shareLinkAnalyticsError } = useQuery(
@@ -247,29 +229,15 @@ export default function PromoterDashboard() {
     const revenueList = shareLinkAnalyticsData?.analytics || shareLinkAnalyticsData?.data || shareLinkAnalyticsData?.links || shareLinkAnalyticsData?.revenue || [];
     // API Response structure: { "pendingRewards", "confirmedRewards", "totalEarnings", "currency" }
     const currency = earningsData?.currency || 'USD';
-    const estimatedRevenue = shareLinkAnalyticsData?.estimatedRevenue || [];
-    const settledRevenue = shareLinkAnalyticsData?.settledRevenue || [];
 
     // Extract earnings data - prioritize exact API response fields
     const totalEarnings = earningsData?.totalEarnings || '0';
-    const pendingEarnings = earningsData?.pendingRewards || '0';
     const confirmedEarnings = earningsData?.confirmedRewards || '0';
     const withdrawable = earningsData?.withdrawable || earningsData?.totalEarnings || '0';
     const withdrawableAmount = parseFloat(withdrawable) || 0;
 
-    // Debug logging
-    useEffect(() => {
-        console.log('PromoterDashboard - Earnings Data:', {
-            earningsData,
-            earningsLoading,
-            withdrawable,
-            withdrawableAmount,
-            canShowQuickWithdraw: !earningsLoading && withdrawableAmount >= 10
-        });
-    }, [earningsData, earningsLoading, withdrawable, withdrawableAmount]);
-
     // Fetch withdrawal history
-    const { data: withdrawalHistory, isLoading: withdrawalHistoryLoading } = useQuery(
+    useQuery(
         ['withdrawalHistory'],
         async () => {
             return withdrawalService.getWithdrawalHistory(token);

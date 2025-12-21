@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { motion } from "framer-motion";
+
 import GoogleIcon from "./GoogleIcon";
 import { RiEyeFill, RiEyeCloseLine } from "react-icons/ri";
 import GoogleLoginButton from './GoogleLoginButton';

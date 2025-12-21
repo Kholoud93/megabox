@@ -46,7 +46,7 @@ export default function Profile() {
         try {
             const response = await authService.getUserAnalytics(Token.MegaBox);
             return response?.data || response;
-        } catch (error) {
+        } catch {
             return null;
         }
     }
@@ -58,11 +58,11 @@ export default function Profile() {
     })
 
     // Fetch user data
-    const { data: userData, isLoading, error } = useQuery('userProfile', () => userService.getUserInfo(Token.MegaBox), {
-        onSuccess: (data) => {
+    const { data: userData, isLoading, error: userError } = useQuery('userProfile', () => userService.getUserInfo(Token.MegaBox), {
+        onSuccess: () => {
             setImageError(false);
         },
-        onError: (error) => {
+        onError: () => {
             toast.error('Failed to fetch user data', ToastOptions('error'));
         }
     });
@@ -219,7 +219,7 @@ export default function Profile() {
         );
     }
 
-    if (error) {
+    if (userError) {
         return (
             <div className="Profile flex justify-center items-center min-h-[60vh] px-4">
                 <div className="text-red-500 text-sm sm:text-base">{t('profile.errorLoading')}</div>

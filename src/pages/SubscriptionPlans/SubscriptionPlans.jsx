@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+
 import { adminService } from '../../services/adminService';
 import { useLanguage } from '../../context/LanguageContext';
 import { FaCrown, FaEdit, FaTrash, FaPlus, FaTimes, FaCheckCircle } from 'react-icons/fa';
@@ -65,7 +65,7 @@ export default function SubscriptionPlans() {
             setShowCreateModal(false);
             setFormData({ name: '', days: '', price: '' });
             queryClient.invalidateQueries('plans');
-        } catch (error) {
+        } catch {
             // Error is handled by service
         } finally {
             setIsSubmitting(false);
@@ -93,7 +93,7 @@ export default function SubscriptionPlans() {
             setSelectedPlan(null);
             setFormData({ name: '', days: '', price: '' });
             queryClient.invalidateQueries('plans');
-        } catch (error) {
+        } catch {
             // Error is handled by service
         } finally {
             setIsSubmitting(false);
@@ -109,7 +109,7 @@ export default function SubscriptionPlans() {
         try {
             await adminService.deletePlan(planId, token);
             queryClient.invalidateQueries('plans');
-        } catch (error) {
+        } catch {
             // Error is handled by service
         }
     };

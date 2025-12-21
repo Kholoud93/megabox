@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './Earning.scss';
 import { useQuery, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
@@ -622,10 +622,7 @@ export default function PromotersEarning() {
         () => adminService.getShareLinkAnalyticdownloads(id, token),
         {
             enabled: !!token && !!id,
-            retry: 2,
-            onError: (error) => {
-                // 404 means user has no shared files, which is expected
-            }
+            retry: 2
         }
     );
 

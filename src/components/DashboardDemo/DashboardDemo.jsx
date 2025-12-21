@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+
 import { useLanguage } from '../../context/LanguageContext';
 import { FaEye, FaDownload, FaChartLine, FaFile } from 'react-icons/fa';
 import './DashboardDemo.scss';

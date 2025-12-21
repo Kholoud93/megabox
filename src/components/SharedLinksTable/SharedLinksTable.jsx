@@ -1,12 +1,11 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { FaLink, FaEye, FaDownload, FaExternalLinkAlt } from 'react-icons/fa';
 import EmptyState from '../EmptyState/EmptyState';
-import { useNavigate } from 'react-router-dom';
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion';
 import './SharedLinksTable.scss';
 
 export default function SharedLinksTable({ files, isLoading, t }) {
-    const navigate = useNavigate();
 
     // Sort files by views (descending) and take top 10
     const topFiles = files

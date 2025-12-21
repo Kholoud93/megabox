@@ -56,7 +56,7 @@ const GoogleCallback = () => {
                                     fcmToken
                                 );
                             }
-                        } catch (error) {
+                        } catch {
                             // Silently fail - FCM token is optional
                         }
 

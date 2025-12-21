@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+
 import './CTASection.scss';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';

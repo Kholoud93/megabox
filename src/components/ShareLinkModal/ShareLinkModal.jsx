@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { FaTimes, FaCopy, FaCheck, FaLink } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
@@ -21,7 +21,7 @@ const ShareLinkModal = ({ isOpen, onClose, shareUrl, title = "Share Link" }) => 
                 setCopied(true);
                 toast.success("Link copied to clipboard!", ToastOptions("success"));
                 setTimeout(() => setCopied(false), 2000);
-            } catch (error) {
+            } catch {
                 toast.error("Failed to copy link", ToastOptions("error"));
             }
         }

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { motion } from "framer-motion";
+
 import { FiSend, FiDownload, FiUpload, FiAlertTriangle, FiFileText, FiUser, FiMail, FiMapPin, FiCheckCircle } from "react-icons/fi";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useQuery, useQueryClient } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { FaCheckCircle, FaTimes, FaUser, FaPhone, FaCalendar, FaTag, FaFileInvoice } from 'react-icons/fa';
 import { HiCurrencyDollar, HiClock } from 'react-icons/hi2';
 import { promoterService, userService, adminService } from '../../services/api';
@@ -41,7 +41,7 @@ export default function Subscription() {
                 if (Array.isArray(response)) return { plans: response };
                 if (response.data) return { plans: response.data };
                 return { plans: [] };
-            } catch (error) {
+            } catch {
                 return { plans: [] };
             }
         },
@@ -102,7 +102,7 @@ export default function Subscription() {
                 });
 
                 return createdSubscriptions;
-            } catch (error) {
+            } catch {
                 return [];
             }
         },
@@ -142,7 +142,7 @@ export default function Subscription() {
                     // Include subscriptions where user is subscriber but not creator
                     return (subUserId === userId || subSubscriberId === userId) && subCreatedBy !== userId;
                 });
-            } catch (error) {
+            } catch {
                 return [];
             }
         },
@@ -255,7 +255,7 @@ export default function Subscription() {
             await refetchUserSubscriptions();
             
             toast.success(t('subscriptionPage.waitingForApproval') || "Subscription request submitted successfully! Waiting for approval.", ToastOptions("success"));
-        } catch (error) {
+        } catch {
             // Error handled by service
         } finally {
             setIsSubmitting(false);

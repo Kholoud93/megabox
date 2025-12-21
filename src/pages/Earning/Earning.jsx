@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import './Earning.scss';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { FaDollarSign, FaTimes } from 'react-icons/fa';
 import { HiArrowRight, HiArrowLeft, HiChevronDown } from 'react-icons/hi2';
 import { promoterService, paymentService } from '../../services/api';
@@ -50,7 +50,6 @@ export default function Earning() {
     const currency = earningsData?.currency || 'USD';
     const amount = earningsData?.confirmedRewards || earningsData?.actualIncome || '0.000000';
     const review = earningsData?.pendingRewards || earningsData?.estimatedIncome || '0.000000';
-    const withdrawn = earningsData?.withdrawn || '0.000000';
     const totalEarnings = earningsData?.totalEarnings || earningsData?.promoterEarnings || '0.000000';
     const withdrawable = earningsData?.withdrawable || totalEarnings || '0.000000';
     const withdrawableAmount = parseFloat(withdrawable) || 0;
@@ -83,21 +82,6 @@ export default function Earning() {
     const paymentServices = paymentServicesData?.paymentServices || paymentServicesData?.data || paymentServicesData || [];
     const activePaymentServices = paymentServices.filter(service => service.isActive !== false);
 
-    // Get selected payment details from payment services only
-    const selectedPaymentDetails = useMemo(() => {
-        if (selectedPaymentServiceId) {
-            const service = activePaymentServices.find(s => s._id === selectedPaymentServiceId || s.id === selectedPaymentServiceId);
-            if (service) {
-                return {
-                    min: service.minAmount || 10,
-                    fees: t('withdrawSection.free') || 'Free',
-                    time: t('withdrawSection.within24Hours') || 'Within 24 hours',
-                    service: service
-                };
-            }
-        }
-        return null;
-    }, [selectedPaymentServiceId, activePaymentServices, t]);
 
     // Fetch withdrawal history using getUserWithdrawals API
     const { data: withdrawalHistory, isLoading: withdrawalHistoryLoading } = useQuery(
@@ -227,7 +211,7 @@ export default function Earning() {
         return '';
     };
 
-    const validatePaymentMethod = (value) => {
+    const validatePaymentMethod = () => {
         // Payment method is valid if a payment service is selected
         if (!selectedPaymentServiceId) {
             return t('withdrawSection.paymentMethodRequired') || 'Payment method is required';

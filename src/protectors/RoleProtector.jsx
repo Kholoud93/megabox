@@ -11,18 +11,18 @@ const TESTING_MODE = false; // Disabled for production - Owner pages are now pro
 const ALLOW_OWNER_ACCESS_IN_TESTING = false; // Disabled - Owner pages are now protected
 
 export default function RoleProtector({ children, requiredRole }) {
-    // TESTING MODE: Completely bypass all checks for Owner pages
-    if (TESTING_MODE && ALLOW_OWNER_ACCESS_IN_TESTING && requiredRole === "Owner") {
-        console.warn("⚠️ TESTING MODE: Bypassing all protection for Owner pages. Remember to disable this in production!");
-        return children;
-    }
-
     const { getUserRole } = useAuth();
     const [cookies] = useCookies(['MegaBox']);
     const [role, setRole] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // TESTING MODE: Completely bypass all checks for Owner pages
+        if (TESTING_MODE && ALLOW_OWNER_ACCESS_IN_TESTING && requiredRole === "Owner") {
+            setLoading(false);
+            return;
+        }
+
         const token = cookies.MegaBox;
         if (!token) {
             setLoading(false);
@@ -35,11 +35,15 @@ export default function RoleProtector({ children, requiredRole }) {
                 setRole(fetchedRole);
                 setLoading(false);
             });
-        } catch (error) {
-
+        } catch {
             setLoading(false);
         }
-    }, [cookies, getUserRole]);
+    }, [cookies, getUserRole, requiredRole]);
+
+    // TESTING MODE: Completely bypass all checks for Owner pages
+    if (TESTING_MODE && ALLOW_OWNER_ACCESS_IN_TESTING && requiredRole === "Owner") {
+        return children;
+    }
 
     if (loading) {
         return <Loading />

@@ -80,7 +80,7 @@ const AuthWrapper = ({ children }) => {
 // Route components that use AuthWrapper - these are only instantiated when routes are rendered
 const LoginRoute = () => (
   <AuthWrapper>
-    {({ navigate, auth, Token }) => (
+    {({ navigate, auth }) => (
       <Login
         onSignup={() => navigate('/signup')}
         onForgot={() => navigate('/forgot-password')}

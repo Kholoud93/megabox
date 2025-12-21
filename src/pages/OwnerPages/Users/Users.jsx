@@ -1,7 +1,7 @@
-import React, { useRef, useState, useMemo, useEffect } from 'react'
+import React, { useRef, useState, useMemo } from 'react'
 import "./Users.scss"
 import { useQuery } from 'react-query';
-import { AnimatePresence, motion, useInView } from 'framer-motion';
+import { AnimatePresence, useInView } from 'framer-motion';
 import { adminService } from '../../../services/adminService';
 import { useCookies } from 'react-cookie';
 import { useQueryClient } from 'react-query';
@@ -154,7 +154,7 @@ export default function Users() {
             );
             // Only invalidate, don't refetch immediately to keep optimistic update
             queryClient.invalidateQueries("getAllusers", { refetchActive: false, refetchInactive: false });
-        } catch (error) {
+        } catch {
             // Revert optimistic update on error
             queryClient.invalidateQueries("getAllusers");
             queryClient.refetchQueries("getAllusers");
@@ -168,7 +168,7 @@ export default function Users() {
             await adminService.deleteUserById(userId, Token.MegaBox);
             queryClient.invalidateQueries("getAllusers");
             setDeleteConfirm(null);
-        } catch (error) {
+        } catch {
             // Error is handled in the service
         }
     }
@@ -184,7 +184,7 @@ export default function Users() {
             const result = await adminService.searchUser(searchValue.trim(), Token.MegaBox);
             setSearchedUser(result.user || result);
             setSearchUserModal(true);
-        } catch (error) {
+        } catch {
             setSearchedUser(null);
         } finally {
             setSearchingUser(false);
@@ -201,7 +201,7 @@ export default function Users() {
             if (searchedUser && (searchedUser._id === userId || searchedUser.id === userId)) {
                 setSearchedUser(prev => ({ ...prev, isBrimume: !prev.isBrimume }));
             }
-        } catch (error) {
+        } catch {
             // Error is handled in the service
         }
     }
@@ -225,7 +225,7 @@ export default function Users() {
             if (searchedUser && (searchedUser._id === userId || searchedUser.id === userId)) {
                 setSearchedUser(prev => ({ ...prev, isBrimume: true, premiumExpiration: expirationDate }));
             }
-        } catch (error) {
+        } catch {
             // Error is handled in the service
         }
     }
@@ -321,12 +321,13 @@ export default function Users() {
         }
     ];
 
-    // animation
-    const animationVariants = {
-        hidden: { opacity: 0, height: 0 },
-        visible: { opacity: 1, height: "max-content" },
-        exit: { opacity: 0, height: 0 }
-    };
+    // Animation variants - commented out as not used
+    // Animation variants - commented out as not used
+    // const animationVariants = {
+    //     hidden: { opacity: 0, height: 0 },
+    //     visible: { opacity: 1, height: "max-content" },
+    //     exit: { opacity: 0, height: 0 }
+    // };
 
     return (
         <div className="admin-users-page">

@@ -1,24 +1,22 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { HiX } from "react-icons/hi";
 import { HiCheckCircle, HiTrash, HiArrowPath } from "react-icons/hi2";
 import { PreventFunction } from '../../../helpers/Prevent';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useCookies } from 'react-cookie';
 import { useQuery } from 'react-query';
-import { fileService, userService } from '../../../services/api';
+import { fileService } from '../../../services/api';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
 import axios from 'axios';
 import { API_URL } from '../../../services/api';
-import { getFileCategory } from '../../../helpers/MimeType';
 import './UploadFromMegaBox.scss';
 
 export default function UploadFromMegaBox({ ToggleUploadFile, refetch, insideFile, id }) {
     const { t } = useLanguage();
     const [Token] = useCookies(['MegaBox']);
     const [selectedFiles, setSelectedFiles] = useState([]);
-    const [uploadProgress, setUploadProgress] = useState({});
+    const [, setUploadProgress] = useState({});
     const [UploadLoading, setUploadLoading] = useState(false);
 
     // Get all files from MegaBox
@@ -27,7 +25,7 @@ export default function UploadFromMegaBox({ ToggleUploadFile, refetch, insideFil
         try {
             const data = await fileService.getAllFiles(Token.MegaBox);
             return data || { files: [] };
-        } catch (error) {
+        } catch {
             return { files: [] };
         }
     };
@@ -86,7 +84,6 @@ export default function UploadFromMegaBox({ ToggleUploadFile, refetch, insideFil
         // Upload files sequentially
         for (let i = 0; i < selectedFiles.length; i++) {
             const file = selectedFiles[i];
-            const fileId = file._id || file.id;
             
             try {
                 setUploadProgress(prev => ({ ...prev, [i]: 'uploading' }));
@@ -139,7 +136,7 @@ export default function UploadFromMegaBox({ ToggleUploadFile, refetch, insideFil
                     setUploadProgress(prev => ({ ...prev, [i]: 'error' }));
                     failCount++;
                 }
-            } catch (err) {
+            } catch {
                 setUploadProgress(prev => ({ ...prev, [i]: 'error' }));
                 failCount++;
             }

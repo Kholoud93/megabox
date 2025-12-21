@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
               fcmToken
             );
           }
-        } catch (error) {
+        } catch {
           // Silently fail - FCM token is optional
         }
       }
@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await authService.signup(username, email, password, confirmationPassword);
+      await authService.signup(username, email, password, confirmationPassword);
       setTempEmail(email);
       setLoading(false);
       return true;
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await authService.signupWithRef(username, email, password, confirmationPassword, ref);
+      await authService.signupWithRef(username, email, password, confirmationPassword, ref);
       setTempEmail(email);
       setLoading(false);
       return true;
@@ -104,7 +104,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await authService.resendotp(email,);
+      await authService.resendotp(email,);
       setTempEmail(email);
       setLoading(false);
       return true;
@@ -119,7 +119,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await authService.resetPassword(email, password, code);
+      await authService.resetPassword(email, password, code);
       setLoading(false);
       return true;
     } catch (err) {
@@ -133,7 +133,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await authService.confirmOTP(code, email);
+      await authService.confirmOTP(code, email);
       setLoading(false);
       return true;
     } catch (err) {
@@ -147,7 +147,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await authService.forgotPassword(email);
+      await authService.forgotPassword(email);
       setTempEmail(email);
       setLoading(false);
       return true;
@@ -245,6 +245,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

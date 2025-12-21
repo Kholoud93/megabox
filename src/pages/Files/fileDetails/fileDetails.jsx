@@ -6,7 +6,7 @@ import { API_URL, userService, fileService } from '../../../services/api';
 import { getFileCategory } from '../../../helpers/MimeType';
 import File from '../../../components/File/File';
 import { Folder } from '../../../components/Folder/Folder';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import UploadFile from '../../../components/Upload/UploadFile/UploadFile';
 import UploadOptions from '../../../components/Upload/UploadOptions/UploadOptions';
 import UploadFromMegaBox from '../../../components/Upload/UploadFromMegaBox/UploadFromMegaBox';
@@ -133,7 +133,7 @@ export default function FileDetails() {
                 exact: false,
                 type: 'active'
             });
-        } catch (error) {
+        } catch {
             // Error refetching folder data
         }
     };

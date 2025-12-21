@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { motion } from "framer-motion";
 import { RiEyeFill, RiEyeCloseLine } from "react-icons/ri";
 import "./Auth.scss";
 import { useNavigate } from "react-router-dom";
@@ -65,17 +64,16 @@ const SignupForMoney = ({ onLogin, onConfirmMail, loading, error, refCode }) => 
                     } else {
                         navigate("/signup");
                     }
-                } catch (err) {
+                } catch {
                     navigate("/signup");
                 }
             } else {
-                // No refCode at all
                 navigate("/signup");
             }
         };
 
         validateRef();
-    }, []);
+    }, [getUserRole, navigate, refCode]);
 
 
     if (RoleLoading) return <Loading />

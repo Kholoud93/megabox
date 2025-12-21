@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+
 import { FiShield, FiDatabase, FiGlobe, FiLink } from "react-icons/fi";
 import privateDataSvgContent from "../../assets/animations/private-data-animate.svg?raw";
 import nftSvgContent from "../../assets/animations/nft-animate.svg?raw";

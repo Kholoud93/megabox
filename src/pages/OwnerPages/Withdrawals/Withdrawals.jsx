@@ -148,7 +148,7 @@ export default function Withdrawals() {
             value: method,
             label: method
         }));
-    }, [withdrawalsData?.withdrawals]);
+    }, [withdrawalsToFilter]);
 
     // Filter configuration
     const filterConfig = [

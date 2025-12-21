@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { userService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import EmptyState from '../../components/EmptyState/EmptyState';
@@ -14,7 +14,6 @@ export default function Referral() {
     const { t } = useLanguage();
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
-    const [copied, setCopied] = useState(false);
     const [showRulesModal, setShowRulesModal] = useState(false);
 
     // Fetch user data for referral link
@@ -36,10 +35,8 @@ export default function Referral() {
     const handleCopyLink = async () => {
         try {
             await navigator.clipboard.writeText(referralLink);
-            setCopied(true);
             toast.success(t('referral.linkCopied'), ToastOptions("success"));
-            setTimeout(() => setCopied(false), 2000);
-        } catch (error) {
+        } catch {
             toast.error(t('referral.copyFailed'), ToastOptions("error"));
         }
     };

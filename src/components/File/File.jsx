@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { RiFolderVideoFill } from "react-icons/ri";
 import { IoImageSharp, IoDocumentsSharp } from "react-icons/io5";
-import { motion } from 'framer-motion';
 import { AgoFormatter } from '../../helpers/DateFormates';
 import { FiArchive, FiMoreVertical, FiFolder } from 'react-icons/fi';
 import { HiTrash, HiPencil, HiShare, HiFolderOpen, HiEye } from "react-icons/hi2";
@@ -278,7 +277,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                 await refetch();
             }
             
-        } catch (error) {
+        } catch {
             toast.error("Failed to archive file", ToastOptions("error"));
         }
     };

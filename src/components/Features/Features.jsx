@@ -1,5 +1,5 @@
 import './Features.scss';
-import { motion } from 'framer-motion';
+
 import { useEffect, useRef } from 'react';
 import uploadingSvgContent from '../../assets/animations/uploading-animate.svg?raw';
 import pressPlaySvgContent from '../../assets/animations/press-play-animate.svg?raw';

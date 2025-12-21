@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { motion } from 'framer-motion';
 import { FaQuestionCircle, FaArrowUp, FaArrowDown, FaLink, FaEye, FaDownload } from 'react-icons/fa';
 import { HiShare } from 'react-icons/hi2';
 import { Link } from 'react-router-dom';
@@ -53,9 +52,10 @@ export default function RevenueData() {
     // Extract share link analytics data - this will be used for the table
     // API Response structure: { "analytics": [{ "fileId", "fileName", "sharedUrl", "downloads", "views", "lastUpdated", "viewsByCountry" }] }
     const shareLinksAnalytics = shareLinkAnalyticsData?.analytics || shareLinkAnalyticsData?.data || shareLinkAnalyticsData?.links || shareLinkAnalyticsData?.revenue || [];
-    const totalLinks = shareLinksAnalytics.length;
-    const totalLinkViews = shareLinksAnalytics.reduce((sum, link) => sum + (link.views || link.totalViews || 0), 0);
-    const totalLinkDownloads = shareLinksAnalytics.reduce((sum, link) => sum + (link.downloads || link.totalDownloads || 0), 0);
+    // Total links stats - commented out as not used
+    // const totalLinks = shareLinksAnalytics.length;
+    // const totalLinkViews = shareLinksAnalytics.reduce((sum, link) => sum + (link.views || link.totalViews || 0), 0);
+    // const totalLinkDownloads = shareLinksAnalytics.reduce((sum, link) => sum + (link.downloads || link.totalDownloads || 0), 0);
     
     // Use shareLinksAnalytics as revenueList for the table
     const revenueList = shareLinksAnalytics;

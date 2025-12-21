@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
-import { motion } from 'framer-motion';
+
 import { fileService, userService, promoterService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import { getFileCategory } from '../../helpers/MimeType';
@@ -182,7 +182,6 @@ export default function SharedFiles() {
     const { t } = useLanguage();
     const [Token] = useCookies(['MegaBox']);
     const navigate = useNavigate();
-    const [viewMode, setViewMode] = useState('grid');
     const [FilterKey, setFilterKey] = useState('All');
     const [ShowRepresent, setRepresents] = useState(false);
     const [Path, setPath] = useState();
@@ -190,7 +189,7 @@ export default function SharedFiles() {
 
 
     // Get share link analytics - contains link data with views, downloads, etc.
-    const { data: shareLinkAnalyticsData, isLoading: shareLinkAnalyticsLoading, refetch: refetchAnalytics } = useQuery(
+    const { data: shareLinkAnalyticsData, isLoading: shareLinkAnalyticsLoading } = useQuery(
         ['shareLinkAnalytics'],
         () => promoterService.getShareLinkAnalytics(Token.MegaBox),
         {
@@ -202,27 +201,6 @@ export default function SharedFiles() {
     // Extract analytics data from getShareLinkAnalytics response
     // API Response structure: { "analytics": [{ "fileId", "fileName", "sharedUrl", "downloads", "views", "lastUpdated", "viewsByCountry" }] }
     const analyticsList = shareLinkAnalyticsData?.analytics || shareLinkAnalyticsData?.data || shareLinkAnalyticsData?.links || [];
-    
-    // For backward compatibility with existing file grid/list view, convert analytics to files format
-    const data = {
-        files: analyticsList.map(link => ({
-            _id: link.fileId || link.id || link._id,
-            id: link.fileId || link.id || link._id,
-            shareLink: link.sharedUrl || link.shareLink || link.fileUrl || link.link || link.shareUrl,
-            shareUrl: link.sharedUrl || link.shareLink || link.fileUrl || link.link || link.shareUrl,
-            createdAt: link.lastUpdated || link.createdAt || link.date || link.uploadDate || new Date().toISOString(),
-            uploadDate: link.lastUpdated || link.createdAt || link.date || link.uploadDate || new Date().toISOString(),
-            totalInstalls: link.downloads || link.totalDownloads || link.installs || 0,
-            installs: link.downloads || link.totalDownloads || link.installs || 0,
-            totalViews: link.views || link.totalViews || 0,
-            views: link.views || link.totalViews || 0,
-            fileName: link.fileName || link.name || 'Unknown',
-            fileType: link.fileType || link.mimeType || 'unknown',
-            viewsByCountry: link.viewsByCountry || [],
-            isShared: true,
-            shared: true
-        }))
-    };
     
     const filesLoading = shareLinkAnalyticsLoading;
 
@@ -271,34 +249,6 @@ export default function SharedFiles() {
     const SelectFilter = (type) => {
         setFilterKey(type);
     };
-
-    // Filter files based on selected filter
-    const filteredFiles = data?.files?.filter(file => {
-        if (FilterKey === 'All') return true;
-        const category = getFileCategory(file?.fileType);
-        switch (FilterKey.toLowerCase()) {
-            case 'image':
-                return category === 'image';
-            case 'video':
-                return category === 'video';
-            case 'document':
-                return category === 'document';
-            case 'zip':
-                return category === 'zip';
-            default:
-                return true;
-        }
-    }) || [];
-
-    const filterOptions = [
-        { key: "All", label: t("files.allFiles"), count: data?.files?.length || 0 },
-        { key: "image", label: t("files.images"), count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'image')?.length || 0 },
-        { key: "video", label: t("files.videos"), count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'video')?.length || 0 },
-        { key: "document", label: t("files.documents"), count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'document')?.length || 0 },
-        { key: "zip", label: t("files.zipFolders"), count: data?.files?.filter(f => getFileCategory(f?.fileType) === 'zip')?.length || 0 },
-    ];
-
-    // Fetch user data to get user ID and plan type
     const { data: userData } = useQuery(
         ['userAccount'],
         () => userService.getUserInfo(Token.MegaBox),
@@ -307,17 +257,10 @@ export default function SharedFiles() {
 
     const userId = userData?._id || userData?.id || '';
     
-    // Check user's plan type
     const hasDownloadsPlan = userData?.Downloadsplan === "true" || userData?.Downloadsplan === true;
-    const hasWatchingPlan = userData?.watchingplan === "true" || userData?.watchingplan === true;
-    // If user has both plans, prioritize Downloads plan, otherwise use the one they have
-    const isDownloadsPlan = hasDownloadsPlan; // Downloads plan takes priority
-    const isWatchingPlan = hasWatchingPlan && !hasDownloadsPlan; // Only watching plan if no downloads plan
+    const isDownloadsPlan = hasDownloadsPlan;
 
-    // Get shared links data for table - use analytics data directly from getShareLinkAnalytics
-    // API Response structure: { "analytics": [{ "fileId", "fileName", "sharedUrl", "downloads", "views", "lastUpdated", "viewsByCountry" }] }
     const sharedLinksData = analyticsList.map(link => {
-        // Prioritize Branch.io links (test-app.link) over Vercel URLs
         const allPossibleLinks = [
             link.branchUrl,
             link.branchLink,

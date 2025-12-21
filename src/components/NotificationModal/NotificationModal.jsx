@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { MdClose } from "react-icons/md";
 import { useLanguage } from '../../context/LanguageContext';
 

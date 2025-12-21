@@ -4,7 +4,7 @@ import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 import { adminService } from '../../../services/adminService';
 import { useLanguage } from '../../../context/LanguageContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { FaCrown, FaTimes, FaUser, FaPhone, FaCalendar, FaFileInvoice, FaEye } from 'react-icons/fa';
 import { HiArrowRight, HiArrowLeft, HiCurrencyDollar, HiClock } from 'react-icons/hi2';
 import { FiSearch, FiX } from 'react-icons/fi';
@@ -41,7 +41,7 @@ export default function AdminSubscriptions() {
                     subscriptions = response.data;
                 }
                 return subscriptions;
-            } catch (error) {
+            } catch {
                 return [];
             }
         },
@@ -86,8 +86,7 @@ export default function AdminSubscriptions() {
                             setEnrichedSubscription(selectedSubscription);
                         }
                     })
-                    .catch(error => {
-                        console.error('Error fetching user data:', error);
+                    .catch(() => {
                         setEnrichedSubscription(selectedSubscription);
                     });
             } else {
@@ -245,7 +244,7 @@ export default function AdminSubscriptions() {
                 return user._id || user.id || null;
             }
             return null;
-        } catch (error) {
+        } catch {
             return null;
         }
     };
@@ -280,23 +279,6 @@ export default function AdminSubscriptions() {
         } catch (error) {
             toast.error(error.message || t('adminSubscriptions.premiumActivationFailed') || 'Failed to activate premium', ToastOptions("error"));
         }
-    };
-
-
-    const getUserProfileLink = (subscription) => {
-        const userId = subscription.userId?._id || subscription.userId?.id || subscription.userId ||
-                      subscription.promoterId?._id || subscription.promoterId?.id || subscription.promoterId ||
-                      subscription.createdBy?._id || subscription.createdBy?.id || subscription.createdBy ||
-                      subscription.promoter?._id || subscription.promoter?.id;
-        
-        if (!userId) return null;
-        
-        // Check if user is promoter
-        const isPromoter = subscription.promoterId || subscription.createdBy || subscription.promoter;
-        if (isPromoter) {
-            return `/Owner/Promoter/${userId}`;
-        }
-        return null; // Regular users don't have a detail page yet
     };
 
     return (

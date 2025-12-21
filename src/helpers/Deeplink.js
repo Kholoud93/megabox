@@ -1,6 +1,6 @@
 // src/helpers/Deeplink.js
 
-export function extractBranchDataFromUrl(url) {
+export function extractBranchDataFromUrl() {
     return new Promise((resolve, reject) => {
         if (typeof window.branch === 'undefined') {
             reject('Branch SDK is not available');
