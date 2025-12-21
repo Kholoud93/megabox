@@ -41,10 +41,11 @@ const Navbar = () => {
 
   const [MegaBox] = useCookies(["MegaBox"])
 
-  const menuItems = [
+  // Only show Partners tab when user is logged in
+  const menuItems = MegaBox.MegaBox ? [
     { label: t('navbar.partners'), to: '/Partners' },
     // { label: 'Feedback', to: '/Feedback' },
-  ]
+  ] : []
 
   const toggleLanguage = (e) => {
     e.preventDefault();
