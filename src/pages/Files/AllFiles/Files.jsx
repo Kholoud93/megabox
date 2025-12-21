@@ -265,11 +265,23 @@ export default function Files() {
                         const createdZips = myZips?.zips || myZips?.files || [];
                         
                         // Merge both types of zips and filter out archived zips
-                        const allZips = [...(uploadedZips?.files || [])].filter(zip => !zip.archived && !zip.isArchived);
+                        // Ensure all zips have fileType set for proper categorization
+                        const allZips = [...(uploadedZips?.files || [])]
+                            .filter(zip => !zip.archived && !zip.isArchived)
+                            .map(zip => ({
+                                ...zip,
+                                fileType: zip.fileType || 'application/zip'
+                            }));
                         const existingIds = new Set(allZips.map(f => f._id || f.id));
-                        const newZips = createdZips.filter(zip => 
-                            !existingIds.has(zip._id || zip.id) && !zip.archived && !zip.isArchived
-                        );
+                        const newZips = createdZips
+                            .filter(zip => 
+                                !existingIds.has(zip._id || zip.id) && !zip.archived && !zip.isArchived
+                            )
+                            .map(zip => ({
+                                ...zip,
+                                fileType: zip.fileType || 'application/zip', // Ensure zip type is set
+                                fileName: zip.fileName || zip.name || 'zip_file.zip'
+                            }));
                         allZips.push(...newZips);
                         
                         // Extract files and folders from zip contents
@@ -286,6 +298,33 @@ export default function Files() {
                                         zipFolders.push({ _id: item.id, type: 'folder', fromZip: zip._id || zip.id });
                                     }
                                 });
+                            }
+                            // If zip has content object (from getMyZips API response)
+                            if (zip.content && typeof zip.content === 'object') {
+                                // Extract files from content
+                                if (zip.content.files && Array.isArray(zip.content.files)) {
+                                    zip.content.files.forEach(file => {
+                                        if (file._id || file.id) {
+                                            zipFiles.push({ 
+                                                _id: file._id || file.id, 
+                                                type: 'file', 
+                                                fromZip: zip._id || zip.id 
+                                            });
+                                        }
+                                    });
+                                }
+                                // Extract folders from content
+                                if (zip.content.folders && Array.isArray(zip.content.folders)) {
+                                    zip.content.folders.forEach(folder => {
+                                        if (folder._id || folder.id) {
+                                            zipFolders.push({ 
+                                                _id: folder._id || folder.id, 
+                                                type: 'folder', 
+                                                fromZip: zip._id || zip.id 
+                                            });
+                                        }
+                                    });
+                                }
                             }
                             // If zip has files/folders arrays directly
                             if (zip.files && Array.isArray(zip.files)) {
@@ -462,6 +501,7 @@ export default function Files() {
     const [OldName, setOldName] = useState(null);
     const [FileId, setFileId] = useState(null);
     const [IsFolder, setIsFolder] = useState(false);
+    const [IsZip, setIsZip] = useState(false);
 
     const ToggleNameChange = (name, close, id, isFolder = false) => {
         if (close) {
@@ -471,6 +511,16 @@ export default function Files() {
         setFileId(id)
         setOldName(name)
         setIsFolder(isFolder)
+        
+        // Check if this is a zip file (created via createZip) for rename handling
+        const file = data?.files?.find(f => (f._id || f.id) === id);
+        const isZipFile = !isFolder && file && (
+            file.fileType === 'application/zip' || 
+            file.fileType?.includes('zip') ||
+            file.items // zip files created via createZip have an items array
+        );
+        
+        setIsZip(isZipFile || false);
         setupdateName(!ShowUpdateName);
     }
 
@@ -537,12 +587,29 @@ export default function Files() {
                     toast.error("Failed to generate share link", ToastOptions("error"));
                 }
             } else {
-                const response = await fileService.generateShareLink(id, Token.MegaBox);
+                // Check if this is a zip file (created via createZip)
+                // Find the file in the current data to check if it's a zip
+                const file = data?.files?.find(f => (f._id || f.id) === id);
+                const isZipFile = file && (
+                    file.fileType === 'application/zip' || 
+                    file.fileType?.includes('zip') ||
+                    file.items // zip files created via createZip have an items array
+                );
+
+                let response;
+                if (isZipFile) {
+                    // Use zip-specific share link endpoint
+                    response = await fileService.generateZipShareLink(id, Token.MegaBox);
+                } else {
+                    // Use regular file share link endpoint
+                    response = await fileService.generateShareLink(id, Token.MegaBox);
+                }
+
                 // Handle different response structures
                 const link = response?.shareUrl || response?.shareLink || response?.data?.shareUrl || response?.data?.shareLink || response?.data?.data?.shareLink || response?.data?.data?.shareUrl;
                 if (link) {
                     setShareUrl(link);
-                    setShareTitle("Share File");
+                    setShareTitle(isZipFile ? "Share Zip File" : "Share File");
                     setShowShareModal(true);
                 } else if (response?.message && (response.message.includes('نجاح') || response.message.includes('success'))) {
                     // If success message but no link, still show success (link might be in different format)
@@ -1342,6 +1409,7 @@ export default function Files() {
                     refetch={IsFolder ? refFolders : refetch}
                     FileId={FileId}
                     isFolder={IsFolder}
+                    isZip={IsZip}
                 />
             )}
             {showShareModal && (

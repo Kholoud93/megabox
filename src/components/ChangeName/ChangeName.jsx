@@ -10,10 +10,9 @@ import { ToastOptions } from '../../helpers/ToastOptions';
 import { motion } from 'framer-motion';
 import { PreventFunction } from '../../helpers/Prevent';
 import { HiArrowPath } from 'react-icons/hi2';
-import axios from 'axios';
-import { API_URL, userService } from '../../services/api';
+import { userService, fileService } from '../../services/api';
 
-export default function ChangeName({ oldFileName, Toggle, FileId, refetch, isFolder = false }) {
+export default function ChangeName({ oldFileName, Toggle, FileId, refetch, isFolder = false, isZip = false }) {
 
     const validationChangeName = Yup.object({
         New_Name: Yup.string().required("Please new name is required")
@@ -36,16 +35,20 @@ export default function ChangeName({ oldFileName, Toggle, FileId, refetch, isFol
                 // Rename folder - API expects "name" not "newFolderName"
                 await userService.updateFolderName(FileId, New_Name, MegaBox.MegaBox);
                 ChangeNameResponse = true;
+            } else if (isZip) {
+                // Rename zip file - use zip-specific endpoint
+                ChangeNameResponse = await fileService.updateZipName(FileId, New_Name, MegaBox.MegaBox);
             } else {
-                // Rename file
+                // Rename regular file
                 ChangeNameResponse = await ChangeFileName(FileId, MegaBox.MegaBox, New_Name);
             }
 
             if (ChangeNameResponse) {
-                toast.success(isFolder ? "Folder name changed successfully" : "File name changed successfully", ToastOptions("success"));
+                const successMessage = isFolder ? "Folder name changed successfully" : (isZip ? "Zip file name changed successfully" : "File name changed successfully");
+                toast.success(successMessage, ToastOptions("success"));
             }
             await refetch();
-        } catch (error) {
+        } catch {
             toast.error("Failed to rename. Please try again.", ToastOptions("error"));
         } finally {
             setChangeNameLoading(false);
@@ -95,10 +98,10 @@ export default function ChangeName({ oldFileName, Toggle, FileId, refetch, isFol
 
             <div className="mb-6 px-6 pt-4">
                 <h2 className="text-2xl font-bold text-white mb-2 drop-shadow-lg" style={{ textShadow: '0 2px 10px rgba(255,255,255,0.3)' }}>
-                    {isFolder ? 'Rename Folder' : 'Rename File'}
+                    {isFolder ? 'Rename Folder' : (isZip ? 'Rename Zip File' : 'Rename File')}
                 </h2>
                 <p className="text-sm text-white/90" style={{ textShadow: '0 1px 5px rgba(255,255,255,0.2)' }}>
-                    Enter a new name for your {isFolder ? 'folder' : 'file'}
+                    Enter a new name for your {isFolder ? 'folder' : (isZip ? 'zip file' : 'file')}
                 </p>
             </div>
 

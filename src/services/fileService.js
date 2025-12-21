@@ -670,47 +670,73 @@ export const fileService = {
         }
     },
 
-    // Delete zip file - try deleteFile first, then deleteFolder as fallback
+    // Delete zip file - try dedicated deleteZip endpoint first, then fallback to deleteFile/deleteFolder
     deleteZip: async (zipId, token) => {
         try {
             console.log('🗑️ Deleting zip file:', zipId);
             
-            // First, try deleteFile endpoint (zip files created via createZip might be files)
+            // First, try the dedicated deleteZip endpoint
             try {
-                const { data } = await api.delete(`/auth/deleteFile/${zipId}`, {
+                const { data } = await api.delete(`/auth/deleteZip/${zipId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
 
-                console.log('✅ Delete zip via deleteFile response:', data);
+                console.log('✅ Delete zip via deleteZip endpoint response:', data);
 
                 if (data?.message === "✅ تم حذف الملف بنجاح" || data?.message?.includes('نجاح') || data?.message?.includes('success') || data?.message?.includes('حذف')) {
+                    toast.success("Zip file deleted successfully", ToastOptions("success"));
                     return true;
                 }
 
                 return data;
-            } catch (deleteFileError) {
-                // If deleteFile fails with 404, try deleteFolder as fallback
-                if (deleteFileError.response?.status === 404) {
-                    console.log('⚠️ deleteFile returned 404, trying deleteFolder...');
+            } catch (deleteZipError) {
+                // If deleteZip fails, fallback to deleteFile
+                if (deleteZipError.response?.status === 404) {
+                    console.log('⚠️ deleteZip returned 404, trying deleteFile...');
                     
-                    const { data } = await api.delete(`/user/deleteFolder/${zipId}`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`
+                    try {
+                        const { data } = await api.delete(`/auth/deleteFile/${zipId}`, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        });
+
+                        console.log('✅ Delete zip via deleteFile response:', data);
+
+                        if (data?.message === "✅ تم حذف الملف بنجاح" || data?.message?.includes('نجاح') || data?.message?.includes('success') || data?.message?.includes('حذف')) {
+                            toast.success("Zip file deleted successfully", ToastOptions("success"));
+                            return true;
                         }
-                    });
 
-                    console.log('✅ Delete zip via deleteFolder response:', data);
+                        return data;
+                    } catch (deleteFileError) {
+                        // If deleteFile also fails with 404, try deleteFolder as last fallback
+                        if (deleteFileError.response?.status === 404) {
+                            console.log('⚠️ deleteFile returned 404, trying deleteFolder...');
+                            
+                            const { data } = await api.delete(`/user/deleteFolder/${zipId}`, {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            });
 
-                    if (data?.message === "✅ تم حذف الملف بنجاح" || data?.message?.includes('نجاح') || data?.message?.includes('success') || data?.message?.includes('حذف')) {
-                        return true;
+                            console.log('✅ Delete zip via deleteFolder response:', data);
+
+                            if (data?.message === "✅ تم حذف الملف بنجاح" || data?.message?.includes('نجاح') || data?.message?.includes('success') || data?.message?.includes('حذف')) {
+                                toast.success("Zip file deleted successfully", ToastOptions("success"));
+                                return true;
+                            }
+
+                            return data;
+                        } else {
+                            throw deleteFileError;
+                        }
                     }
-
-                    return data;
                 } else {
                     // If it's not a 404, re-throw the error
-                    throw deleteFileError;
+                    throw deleteZipError;
                 }
             }
         } catch (error) {
@@ -723,6 +749,50 @@ export const fileService = {
             
             const errorMessage = error.response?.data?.message || error.message || "Failed to delete zip file";
             toast.error(errorMessage, ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Update zip file name
+    updateZipName: async (zipId, fileName, token) => {
+        try {
+            const { data } = await api.patch(`/auth/updateZipName/${zipId}`, {
+                fileName
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+
+            if (data?.message === "✅ تم تعديل اسم الملف بنجاح" || data?.message?.includes('نجاح') || data?.message?.includes('success') || data?.message?.includes('تعديل')) {
+                toast.success("Zip file name updated successfully", ToastOptions("success"));
+                return true;
+            }
+
+            return data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to update zip file name", ToastOptions("error"));
+            throw error.response?.data || error.message;
+        }
+    },
+
+    // Generate share link for zip file
+    generateZipShareLink: async (zipId, token) => {
+        try {
+            const { data } = await api.post('/auth/generateZipShareLink', {
+                zipId
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            // Show success toast if message indicates success
+            if (data?.message && (data.message.includes('نجاح') || data.message.includes('success') || data.shareUrl || data.shareLink)) {
+                toast.success(data.message || "Zip share link generated successfully", ToastOptions("success"));
+            }
+            return data;
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to generate zip share link", ToastOptions("error"));
             throw error.response?.data || error.message;
         }
     },
