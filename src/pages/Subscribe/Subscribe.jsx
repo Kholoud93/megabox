@@ -59,7 +59,7 @@ export default function Subscribe() {
     );
 
     // Fetch user subscriptions to check status
-    const { data: userSubscriptionsData } = useQuery(
+    const { data: userSubscriptionsData, refetch: refetchUserSubscriptions } = useQuery(
         ['userSubscriptions'],
         async () => {
             try {
@@ -90,7 +90,9 @@ export default function Subscribe() {
         },
         {
             enabled: !!cookies.MegaBox && !!userData,
-            retry: false
+            retry: false,
+            refetchInterval: 30000, // Refetch every 30 seconds to check for status updates
+            refetchOnWindowFocus: true
         }
     );
 
@@ -232,6 +234,9 @@ export default function Subscribe() {
             queryClient.invalidateQueries(['subscription-plans']);
             queryClient.invalidateQueries(['userAccount']);
             queryClient.invalidateQueries(['userSubscriptions']);
+            
+            // Refetch user subscriptions immediately to show updated status
+            await refetchUserSubscriptions();
             
             toast.success(t('subscribe.waitingForApproval') || 'Subscription request submitted successfully! Waiting for approval.', ToastOptions("success"));
         } catch (error) {

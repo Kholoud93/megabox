@@ -116,8 +116,8 @@ export default function Subscription() {
 
     const mySubscriptions = allSubscriptionsData || [];
     
-    // Fetch user subscriptions to check status (for regular users)
-    const { data: userSubscriptionsData } = useQuery(
+    // Fetch user subscriptions to check status (for regular users and promoters subscribing to themselves)
+    const { data: userSubscriptionsData, refetch: refetchUserSubscriptions } = useQuery(
         ['userSubscriptions'],
         async () => {
             try {
@@ -135,11 +135,13 @@ export default function Subscription() {
                     subscriptions = response.data;
                 }
                 
-                // Filter subscriptions for current user (not created by them)
+                // For promoters: filter subscriptions where they are the subscriber (not the creator)
+                // For regular users: filter subscriptions for current user (not created by them)
                 return subscriptions.filter(sub => {
                     const subUserId = sub.userId?._id || sub.userId?.id || sub.userId;
                     const subSubscriberId = sub.subscriberId?._id || sub.subscriberId?.id || sub.subscriberId;
                     const subCreatedBy = sub.createdBy?._id || sub.createdBy?.id || sub.createdBy;
+                    // Include subscriptions where user is subscriber but not creator
                     return (subUserId === userId || subSubscriberId === userId) && subCreatedBy !== userId;
                 });
             } catch (error) {
@@ -148,8 +150,10 @@ export default function Subscription() {
             }
         },
         {
-            enabled: !!cookies.MegaBox && !!userData && !isPromoter, // Only for regular users
-            retry: false
+            enabled: !!cookies.MegaBox && !!userData, // For both promoters and regular users
+            retry: false,
+            refetchInterval: 30000, // Refetch every 30 seconds to check for status updates
+            refetchOnWindowFocus: true
         }
     );
 
@@ -249,6 +253,9 @@ export default function Subscription() {
             queryClient.invalidateQueries(['userAccount']);
             queryClient.invalidateQueries(['allSubscriptions']);
             queryClient.invalidateQueries(['userSubscriptions']);
+            
+            // Refetch user subscriptions immediately to show updated status
+            await refetchUserSubscriptions();
             
             toast.success(t('subscriptionPage.waitingForApproval') || "Subscription request submitted successfully! Waiting for approval.", ToastOptions("success"));
         } catch (error) {
