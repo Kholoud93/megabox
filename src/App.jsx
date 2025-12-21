@@ -86,11 +86,8 @@ const LoginRoute = () => (
         onForgot={() => navigate('/forgot-password')}
         onSubmit={async (values) => {
           let success = await auth.login(values.email, values.password)
-          const tokenStr = Token.MegaBox;
-          console.log(tokenStr);
           if (success) {
             const { role } = jwtDecode(success);
-            console.log(role);
             switch (role) {
               case 'User':
                 navigate('/dashboard');
@@ -223,7 +220,6 @@ const RegisterRoute = () => (
               values.confirmationPassword,
               ref
             );
-            console.log(success);
 
             if (success) {
               navigate('/confirm-email');

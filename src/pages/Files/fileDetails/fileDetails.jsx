@@ -134,7 +134,7 @@ export default function FileDetails() {
                 type: 'active'
             });
         } catch (error) {
-            console.error('Error refetching folder data:', error);
+            // Error refetching folder data
         }
     };
 

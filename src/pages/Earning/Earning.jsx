@@ -43,34 +43,17 @@ export default function Earning() {
         () => promoterService.getUserEarnings(token),
         {
             enabled: !!token,
-            retry: 2,
-            onError: (error) => {
-                console.error('Error fetching earnings:', error);
-            }
+            retry: 2
         }
     );
 
-    // API Response structure: { "pendingRewards", "confirmedRewards", "totalEarnings", "currency" }
     const currency = earningsData?.currency || 'USD';
-    // Match API response structure - prioritize exact API fields
     const amount = earningsData?.confirmedRewards || earningsData?.actualIncome || '0.000000';
     const review = earningsData?.pendingRewards || earningsData?.estimatedIncome || '0.000000';
     const withdrawn = earningsData?.withdrawn || '0.000000';
     const totalEarnings = earningsData?.totalEarnings || earningsData?.promoterEarnings || '0.000000';
     const withdrawable = earningsData?.withdrawable || totalEarnings || '0.000000';
     const withdrawableAmount = parseFloat(withdrawable) || 0;
-
-    // Debug logging
-    useEffect(() => {
-        console.log('Earning Page - Earnings Data:', {
-            earningsData,
-            earningsLoading,
-            amount,
-            withdrawable,
-            withdrawableAmount,
-            canShowQuickWithdraw: !earningsLoading && withdrawableAmount >= 10
-        });
-    }, [earningsData, earningsLoading, amount, withdrawable, withdrawableAmount]);
 
     const [withdrawalAmount, setWithdrawalAmount] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('');

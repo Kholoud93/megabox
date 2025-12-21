@@ -152,7 +152,6 @@ export const fileService = {
                 }
             } catch (zipError) {
                 // Silently fail - created zips are optional
-                console.warn('Failed to fetch created zips:', zipError);
             }
             
             return data;
@@ -307,7 +306,6 @@ export const fileService = {
             // Toast is shown in the component
             return data;
         } catch (error) {
-            console.error('Archive file error:', error.response?.data || error.message);
             toast.error(error.response?.data?.message || "Failed to archive file", ToastOptions("error"));
             throw error.response?.data || error.message;
         }
@@ -318,9 +316,6 @@ export const fileService = {
     // We need to find which archive contains this file first
     unarchiveFile: async (fileId, token) => {
         try {
-            console.log('📤 Unarchiving file:', fileId);
-            
-            // First, get all archives to find which archive contains this file
             const archivesResponse = await api.get('/auth/getMyArchives', {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -328,15 +323,12 @@ export const fileService = {
             });
             
             const archives = archivesResponse.data?.data || [];
-            console.log('🔍 Searching for file in archives:', fileId);
             
-            // Find the archive that contains this file
             let archiveId = null;
             for (const archive of archives) {
                 const hasFile = archive.files?.some(f => (f._id || f.id) === fileId);
                 if (hasFile) {
                     archiveId = archive._id;
-                    console.log('✅ Found archive containing file:', archiveId);
                     break;
                 }
             }
@@ -345,7 +337,6 @@ export const fileService = {
                 throw new Error("Archive not found for this file");
             }
             
-            // Use Archive ID in URL, File ID in body
             const { data } = await api.delete(`/auth/removeFromArchive/${archiveId}`, {
                 data: {
                     files: [fileId],
@@ -357,16 +348,8 @@ export const fileService = {
                 }
             });
             
-            console.log('✅ Unarchive file success:', data);
-            // Toast is shown in the component
             return data;
         } catch (error) {
-            console.error('❌ Unarchive file error:', {
-                status: error.response?.status,
-                message: error.response?.data?.message,
-                data: error.response?.data,
-                fileId
-            });
             
             const errorMessage = error.response?.data?.message || error.message || "Failed to unarchive file";
             toast.error(errorMessage, ToastOptions("error"));
@@ -492,79 +475,42 @@ export const fileService = {
                 }
             });
             
-            console.log('📦 Raw getMyArchives response:', data);
-            
-            // Transform response: extract all files and folders from all archives
-            // Response structure: { message, count, data: [{ files: [], folders: [] }, ...] }
-            // OR: { message, count, data: [{ _id: archiveId, files: [], folders: [] }, ...] }
             const archives = data?.data || [];
             
-            console.log('📦 Total archives:', archives.length);
-            console.log('📦 API count:', data?.count);
-            console.log('📦 Archive structure sample:', archives[0]);
-            
-            // Flatten all files and folders from all archives
             const allFiles = [];
             const allFolders = [];
             const seenFileIds = new Set();
             const seenFolderIds = new Set();
-            let totalFilesProcessed = 0;
-            let totalFoldersProcessed = 0;
-            let filesWithoutId = 0;
-            let foldersWithoutId = 0;
             
-            archives.forEach((archive, archiveIdx) => {
-                // Add files from this archive
+            archives.forEach((archive) => {
                 if (archive.files && Array.isArray(archive.files)) {
-                    console.log(`📦 Archive ${archiveIdx + 1}: ${archive.files.length} files`);
                     archive.files.forEach(file => {
-                        totalFilesProcessed++;
                         const fileId = file._id || file.id;
-                        if (!fileId) {
-                            filesWithoutId++;
-                            console.warn('⚠️ File without ID:', file.fileName);
-                        }
                         if (fileId && !seenFileIds.has(String(fileId))) {
                             seenFileIds.add(String(fileId));
-                            // Mark as archived
                             allFiles.push({
                                 ...file,
                                 archived: true,
                                 isArchived: true
                             });
-                        } else if (fileId) {
-                            console.log(`🔄 Duplicate file skipped: ${file.fileName} (${fileId})`);
                         }
                     });
                 }
                 
-                // Add folders from this archive
                 if (archive.folders && Array.isArray(archive.folders)) {
-                    console.log(`📦 Archive ${archiveIdx + 1}: ${archive.folders.length} folders`);
                     archive.folders.forEach(folder => {
-                        totalFoldersProcessed++;
                         const folderId = folder._id || folder.id;
-                        if (!folderId) {
-                            foldersWithoutId++;
-                            console.warn('⚠️ Folder without ID:', folder.name);
-                        }
                         if (folderId && !seenFolderIds.has(String(folderId))) {
                             seenFolderIds.add(String(folderId));
-                            // Mark as archived
                             allFolders.push({
                                 ...folder,
                                 archived: true,
                                 isArchived: true
                             });
-                        } else if (folderId) {
-                            console.log(`🔄 Duplicate folder skipped: ${folder.name} (${folderId})`);
                         }
                     });
                 }
             });
-            
-            console.log(`📊 Summary: ${totalFilesProcessed} total files processed, ${allFiles.length} unique files, ${filesWithoutId} files without ID`);
-            console.log(`📊 Summary: ${totalFoldersProcessed} total folders processed, ${allFolders.length} unique folders, ${foldersWithoutId} folders without ID`);
             
             return { files: allFiles, folders: allFolders };
         } catch (error) {
@@ -637,8 +583,6 @@ export const fileService = {
                 );
                 
                 if (filesInArchive.length > 0 || foldersInArchive.length > 0) {
-                    console.log(`🗑️ Removing from archive ${archiveId}:`, { files: filesInArchive, folders: foldersInArchive });
-                    
                     const { data } = await api.delete(`/auth/removeFromArchive/${archiveId}`, {
                         data: {
                             files: filesInArchive,
@@ -654,17 +598,8 @@ export const fileService = {
                 }
             }
             
-            console.log('✅ Remove from archive success:', results);
-            // Return the last result or combine them
             return results[results.length - 1] || { success: true };
         } catch (error) {
-            console.error('❌ Remove from archive error:', {
-                status: error.response?.status,
-                message: error.response?.data?.message,
-                data: error.response?.data,
-                files,
-                folders
-            });
             
             const errorMessage = error.response?.data?.message || error.message || "Failed to remove items from archive";
             toast.error(errorMessage, ToastOptions("error"));
@@ -675,17 +610,12 @@ export const fileService = {
     // Delete zip file - try dedicated deleteZip endpoint first, then fallback to deleteFile/deleteFolder
     deleteZip: async (zipId, token) => {
         try {
-            console.log('🗑️ Deleting zip file:', zipId);
-            
-            // First, try the dedicated deleteZip endpoint
             try {
                 const { data } = await api.delete(`/auth/deleteZip/${zipId}`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
-
-                console.log('✅ Delete zip via deleteZip endpoint response:', data);
 
                 if (data?.message === "✅ تم حذف الملف بنجاح" || data?.message?.includes('نجاح') || data?.message?.includes('success') || data?.message?.includes('حذف')) {
                     toast.success("Zip file deleted successfully", ToastOptions("success"));
@@ -694,18 +624,13 @@ export const fileService = {
 
                 return data;
             } catch (deleteZipError) {
-                // If deleteZip fails, fallback to deleteFile
                 if (deleteZipError.response?.status === 404) {
-                    console.log('⚠️ deleteZip returned 404, trying deleteFile...');
-                    
                     try {
                         const { data } = await api.delete(`/auth/deleteFile/${zipId}`, {
                             headers: {
                                 Authorization: `Bearer ${token}`
                             }
                         });
-
-                        console.log('✅ Delete zip via deleteFile response:', data);
 
                         if (data?.message === "✅ تم حذف الملف بنجاح" || data?.message?.includes('نجاح') || data?.message?.includes('success') || data?.message?.includes('حذف')) {
                             toast.success("Zip file deleted successfully", ToastOptions("success"));
@@ -714,17 +639,12 @@ export const fileService = {
 
                         return data;
                     } catch (deleteFileError) {
-                        // If deleteFile also fails with 404, try deleteFolder as last fallback
                         if (deleteFileError.response?.status === 404) {
-                            console.log('⚠️ deleteFile returned 404, trying deleteFolder...');
-                            
                             const { data } = await api.delete(`/user/deleteFolder/${zipId}`, {
                                 headers: {
                                     Authorization: `Bearer ${token}`
                                 }
                             });
-
-                            console.log('✅ Delete zip via deleteFolder response:', data);
 
                             if (data?.message === "✅ تم حذف الملف بنجاح" || data?.message?.includes('نجاح') || data?.message?.includes('success') || data?.message?.includes('حذف')) {
                                 toast.success("Zip file deleted successfully", ToastOptions("success"));
@@ -737,17 +657,10 @@ export const fileService = {
                         }
                     }
                 } else {
-                    // If it's not a 404, re-throw the error
                     throw deleteZipError;
                 }
             }
         } catch (error) {
-            console.error('❌ Delete zip error:', {
-                status: error.response?.status,
-                message: error.response?.data?.message,
-                data: error.response?.data,
-                zipId
-            });
             
             const errorMessage = error.response?.data?.message || error.message || "Failed to delete zip file";
             toast.error(errorMessage, ToastOptions("error"));

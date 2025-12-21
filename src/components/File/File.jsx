@@ -279,7 +279,6 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             }
             
         } catch (error) {
-            console.error("Archive error:", error);
             toast.error("Failed to archive file", ToastOptions("error"));
         }
     };

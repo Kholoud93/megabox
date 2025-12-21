@@ -47,7 +47,6 @@ export default function Profile() {
             const response = await authService.getUserAnalytics(Token.MegaBox);
             return response?.data || response;
         } catch (error) {
-            console.error('Error fetching user analytics:', error);
             return null;
         }
     }
@@ -61,12 +60,9 @@ export default function Profile() {
     // Fetch user data
     const { data: userData, isLoading, error } = useQuery('userProfile', () => userService.getUserInfo(Token.MegaBox), {
         onSuccess: (data) => {
-            console.log('User data received:', data);
-            console.log('Profile Pic URL:', data?.profilePic);
-            setImageError(false); // Reset image error when new data is loaded
+            setImageError(false);
         },
         onError: (error) => {
-            console.error('Error fetching user data:', error);
             toast.error('Failed to fetch user data', ToastOptions('error'));
         }
     });

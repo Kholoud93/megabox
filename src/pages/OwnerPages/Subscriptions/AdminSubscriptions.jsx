@@ -42,7 +42,6 @@ export default function AdminSubscriptions() {
                 }
                 return subscriptions;
             } catch (error) {
-                console.error('Error fetching subscriptions:', error);
                 return [];
             }
         },
@@ -55,30 +54,8 @@ export default function AdminSubscriptions() {
     const [isApproving, setIsApproving] = useState(false);
     const [enrichedSubscription, setEnrichedSubscription] = useState(null);
 
-    // Debug and enrich subscription data when selected
     useEffect(() => {
         if (selectedSubscription) {
-            console.log('=== Subscription Details Debug ===');
-            console.log('Selected Subscription Object:', selectedSubscription);
-            console.log('Email fields:', {
-                email: selectedSubscription.email,
-                userIdEmail: selectedSubscription.userId?.email,
-                userEmail: selectedSubscription.user?.email,
-                subscriberEmail: selectedSubscription.subscriberEmail,
-                userId: selectedSubscription.userId
-            });
-            console.log('Payment Method:', selectedSubscription.paymentMethod);
-            console.log('Payment fields:', {
-                paymentMethod: selectedSubscription.paymentMethod,
-                payment: selectedSubscription.payment,
-                paymentType: selectedSubscription.paymentType,
-                paymentDetails: selectedSubscription.paymentDetails
-            });
-            console.log('All subscription keys:', Object.keys(selectedSubscription));
-            console.log('userId object:', selectedSubscription.userId);
-            console.log('user object:', selectedSubscription.user);
-            console.log('===================================');
-
             // Try to fetch user data if email is missing and we have a userId
             const userId = selectedSubscription.userId?._id || 
                           selectedSubscription.userId?.id || 
@@ -173,11 +150,6 @@ export default function AdminSubscriptions() {
 
         setIsApproving(true);
         try {
-            console.log('Approving subscription:', {
-                subscription: subToApprove,
-                token: token ? 'Token exists' : 'No token'
-            });
-            
             // Activate premium using toggleBrimumeByOwner (this also approves the subscription)
             await handleSetPremium(subToApprove);
             
@@ -206,7 +178,6 @@ export default function AdminSubscriptions() {
             toast.success(t('adminSubscriptions.subscriptionApprovedAndPremium') || 'Subscription approved and premium activated successfully!', ToastOptions("success"));
             setSelectedSubscription(null);
         } catch (error) {
-            console.error('Error approving subscription:', error);
             const errorMessage = error?.response?.data?.message || error?.message || t('adminSubscriptions.approveFailed') || 'Failed to approve subscription';
             toast.error(errorMessage, ToastOptions("error"));
         } finally {
@@ -275,7 +246,6 @@ export default function AdminSubscriptions() {
             }
             return null;
         } catch (error) {
-            console.error('Error searching for user by phone:', error);
             return null;
         }
     };
@@ -292,8 +262,6 @@ export default function AdminSubscriptions() {
         }
         
         if (!userId) {
-            // Log subscription structure for debugging
-            console.warn('User ID not found in subscription:', subscription);
             toast.warning(
                 t('adminSubscriptions.userNotFound') || 
                 `User ID not found for subscriber "${subscription.subscriberName || subscription.phone}". Premium not activated.`, 

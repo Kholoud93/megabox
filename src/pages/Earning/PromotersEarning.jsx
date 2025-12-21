@@ -599,10 +599,7 @@ export default function PromotersEarning() {
         () => adminService.getUserEarningsadmin(id, token),
         {
             enabled: !!token && !!id,
-            retry: 2,
-            onError: (error) => {
-                console.error('Error fetching earnings:', error);
-            }
+            retry: 2
         }
     );
 
@@ -613,10 +610,7 @@ export default function PromotersEarning() {
         () => adminService.getUserAnalyticsadmin(id, token),
         {
             enabled: !!token && !!id,
-            retry: 2,
-            onError: (error) => {
-                console.error('Error fetching analytics:', error);
-            }
+            retry: 2
         }
     );
 
@@ -630,10 +624,7 @@ export default function PromotersEarning() {
             enabled: !!token && !!id,
             retry: 2,
             onError: (error) => {
-                // Only log non-404 errors (404 means user has no shared files, which is expected)
-                if (error?.response?.status !== 404 && error?.status !== 404) {
-                    console.error('Error fetching share links:', error);
-                }
+                // 404 means user has no shared files, which is expected
             }
         }
     );
@@ -652,17 +643,6 @@ export default function PromotersEarning() {
                                earningsData?.pendingRewardsList || 
                                [];
     
-    // Debug: Log earnings data structure
-    useEffect(() => {
-        if (earningsData) {
-            console.log('Earnings Data Structure:', {
-                earningsData,
-                pendingRewardsList,
-                firstReward: pendingRewardsList[0],
-                keys: Object.keys(earningsData)
-            });
-        }
-    }, [earningsData, pendingRewardsList]);
     
     // API Response structure: { "message", "userId", "totalAnalytics": { "totalDownloads", "totalViews" } }
     const totalViews = analyticsData?.totalAnalytics?.totalViews || 0;
@@ -683,23 +663,13 @@ export default function PromotersEarning() {
                         selectedReward.reward?._id ||
                         selectedReward.reward?.id;
 
-        // Validate reward ID exists
         if (!rewardId) {
-            console.error('Reward ID not found. Reward object:', selectedReward);
-            console.error('Available keys:', Object.keys(selectedReward || {}));
             toast.error(t('earning.rewardIdNotFound') || 'Reward ID not found. Please try again.', ToastOptions("error"));
             return;
         }
 
         setIsUpdating(true);
         try {
-            console.log('Updating reward:', {
-                userId: id,
-                rewardId: rewardId,
-                amount: parseFloat(rewardAmount),
-                rewardObject: selectedReward
-            });
-            
             await adminService.updateSinglePendingReward(id, rewardId, parseFloat(rewardAmount), token);
             toast.success(t('earning.rewardUpdated') || 'Pending reward updated successfully!', ToastOptions("success"));
             queryClient.invalidateQueries(['userEarnings', id]);
@@ -707,8 +677,6 @@ export default function PromotersEarning() {
             setSelectedReward(null);
             setRewardAmount('');
         } catch (error) {
-            console.error('Error updating reward:', error);
-            console.error('Error response:', error.response?.data);
             const errorMessage = error.response?.data?.message || 
                                 error.message || 
                                 t('earning.rewardUpdateFailed') || 
@@ -746,15 +714,8 @@ export default function PromotersEarning() {
         }
     };
 
-    // Open update reward modal
     const openUpdateRewardModal = (reward) => {
-        console.log('Opening update reward modal with reward:', reward);
-        console.log('Reward keys:', Object.keys(reward || {}));
-        console.log('Full earnings data:', earningsData);
-        console.log('Pending rewards list:', pendingRewardsList);
-        
         if (!reward) {
-            console.error('No reward provided to openUpdateRewardModal');
             toast.error(t('earning.noRewardSelected') || 'No reward selected', ToastOptions("error"));
             return;
         }
@@ -785,20 +746,6 @@ export default function PromotersEarning() {
         files = shareLinksData;
     }
     const totalLinks = files.length;
-    
-    // Debug: Log the files data to verify API response
-    useEffect(() => {
-        if (shareLinksData) {
-            console.log('Share Links Data:', shareLinksData);
-            console.log('Files Array:', files);
-            if (files.length > 0) {
-                console.log('First File:', files[0]);
-                console.log('First File fileName:', files[0]?.fileName);
-                console.log('First File sharedUrl:', files[0]?.sharedUrl);
-                console.log('First File fileId:', files[0]?.fileId);
-            }
-        }
-    }, [shareLinksData, files]);
 
     return (
         <motion.div

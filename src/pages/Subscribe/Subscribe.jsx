@@ -39,7 +39,6 @@ export default function Subscribe() {
                 if (response.data) return { plans: response.data };
                 return { plans: [] };
             } catch (error) {
-                console.error('Error fetching plans:', error);
                 return { plans: [] };
             }
         },
@@ -84,7 +83,6 @@ export default function Subscribe() {
                     return subUserId === userId || subSubscriberId === userId;
                 });
             } catch (error) {
-                console.error('Error fetching user subscriptions:', error);
                 return [];
             }
         },
@@ -173,15 +171,6 @@ export default function Subscribe() {
         const durationDays = selectedPlan.days || selectedPlan.durationDays || 30;
         const planName = selectedPlan.name || selectedPlan.planName || selectedPlan.planKey || selectedPlan.title || '';
 
-        // Debug: Log selected plan data
-        console.log('Selected Plan:', selectedPlan);
-        console.log('Form Data:', {
-            phone,
-            paymentMethod,
-            hasInvoice: !!invoiceFile,
-            durationDays,
-            planName
-        });
 
         if (!phone || !paymentMethod || !invoiceFile || !planName) {
             const missingFields = [];
@@ -201,17 +190,6 @@ export default function Subscribe() {
         try {
             // Get user name/username if available
             const subscriberName = userData?.name || userData?.username || userData?.user?.name || userData?.user?.username || '';
-            
-            console.log('User data for subscriberName:', {
-                userData,
-                subscriberName,
-                extractedFrom: {
-                    name: userData?.name,
-                    username: userData?.username,
-                    user_name: userData?.user?.name,
-                    user_username: userData?.user?.username
-                }
-            });
             
             await promoterService.createSubscription(
                 invoiceFile,
@@ -240,7 +218,7 @@ export default function Subscribe() {
             
             toast.success(t('subscribe.waitingForApproval') || 'Subscription request submitted successfully! Waiting for approval.', ToastOptions("success"));
         } catch (error) {
-            console.error('Error creating subscription:', error);
+            // Error handled by service
         } finally {
             setIsSubmitting(false);
         }

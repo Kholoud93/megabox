@@ -52,15 +52,6 @@ export const adminService = {
                 }
             });
             
-            // Log to verify if reason field is included in backend response
-            // TODO: Remove this console.log after confirming backend response structure
-            if (response.data?.withdrawals) {
-                const rejectedWithdrawals = response.data.withdrawals.filter(w => w.status === 'rejected');
-                if (rejectedWithdrawals.length > 0) {
-                    console.log('Sample rejected withdrawal from getAllWithdrawals:', rejectedWithdrawals[0]);
-                    console.log('Reason field exists:', 'reason' in rejectedWithdrawals[0]);
-                }
-            }
             
             return response.data;
         } catch (error) {
@@ -82,11 +73,6 @@ export const adminService = {
             });
             
             // Log response to verify if reason is included in backend response
-            // TODO: Remove this console.log after confirming backend response structure
-            if (status === 'rejected' && reason) {
-                console.log('UpdateWithdrawalStatus Response:', response.data);
-                console.log('Reason in response:', response.data?.withdrawal?.reason || response.data?.reason);
-            }
             
             toast.success(
                 status === 'approved' 
@@ -138,8 +124,6 @@ export const adminService = {
             }
             return { storage: [] };
         } catch {
-            // If API doesn't exist or fails, return empty array
-            console.warn('getAllStorageStats API not available, returning empty storage');
             return { storage: [] };
         }
     },
@@ -417,11 +401,9 @@ export const adminService = {
                     Authorization: `Bearer ${token}`
                 }
             });
-            console.log('sendNotification Response:', response.data);
             toast.success("Notification sent successfully!", ToastOptions("success"));
             return response.data;
         } catch (error) {
-            console.error('sendNotification Error:', error.response?.data || error);
             const errorMessage = error.response?.data?.message || error.message || "Failed to send notification";
             toast.error(errorMessage, ToastOptions("error"));
             throw error.response?.data || error.message;
@@ -539,12 +521,6 @@ export const adminService = {
                 throw new Error('Authentication token is required');
             }
 
-            console.log('Calling approveSubscription API:', {
-                subscriptionId,
-                endpoint: `/auth/approveSubscription/${subscriptionId}`,
-                hasToken: !!token
-            });
-
             const response = await api.patch(`/auth/approveSubscription/${subscriptionId}`, {
                 status: 'approved'
             }, {
@@ -554,18 +530,8 @@ export const adminService = {
                 }
             });
 
-            console.log('Approve subscription API response:', response.data);
-            
-            // Don't show toast here - let the caller handle it
             return response.data;
         } catch (error) {
-            console.error('Approve subscription API error:', {
-                status: error.response?.status,
-                statusText: error.response?.statusText,
-                data: error.response?.data,
-                message: error.message
-            });
-            
             const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || "Failed to approve subscription";
             // Don't show toast here - let the caller handle it
             throw new Error(errorMessage);

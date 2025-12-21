@@ -88,7 +88,6 @@ export default function ZipContents() {
 
     const Representation = (url, type) => {
         // Handle file preview - similar to Files page
-        console.log('Representation:', url, type);
     };
 
     if (isLoading) {

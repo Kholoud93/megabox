@@ -21,17 +21,12 @@ const GoogleLoginButton = ({ SignUp }) => {
         const scope = 'openid email profile';
         const responseType = 'token';
 
-        console.log('Initiating Google OAuth:', { redirectUri, clientId: GOOGLE_CLIENT_ID });
-
-        // Build Google OAuth URL
         const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
             `client_id=${encodeURIComponent(GOOGLE_CLIENT_ID)}&` +
             `redirect_uri=${encodeURIComponent(redirectUri)}&` +
             `response_type=${responseType}&` +
             `scope=${encodeURIComponent(scope)}&` +
             `include_granted_scopes=true`;
-
-        console.log('Redirecting to Google OAuth URL');
 
         // Redirect to Google
         window.location.href = googleAuthUrl;

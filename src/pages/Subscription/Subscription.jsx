@@ -42,7 +42,6 @@ export default function Subscription() {
                 if (response.data) return { plans: response.data };
                 return { plans: [] };
             } catch (error) {
-                console.error('Error fetching plans:', error);
                 return { plans: [] };
             }
         },
@@ -104,7 +103,6 @@ export default function Subscription() {
 
                 return createdSubscriptions;
             } catch (error) {
-                console.error('Error fetching subscriptions:', error);
                 return [];
             }
         },
@@ -145,7 +143,6 @@ export default function Subscription() {
                     return (subUserId === userId || subSubscriberId === userId) && subCreatedBy !== userId;
                 });
             } catch (error) {
-                console.error('Error fetching user subscriptions:', error);
                 return [];
             }
         },
@@ -259,7 +256,7 @@ export default function Subscription() {
             
             toast.success(t('subscriptionPage.waitingForApproval') || "Subscription request submitted successfully! Waiting for approval.", ToastOptions("success"));
         } catch (error) {
-            console.error('Error subscribing to plan:', error);
+            // Error handled by service
         } finally {
             setIsSubmitting(false);
         }

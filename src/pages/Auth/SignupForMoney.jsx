@@ -55,7 +55,6 @@ const SignupForMoney = ({ onLogin, onConfirmMail, loading, error, refCode }) => 
     useEffect(() => {
         const validateRef = async () => {
             setRoleLoading(true);
-            console.log(refCode);
 
             if (refCode) {
                 try {
@@ -64,12 +63,9 @@ const SignupForMoney = ({ onLogin, onConfirmMail, loading, error, refCode }) => 
                     if (roleData) {
                         setRoleLoading(false);
                     } else {
-                        // refCode exists but invalid role
-                        console.warn("Invalid refCode: no role found.");
                         navigate("/signup");
                     }
                 } catch (err) {
-                    console.error("Error validating refCode:", err);
                     navigate("/signup");
                 }
             } else {

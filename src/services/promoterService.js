@@ -84,21 +84,6 @@ export const promoterService = {
                 formData.append('paymentMethod', paymentMethod.trim());
             }
 
-            // Log form data for debugging (remove in production)
-            console.log('Creating subscription with:', {
-                phone: phone.trim(),
-                subscriberName: subscriberName && subscriberName.trim() ? subscriberName.trim() : '',
-                durationDays: String(durationDays),
-                planName: planName.trim(),
-                paymentMethod: paymentMethod || 'not provided',
-                hasInvoice: !!invoiceFile
-            });
-
-            // Log FormData contents
-            console.log('FormData entries:');
-            for (let pair of formData.entries()) {
-                console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
-            }
 
             const response = await api.post('/auth/createSubscription', formData, {
                 headers: {

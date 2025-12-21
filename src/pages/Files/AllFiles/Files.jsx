@@ -182,12 +182,10 @@ export default function Files() {
                     await notificationService.deleteFcmToken(Token.MegaBox);
                 } catch (error) {
                     // Silently fail - FCM token deletion is optional
-                    console.warn('Failed to delete FCM token:', error);
                 }
             }
         } catch (error) {
             // Continue with logout even if FCM token deletion fails
-            console.warn('Error during logout cleanup:', error);
         }
         
         toast.success(t('common.logoutSuccess') || 'Logged out successfully', ToastOptions('success'));
@@ -211,47 +209,36 @@ export default function Files() {
         const [, filterKey] = queryKey;
         const token = Token.MegaBox;
 
-        console.log('🔍 GetFiles called with filterKey:', filterKey);
-
         try {
             let data;
 
             switch (filterKey.toLowerCase()) {
                 case 'image':
                     data = await fileService.getImageFiles(token);
-                    console.log('📸 Image files before filter:', data?.files?.length);
                     if (data?.files) {
                         data.files = data.files.filter(file => {
                             const isArchived = file.archived === true || file.isArchived === true;
-                            if (isArchived) console.log('   ❌ Filtering out archived image:', file.fileName);
                             return !isArchived;
                         });
                     }
-                    console.log('📸 Image files after filter:', data?.files?.length);
                     break;
                 case 'video':
                     data = await fileService.getVideoFiles(token);
-                    console.log('🎥 Video files before filter:', data?.files?.length);
                     if (data?.files) {
                         data.files = data.files.filter(file => {
                             const isArchived = file.archived === true || file.isArchived === true;
-                            if (isArchived) console.log('   ❌ Filtering out archived video:', file.fileName);
                             return !isArchived;
                         });
                     }
-                    console.log('🎥 Video files after filter:', data?.files?.length);
                     break;
                 case 'document':
                     data = await fileService.getDocumentFiles(token);
-                    console.log('📄 Document files before filter:', data?.files?.length);
                     if (data?.files) {
                         data.files = data.files.filter(file => {
                             const isArchived = file.archived === true || file.isArchived === true;
-                            if (isArchived) console.log('   ❌ Filtering out archived document:', file.fileName);
                             return !isArchived;
                         });
                     }
-                    console.log('📄 Document files after filter:', data?.files?.length);
                     break;
                 case 'zip':
                     // Get zip files and extract their contents (files and folders inside)
@@ -400,56 +387,35 @@ export default function Files() {
                     break;
                 case 'archived': {
                     data = await fileService.getMyArchives(token);
-                    console.log('🗄️  Archived files from service:', data?.files?.length);
-                    console.log('🗄️  Archived folders from service:', data?.folders?.length);
-                    // Service already handles duplicate removal and marking as archived
-                    // Just ensure we have the right structure
                     if (!data?.files) {
                         data = { files: [] };
                     }
                     if (!data?.folders) {
                         data = { ...data, folders: [] };
                     }
-                    console.log('🗄️  Final archived files:', data?.files?.length);
-                    console.log('🗄️  Final archived folders:', data?.folders?.length);
                     break;
                 }
                 case 'all':
                 default:
                     data = await fileService.getAllFiles(token);
-                    console.log('📁 All files before filter:', data?.files?.length);
                     if (data?.files) {
                         data.files = data.files.filter(file => {
                             const isArchived = file.archived === true || file.isArchived === true;
-                            if (isArchived) console.log('   ❌ Filtering out archived file:', file.fileName);
                             return !isArchived;
                         });
                     }
-                    console.log('📁 All files after filter:', data?.files?.length);
                     break;
             }
 
-            // Final safety check with detailed logging
             if (filterKey.toLowerCase() !== 'archived' && data?.files) {
-                console.log('🔒 Final safety check for', filterKey);
-                const beforeCount = data.files.length;
                 data.files = data.files.filter(file => {
                     const isArchived = file.archived === true || file.isArchived === true;
-                    if (isArchived) {
-                        console.log('   ⚠️  CAUGHT IN SAFETY CHECK:', file.fileName, 'archived:', file.archived, 'isArchived:', file.isArchived);
-                    }
                     return !isArchived;
                 });
-                const afterCount = data.files.length;
-                if (beforeCount !== afterCount) {
-                    console.log(`   🛡️  Safety check removed ${beforeCount - afterCount} files`);
-                }
             }
 
-            console.log('✅ Final result:', filterKey, '-', data?.files?.length, 'files');
             return data || { files: [] };
         } catch (error) {
-            console.error('❌ Error fetching files:', error);
             return { files: [] };
         }
     };
@@ -790,7 +756,6 @@ export default function Files() {
             await refFolders();
             
         } catch (error) {
-            console.error("Archive error:", error);
             toast.error("Failed to archive items", ToastOptions("error"));
         }
     }
@@ -814,7 +779,6 @@ export default function Files() {
                     await fileService.unarchiveFile(fileId, Token.MegaBox);
                     successCount++;
                 } catch (error) {
-                    console.error(`Failed to unarchive file ${fileId}:`, error);
                     // Continue with other files even if one fails
                     if (error?.response?.status !== 404) {
                         errorCount++;
@@ -828,7 +792,6 @@ export default function Files() {
                     await userService.unarchiveFolder(folderId, Token.MegaBox);
                     successCount++;
                 } catch (error) {
-                    console.error(`Failed to unarchive folder ${folderId}:`, error);
                     // Continue with other folders even if one fails
                     if (error?.response?.status !== 404) {
                         errorCount++;
@@ -876,7 +839,6 @@ export default function Files() {
             await refFolders();
             
         } catch (error) {
-            console.error("Unarchive error:", error);
             const errorMessage = error?.response?.data?.message || error?.message || "Failed to unarchive items";
             
             // If 404, refresh to sync with server

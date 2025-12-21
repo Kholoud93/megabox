@@ -28,7 +28,6 @@ export const AuthProvider = ({ children }) => {
 
       if (response?.message === "Done") {
         setToken("MegaBox", response?.data?.access_Token);
-        console.log(response?.data?.checkUser);
         setUserRole(response?.data?.checkUser?.role);
         setUserRefLink(response?.data?.checkUser?.referralLink);
         
@@ -43,7 +42,6 @@ export const AuthProvider = ({ children }) => {
           }
         } catch (error) {
           // Silently fail - FCM token is optional
-          console.warn('Failed to save FCM token:', error);
         }
       }
 
