@@ -28,7 +28,7 @@ export const LanguageProvider = ({ children }) => {
     document.documentElement.lang = lang;
   };
 
-  const t = (key) => {
+  const t = (key, params = {}) => {
     const keys = key.split('.');
     const translations = language === 'ar' ? arTranslations : enTranslations;
     let value = translations;
@@ -38,7 +38,47 @@ export const LanguageProvider = ({ children }) => {
       if (value === undefined) return key;
     }
 
-    return value || key;
+    if (typeof value !== 'string') return value || key;
+
+    // Handle interpolation (replace {{variable}} with actual values)
+    let result = value;
+    if (params && typeof params === 'object') {
+      Object.keys(params).forEach(paramKey => {
+        const regex = new RegExp(`\\{\\{${paramKey}\\}\\}`, 'g');
+        result = result.replace(regex, params[paramKey]);
+      });
+      
+      // Handle pluralization for count parameter
+      if (params.count !== undefined) {
+        const count = Number(params.count);
+        // Check if there's a plural version of the key (append 'Plural' to the last key segment)
+        const keyParts = key.split('.');
+        const lastKey = keyParts[keyParts.length - 1];
+        const pluralLastKey = lastKey + 'Plural';
+        const pluralKeyParts = [...keyParts.slice(0, -1), pluralLastKey];
+        const pluralKey = pluralKeyParts.join('.');
+        
+        // Try to get the plural value
+        let pluralValue = translations;
+        for (const k of pluralKeyParts) {
+          pluralValue = pluralValue?.[k];
+          if (pluralValue === undefined) break;
+        }
+        
+        // If plural key exists and count is not 1, use plural form
+        if (pluralValue !== undefined && typeof pluralValue === 'string' && count !== 1) {
+          result = pluralValue;
+          // Replace count in plural form too
+          Object.keys(params).forEach(paramKey => {
+            const regex = new RegExp(`\\{\\{${paramKey}\\}\\}`, 'g');
+            result = result.replace(regex, params[paramKey]);
+          });
+        }
+        // If count is 1, the singular form (already in result) is correct
+      }
+    }
+
+    return result || key;
   };
 
   return (
