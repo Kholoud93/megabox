@@ -283,16 +283,9 @@ export default function Promoters() {
                                             <td data-label={t("adminPromoters.email")}>{ele.email}</td>
 
                                             <td data-label={t("adminPromoters.premiumStatus") || "Premium Status"}>
-                                                {ele?.isBrimume ? (
-                                                    <span className="premium-badge premium-badge--active">
-                                                        <FaCrown className="premium-badge__icon" />
-                                                        {t("adminPromoters.premium") || t("adminUsers.premium") || "Premium"}
-                                                    </span>
-                                                ) : (
-                                                    <span className="premium-badge premium-badge--inactive">
-                                                        {t("adminPromoters.notPremium") || t("adminUsers.notPremium") || "Not Premium"}
-                                                    </span>
-                                                )}
+                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${ele?.isBrimume ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}>
+                                                    {ele?.isBrimume ? 'true' : 'false'}
+                                                </span>
                                             </td>
 
                                             <td data-label={t("adminPromoters.watchingPlan")}>

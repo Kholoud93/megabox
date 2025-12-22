@@ -404,6 +404,7 @@ export default function Users() {
                                 <th scope="col" className="px-6 py-3">{t("adminUsers.username")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminUsers.email")}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminUsers.status")}</th>
+                                <th scope="col" className="px-6 py-3">{t("adminUsers.premiumStatus") || "Premium Status"}</th>
                                 <th scope="col" className="px-6 py-3">{t("adminUsers.actions")}</th>
                             </tr>
                         </thead>
@@ -419,6 +420,11 @@ export default function Users() {
                                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${ele.isBanned ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
                                                     }`}>
                                                     {ele.isBanned ? t("adminUsers.banned") : t("adminUsers.active")}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4" data-label={t("adminUsers.premiumStatus") || "Premium Status"}>
+                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${ele.isBrimume ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}>
+                                                    {ele.isBrimume ? 'true' : 'false'}
                                                 </span>
                                             </td>
                                             <td data-label={t("adminUsers.actions")}>

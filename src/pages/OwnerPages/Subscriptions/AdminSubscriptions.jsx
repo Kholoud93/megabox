@@ -153,7 +153,7 @@ export default function AdminSubscriptions() {
             // Activate premium using toggleBrimumeByOwner (this also approves the subscription)
             await handleSetPremium(subToApprove);
             
-            // Optimistically update the subscription status in the cache
+            // Optimistically update the subscription isBrimume in the cache
             queryClient.setQueryData(['allSubscriptions'], (oldData) => {
                 if (!oldData) return oldData;
                 
@@ -165,7 +165,7 @@ export default function AdminSubscriptions() {
                     const subId = sub.id || sub._id;
                     const targetId = subToApprove.id || subToApprove._id;
                     if (subId === targetId) {
-                        return { ...sub, status: 'approved' };
+                        return { ...sub, isBrimume: true };
                     }
                     return sub;
                 });
@@ -340,7 +340,7 @@ export default function AdminSubscriptions() {
                                         <th scope="col" className="px-6 py-3">{t("adminSubscriptions.phone") || "Phone"}</th>
                                         <th scope="col" className="px-6 py-3">{t("adminSubscriptions.planName") || "Plan"}</th>
                                         <th scope="col" className="px-6 py-3">{t("adminSubscriptions.duration") || "Duration"}</th>
-                                        <th scope="col" className="px-6 py-3">{t("adminSubscriptions.status") || "Status"}</th>
+                                        <th scope="col" className="px-6 py-3">{t("adminSubscriptions.premiumStatus") || "Premium Status"}</th>
                                         <th scope="col" className="px-6 py-3">{t("adminSubscriptions.createdAt") || "Created At"}</th>
                                         <th scope="col" className="px-6 py-3">{t("adminSubscriptions.actions") || "Actions"}</th>
                                     </tr>
@@ -374,9 +374,9 @@ export default function AdminSubscriptions() {
                                                 <span>{subscription.durationDays || subscription.days || '-'} {t('adminSubscriptions.days') || 'days'}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4" data-label={t("adminSubscriptions.status") || "Status"}>
-                                            <span className={`px-2 py-1 rounded-full text-xs font-medium admin-subscription-status admin-subscription-status--${(subscription.status || 'pending').toLowerCase()}`}>
-                                                {subscription.status || 'Pending'}
+                                        <td className="px-6 py-4" data-label={t("adminSubscriptions.premiumStatus") || "Premium Status"}>
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${subscription.isBrimume || subscription.userId?.isBrimume || subscription.createdBy?.isBrimume ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}>
+                                                {subscription.isBrimume || subscription.userId?.isBrimume || subscription.createdBy?.isBrimume ? 'true' : 'false'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4" data-label={t("adminSubscriptions.createdAt") || "Created At"}>
@@ -525,10 +525,10 @@ export default function AdminSubscriptions() {
                                                 </div>
                                                 <div className="admin-subscription-details-row">
                                                     <span className="admin-subscription-details-label">
-                                                        {t('adminSubscriptions.status') || 'Status'}:
+                                                        {t('adminSubscriptions.premiumStatus') || 'Premium Status'}:
                                                     </span>
-                                                    <span className={`admin-subscription-details-status admin-subscription-details-status--${(subscription.status || 'pending').toLowerCase()}`}>
-                                                        {subscription.status || 'Pending'}
+                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${subscription.isBrimume || subscription.userId?.isBrimume || subscription.createdBy?.isBrimume ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}>
+                                                        {subscription.isBrimume || subscription.userId?.isBrimume || subscription.createdBy?.isBrimume ? 'true' : 'false'}
                                                     </span>
                                                 </div>
                                             </div>
@@ -614,7 +614,7 @@ export default function AdminSubscriptions() {
                                 >
                                     {t('adminSubscriptions.close') || 'Close'}
                                 </button>
-                                {((enrichedSubscription || selectedSubscription).status === 'pending' || !(enrichedSubscription || selectedSubscription).status) && (
+                                {!((enrichedSubscription || selectedSubscription).isBrimume || (enrichedSubscription || selectedSubscription).userId?.isBrimume || (enrichedSubscription || selectedSubscription).createdBy?.isBrimume) && (
                                     <button
                                         onClick={() => handleApproveSubscription(selectedSubscription)}
                                         disabled={isApproving}
