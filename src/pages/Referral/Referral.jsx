@@ -3,12 +3,13 @@ import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
-import { userService } from '../../services/api';
+import { userService, promoterService } from '../../services/api';
 import { useLanguage } from '../../context/LanguageContext';
 import EmptyState from '../../components/EmptyState/EmptyState';
 import { FaUsers, FaLink, FaCopy, FaCheck, FaDollarSign } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../helpers/ToastOptions';
+import Loading from '../../components/Loading/Loading';
 import './Referral.scss';
 
 export default function Referral() {
@@ -24,14 +25,28 @@ export default function Referral() {
         { enabled: !!token, retry: false }
     );
 
-    // Default values (no API call)
-    const referralLink = userData?.referralLink || `https://mega-box.vercel.app/register?ref=${userData?._id || ''}`;
-    const todayRefers = 0;
-    const totalRefers = 0;
-    const todayReferralRevenue = 0;
-    const totalReferralRevenue = 0;
-    const referUsers = [];
-    const currency = 'USD';
+    // Fetch referral statistics
+    const { data: referralStatsData, isLoading: referralStatsLoading } = useQuery(
+        ['referralStats'],
+        () => promoterService.getReferralStats(token),
+        {
+            enabled: !!token,
+            retry: 2,
+            onError: (error) => {
+                console.error('Error fetching referral stats:', error);
+                // Don't show error toast, just use default values
+            }
+        }
+    );
+
+    // Extract referral data from API response
+    const referralLink = userData?.referralLink || referralStatsData?.referralLink || `https://mega-box.vercel.app/register?ref=${userData?._id || ''}`;
+    const todayRefers = referralStatsData?.todayRefers || referralStatsData?.todayRefs || referralStatsData?.todayReferrals || 0;
+    const totalRefers = referralStatsData?.totalRefers || referralStatsData?.totalRefs || referralStatsData?.totalReferrals || 0;
+    const todayReferralRevenue = referralStatsData?.todayReferralRevenue || referralStatsData?.todayRevenue || 0;
+    const totalReferralRevenue = referralStatsData?.totalReferralRevenue || referralStatsData?.totalRevenue || 0;
+    const referUsers = referralStatsData?.referUsers || referralStatsData?.users || referralStatsData?.referrals || [];
+    const currency = referralStatsData?.currency || 'USD';
 
     const handleCopyLink = async () => {
         try {
@@ -115,45 +130,51 @@ export default function Referral() {
                 </AnimatePresence>
 
                 {/* Stats Cards */}
-                <div className="referral-stats">
-                    <motion.div
-                        className="referral-stats__card"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 }}
-                    >
-                        <h3 className="referral-stats__title">{t('referral.refers')}</h3>
-                        <div className="referral-stats__content">
-                            <div className="referral-stats__item">
-                                <span className="referral-stats__label">{t('referral.todayRefers')}</span>
-                                <span className="referral-stats__value">{todayRefers}</span>
+                {referralStatsLoading ? (
+                    <div className="referral-stats">
+                        <Loading />
+                    </div>
+                ) : (
+                    <div className="referral-stats">
+                        <motion.div
+                            className="referral-stats__card"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.1 }}
+                        >
+                            <h3 className="referral-stats__title">{t('referral.refers')}</h3>
+                            <div className="referral-stats__content">
+                                <div className="referral-stats__item">
+                                    <span className="referral-stats__label">{t('referral.todayRefers')}</span>
+                                    <span className="referral-stats__value">{todayRefers}</span>
+                                </div>
+                                <div className="referral-stats__item">
+                                    <span className="referral-stats__label">{t('referral.totalRefers')}</span>
+                                    <span className="referral-stats__value">{totalRefers}</span>
+                                </div>
                             </div>
-                            <div className="referral-stats__item">
-                                <span className="referral-stats__label">{t('referral.totalRefers')}</span>
-                                <span className="referral-stats__value">{totalRefers}</span>
-                            </div>
-                        </div>
-                    </motion.div>
+                        </motion.div>
 
-                    <motion.div
-                        className="referral-stats__card"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 }}
-                    >
-                        <h3 className="referral-stats__title">{t('referral.referralRevenue')}</h3>
-                        <div className="referral-stats__content">
-                            <div className="referral-stats__item">
-                                <span className="referral-stats__label">{t('referral.todayReferralRevenue')}</span>
-                                <span className="referral-stats__value">{todayReferralRevenue.toFixed(4)} {currency}</span>
+                        <motion.div
+                            className="referral-stats__card"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            <h3 className="referral-stats__title">{t('referral.referralRevenue')}</h3>
+                            <div className="referral-stats__content">
+                                <div className="referral-stats__item">
+                                    <span className="referral-stats__label">{t('referral.todayReferralRevenue')}</span>
+                                    <span className="referral-stats__value">{parseFloat(todayReferralRevenue || 0).toFixed(4)} {currency}</span>
+                                </div>
+                                <div className="referral-stats__item">
+                                    <span className="referral-stats__label">{t('referral.totalReferralRevenue')}</span>
+                                    <span className="referral-stats__value">{parseFloat(totalReferralRevenue || 0).toFixed(4)} {currency}</span>
+                                </div>
                             </div>
-                            <div className="referral-stats__item">
-                                <span className="referral-stats__label">{t('referral.totalReferralRevenue')}</span>
-                                <span className="referral-stats__value">{totalReferralRevenue.toFixed(4)} {currency}</span>
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
+                        </motion.div>
+                    </div>
+                )}
 
                 {/* Refer Users Table */}
                 <motion.div

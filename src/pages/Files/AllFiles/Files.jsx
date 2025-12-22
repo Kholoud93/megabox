@@ -19,7 +19,7 @@ import Represents from '../../../components/Represents/Represents';
 import ChangeName from '../../../components/ChangeName/ChangeName';
 import { toast } from 'react-toastify';
 import { ToastOptions } from '../../../helpers/ToastOptions';
-import { fileService, userService, notificationService } from '../../../services/api';
+import { fileService, userService } from '../../../services/api';
 import { useLanguage } from '../../../context/LanguageContext';
 import ShareLinkModal from '../../../components/ShareLinkModal/ShareLinkModal';
 import { useNavigate, Link } from 'react-router-dom';
@@ -33,8 +33,8 @@ import './Files.scss';
 export default function Files() {
     const { t, language, changeLanguage } = useLanguage();
     const navigate = useNavigate();
-    const { setUserRole } = useAuth();
-    const [Token, , removeToken] = useCookies(['MegaBox']);
+    const { logout } = useAuth();
+    const [Token] = useCookies(['MegaBox']);
     const [profileMenuOpen, setProfileMenuOpen] = useState(false);
     const [profileImageError, setProfileImageError] = useState(false);
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0, left: 0 });
@@ -176,24 +176,8 @@ export default function Files() {
     };
     
     const Logout = async () => {
-        try {
-            // Delete FCM token on logout to stop receiving notifications
-            if (Token.MegaBox) {
-                try {
-                    await notificationService.deleteFcmToken(Token.MegaBox);
-                } catch {
-                    // Silently fail - FCM token deletion is optional
-                }
-            }
-        } catch {
-            // Continue with logout even if FCM token deletion fails
-        }
-        
+        await logout();
         toast.success(t('common.logoutSuccess') || 'Logged out successfully', ToastOptions('success'));
-        removeToken("MegaBox", {
-            path: '/',
-        });
-        setUserRole(null);
         navigate('/login');
     };
     

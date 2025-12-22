@@ -125,6 +125,20 @@ export const promoterService = {
         }
     },
 
+    // Get referral statistics
+    getReferralStats: async (token) => {
+        try {
+            const response = await api.get('/auth/getReferralStats', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
+    },
+
 };
 
 export default promoterService;

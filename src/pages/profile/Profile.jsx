@@ -39,7 +39,19 @@ export default function Profile() {
         if (!Token.MegaBox) return null;
         try {
             const response = await authService.getUserAnalytics(Token.MegaBox);
-            return response?.data || response;
+            const data = response?.data || response;
+            
+            // Handle different response structures
+            // API might return: { totalAnalytics: { totalDownloads, totalViews } } or direct fields
+            if (data?.totalAnalytics) {
+                return {
+                    ...data,
+                    totalDownloads: data.totalAnalytics.totalDownloads || data.totalDownloads || 0,
+                    totalViews: data.totalAnalytics.totalViews || data.totalViews || 0,
+                };
+            }
+            
+            return data;
         } catch {
             return null;
         }
