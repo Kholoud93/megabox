@@ -1635,7 +1635,10 @@
     "fromDesktop": "من سطح المكتب",
     "fromDesktopDesc": "رفع الملفات من جهاز الكمبيوتر أو الجهاز الخاص بك",
     "fromMegaBox": "من MegaBox",
-    "fromMegaBoxDesc": "اختر الملفات من مساحة MegaBox الخاصة بك"
+    "fromMegaBoxDesc": "قم بتنزيل تطبيق MegaBox لرفع الملفات",
+    "loadingAppLink": "جاري تحميل رابط التطبيق...",
+    "appLinkNotFound": "لم يتم العثور على رابط التطبيق",
+    "appLinkError": "فشل الحصول على رابط التطبيق"
   },
   "uploadFromMegaBox": {
     "title": "اختر الملفات من MegaBox",

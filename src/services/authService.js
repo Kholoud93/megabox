@@ -148,6 +148,20 @@ export const authService = {
         } catch (error) {
             throw error.response?.data || error.message;
         }
+    },
+
+    // Get app download link
+    getAppLink: async (token) => {
+        try {
+            const response = await api.get('/auth/getAppLink', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            throw error.response?.data || error.message;
+        }
     }
 };
 

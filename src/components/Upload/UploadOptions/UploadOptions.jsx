@@ -1,14 +1,91 @@
-import React from 'react';
+import React, { useState } from 'react';
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import { HiX } from "react-icons/hi";
 import { HiComputerDesktop, HiCloud } from "react-icons/hi2";
 import { PreventFunction } from '../../../helpers/Prevent';
 import { useLanguage } from '../../../context/LanguageContext';
+import { useCookies } from 'react-cookie';
+import { authService } from '../../../services/authService';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../../helpers/ToastOptions';
 import './UploadOptions.scss';
 
 export default function UploadOptions({ onClose, onSelectDesktop, onSelectMegaBox, isPromoter = false }) {
     const { t } = useLanguage();
+    const [cookies] = useCookies(['MegaBox']);
+    const [isLoadingAppLink, setIsLoadingAppLink] = useState(false);
+
+    // Helper function to detect user's platform
+    const detectPlatform = () => {
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        
+        // Check for Android
+        if (/android/i.test(userAgent)) {
+            return 'android';
+        }
+        
+        // Check for iOS
+        if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+            return 'ios';
+        }
+        
+        // Default to android if platform cannot be detected
+        return 'android';
+    };
+
+    const handleMegaBoxClick = async () => {
+        if (isPromoter) {
+            // For promoters, get app link and redirect to download
+            setIsLoadingAppLink(true);
+            try {
+                const response = await authService.getAppLink(cookies.MegaBox);
+                
+                // Handle new response structure with links array
+                let appLink = null;
+                
+                if (response?.links && Array.isArray(response.links) && response.links.length > 0) {
+                    // Get active links only
+                    const activeLinks = response.links.filter(link => link.isActive);
+                    
+                    if (activeLinks.length > 0) {
+                        // Try to find link matching user's platform
+                        const userPlatform = detectPlatform();
+                        const platformLink = activeLinks.find(link => 
+                            link.platform?.toLowerCase() === userPlatform
+                        );
+                        
+                        // Use platform-specific link if found, otherwise use first active link
+                        appLink = platformLink?.link || activeLinks[0]?.link;
+                    }
+                } else {
+                    // Fallback to old response structure
+                    appLink = response?.appLink || response?.link || response?.url || 
+                             response?.data?.appLink || response?.data?.link || response?.data?.url;
+                }
+                
+                if (appLink) {
+                    // Show success toast with message from response if available
+                    const successMessage = response?.message || t('uploadOptions.appLinkSuccess') || 'App link retrieved successfully';
+                    toast.success(successMessage, ToastOptions("success"));
+                    
+                    // Open the link in a new window
+                    window.open(appLink, '_blank');
+                    onClose();
+                } else {
+                    toast.error(t('uploadOptions.appLinkNotFound') || 'App download link not found', ToastOptions("error"));
+                }
+            } catch (error) {
+                toast.error(error.response?.data?.message || error.message || t('uploadOptions.appLinkError') || 'Failed to get app download link', ToastOptions("error"));
+            } finally {
+                setIsLoadingAppLink(false);
+            }
+        } else {
+            // For regular users, open upload from MegaBox modal
+            onSelectMegaBox();
+            onClose();
+        }
+    };
 
     return (
         <motion.div 
@@ -57,17 +134,20 @@ export default function UploadOptions({ onClose, onSelectDesktop, onSelectMegaBo
                     {isPromoter && (
                         <button
                             className="UploadOptions_option"
-                            onClick={() => {
-                                onSelectMegaBox();
-                                onClose();
-                            }}
+                            onClick={handleMegaBoxClick}
+                            disabled={isLoadingAppLink}
                         >
                             <div className="UploadOptions_option_icon">
                                 <HiCloud />
                             </div>
                             <div className="UploadOptions_option_content">
                                 <h3 className="UploadOptions_option_title">{t("uploadOptions.fromMegaBox")}</h3>
-                                <p className="UploadOptions_option_desc">{t("uploadOptions.fromMegaBoxDesc")}</p>
+                                <p className="UploadOptions_option_desc">
+                                    {isLoadingAppLink 
+                                        ? (t("uploadOptions.loadingAppLink") || "Loading...")
+                                        : (t("uploadOptions.fromMegaBoxDesc") || "Download MegaBox app to upload files")
+                                    }
+                                </p>
                             </div>
                         </button>
                     )}

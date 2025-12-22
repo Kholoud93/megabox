@@ -1636,7 +1636,10 @@
     "fromDesktop": "From Desktop",
     "fromDesktopDesc": "Upload files from your computer or device",
     "fromMegaBox": "From MegaBox",
-    "fromMegaBoxDesc": "Select files from your existing MegaBox storage"
+    "fromMegaBoxDesc": "Download MegaBox app to upload files",
+    "loadingAppLink": "Loading app download link...",
+    "appLinkNotFound": "App download link not found",
+    "appLinkError": "Failed to get app download link"
   },
   "uploadFromMegaBox": {
     "title": "Select Files from MegaBox",
