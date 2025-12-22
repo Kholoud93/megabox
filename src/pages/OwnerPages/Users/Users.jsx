@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo } from 'react'
+import React, { useRef, useState, useMemo, useEffect } from 'react'
 import "./Users.scss"
 import { useQuery } from 'react-query';
 // eslint-disable-next-line no-unused-vars
@@ -13,7 +13,7 @@ import { HiTrash } from "react-icons/hi2";
 // icons 
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ToastOptions } from '../../../helpers/ToastOptions';
 import { toast } from 'react-toastify';
 import { useLanguage } from '../../../context/LanguageContext';
@@ -28,7 +28,8 @@ export default function Users() {
     const [selectedUser, setSelectedUser] = useState(null);
     const [addform, setaddform] = useState(false)
     const [deleteConfirm, setDeleteConfirm] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
     const [filters, setFilters] = useState({});
     const [premiumModal, setPremiumModal] = useState(null);
     const [searchUserModal, setSearchUserModal] = useState(false);
@@ -39,6 +40,15 @@ export default function Users() {
     const navigate = useNavigate()
     const [Token] = useCookies(['MegaBox']);
     const queryClient = useQueryClient();
+
+    // Update URL when search term changes
+    useEffect(() => {
+        if (searchTerm) {
+            setSearchParams({ search: searchTerm });
+        } else {
+            setSearchParams({});
+        }
+    }, [searchTerm, setSearchParams]);
 
     // get Allusers 
     const Allusers = async () => {

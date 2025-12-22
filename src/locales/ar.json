@@ -801,7 +801,8 @@
     "makePremium": "تحويل إلى بريميوم",
     "premiumExpirationDate": "تاريخ انتهاء البريميوم",
     "subscriptionApprovedAndPremium": "تم الموافقة على الاشتراك وتفعيل البريميوم بنجاح!",
-    "premiumActivationFailed": "فشل تفعيل البريميوم. يرجى التفعيل يدوياً."
+    "premiumActivationFailed": "فشل تفعيل البريميوم. يرجى التفعيل يدوياً.",
+    "goToUser": "الانتقال إلى المستخدم/المروج"
   },
   "adminPlans": {
     "title": "إدارة خطط الاشتراك",

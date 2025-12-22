@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from 'react-query';
 // eslint-disable-next-line no-unused-vars
 import { motion, useInView, AnimatePresence } from 'framer-motion';
 import { API_URL, adminService, promoterService } from '../../../services/api';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { MdDelete, MdClose } from "react-icons/md";
 import { MdAttachMoney } from "react-icons/md";
 import { FaCrown } from "react-icons/fa";
@@ -20,7 +20,8 @@ import * as Yup from 'yup';
 
 export default function Promoters() {
     const { t } = useLanguage();
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
     const [filters, setFilters] = useState({});
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
@@ -30,6 +31,15 @@ export default function Promoters() {
     const [cookies] = useCookies(['MegaBox']);
     const token = cookies.MegaBox;
     const queryClient = useQueryClient();
+
+    // Update URL when search term changes
+    useEffect(() => {
+        if (searchTerm) {
+            setSearchParams({ search: searchTerm });
+        } else {
+            setSearchParams({});
+        }
+    }, [searchTerm, setSearchParams]);
 
     const animationRef = useRef();
     const animationInView = useInView(animationRef, { once: true });
@@ -285,7 +295,7 @@ export default function Promoters() {
                                             <td data-label={t("adminPromoters.premiumStatus") || "Premium Status"}>
                                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${ele?.isBrimume ? 'bg-yellow-100 text-yellow-800' : 'bg-gray-100 text-gray-800'}`}>
                                                     {ele?.isBrimume ? 'true' : 'false'}
-                                                </span>
+                                                    </span>
                                             </td>
 
                                             <td data-label={t("adminPromoters.watchingPlan")}>

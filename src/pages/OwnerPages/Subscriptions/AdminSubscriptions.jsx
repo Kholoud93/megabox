@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useQuery, useQueryClient } from 'react-query';
+import { useQuery } from 'react-query';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { adminService } from '../../../services/adminService';
+import { promoterService } from '../../../services/promoterService';
 import { useLanguage } from '../../../context/LanguageContext';
-import { FaCrown, FaTimes, FaUser, FaPhone, FaCalendar, FaFileInvoice, FaEye } from 'react-icons/fa';
+import { FaCrown, FaTimes, FaUser, FaPhone, FaCalendar, FaFileInvoice, FaEye, FaExternalLinkAlt } from 'react-icons/fa';
 import { HiArrowRight, HiArrowLeft, HiCurrencyDollar, HiClock } from 'react-icons/hi2';
 import { FiSearch, FiX } from 'react-icons/fi';
 import { toast } from 'react-toastify';
@@ -25,7 +26,6 @@ export default function AdminSubscriptions() {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
-    const queryClient = useQueryClient();
 
     // Fetch all subscriptions
     const { data: subscriptionsData, isLoading: subscriptionsLoading } = useQuery(
@@ -52,7 +52,6 @@ export default function AdminSubscriptions() {
         }
     );
 
-    const [isApproving, setIsApproving] = useState(false);
     const [enrichedSubscription, setEnrichedSubscription] = useState(null);
 
     useEffect(() => {
@@ -144,44 +143,196 @@ export default function AdminSubscriptions() {
         setSelectedSubscription(subscription);
     };
 
-    const handleApproveSubscription = async (subscription = null) => {
-        const subToApprove = subscription || selectedSubscription;
-        if (!subToApprove) return;
+    // Check if user is a promoter by watchingplan or Downloadsplan
+    const isPromoter = (user) => {
+        if (!user) return false;
+        const watchingPlan = user.watchingplan === true || user.watchingplan === "true";
+        const downloadsPlan = user.Downloadsplan === true || user.Downloadsplan === "true";
+        return watchingPlan || downloadsPlan;
+    };
 
-        setIsApproving(true);
-        try {
-            // Activate premium using toggleBrimumeByOwner (this also approves the subscription)
-            await handleSetPremium(subToApprove);
-            
-            // Optimistically update the subscription isBrimume in the cache
-            queryClient.setQueryData(['allSubscriptions'], (oldData) => {
-                if (!oldData) return oldData;
+    // Navigate to user or promoter page
+    const handleNavigateToUser = async (subscription) => {
+        if (!subscription) return;
+
+        let userId = getUserIdFromSubscription(subscription);
+        let userEmail = subscription.email || subscription.userId?.email || subscription.createdBy?.email;
+        let searchValue = userEmail || subscription.phone || userId;
+        let foundUser = null;
+        let foundPromoter = null;
+        
+        // First, check if subscription data itself indicates promoter status
+        const subscriptionUser = subscription.userId || subscription.createdBy || subscription.promoter || subscription.user;
+        if (subscriptionUser && isPromoter(subscriptionUser)) {
+            userId = subscriptionUser._id || subscriptionUser.id || userId;
+            if (userId) {
+                navigate(`/Owner/AllPromoters?search=${encodeURIComponent(searchValue || userId)}`);
+                return;
+            }
+        }
+
+        // If we have userId, check promoters first, then users
+        if (userId) {
+            try {
+                // Check promoters first
+                const promotersResponse = await promoterService.getAllPromoters(token);
+                const promoters = Array.isArray(promotersResponse) 
+                    ? promotersResponse 
+                    : (promotersResponse?.promoters || promotersResponse?.data?.promoters || []);
                 
-                const subscriptions = Array.isArray(oldData) 
-                    ? oldData 
-                    : (oldData.subscriptions || oldData.data || []);
+                foundPromoter = promoters.find(p => 
+                    String(p._id || p.id) === String(userId)
+                );
+
+                if (foundPromoter) {
+                    navigate(`/Owner/AllPromoters?search=${encodeURIComponent(searchValue || userId)}`);
+                    return;
+                }
+
+                // If not found in promoters, check users
+                const usersResponse = await adminService.getAllUsers(token);
+                const users = Array.isArray(usersResponse) 
+                    ? usersResponse 
+                    : (usersResponse?.users || usersResponse?.data?.users || []);
                 
-                return subscriptions.map(sub => {
-                    const subId = sub.id || sub._id;
-                    const targetId = subToApprove.id || subToApprove._id;
-                    if (subId === targetId) {
-                        return { ...sub, isBrimume: true };
+                foundUser = users.find(u => 
+                    String(u._id || u.id) === String(userId)
+                );
+
+                if (foundUser) {
+                    navigate(`/Owner/Users?search=${encodeURIComponent(searchValue || userId)}`);
+                    return;
+                }
+            } catch (error) {
+                console.error('Error checking user/promoter:', error);
+            }
+        }
+
+        // If no user ID or user not found, try to find by email or phone
+        if (!userId || (!foundUser && !foundPromoter)) {
+            if (userEmail) {
+                try {
+                    // Check promoters first by searching
+                    const promotersResponse = await promoterService.getAllPromoters(token);
+                    const promoters = Array.isArray(promotersResponse) 
+                        ? promotersResponse 
+                        : (promotersResponse?.promoters || promotersResponse?.data?.promoters || []);
+                    
+                    foundPromoter = promoters.find(p => 
+                        (p.email && p.email.toLowerCase() === userEmail.toLowerCase()) ||
+                        (p.username && p.username.toLowerCase() === userEmail.toLowerCase())
+                    );
+
+                    if (foundPromoter) {
+                        navigate(`/Owner/AllPromoters?search=${encodeURIComponent(userEmail)}`);
+                        return;
                     }
-                    return sub;
-                });
-            });
-            
-            // Invalidate queries to refresh data from server
-            queryClient.invalidateQueries('allSubscriptions');
-            queryClient.invalidateQueries(['allSubscriptions']);
-            
-            toast.success(t('adminSubscriptions.subscriptionApprovedAndPremium') || 'Subscription approved and premium activated successfully!', ToastOptions("success"));
-            setSelectedSubscription(null);
-        } catch (error) {
-            const errorMessage = error?.response?.data?.message || error?.message || t('adminSubscriptions.approveFailed') || 'Failed to approve subscription';
-            toast.error(errorMessage, ToastOptions("error"));
-        } finally {
-            setIsApproving(false);
+
+                    // If not found in promoters, check users
+                    const result = await adminService.searchUser(userEmail, token);
+                    foundUser = result?.user || result;
+                    userId = foundUser?._id || foundUser?.id || userId;
+                    
+                    if (foundUser) {
+                        navigate(`/Owner/Users?search=${encodeURIComponent(userEmail)}`);
+                        return;
+                    }
+                } catch (error) {
+                    console.error('Error searching by email:', error);
+                    // If search fails, try phone
+                    if (subscription.phone) {
+                        userId = await findUserByPhone(subscription.phone);
+                        if (userId) {
+                            // Check promoters first
+                            try {
+                                const promotersResponse = await promoterService.getAllPromoters(token);
+                                const promoters = Array.isArray(promotersResponse) 
+                                    ? promotersResponse 
+                                    : (promotersResponse?.promoters || promotersResponse?.data?.promoters || []);
+                                
+                                foundPromoter = promoters.find(p => 
+                                    String(p._id || p.id) === String(userId)
+                                );
+
+                                if (foundPromoter) {
+                                    navigate(`/Owner/AllPromoters?search=${encodeURIComponent(subscription.phone)}`);
+                                    return;
+                                }
+
+                                // Check users
+                                const usersResponse = await adminService.getAllUsers(token);
+                                const users = Array.isArray(usersResponse) 
+                                    ? usersResponse 
+                                    : (usersResponse?.users || usersResponse?.data?.users || []);
+                                
+                                foundUser = users.find(u => 
+                                    String(u._id || u.id) === String(userId)
+                                );
+
+                                if (foundUser) {
+                                    navigate(`/Owner/Users?search=${encodeURIComponent(subscription.phone)}`);
+                                    return;
+                                }
+                            } catch {
+                                // Fall through to error
+                            }
+                        }
+                    }
+                }
+            } else if (subscription.phone) {
+                userId = await findUserByPhone(subscription.phone);
+                if (userId) {
+                    // Check promoters first
+                    try {
+                        const promotersResponse = await promoterService.getAllPromoters(token);
+                        const promoters = Array.isArray(promotersResponse) 
+                            ? promotersResponse 
+                            : (promotersResponse?.promoters || promotersResponse?.data?.promoters || []);
+                        
+                        foundPromoter = promoters.find(p => 
+                            String(p._id || p.id) === String(userId)
+                        );
+
+                        if (foundPromoter) {
+                            navigate(`/Owner/AllPromoters?search=${encodeURIComponent(subscription.phone)}`);
+                            return;
+                        }
+
+                        // Check users
+                        const usersResponse = await adminService.getAllUsers(token);
+                        const users = Array.isArray(usersResponse) 
+                            ? usersResponse 
+                            : (usersResponse?.users || usersResponse?.data?.users || []);
+                        
+                        foundUser = users.find(u => 
+                            String(u._id || u.id) === String(userId)
+                        );
+
+                        if (foundUser) {
+                            navigate(`/Owner/Users?search=${encodeURIComponent(subscription.phone)}`);
+                            return;
+                        }
+                    } catch {
+                        // Fall through to error
+                    }
+                }
+            }
+        }
+
+        if (!userId || (!foundUser && !foundPromoter)) {
+            toast.error(
+                t('adminSubscriptions.userNotFound') || 
+                'User not found. Cannot navigate to user page.',
+                ToastOptions("error")
+            );
+            return;
+        }
+
+        // Final check - if we found a promoter, go to promoters page
+        if (foundPromoter) {
+            navigate(`/Owner/AllPromoters?search=${encodeURIComponent(searchValue || userId)}`);
+        } else if (foundUser) {
+            navigate(`/Owner/Users?search=${encodeURIComponent(searchValue || userId)}`);
         }
     };
 
@@ -250,37 +401,6 @@ export default function AdminSubscriptions() {
         }
     };
 
-    // Set premium for user/promoter
-    const handleSetPremium = async (subscription) => {
-        if (!subscription) return;
-        
-        let userId = getUserIdFromSubscription(subscription);
-        
-        // If user ID not found, try to find user by phone number
-        if (!userId && subscription.phone) {
-            userId = await findUserByPhone(subscription.phone);
-        }
-        
-        if (!userId) {
-            toast.warning(
-                t('adminSubscriptions.userNotFound') || 
-                `User ID not found for subscriber "${subscription.subscriberName || subscription.phone}". Premium not activated.`, 
-                ToastOptions("warning")
-            );
-            return;
-        }
-
-        try {
-            const durationDays = subscription.durationDays || subscription.days || 30;
-            // Ensure userId is a string before passing to API
-            await adminService.toggleBrimumeByOwner(String(userId), true, durationDays, token);
-            queryClient.invalidateQueries("getAllusers");
-            queryClient.invalidateQueries("getAllPromoters");
-            toast.success(t('adminSubscriptions.premiumActivated') || 'Premium activated successfully!', ToastOptions("success"));
-        } catch (error) {
-            toast.error(error.message || t('adminSubscriptions.premiumActivationFailed') || 'Failed to activate premium', ToastOptions("error"));
-        }
-    };
 
     return (
         <div className="admin-subscriptions-page">
@@ -354,13 +474,27 @@ export default function AdminSubscriptions() {
                                         <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap" data-label={t("adminSubscriptions.subscriberName") || "Subscriber"}>
                                             <div className="flex items-center gap-2">
                                                 <FaUser className="text-indigo-600" size={16} />
-                                                <span>{subscription.subscriberName || subscription.name || '-'}</span>
+                                                <button
+                                                    onClick={() => handleNavigateToUser(subscription)}
+                                                    className="text-indigo-600 hover:text-indigo-800 hover:underline flex items-center gap-1"
+                                                    title={t("adminSubscriptions.goToUser") || "Go to User/Promoter Page"}
+                                                >
+                                                    <span>{subscription.subscriberName || subscription.name || '-'}</span>
+                                                    <FaExternalLinkAlt size={12} />
+                                                </button>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4" data-label={t("adminSubscriptions.phone") || "Phone"}>
                                             <div className="flex items-center gap-2">
                                                 <FaPhone className="text-gray-400" size={14} />
-                                                <span>{subscription.phone || '-'}</span>
+                                                <button
+                                                    onClick={() => handleNavigateToUser(subscription)}
+                                                    className="text-gray-600 hover:text-indigo-600 hover:underline flex items-center gap-1"
+                                                    title={t("adminSubscriptions.goToUser") || "Go to User/Promoter Page"}
+                                                >
+                                                    <span>{subscription.phone || '-'}</span>
+                                                    <FaExternalLinkAlt size={12} />
+                                                </button>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4" data-label={t("adminSubscriptions.planName") || "Plan"}>
@@ -614,18 +748,16 @@ export default function AdminSubscriptions() {
                                 >
                                     {t('adminSubscriptions.close') || 'Close'}
                                 </button>
-                                {!((enrichedSubscription || selectedSubscription).isBrimume || (enrichedSubscription || selectedSubscription).userId?.isBrimume || (enrichedSubscription || selectedSubscription).createdBy?.isBrimume) && (
-                                    <button
-                                        onClick={() => handleApproveSubscription(selectedSubscription)}
-                                        disabled={isApproving}
-                                        className="admin-subscription-details-modal__btn admin-subscription-details-modal__btn--approve"
-                                    >
-                                        {isApproving 
-                                            ? (t('adminSubscriptions.approving') || 'Approving...')
-                                            : (t('adminSubscriptions.approve') || 'Approve Subscription')
-                                        }
-                                    </button>
-                                )}
+                                <button
+                                    onClick={() => {
+                                        handleNavigateToUser(enrichedSubscription || selectedSubscription);
+                                        setSelectedSubscription(null);
+                                    }}
+                                    className="admin-subscription-details-modal__btn admin-subscription-details-modal__btn--approve"
+                                >
+                                    <FaExternalLinkAlt className="mr-2" />
+                                    {t('adminSubscriptions.goToUser') || 'Go to User/Promoter'}
+                                </button>
                             </div>
                         </motion.div>
                     </motion.div>

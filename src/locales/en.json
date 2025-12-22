@@ -802,7 +802,8 @@
     "makePremium": "Make Premium",
     "premiumExpirationDate": "Premium Expiration Date",
     "subscriptionApprovedAndPremium": "Subscription approved and premium activated successfully!",
-    "premiumActivationFailed": "Premium activation failed. Please activate manually."
+    "premiumActivationFailed": "Premium activation failed. Please activate manually.",
+    "goToUser": "Go to User/Promoter"
   },
   "adminPlans": {
     "title": "Subscription Plans Management",
