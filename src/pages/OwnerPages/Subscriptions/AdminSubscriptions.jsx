@@ -97,11 +97,28 @@ export default function AdminSubscriptions() {
         }
     }, [selectedSubscription, token]);
 
-    // Filter subscriptions
+    // Filter subscriptions - exclude premium users/promoters
     const filteredSubscriptions = useMemo(() => {
         if (!subscriptionsData) return [];
         
         return subscriptionsData.filter((sub) => {
+            // Check if user/promoter has premium status (isBrimume: true)
+            // Check multiple possible locations for premium status
+            const isPremium = sub.isBrimume === true || sub.isBrimume === "true" ||
+                            sub.userId?.isBrimume === true || sub.userId?.isBrimume === "true" ||
+                            sub.createdBy?.isBrimume === true || sub.createdBy?.isBrimume === "true" ||
+                            sub.promoterId?.isBrimume === true || sub.promoterId?.isBrimume === "true" ||
+                            sub.promoter?.isBrimume === true || sub.promoter?.isBrimume === "true" ||
+                            sub.user?.isBrimume === true || sub.user?.isBrimume === "true" ||
+                            sub.subscriberId?.isBrimume === true || sub.subscriberId?.isBrimume === "true" ||
+                            sub.subscriber?.isBrimume === true || sub.subscriber?.isBrimume === "true";
+            
+            // Filter out premium users/promoters
+            if (isPremium) {
+                return false;
+            }
+            
+            // Apply search filter
             if (searchTerm) {
                 const searchLower = searchTerm.toLowerCase();
                 const subscriberName = (sub.subscriberName || sub.name || '').toLowerCase();
