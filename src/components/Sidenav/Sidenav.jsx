@@ -46,11 +46,10 @@ export default function Sidenav({ role }) {
     const [fileType, setfileType] = useState();
     const { pathname } = useLocation();
     const navigate = useNavigate()
-    const { setUserRole } = useAuth();
+    const { logout } = useAuth();
     const { t, language, changeLanguage } = useLanguage();
     const { theme, toggleTheme } = useTheme();
     const [Token] = useCookies(['MegaBox']);
-    const [, , removeToken] = useCookies(['MegaBox']);
     const queryClient = useQueryClient();
 
     const Representation = (path, type, close) => {
@@ -248,24 +247,9 @@ export default function Sidenav({ role }) {
     const filesNotInFolders = filesData?.files?.filter(file => !file.folderId && !file.folder) || [];
 
     const Logout = async () => {
-        try {
-            if (Token.MegaBox) {
-                try {
-                    await notificationService.deleteFcmToken(Token.MegaBox);
-                } catch (error) {
-                    console.warn('Failed to delete FCM token:', error);
-                }
-            }
-        } catch (error) {
-            console.warn('Error during logout cleanup:', error);
-        }
-        
+        await logout();
         toast.success(t('common.logoutSuccess') || 'Logged out successfully', ToastOptions('success'));
-        removeToken("MegaBox", {
-            path: '/',
-        })
-        setUserRole(null)
-        navigate('/login')
+        navigate('/login');
     }
 
     const toggleLanguage = (e) => {

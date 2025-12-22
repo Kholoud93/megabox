@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authService, fileService, notificationService } from '../services/api';
 import { useCookies } from 'react-cookie';
 import { getFCMToken } from '../utils/fcmToken';
+import { jwtDecode } from 'jwt-decode';
+import { useQueryClient } from 'react-query';
 
 const AuthContext = createContext(null);
 
@@ -13,10 +15,57 @@ export const AuthProvider = ({ children }) => {
   const [UserRole, setUserRole] = useState('')
   const [UserRefLink, setUserRefLink] = useState('')
 
-
-  const [, setToken] = useCookies(['MegaBox'], {
+  const [cookies, setToken, removeToken] = useCookies(['MegaBox'], {
     doNotParse: true,
   });
+  
+  const queryClient = useQueryClient();
+
+  const getUserRole = async (id) => {
+    try {
+      setError(null)
+      const role = await authService.userRole(id);
+
+      setUserRole(role?.role);
+      setUserRefLink(role?.referralLink);
+
+      return role?.role;
+
+    } catch (err) {
+
+      setError(err)
+      return false;
+    }
+  }
+
+  // Initialize UserRole from token on page load/reload
+  useEffect(() => {
+    const token = cookies.MegaBox;
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        if (decoded?.role) {
+          setUserRole(decoded.role);
+        }
+        // Optionally fetch referral link if needed
+        if (decoded?.id && !UserRefLink) {
+          getUserRole(decoded.id).catch(() => {
+            // Silently fail if role fetch fails
+          });
+        }
+      } catch (error) {
+        // Invalid token, clear it
+        console.warn('Invalid token on page load:', error);
+        removeToken("MegaBox", {
+          path: '/',
+        });
+        setUserRole('');
+      }
+    } else {
+      setUserRole('');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cookies.MegaBox]);
 
   const login = async (email, password) => {
     try {
@@ -158,23 +207,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const getUserRole = async (id) => {
-    try {
-
-      setError(null)
-      const role = await authService.userRole(id);
-
-      setUserRole(role?.role);
-      setUserRefLink(role?.referralLink);
-
-      return role?.role;
-
-    } catch (err) {
-
-      setError(err)
-      return false;
-    }
-  }
 
   const UploadFile = async (file, token) => {
     try {
@@ -219,6 +251,49 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  // Centralized logout function
+  const logout = async () => {
+    try {
+      const token = cookies.MegaBox;
+      
+      // Delete FCM token on logout
+      if (token) {
+        try {
+          await notificationService.deleteFcmToken(token);
+        } catch (error) {
+          // Silently fail - FCM token deletion is optional
+          console.warn('Failed to delete FCM token:', error);
+        }
+      }
+    } catch (error) {
+      // Continue with logout even if FCM token deletion fails
+      console.warn('Error during logout cleanup:', error);
+    }
+    
+    // Clear React Query cache
+    queryClient.clear();
+    
+    // Clear all auth state
+    setUser(null);
+    setUserRole('');
+    setUserRefLink('');
+    setTempEmail('');
+    setError(null);
+    
+    // Remove cookie with all necessary options
+    removeToken("MegaBox", {
+      path: '/',
+    });
+    
+    // Also try to remove cookie manually as a fallback (multiple attempts to ensure it's cleared)
+    document.cookie = "MegaBox=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+    document.cookie = "MegaBox=; path=/; domain=" + window.location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+    // Try without domain for localhost
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      document.cookie = "MegaBox=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+    }
+  }
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -238,7 +313,8 @@ export const AuthProvider = ({ children }) => {
       UploadFile,
       DeleteFile,
       ChangeFileName,
-      signupWithRef
+      signupWithRef,
+      logout
     }}>
       {children}
     </AuthContext.Provider>

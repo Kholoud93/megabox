@@ -125,19 +125,19 @@ export const promoterService = {
         }
     },
 
-    // Get referral statistics
-    getReferralStats: async (token) => {
-        try {
-            const response = await api.get('/auth/getReferralStats', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            return response.data;
-        } catch (error) {
-            throw error.response?.data || error.message;
-        }
-    },
+    // Get referral statistics - REMOVED: API doesn't exist
+    // getReferralStats: async (token) => {
+    //     try {
+    //         const response = await api.get('/auth/getReferralStats', {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`
+    //             }
+    //         });
+    //         return response.data;
+    //     } catch (error) {
+    //         throw error.response?.data || error.message;
+    //     }
+    // },
 
 };
 

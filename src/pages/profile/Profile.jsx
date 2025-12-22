@@ -25,12 +25,23 @@ export default function Profile() {
     const location = useLocation();
     const isOwner = location.pathname.startsWith('/Owner');
 
+    // Fetch user data first (needed for other queries)
+    const { data: userData, isLoading, error: userError } = useQuery('userProfile', () => userService.getUserInfo(Token.MegaBox), {
+        onSuccess: () => {
+            setImageError(false);
+        },
+        onError: () => {
+            toast.error('Failed to fetch user data', ToastOptions('error'));
+        }
+    });
+
     const GetUserStorage = async () => {
         const response = await fileService.getUserStorageUsage(Token.MegaBox);
         return response?.data || response;
     }
 
     const { data: userStorage, isLoading: StorageLoading } = useQuery("Get user storage", GetUserStorage, {
+        enabled: !!Token.MegaBox,
         cacheTime: 3000000
     })
 
@@ -51,27 +62,33 @@ export default function Profile() {
                 };
             }
             
-            return data;
+            // Return default values if no data
+            return {
+                totalDownloads: data?.totalDownloads || 0,
+                totalViews: data?.totalViews || 0,
+                totalFiles: 0,
+                totalShares: 0,
+                totalFolders: 0,
+                storageUsedGB: 0,
+            };
         } catch {
-            return null;
+            // Return default values on error
+            return {
+                totalDownloads: 0,
+                totalViews: 0,
+                totalFiles: 0,
+                totalShares: 0,
+                totalFolders: 0,
+                storageUsedGB: 0,
+            };
         }
     }
 
     const { data: userAnalytics, isLoading: analyticsLoading } = useQuery('userAnalytics', GetUserAnalytics, {
-        enabled: !!Token.MegaBox,
+        enabled: !!Token.MegaBox && !isOwner,
         cacheTime: 300000,
         retry: 1
     })
-
-    // Fetch user data
-    const { data: userData, isLoading, error: userError } = useQuery('userProfile', () => userService.getUserInfo(Token.MegaBox), {
-        onSuccess: () => {
-            setImageError(false);
-        },
-        onError: () => {
-            toast.error('Failed to fetch user data', ToastOptions('error'));
-        }
-    });
 
     // Reset image error when userData or profilePic changes
     useEffect(() => {
@@ -558,7 +575,7 @@ export default function Profile() {
                             <>
                                 {/* Analytics Cards Grid */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-5 mb-6">
-                                    {/* Total Files Card */}
+                                    {/* Total Files Card - from storage API */}
                                     <motion.div
                                         className="bg-gradient-to-br from-indigo-50 to-indigo-100 border-2 border-indigo-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow"
                                         initial={{ opacity: 0, scale: 0.9 }}
@@ -574,7 +591,7 @@ export default function Profile() {
                                         </div>
                                         <p className="text-xs sm:text-sm text-indigo-600 font-medium mb-2">{t('profile.analytics.totalFiles')}</p>
                                         <p className="text-2xl sm:text-3xl font-bold text-indigo-900">
-                                            {userAnalytics?.totalFiles ?? 0}
+                                            {userStorage?.totalFiles ?? 0}
                                         </p>
                                     </motion.div>
 
@@ -619,47 +636,8 @@ export default function Profile() {
                                         </p>
                                     </motion.div>
 
-                                    {/* Total Shares Card */}
-                                    <motion.div
-                                        className="bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow"
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ delay: 0.8 }}
-                                    >
-                                        <div className="flex items-center justify-between mb-2">
-                                            <div className="bg-purple-500 rounded-lg p-2">
-                                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                        <p className="text-xs sm:text-sm text-purple-600 font-medium mb-2">{t('profile.analytics.totalShares')}</p>
-                                        <p className="text-2xl sm:text-3xl font-bold text-purple-900">
-                                            {userAnalytics?.totalShares ?? 0}
-                                        </p>
-                                    </motion.div>
 
-                                    {/* Total Folders Card */}
-                                    <motion.div
-                                        className="bg-gradient-to-br from-orange-50 to-orange-100 border-2 border-orange-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow"
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ delay: 0.9 }}
-                                    >
-                                        <div className="flex items-center justify-between mb-2">
-                                            <div className="bg-orange-500 rounded-lg p-2">
-                                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                        <p className="text-xs sm:text-sm text-orange-600 font-medium mb-2">{t('profile.analytics.totalFolders')}</p>
-                                        <p className="text-2xl sm:text-3xl font-bold text-orange-900">
-                                            {userAnalytics?.totalFolders ?? 0}
-                                        </p>
-                                    </motion.div>
-
-                                    {/* Storage Used Card */}
+                                    {/* Storage Used Card - from storage API */}
                                     <motion.div
                                         className="bg-gradient-to-br from-pink-50 to-pink-100 border-2 border-pink-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow"
                                         initial={{ opacity: 0, scale: 0.9 }}
@@ -675,82 +653,9 @@ export default function Profile() {
                                         </div>
                                         <p className="text-xs sm:text-sm text-pink-600 font-medium mb-2">{t('profile.analytics.storageUsed')}</p>
                                         <p className="text-2xl sm:text-3xl font-bold text-pink-900">
-                                            {userAnalytics?.storageUsedGB ?? userAnalytics?.totalStorageUsed ?? 0} GB
+                                            {userStorage?.totalUsedGB ?? 0} GB
                                         </p>
                                     </motion.div>
-                                </div>
-
-                                {/* Analytics Table (Optional - for detailed view) */}
-                                <div className="mt-6 overflow-x-auto">
-                                    <div className="bg-indigo-50 rounded-lg border-2 border-indigo-100 p-4">
-                                        <h3 className={`text-sm sm:text-base font-semibold text-indigo-900 mb-4 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                            {t('profile.analytics.totalFiles')} - {t('profile.analytics.detailedView') || 'Detailed View'}
-                                        </h3>
-                                        <div className="bg-white rounded-lg overflow-hidden">
-                                            <table className="w-full text-sm">
-                                                <thead className="bg-indigo-100">
-                                                    <tr>
-                                                        <th className={`px-4 py-3 text-xs sm:text-sm font-semibold text-indigo-900 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                            {t('profile.analytics.metric') || 'Metric'}
-                                                        </th>
-                                                        <th className={`px-4 py-3 text-xs sm:text-sm font-semibold text-indigo-900 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                            {t('profile.analytics.value') || 'Value'}
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-indigo-100">
-                                                    <tr className="hover:bg-indigo-50 transition-colors">
-                                                        <td className={`px-4 py-3 text-indigo-700 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                            {t('profile.analytics.totalFiles')}
-                                                        </td>
-                                                        <td className={`px-4 py-3 font-semibold text-indigo-900 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                            {userAnalytics?.totalFiles ?? 0}
-                                                        </td>
-                                                    </tr>
-                                                    <tr className="hover:bg-indigo-50 transition-colors">
-                                                        <td className={`px-4 py-3 text-indigo-700 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                            {t('profile.analytics.totalViews')}
-                                                        </td>
-                                                        <td className={`px-4 py-3 font-semibold text-indigo-900 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                            {userAnalytics?.totalViews ?? 0}
-                                                        </td>
-                                                    </tr>
-                                                    <tr className="hover:bg-indigo-50 transition-colors">
-                                                        <td className={`px-4 py-3 text-indigo-700 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                            {t('profile.analytics.totalDownloads')}
-                                                        </td>
-                                                        <td className={`px-4 py-3 font-semibold text-indigo-900 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                            {userAnalytics?.totalDownloads ?? 0}
-                                                        </td>
-                                                    </tr>
-                                                    <tr className="hover:bg-indigo-50 transition-colors">
-                                                        <td className={`px-4 py-3 text-indigo-700 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                            {t('profile.analytics.totalShares')}
-                                                        </td>
-                                                        <td className={`px-4 py-3 font-semibold text-indigo-900 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                            {userAnalytics?.totalShares ?? 0}
-                                                        </td>
-                                                    </tr>
-                                                    <tr className="hover:bg-indigo-50 transition-colors">
-                                                        <td className={`px-4 py-3 text-indigo-700 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                            {t('profile.analytics.totalFolders')}
-                                                        </td>
-                                                        <td className={`px-4 py-3 font-semibold text-indigo-900 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                            {userAnalytics?.totalFolders ?? 0}
-                                                        </td>
-                                                    </tr>
-                                                    <tr className="hover:bg-indigo-50 transition-colors">
-                                                        <td className={`px-4 py-3 text-indigo-700 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                            {t('profile.analytics.storageUsed')}
-                                                        </td>
-                                                        <td className={`px-4 py-3 font-semibold text-indigo-900 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                                                            {userAnalytics?.storageUsedGB ?? userAnalytics?.totalStorageUsed ?? 0} GB
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
                                 </div>
                             </>
                         )}
