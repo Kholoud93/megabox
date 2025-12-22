@@ -68,7 +68,20 @@ export default function Subscription() {
     const hasWatchingPlan = userData?.watchingplan === "true" || userData?.watchingplan === true;
     const hasDownloadsPlan = userData?.Downloadsplan === "true" || userData?.Downloadsplan === true;
 
-
+    // Check premium status and expiration
+    const isPremium = userData?.isBrimume === true || userData?.isBrimume === "true";
+    const premiumExpiration = userData?.premiumExpiration || userData?.premiumExpirationDate || userData?.premiumExpireDate;
+    const userSubscriptionPlan = userData?.subscriptionPlan || userData?.planName || userData?.plan?.name;
+    
+    // Check if premium subscription is still active (not expired)
+    const isPremiumActive = isPremium && premiumExpiration && new Date(premiumExpiration) > new Date();
+    
+    // Check if a plan matches the user's subscription
+    const isPlanSubscribed = (plan) => {
+        if (!isPremiumActive || !userSubscriptionPlan) return false;
+        const planName = plan.name || plan.planName || plan.planKey || '';
+        return planName.toLowerCase() === userSubscriptionPlan.toLowerCase();
+    };
     
     // Check if user has any legacy plans (watchingplan or Downloadsplan)
     const hasLegacyPlan = hasWatchingPlan || hasDownloadsPlan;
@@ -263,13 +276,22 @@ export default function Subscription() {
                                             </ul>
                                         {isPromoter ? (
                                             <div className="subscription-page__plan-actions">
-                                                <button
-                                                    onClick={() => handleSubscribeToPlan(plan)}
-                                                    className="subscription-page__plan-button subscription-page__plan-button--subscribe"
-                                                    disabled={isSubmitting}
-                                                >
-                                                    {t('subscriptionPage.subscribe') || 'Subscribe'}
-                                                </button>
+                                                {isPlanSubscribed(plan) ? (
+                                                    <button
+                                                        disabled
+                                                        className="subscription-page__plan-button subscription-page__plan-button--subscribed"
+                                                    >
+                                                        {t('subscriptionPage.subscribed') || 'Subscribed'}
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => handleSubscribeToPlan(plan)}
+                                                        className="subscription-page__plan-button subscription-page__plan-button--subscribe"
+                                                        disabled={isSubmitting}
+                                                    >
+                                                        {t('subscriptionPage.subscribe') || 'Subscribe'}
+                                                    </button>
+                                                )}
                                                 <button
                                                     onClick={() => handleCreateSubscription(plan)}
                                                     className="subscription-page__plan-button subscription-page__plan-button--create"
@@ -278,12 +300,21 @@ export default function Subscription() {
                                                 </button>
                                             </div>
                                         ) : (
-                                            <button
-                                                onClick={() => navigate('/Subscribe')}
-                                                className="subscription-page__plan-button"
-                                            >
-                                                {t('subscriptionPage.subscribe') || 'Subscribe'}
-                                            </button>
+                                            isPlanSubscribed(plan) ? (
+                                                <button
+                                                    disabled
+                                                    className="subscription-page__plan-button subscription-page__plan-button--subscribed"
+                                                >
+                                                    {t('subscriptionPage.subscribed') || 'Subscribed'}
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => navigate('/Subscribe')}
+                                                    className="subscription-page__plan-button"
+                                                >
+                                                    {t('subscriptionPage.subscribe') || 'Subscribe'}
+                                                </button>
+                                            )
                                         )}
                                         </div>
                                     </motion.div>

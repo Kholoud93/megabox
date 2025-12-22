@@ -58,6 +58,21 @@ export default function Subscribe() {
         }
     );
 
+    // Check premium status and expiration
+    const isPremium = userData?.isBrimume === true || userData?.isBrimume === "true";
+    const premiumExpiration = userData?.premiumExpiration || userData?.premiumExpirationDate || userData?.premiumExpireDate;
+    const userSubscriptionPlan = userData?.subscriptionPlan || userData?.planName || userData?.plan?.name;
+    
+    // Check if premium subscription is still active (not expired)
+    const isPremiumActive = isPremium && premiumExpiration && new Date(premiumExpiration) > new Date();
+    
+    // Check if a plan matches the user's subscription
+    const isPlanSubscribed = (plan) => {
+        if (!isPremiumActive || !userSubscriptionPlan) return false;
+        const planName = plan.name || plan.planName || plan.planKey || '';
+        return planName.toLowerCase() === userSubscriptionPlan.toLowerCase();
+    };
+
 
     // Payment methods
     const paymentMethods = [
@@ -230,13 +245,22 @@ export default function Subscribe() {
                                                     </li>
                                                 )}
                                             </ul>
-                                            <button
-                                                onClick={() => handleSubscribe(plan)}
-                                                className="subscribe-page__plan-button"
-                                                disabled={isSubmitting}
-                                            >
-                                                {t('subscribe.subscribe') || 'Subscribe'}
-                                            </button>
+                                            {isPlanSubscribed(plan) ? (
+                                                <button
+                                                    disabled
+                                                    className="subscribe-page__plan-button subscribe-page__plan-button--subscribed"
+                                                >
+                                                    {t('subscribe.subscribed') || 'Subscribed'}
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => handleSubscribe(plan)}
+                                                    className="subscribe-page__plan-button"
+                                                    disabled={isSubmitting}
+                                                >
+                                                    {t('subscribe.subscribe') || 'Subscribe'}
+                                                </button>
+                                            )}
                                         </div>
                                     </motion.div>
                                 ))}
