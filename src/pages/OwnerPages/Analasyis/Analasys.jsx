@@ -35,6 +35,13 @@ export default function Analasys() {
         { enabled: !!token }
     );
 
+    // Fetch approved withdrawals
+    const { data: approvedWithdrawalsData, isLoading: approvedWithdrawalsLoading } = useQuery(
+        ['approvedWithdrawals'],
+        () => adminService.getApprovedWithdrawals(token),
+        { enabled: !!token }
+    );
+
     // Fetch all promoters
     const { data: promotersData, isLoading: promotersLoading } = useQuery(
         ['allPromoters'],
@@ -233,7 +240,7 @@ export default function Analasys() {
         { enabled: !!token && !!promotersData }
     );
 
-    const isLoading = usersLoading || withdrawalsLoading || promotersLoading || platformStatsLoading || userStatsLoading;
+    const isLoading = usersLoading || withdrawalsLoading || approvedWithdrawalsLoading || promotersLoading || platformStatsLoading || userStatsLoading;
 
     // Normalize promotersData to ensure it's always an array
     const normalizedPromotersData = useMemo(() => {
@@ -249,14 +256,48 @@ export default function Analasys() {
         return [];
     }, [promotersData]);
 
+    // Normalize withdrawalsData to ensure it's always an array
+    const normalizedWithdrawalsData = useMemo(() => {
+        if (Array.isArray(withdrawalsData)) {
+            return withdrawalsData;
+        }
+        if (withdrawalsData?.withdrawals && Array.isArray(withdrawalsData.withdrawals)) {
+            return withdrawalsData.withdrawals;
+        }
+        if (withdrawalsData?.data?.withdrawals && Array.isArray(withdrawalsData.data.withdrawals)) {
+            return withdrawalsData.data.withdrawals;
+        }
+        if (withdrawalsData?.data && Array.isArray(withdrawalsData.data)) {
+            return withdrawalsData.data;
+        }
+        return [];
+    }, [withdrawalsData]);
+
+    // Normalize approved withdrawals data to ensure it's always an array
+    const normalizedApprovedWithdrawalsData = useMemo(() => {
+        if (Array.isArray(approvedWithdrawalsData)) {
+            return approvedWithdrawalsData;
+        }
+        if (approvedWithdrawalsData?.withdrawals && Array.isArray(approvedWithdrawalsData.withdrawals)) {
+            return approvedWithdrawalsData.withdrawals;
+        }
+        if (approvedWithdrawalsData?.data?.withdrawals && Array.isArray(approvedWithdrawalsData.data.withdrawals)) {
+            return approvedWithdrawalsData.data.withdrawals;
+        }
+        if (approvedWithdrawalsData?.data && Array.isArray(approvedWithdrawalsData.data)) {
+            return approvedWithdrawalsData.data;
+        }
+        return [];
+    }, [approvedWithdrawalsData]);
+
     // Calculate statistics
     const totalUsers = usersData?.length || 0;
     const totalPromoters = normalizedPromotersData.length || 0;
-    const totalWithdrawals = withdrawalsData?.withdrawals?.length || 0;
-    const totalWithdrawalAmount = withdrawalsData?.withdrawals?.reduce((sum, w) => sum + (parseFloat(w.amount) || 0), 0) || 0;
-    const pendingWithdrawals = withdrawalsData?.withdrawals?.filter(w => w.status === 'pending')?.length || 0;
-    const approvedWithdrawals = withdrawalsData?.withdrawals?.filter(w => w.status === 'approved')?.length || 0;
-    const currency = withdrawalsData?.withdrawals?.[0]?.currency || 'USD';
+    const totalWithdrawals = normalizedWithdrawalsData.length || 0;
+    const totalWithdrawalAmount = normalizedWithdrawalsData.reduce((sum, w) => sum + (parseFloat(w.amount) || 0), 0) || 0;
+    const pendingWithdrawals = normalizedWithdrawalsData.filter(w => w.status === 'pending')?.length || 0;
+    const approvedWithdrawals = normalizedApprovedWithdrawalsData.length || 0;
+    const currency = normalizedWithdrawalsData[0]?.currency || 'USD';
 
     // Calculate promoter statistics
     const promotersWithPlans = normalizedPromotersData.filter(p =>

@@ -54,7 +54,16 @@ export default function Withdrawals() {
         if (viewMode === 'approved' || showApprovedOnly) {
             baseWithdrawals = approvedWithdrawalsData?.withdrawals || approvedWithdrawalsData || [];
         } else {
-            baseWithdrawals = withdrawalsData?.withdrawals || withdrawalsData || [];
+            // For 'all' mode, show only pending and rejected (exclude approved)
+            const allWithdrawals = withdrawalsData?.withdrawals || withdrawalsData || [];
+            // Handle case where API returns array directly
+            const withdrawalsArray = Array.isArray(allWithdrawals) 
+                ? allWithdrawals 
+                : (allWithdrawals.withdrawals || []);
+            // Filter to show only pending and rejected
+            baseWithdrawals = withdrawalsArray.filter(w => 
+                w.status === 'pending' || w.status === 'rejected'
+            );
         }
 
         return baseWithdrawals;
@@ -307,10 +316,10 @@ export default function Withdrawals() {
                                     }}
                                 >
                                     <span className="filter-title">
-                                        {t('adminWithdrawals.allWithdrawals') || 'All'}
+                                        {t('adminWithdrawals.pendingAndRejected') || 'Pending & Rejected'}
                                     </span>
                                     <span className="filter-desc">
-                                        {t('adminWithdrawals.allWithdrawalsDesc') || 'View all withdrawal requests'}
+                                        {t('adminWithdrawals.pendingAndRejectedDesc') || 'View pending and rejected withdrawal requests'}
                                     </span>
                                 </button>
                                 <button
