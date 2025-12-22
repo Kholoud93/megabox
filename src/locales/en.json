@@ -28,6 +28,9 @@
     "description": "Easy to use, private and secure, reliable.",
     "getStarted": "Get Started",
     "download": "Download",
+    "downloading": "Loading...",
+    "downloadSuccess": "App link retrieved successfully",
+    "downloadError": "Failed to get app download link",
     "footer": "Your free and secure cloud storage by MegaBox"
   },
   "features": {

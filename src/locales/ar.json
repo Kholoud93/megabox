@@ -28,6 +28,9 @@
     "description": "سهل الاستخدام، خاص وآمن، وموثوق.",
     "getStarted": "ابدأ الآن",
     "download": "تحميل",
+    "downloading": "جاري التحميل...",
+    "downloadSuccess": "تم جلب رابط التطبيق بنجاح",
+    "downloadError": "فشل في الحصول على رابط تحميل التطبيق",
     "footer": "تخزينك السحابي المجاني والآمن من MegaBox"
   },
   "features": {

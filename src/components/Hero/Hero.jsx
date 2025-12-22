@@ -4,12 +4,17 @@ import { motion } from 'framer-motion'
 import './Hero.scss'
 import { useCookies } from 'react-cookie';
 import { useLanguage } from '../../context/LanguageContext';
+import { authService } from '../../services/authService';
+import { toast } from 'react-toastify';
+import { ToastOptions } from '../../helpers/ToastOptions';
+import { useState } from 'react';
 
 const Hero = () => {
 
   const [MegaBox] = useCookies(['MegaBox']);
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const [isLoadingAppLink, setIsLoadingAppLink] = useState(false);
 
   const HandleMainNavigate = () => {
 
@@ -20,6 +25,73 @@ const Hero = () => {
     }
 
   }
+
+  // Helper function to detect user's platform
+  const detectPlatform = () => {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    
+    // Check for Android
+    if (/android/i.test(userAgent)) {
+      return 'android';
+    }
+    
+    // Check for iOS
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+      return 'ios';
+    }
+    
+    // Default to android if platform cannot be detected
+    return 'android';
+  };
+
+  const handleDownloadClick = async () => {
+    setIsLoadingAppLink(true);
+    try {
+      // Call the API to get app download links
+      // Note: This endpoint might work without auth token for public access
+      const response = await authService.getAppLink(MegaBox.MegaBox || null);
+      
+      // Handle new response structure with links array
+      let appLink = null;
+      
+      if (response?.links && Array.isArray(response.links) && response.links.length > 0) {
+        // Get active links only
+        const activeLinks = response.links.filter(link => link.isActive);
+        
+        if (activeLinks.length > 0) {
+          // Try to find link matching user's platform
+          const userPlatform = detectPlatform();
+          const platformLink = activeLinks.find(link => 
+            link.platform?.toLowerCase() === userPlatform
+          );
+          
+          // Use platform-specific link if found, otherwise use first active link
+          appLink = platformLink?.link || activeLinks[0]?.link;
+        }
+      } else {
+        // Fallback to old response structure
+        appLink = response?.appLink || response?.link || response?.url || 
+                 response?.data?.appLink || response?.data?.link || response?.data?.url;
+      }
+      
+      if (appLink) {
+        // Show success toast with message from response if available
+        const successMessage = response?.message || t('hero.downloadSuccess') || 'App link retrieved successfully';
+        toast.success(successMessage, ToastOptions("success"));
+        
+        // Open the link in a new window
+        window.open(appLink, '_blank');
+      } else {
+        toast.error(t('hero.downloadError') || 'App download link not found', ToastOptions("error"));
+      }
+    } catch (error) {
+      // If API call fails (e.g., no auth token), fallback to scrolling to pricing section
+      console.log('App link API call failed, falling back to pricing section:', error);
+      scrollToSection('pricing');
+    } finally {
+      setIsLoadingAppLink(false);
+    }
+  };
 
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId)
@@ -76,10 +148,14 @@ const Hero = () => {
                 {t('hero.getStarted')}
               </button>
               <button
-                onClick={() => scrollToSection('pricing')}
+                onClick={handleDownloadClick}
                 className="hero__button hero__button--secondary"
+                disabled={isLoadingAppLink}
               >
-                {t('hero.download')}
+                {isLoadingAppLink 
+                  ? (t('hero.downloading') || 'Loading...') 
+                  : t('hero.download')
+                }
               </button>
             </motion.div>
             <motion.p

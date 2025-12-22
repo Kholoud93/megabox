@@ -153,10 +153,13 @@ export const authService = {
     // Get app download link
     getAppLink: async (token) => {
         try {
+            const headers = {};
+            // Only add Authorization header if token is provided
+            if (token) {
+                headers.Authorization = `Bearer ${token}`;
+            }
             const response = await api.get('/auth/getAppLink', {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+                headers
             });
             return response.data;
         } catch (error) {
