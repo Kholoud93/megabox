@@ -5,10 +5,8 @@ import { useCookies } from 'react-cookie';
 import { jwtDecode } from 'jwt-decode';
 import Loading from '../components/Loading/Loading';
 
-// TESTING MODE: Set to true to allow access to Owner pages for testing
-// WARNING: Set this back to false before deploying to production!
-const TESTING_MODE = false; // Disabled for production - Owner pages are now protected
-const ALLOW_OWNER_ACCESS_IN_TESTING = false; // Disabled - Owner pages are now protected
+const TESTING_MODE = false;
+const ALLOW_OWNER_ACCESS_IN_TESTING = false;
 
 export default function RoleProtector({ children, requiredRole }) {
     const { getUserRole } = useAuth();
@@ -17,7 +15,6 @@ export default function RoleProtector({ children, requiredRole }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // TESTING MODE: Completely bypass all checks for Owner pages
         if (TESTING_MODE && ALLOW_OWNER_ACCESS_IN_TESTING && requiredRole === "Owner") {
             setLoading(false);
             return;
@@ -31,8 +28,13 @@ export default function RoleProtector({ children, requiredRole }) {
 
         try {
             const decoded = jwtDecode(token);
-            getUserRole(decoded?.id).then(fetchedRole => {
-                setRole(fetchedRole);
+            const tokenRole = decoded?.role;
+            getUserRole(decoded?.id).then((fetchedRole) => {
+                const apiRole =
+                    fetchedRole === false || fetchedRole == null || fetchedRole === undefined
+                        ? null
+                        : fetchedRole;
+                setRole(apiRole ?? tokenRole ?? null);
                 setLoading(false);
             });
         } catch {
@@ -40,7 +42,6 @@ export default function RoleProtector({ children, requiredRole }) {
         }
     }, [cookies, getUserRole, requiredRole]);
 
-    // TESTING MODE: Completely bypass all checks for Owner pages
     if (TESTING_MODE && ALLOW_OWNER_ACCESS_IN_TESTING && requiredRole === "Owner") {
         return children;
     }
@@ -53,15 +54,13 @@ export default function RoleProtector({ children, requiredRole }) {
         return children;
     }
 
-    // Redirect to appropriate dashboard based on user's actual role
     if (role === "Owner") {
         return <Navigate to="/Owner/profile" replace />;
     }
-    
+
     if (role === "User") {
         return <Navigate to="/dashboard" replace />;
     }
 
-    // Default fallback
     return <Navigate to="/" replace />;
 }
