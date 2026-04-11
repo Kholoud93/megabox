@@ -7,10 +7,9 @@ export const api = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
-    timeout: 15000, // 15 seconds timeout for all requests
+    timeout: 15000,
 });
 
-// Add request interceptor for better error handling
 api.interceptors.request.use(
     (config) => {
         return config;
@@ -20,7 +19,6 @@ api.interceptors.request.use(
     }
 );
 
-// Add response interceptor for better error handling
 api.interceptors.response.use(
     (response) => {
         return response;
