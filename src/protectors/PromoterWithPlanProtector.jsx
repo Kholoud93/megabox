@@ -23,7 +23,6 @@ export default function PromoterWithPlanProtector({ children }) {
                 const hasDownloadsPlan = userData?.Downloadsplan === "true" || userData?.Downloadsplan === true;
                 const hasWatchingPlan = userData?.watchingplan === "true" || userData?.watchingplan === true;
 
-                // User must be a promoter AND have at least one plan
                 setHasAccess(isPromoter && (hasDownloadsPlan || hasWatchingPlan));
                 setLoading(false);
             } catch (error) {
@@ -45,4 +44,3 @@ export default function PromoterWithPlanProtector({ children }) {
 
     return <Navigate to="/dashboard" replace />;
 }
-

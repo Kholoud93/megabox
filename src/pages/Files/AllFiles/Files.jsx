@@ -114,7 +114,6 @@ export default function Files() {
             }
         }, 10);
 
-        // CRITICAL: Don't use capture phase - it prevents child elements from handling clicks
         // Use bubble phase instead
         document.addEventListener('mousedown', handleClickOutside, false);
         document.addEventListener('touchstart', handleClickOutside, false);
@@ -727,7 +726,6 @@ export default function Files() {
             queryClient.invalidateQueries({ queryKey: ["GetUserFolders"] });
             queryClient.invalidateQueries({ queryKey: ["userFolders"] });
             queryClient.invalidateQueries({ queryKey: ["GetArchivedFilesCount"] });
-            // CRITICAL: Invalidate getMyArchives to add items to archived list
             queryClient.invalidateQueries({ queryKey: ["getMyArchives"] });
             
             // Update archived count
@@ -804,7 +802,6 @@ export default function Files() {
             queryClient.invalidateQueries({ queryKey: ["GetUserFolders"] });
             queryClient.invalidateQueries({ queryKey: ["userFolders"] });
             queryClient.invalidateQueries({ queryKey: ["GetArchivedFilesCount"] });
-            // CRITICAL: Invalidate getMyArchives to remove items from archived list
             queryClient.invalidateQueries({ queryKey: ["getMyArchives"] });
             
             setIsSelectionMode(false);
@@ -1010,7 +1007,6 @@ export default function Files() {
                                                     : { right: `${dropdownPosition.right}px`, left: 'auto' }
                                                 ),
                                             }}
-                                            // CRITICAL: Don't stop propagation or prevent default here
                                             // Let child elements handle their own events
                                         >
                                         <Link

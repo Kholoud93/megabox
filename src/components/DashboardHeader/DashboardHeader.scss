@@ -7,7 +7,7 @@
   top: 0 !important;
   z-index: 9999999 !important; // Highest z-index for the entire header
   width: 100% !important;
-  // CRITICAL: Don't create stacking context that blocks dropdown on mobile
+
   isolation: auto !important;
   
   @media (max-width: 768px) {
@@ -237,16 +237,16 @@
     z-index: 9999998 !important; // Just below dropdown
     pointer-events: auto !important;
     background: transparent !important;
-    // CRITICAL: Don't create stacking context that blocks dropdown
+
     isolation: auto !important;
-    // CRITICAL: Ensure backdrop doesn't block events to dropdown
+
     // The dropdown's higher z-index should allow it to receive events first
     touch-action: manipulation !important;
     
     // Show overlay in mobile view
     @include mix.media-breakpoint-down(md) {
       background: rgba(0, 0, 0, 0.3) !important;
-      // CRITICAL: On mobile, backdrop should not block dropdown
+
       // Dropdown's higher z-index ensures it receives events first
       // JavaScript will handle checking if touch is on dropdown
       pointer-events: auto !important;
@@ -264,7 +264,7 @@
     -webkit-touch-callout: none !important;
     user-select: none !important;
     -webkit-user-select: none !important;
-    isolation: auto !important; // CRITICAL: Don't create stacking context
+    isolation: auto !important;
     will-change: transform; // Optimize for transforms
     
     // Ensure all child elements (links, buttons) are clickable
@@ -294,7 +294,7 @@
       isolation: auto !important; // Explicitly remove isolation on mobile
       pointer-events: auto !important;
       touch-action: manipulation !important;
-      // CRITICAL: Ensure dropdown is above everything on mobile
+
       z-index: 9999999 !important;
       position: fixed !important;
       
@@ -406,7 +406,7 @@
   }
 }
 
-// CRITICAL FIX: Profile dropdown mobile interaction issues
+
 // This fixes the non-responsive dropdown clicks on mobile devices
 
 // 1. MOST IMPORTANT: Fix the backdrop to NOT block dropdown clicks
@@ -457,7 +457,7 @@
 .files-header__profile-dropdown {
   position: fixed !important;
   z-index: 9999 !important; // Above backdrop
-  isolation: auto !important; // CRITICAL: Don't create stacking context
+  isolation: auto !important;
   pointer-events: auto !important;
   touch-action: manipulation !important;
   

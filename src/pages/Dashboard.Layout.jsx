@@ -19,7 +19,6 @@ export default function DashboardLayout({ role }) {
 
     const [RoleLoading, setRoleLoading] = useState(true)
 
-    // Get user data for BottomNavigation
     const { data: userData } = useQuery(
         ['userAccount'],
         () => userService.getUserInfo(Token.MegaBox),
@@ -61,23 +60,15 @@ export default function DashboardLayout({ role }) {
                 return;
             }
 
-            // Use token role as primary source of truth
-            // Token role is more reliable than API call which might have delays or inconsistencies
-            
-            // Check if user is Owner trying to access non-Owner routes
             if (tokenRole === "Owner" && role !== "Owner") {
-                // Only redirect if not already on an Owner route
                 if (!location.pathname.startsWith("/Owner")) {
                     navigate("/Owner/profile", { replace: true });
                     return;
                 }
             }
 
-            // Check if non-Owner is trying to access Owner routes
             if (tokenRole !== "Owner" && role === "Owner") {
-                // Only redirect if currently on Owner route
                 if (location.pathname.startsWith("/Owner")) {
-                    // Redirect to appropriate route based on token role
                     if (tokenRole === "User") {
                         navigate("/dashboard", { replace: true });
                     } else {
@@ -87,42 +78,35 @@ export default function DashboardLayout({ role }) {
                 }
             }
 
-            // If token role matches the route role, allow access and stop loading
-            if ((tokenRole === "Owner" && role === "Owner") || 
+            if ((tokenRole === "Owner" && role === "Owner") ||
                 (tokenRole !== "Owner" && role !== "Owner")) {
                 setRoleLoading(false);
                 return;
             }
 
-            // Only use API role as a secondary check if token role is unclear
             auth.getUserRole(idTracker()).then(fetchedRole => {
-                // Only redirect if API role differs from token role AND there's a mismatch with current route
                 if (fetchedRole === "Owner" && tokenRole !== "Owner" && role !== "Owner") {
-                    // API says Owner but token says non-Owner - trust token, don't redirect
                     setRoleLoading(false);
                     return;
                 }
-                
+
                 if (fetchedRole !== "Owner" && tokenRole === "Owner" && role === "Owner") {
-                    // API says non-Owner but token says Owner - trust token, don't redirect
                     setRoleLoading(false);
                     return;
                 }
-                
-                // If both token and API agree, proceed with normal checks
+
                 if (fetchedRole === "Owner" && role !== "Owner" && !location.pathname.startsWith("/Owner")) {
                     navigate("/Owner/profile", { replace: true });
                     return;
                 }
-                
+
                 if (fetchedRole !== "Owner" && role === "Owner" && location.pathname.startsWith("/Owner")) {
                     navigate("/dashboard", { replace: true });
                     return;
                 }
-                
+
                 setRoleLoading(false);
             }).catch(() => {
-                // If API call fails, trust token role and allow access
                 setRoleLoading(false);
             });
         } else {
@@ -147,14 +131,14 @@ export default function DashboardLayout({ role }) {
             </Outlet>
         </div>
         {role === "User" && (
-            <BottomNavigation 
-                role={role} 
+            <BottomNavigation
+                role={role}
                 isPromoter={isPromoter}
                 userData={userData}
             />
         )}
         {role === "Owner" && (
-            <BottomNavigation 
+            <BottomNavigation
                 role={role}
             />
         )}

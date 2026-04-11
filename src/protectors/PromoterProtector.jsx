@@ -45,4 +45,3 @@ export default function PromoterProtector({ children }) {
 
     return <Navigate to="/dashboard" replace />;
 }
-

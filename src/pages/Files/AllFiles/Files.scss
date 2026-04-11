@@ -191,7 +191,7 @@
   overflow: visible; // Changed from hidden to allow dropdown to show
   width: 100%;
   max-width: 100%;
-  // CRITICAL: Don't create stacking context that blocks dropdown on mobile
+
   isolation: auto !important;
   
   // Prevent horizontal overflow on mobile when sidebar is open
@@ -200,7 +200,7 @@
     overflow-y: visible; // Allow vertical overflow for dropdown
     position: relative;
     z-index: 1;
-    // CRITICAL: Ensure header doesn't block dropdown on mobile
+
     isolation: auto !important;
   }
 
@@ -401,7 +401,7 @@
     align-items: center;
     z-index: 1001;
     isolation: auto; // Don't create stacking context that could trap dropdown
-    // CRITICAL: Ensure menu container doesn't block dropdown
+
     pointer-events: auto !important;
     
     // Ensure it works on mobile/tablet - higher z-index to appear above folders/files
@@ -499,17 +499,17 @@
     background: transparent !important;
     z-index: 9999998 !important;
     display: none;
-    // CRITICAL: Backdrop should not block events to dropdown
+
     // The dropdown has higher z-index and should receive events first
     pointer-events: auto !important;
-    isolation: auto !important; // CRITICAL: Don't create stacking context
+    isolation: auto !important;
     touch-action: manipulation !important;
     
     // Show overlay in mobile view
     @include mixins.media-breakpoint-down(md) {
       display: block;
       background: rgba(0, 0, 0, 0.3) !important;
-      // CRITICAL: Backdrop should not block dropdown clicks
+
       // JavaScript will check if touch is on dropdown before closing
       // Dropdown's higher z-index ensures it receives events first
       pointer-events: auto !important;
@@ -527,7 +527,7 @@
     min-width: 200px;
     z-index: 9999999 !important; // Highest z-index to appear above everything
     // DO NOT use isolation: isolate here - it creates a stacking context that hides the menu on mobile
-    isolation: auto !important; // CRITICAL: Don't create stacking context
+    isolation: auto !important;
     overflow: hidden;
     border: 2px solid var(--color-indigo-200);
     margin-top: 0.5rem;
@@ -572,7 +572,7 @@
       -webkit-transform: translateZ(0);
       isolation: auto !important; // Explicitly remove isolation on mobile
       
-      // CRITICAL: Ensure all children are clickable on mobile
+
       * {
         pointer-events: auto !important;
         touch-action: manipulation !important;
@@ -808,14 +808,14 @@
   padding-bottom: 5rem; // Add space at bottom to prevent content from being hidden behind bottom navigation
   position: relative;
   z-index: 1; // Lower than header to ensure dropdown appears above
-  // CRITICAL: Don't create stacking context that blocks dropdown
+
   isolation: auto !important;
 
   // Grid containers - ensure they don't create stacking context issues
   .grid {
     position: relative;
     z-index: 1; // Lower than header/dropdown
-    // CRITICAL: Don't use isolation: isolate on mobile - it blocks the profile dropdown
+
     isolation: auto !important;
     @include mixins.media-breakpoint-up(md) {
       isolation: isolate; // Only create stacking context on desktop
@@ -829,13 +829,13 @@
     padding-bottom: 10rem !important; // Reduced padding since bottom nav is now smaller
     margin-bottom: 1rem;
     pointer-events: auto; // Ensure content is clickable
-    // CRITICAL: Don't create stacking context on mobile - it blocks dropdown
+
     isolation: auto !important;
     
     .grid {
       position: relative;
       z-index: 1;
-      // CRITICAL: Remove isolation on mobile to prevent blocking dropdown
+
       isolation: auto !important;
     }
   }
@@ -1348,7 +1348,7 @@ div[class*="relative"][class*="bg-white"] {
   }
 }
 
-// CRITICAL FIX: Profile dropdown mobile interaction issues
+
 // This fixes the non-responsive dropdown clicks on mobile devices
 
 // 1. MOST IMPORTANT: Fix the backdrop to NOT block dropdown clicks
@@ -1399,7 +1399,7 @@ div[class*="relative"][class*="bg-white"] {
 .files-header__profile-dropdown {
   position: fixed !important;
   z-index: 9999 !important; // Above backdrop
-  isolation: auto !important; // CRITICAL: Don't create stacking context
+  isolation: auto !important;
   pointer-events: auto !important;
   touch-action: manipulation !important;
   
