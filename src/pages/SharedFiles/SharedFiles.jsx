@@ -9,6 +9,7 @@ import { getFileCategory } from '../../helpers/MimeType';
 import File from '../../components/File/File';
 import Represents from '../../components/Represents/Represents';
 import EmptyState from '../../components/EmptyState/EmptyState';
+import ChangeName from '../../components/ChangeName/ChangeName';
 import { HiViewGrid, HiViewList } from "react-icons/hi";
 import { HiShare } from "react-icons/hi2";
 import { FaShare, FaFolder, FaLink, FaArrowUp, FaArrowDown, FaQuestionCircle } from 'react-icons/fa';
@@ -19,7 +20,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import './SharedFiles.scss';
 import '../RevenueData/RevenueData.scss';
 
-// Shared Folder Card Component with Menu
 const SharedFolderCard = ({ folder, folderId, folderName, sharedUrl, files, index, navigate, t }) => {
     const [Token] = useCookies(['MegaBox']);
     const [showMenu, setShowMenu] = useState(false);
@@ -27,7 +27,6 @@ const SharedFolderCard = ({ folder, folderId, folderName, sharedUrl, files, inde
     const buttonRef = useRef(null);
     const queryClient = useQueryClient();
 
-    // Close menu when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (
@@ -50,33 +49,26 @@ const SharedFolderCard = ({ folder, folderId, folderName, sharedUrl, files, inde
     const handleDisableShare = async () => {
         try {
             await userService.disableFolderShare(folderId, Token.MegaBox);
-            // Invalidate shared files and folders queries
             queryClient.invalidateQueries(['sharedFilesByUser']);
             queryClient.invalidateQueries('GetSharedFolders');
             queryClient.invalidateQueries(['shareLinkAnalytics']);
             setShowMenu(false);
         } catch (error) {
-            // Error is handled in the service, but ensure menu closes
             setShowMenu(false);
             console.error('Error disabling folder share:', error);
         }
     };
 
     const handleOpenFolder = async (e) => {
-        // Don't trigger if clicking on dropdown menu or button
         if (menuRef.current?.contains(e.target) || buttonRef.current?.contains(e.target)) {
             return;
         }
         e.preventDefault();
         e.stopPropagation();
         if (sharedUrl) {
-            // Open shared folder using the original Branch.io link directly
-            // If it's a Vercel URL, try to find the original Branch.io link
             let urlToOpen = sharedUrl;
-            
-            // If it's a Vercel URL, we need to get the original Branch.io link
+
             if (urlToOpen.includes('mega-box.vercel.app') || urlToOpen.includes('vercel.app')) {
-                // Try to find Branch.io link in folder data first
                 const branchLink = folder.branchUrl || 
                                   folder.branchLink || 
                                   folder.originalUrl || 
@@ -86,7 +78,6 @@ const SharedFolderCard = ({ folder, folderId, folderName, sharedUrl, files, inde
                 if (branchLink) {
                     urlToOpen = branchLink;
                 } else {
-                    // If not found in folder data, try to fetch it from the backend
                     try {
                         const response = await userService.generateFolderShareLink(folderId, Token.MegaBox);
                         const fetchedBranchLink = response?.shareUrl || response?.shareLink || response?.data?.shareUrl || response?.data?.shareLink;
@@ -95,22 +86,16 @@ const SharedFolderCard = ({ folder, folderId, folderName, sharedUrl, files, inde
                         }
                     } catch (error) {
                         console.error('Error fetching Branch.io link for folder:', error);
-                        // Fallback to opening the Vercel URL if we can't get Branch.io link
                     }
                 }
             }
-            
-            // Open in new tab - use location.href to bypass React Router
-            const newWindow = window.open('', '_blank', 'noopener,noreferrer');
-            if (newWindow) {
-                newWindow.location.href = urlToOpen;
-            } else {
-                // Fallback if popup blocked
+
+            const newWindow = window.open(urlToOpen, '_blank', 'noopener,noreferrer');
+            if (!newWindow) {
                 window.location.href = urlToOpen;
             }
         } else if (folderId) {
-            // Navigate to folder preview if no shared URL
-            navigate(`/video-preview/${folderId}?type=folder`);
+            navigate(`/share/${folderId}?type=folder`);
         }
     };
 
@@ -122,7 +107,6 @@ const SharedFolderCard = ({ folder, folderId, folderName, sharedUrl, files, inde
             transition={{ delay: index * 0.1 }}
             onClick={handleOpenFolder}
         >
-            {/* Three dots menu button */}
             <div
                 ref={buttonRef}
                 className="absolute top-2 right-2 z-10"
@@ -136,25 +120,41 @@ const SharedFolderCard = ({ folder, folderId, folderName, sharedUrl, files, inde
                 <FiMoreVertical className="w-5 h-5 text-indigo-600 cursor-pointer hover:text-indigo-800 transition-colors" />
             </div>
 
-            {/* Dropdown menu */}
             {showMenu && (
                 <div
                     ref={menuRef}
                     className="absolute top-8 right-2 bg-white border-2 border-indigo-100 shadow-xl rounded-lg py-1.5 text-xs min-w-[160px] z-[99999]"
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {sharedUrl && (
+                    {folderId && (
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                handleDisableShare();
+                                setShowMenu(false);
+                                navigate(`/share/${folderId}?type=folder`);
                             }}
-                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-orange-50 w-full text-left transition-colors text-orange-600"
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 w-full text-left transition-colors text-indigo-900"
                         >
-                            <HiShare className='w-4 h-4 text-orange-600 rotate-180 flex-shrink-0' />
-                            <span className="font-medium">{t("folder.disableShare") || "Disable Share"}</span>
+                            <FaFolder className='w-4 h-4 text-indigo-600 flex-shrink-0' />
+                            <span className="font-medium">{t("sharedFiles.openFolder") || "Open Folder"}</span>
                         </button>
+                    )}
+                    {sharedUrl && (
+                        <>
+                            {folderId && <div className="border-t border-gray-200 my-1"></div>}
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleDisableShare();
+                                }}
+                                className="flex items-center gap-2 px-3 py-1.5 hover:bg-orange-50 w-full text-left transition-colors text-orange-600"
+                            >
+                                <HiShare className='w-4 h-4 text-orange-600 rotate-180 flex-shrink-0' />
+                                <span className="font-medium">{t("folder.disableShare") || "Disable Share"}</span>
+                            </button>
+                        </>
                     )}
                 </div>
             )}
@@ -187,9 +187,12 @@ export default function SharedFiles() {
     const [ShowRepresent, setRepresents] = useState(false);
     const [Path, setPath] = useState();
     const [fileType, setfileType] = useState();
+    const [ShowUpdateName, setShowUpdateName] = useState(false);
+    const [OldName, setOldName] = useState('');
+    const [FileId, setFileId] = useState('');
+    const [IsFolder, setIsFolder] = useState(false);
 
 
-    // Get share link analytics - contains link data with views, downloads, etc.
     const { data: shareLinkAnalyticsData, isLoading: shareLinkAnalyticsLoading } = useQuery(
         ['shareLinkAnalytics'],
         () => promoterService.getShareLinkAnalytics(Token.MegaBox),
@@ -199,17 +202,13 @@ export default function SharedFiles() {
         }
     );
 
-    // Extract analytics data from getShareLinkAnalytics response
-    // API Response structure: { "analytics": [{ "fileId", "fileName", "sharedUrl", "downloads", "views", "lastUpdated", "viewsByCountry" }] }
     const analyticsList = shareLinkAnalyticsData?.analytics || shareLinkAnalyticsData?.data || shareLinkAnalyticsData?.links || [];
     
     const filesLoading = shareLinkAnalyticsLoading;
 
-    // Get shared folders with files
     const GetSharedFolders = async () => {
         try {
             const data = await userService.getSharedFoldersWithFiles(Token.MegaBox);
-            // Handle different response structures
             if (data?.folders && Array.isArray(data.folders)) {
                 return data;
             } else if (Array.isArray(data)) {
@@ -224,8 +223,7 @@ export default function SharedFiles() {
 
     const { data: sharedFoldersData, isLoading: foldersLoading } = useQuery("GetSharedFolders", GetSharedFolders);
 
-    // Get shared files by user
-    const { data: sharedFilesByUserData, isLoading: sharedFilesByUserLoading } = useQuery(
+    const { data: sharedFilesByUserData, isLoading: sharedFilesByUserLoading, refetch: refetchSharedFiles } = useQuery(
         ['sharedFilesByUser'],
         () => fileService.getSharedFilesByUser(Token.MegaBox),
         {
@@ -245,6 +243,13 @@ export default function SharedFiles() {
             setfileType(type);
             setRepresents(!ShowRepresent);
         }
+    };
+
+    const ToggleNameChange = (name, isFolder, id) => {
+        setOldName(name);
+        setIsFolder(isFolder || false);
+        setFileId(id);
+        setShowUpdateName(!ShowUpdateName);
     };
 
     const SelectFilter = (type) => {
@@ -273,8 +278,7 @@ export default function SharedFiles() {
             link.fileUrl,
             link.link
         ].filter(Boolean);
-        
-        // Find Branch.io link first, fallback to any other link
+
         const branchLink = allPossibleLinks.find(url => 
             url && (url.includes('test-app.link') || url.includes('app.link') || url.includes('branch.io'))
         );
@@ -287,7 +291,7 @@ export default function SharedFiles() {
             link: finalLink,
             totalInstall: link.downloads || link.totalDownloads || link.installs || 0,
             totalViews: link.views || link.totalViews || 0,
-            fileName: link.fileName || link.name || 'Unknown',
+            fileName: link.fileName || link.name || t("sidenav.linkDataSection.unknown") || "Unknown",
             viewsByCountry: link.viewsByCountry || [],
             downloads: link.downloads || link.totalDownloads || 0,
             views: link.views || link.totalViews || 0,
@@ -295,7 +299,6 @@ export default function SharedFiles() {
         };
     });
 
-    // Sort by appropriate metric based on plan (descending) and take top 10
     const topSharedLinks = [...sharedLinksData]
         .sort((a, b) => {
             if (isDownloadsPlan) {
@@ -306,7 +309,6 @@ export default function SharedFiles() {
         })
         .slice(0, 10);
 
-    // Fetch earnings data
     const { data: earningsData, isLoading: earningsLoading } = useQuery(
         ['userEarnings'],
         () => promoterService.getUserEarnings(Token.MegaBox),
@@ -316,7 +318,6 @@ export default function SharedFiles() {
         }
     );
 
-    // Extract earnings data
     const currency = earningsData?.currency || 'USD';
     const withdrawable = earningsData?.withdrawable || earningsData?.totalEarnings || '0';
     const estimatedIncome = earningsData?.totalEarnings || earningsData?.estimatedIncome || '0';
@@ -326,7 +327,6 @@ export default function SharedFiles() {
         <>
             <div className="revenue-data-page">
                 <div className="revenue-data-page__wrapper">
-                    {/* Earning Section */}
                     <motion.div
                         className="revenue-earning-section"
                         initial={{ opacity: 0, y: -20 }}
@@ -385,7 +385,6 @@ export default function SharedFiles() {
                         </div>
                     </motion.div>
 
-                    {/* Shared Files by User Section */}
                     {sharedFilesByUserData?.files && sharedFilesByUserData.files.length > 0 && (
                         <motion.div
                             className="revenue-table-section"
@@ -410,14 +409,10 @@ export default function SharedFiles() {
                                 ) : (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
                                         {sharedFilesByUserData.files.map((file, index) => {
-                                            // Map file data to match File component's expected structure
-                                            // Response: {_id, fileName, sharedUrl, createdAt}
-                                            // Determine file type from fileName extension if not provided
-                                            const fileName = file.fileName || file.name || 'Unknown File';
+                                            const fileName = file.fileName || file.name || t("sidenav.linkDataSection.unknownFile") || "Unknown File";
                                             const fileExtension = fileName.split('.').pop()?.toLowerCase() || '';
                                             let inferredFileType = 'application/octet-stream';
                                             
-                                            // Infer file type from extension
                                             if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(fileExtension)) {
                                                 inferredFileType = 'image/' + (fileExtension === 'jpg' ? 'jpeg' : fileExtension);
                                             } else if (['mp4', 'webm', 'ogg', 'mov', 'avi'].includes(fileExtension)) {
@@ -428,11 +423,8 @@ export default function SharedFiles() {
                                                 inferredFileType = 'application/zip';
                                             }
                                             
-                                            // For shared files, try to get the actual file URL for preview
-                                            // If we have a file ID, we might be able to construct a preview URL
-                                            // Otherwise, use sharedUrl as fallback
-                                            
-                                            // Prioritize Branch.io links (test-app.link) over Vercel URLs
+                                            const fileUrl = file.url || file.fileUrl || file.fileURL || file.previewUrl || file.imageUrl || file.videoUrl || file.fileURL || '';
+
                                             const allPossibleShareUrls = [
                                                 file.branchUrl,
                                                 file.branchLink,
@@ -443,8 +435,7 @@ export default function SharedFiles() {
                                                 file.shareURL,
                                                 file.shareUrl
                                             ].filter(Boolean);
-                                            
-                                            // Find Branch.io link first, fallback to any other link
+
                                             const branchShareUrl = allPossibleShareUrls.find(url => 
                                                 url && (url.includes('test-app.link') || url.includes('app.link') || url.includes('branch.io'))
                                             );
@@ -455,20 +446,16 @@ export default function SharedFiles() {
                                                 id: file._id || file.id,
                                                 fileName: fileName,
                                                 fileType: file.fileType || file.type || file.mimeType || inferredFileType,
-                                                // Try to get file URL - prioritize actual file URL for preview
-                                                // If file has an ID, we can try to fetch it or construct preview URL
-                                                url: file.url || file.fileUrl || file.fileURL || file.previewUrl || '',
+                                                url: fileUrl,
                                                 createdAt: file.createdAt || file.created || file.date || new Date().toISOString(),
                                                 shareLink: finalShareUrl,
                                                 sharedUrl: finalShareUrl,
                                                 shared: file.shared !== false,
                                                 isShared: true,
-                                                ...file // Include all other fields from response
+                                                ...file
                                             };
-                                            
-                                            // If file has sharedUrl but no url, clicking should open the shared link
+
                                             if (!fileData.url && fileData.sharedUrl) {
-                                                // Store sharedUrl for click handling
                                                 fileData._sharedUrl = fileData.sharedUrl;
                                             }
                                             
@@ -483,6 +470,19 @@ export default function SharedFiles() {
                                                     <File
                                                         Type={getFileCategory(fileData.fileType)}
                                                         data={fileData}
+                                                        Representation={Representation}
+                                                        onRename={ToggleNameChange}
+                                                        refetch={async () => {
+                                                            await refetchSharedFiles();
+                                                        }}
+                                                        onShare={async (id) => {
+                                                            try {
+                                                                await fileService.generateShareLink(id, Token.MegaBox);
+                                                                refetchSharedFiles();
+                                                            } catch {
+                                                                void 0;
+                                                            }
+                                                        }}
                                                         viewMode="grid"
                                                     />
                                                 </motion.div>
@@ -494,7 +494,6 @@ export default function SharedFiles() {
                         </motion.div>
                     )}
 
-                    {/* Shared Folders Section */}
                     {sharedFoldersData?.folders && sharedFoldersData.folders.length > 0 && (
                         <motion.div
                             className="revenue-table-section"
@@ -519,85 +518,24 @@ export default function SharedFiles() {
                                 ) : (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
                                         {sharedFoldersData.folders.map((item, index) => {
-                                            // Extract folder data from nested structure
                                             const folder = item.folder || item;
                                             const folderId = folder.id || folder._id || folder.folderId;
-                                            const folderName = folder.name || folder.folderName || 'Unnamed Folder';
+                                            const folderName = folder.name || folder.folderName || t("sidenav.linkDataSection.unnamedFolder") || "Unnamed Folder";
                                             const sharedUrl = folder.sharedUrl || folder.shareLink || item.sharedUrl;
                                             const files = item.files || folder.files || [];
                                             
                                             return (
-                                                <motion.div
+                                                <SharedFolderCard
                                                     key={folderId || index}
-                                                    className="bg-white rounded-lg border-2 border-indigo-200 p-4 hover:shadow-lg transition-shadow cursor-pointer"
-                                                    initial={{ opacity: 0, scale: 0.9 }}
-                                                    animate={{ opacity: 1, scale: 1 }}
-                                                    transition={{ delay: index * 0.1 }}
-                                                    onClick={async (e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        if (sharedUrl) {
-                                                            // Open shared folder using the original Branch.io link directly
-                                                            // If it's a Vercel URL, try to find the original Branch.io link
-                                                            let urlToOpen = sharedUrl;
-                                                            
-                                                            // If it's a Vercel URL, we need to get the original Branch.io link
-                                                            if (urlToOpen.includes('mega-box.vercel.app') || urlToOpen.includes('vercel.app')) {
-                                                                // Try to find Branch.io link in folder data first
-                                                                const branchLink = folder.branchUrl || 
-                                                                                  folder.branchLink || 
-                                                                                  folder.originalUrl || 
-                                                                                  folder.originalLink ||
-                                                                                  (folder.sharedUrl && folder.sharedUrl.includes('test-app.link') ? folder.sharedUrl : null) ||
-                                                                                  (folder.shareLink && folder.shareLink.includes('test-app.link') ? folder.shareLink : null);
-                                                                if (branchLink) {
-                                                                    urlToOpen = branchLink;
-                                                                } else {
-                                                                    // If not found in folder data, try to fetch it from the backend
-                                                                    try {
-                                                                        const response = await userService.generateFolderShareLink(folderId, Token.MegaBox);
-                                                                        const fetchedBranchLink = response?.shareUrl || response?.shareLink || response?.data?.shareUrl || response?.data?.shareLink;
-                                                                        if (fetchedBranchLink && (fetchedBranchLink.includes('test-app.link') || fetchedBranchLink.includes('app.link') || fetchedBranchLink.includes('branch.io'))) {
-                                                                            urlToOpen = fetchedBranchLink;
-                                                                        }
-                                                                    } catch (error) {
-                                                                        console.error('Error fetching Branch.io link for folder:', error);
-                                                                        // Fallback to opening the Vercel URL if we can't get Branch.io link
-                                                                    }
-                                                                }
-                                                            }
-                                                            
-                                                            // Open in new tab - use location.href to bypass React Router
-                                                            const newWindow = window.open('', '_blank', 'noopener,noreferrer');
-                                                            if (newWindow) {
-                                                                newWindow.location.href = urlToOpen;
-                                                            } else {
-                                                                // Fallback if popup blocked
-                                                                window.location.href = urlToOpen;
-                                                            }
-                                                        } else if (folderId) {
-                                                            // Navigate to folder preview if no shared URL
-                                                            navigate(`/video-preview/${folderId}?type=folder`);
-                                                        }
-                                                    }}
-                                                >
-                                                    <div className="flex items-center gap-3 mb-3">
-                                                        <FaFolder className="text-indigo-600 text-2xl flex-shrink-0" />
-                                                        <h3 className="font-semibold text-indigo-900 truncate flex-1">
-                                                            {folderName}
-                                                        </h3>
-                                                    </div>
-                                                    {files && files.length > 0 && (
-                                                        <div className="text-sm text-gray-600 mb-2">
-                                                            <span className="font-medium">{files.length}</span> {t("sharedFiles.files") || "files"}
-                                                        </div>
-                                                    )}
-                                                    {sharedUrl && (
-                                                        <div className="mt-2 inline-flex items-center gap-2 text-xs text-indigo-600 hover:text-indigo-800">
-                                                            <FaLink /> {t("sharedFiles.viewLink") || "View Link"}
-                                                        </div>
-                                                    )}
-                                                </motion.div>
+                                                    folder={folder}
+                                                    folderId={folderId}
+                                                    folderName={folderName}
+                                                    sharedUrl={sharedUrl}
+                                                    files={files}
+                                                    index={index}
+                                                    navigate={navigate}
+                                                    t={t}
+                                                />
                                             );
                                         })}
                                     </div>
@@ -606,7 +544,6 @@ export default function SharedFiles() {
                         </motion.div>
                     )}
 
-                    {/* Shared Links Table Section */}
                     <motion.div
                         className="revenue-table-section"
                         initial={{ opacity: 0, y: -20 }}
@@ -733,7 +670,7 @@ export default function SharedFiles() {
                                             >
                                                 <td>
                                                     <div className="font-medium text-indigo-900 truncate max-w-[200px]" title={link.fileName}>
-                                                        {link.fileName || 'Unknown'}
+                                                        {link.fileName || t("sidenav.linkDataSection.unknown") || "Unknown"}
                                                     </div>
                                                 </td>
                                                 <td>
@@ -753,16 +690,11 @@ export default function SharedFiles() {
                                                             onClick={async (e) => {
                                                                 e.preventDefault();
                                                                 e.stopPropagation();
-                                                                // Open the original Branch.io link directly without routing
                                                                 if (link.link) {
                                                                     let urlToOpen = link.link;
-                                                                    
-                                                                    // If it's a Vercel URL, we need to get the original Branch.io link
-                                                                    // The backend might be returning Vercel URL, so we need to fetch the original
+
                                                                     if (urlToOpen.includes('mega-box.vercel.app') || urlToOpen.includes('vercel.app')) {
                                                                         try {
-                                                                            // Try to get the original Branch.io link by calling generateShareLink again
-                                                                            // This will return the Branch.io link from the backend
                                                                             const response = await fileService.generateShareLink(link.fileId, Token.MegaBox);
                                                                             const branchLink = response?.shareUrl || response?.shareLink || response?.data?.shareUrl || response?.data?.shareLink;
                                                                             if (branchLink && (branchLink.includes('test-app.link') || branchLink.includes('app.link') || branchLink.includes('branch.io'))) {
@@ -770,16 +702,11 @@ export default function SharedFiles() {
                                                                             }
                                                                         } catch (error) {
                                                                             console.error('Error fetching Branch.io link:', error);
-                                                                            // Fallback to opening the Vercel URL if we can't get Branch.io link
                                                                         }
                                                                     }
-                                                                    
-                                                                    // Open in new tab - use location.href to bypass React Router
-                                                                    const newWindow = window.open('', '_blank', 'noopener,noreferrer');
-                                                                    if (newWindow) {
-                                                                        newWindow.location.href = urlToOpen;
-                                                                    } else {
-                                                                        // Fallback if popup blocked
+
+                                                                    const newWindow = window.open(urlToOpen, '_blank', 'noopener,noreferrer');
+                                                                    if (!newWindow) {
                                                                         window.location.href = urlToOpen;
                                                                     }
                                                                 }
@@ -806,6 +733,15 @@ export default function SharedFiles() {
                     path={Path}
                     type={fileType}
                     ToggleUploadFile={() => Representation("", "", true)}
+                />
+            )}
+            {ShowUpdateName && (
+                <ChangeName
+                    oldFileName={OldName}
+                    Toggle={ToggleNameChange}
+                    refetch={IsFolder ? () => {} : refetchSharedFiles}
+                    FileId={FileId}
+                    isFolder={IsFolder}
                 />
             )}
         </>
