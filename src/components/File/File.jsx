@@ -195,13 +195,11 @@ export default function File({ Type, data, Representation, onRename, refetch, on
         };
     }, [showMenu]);
 
-    const handleOpenFile = async () => {
-        if (Type === 'image') {
-            Representation(url, fileType);
-        } else if (Type === 'zip') {
-            // For zip files, navigate to zip contents view
+    const handleOpenFile = () => {
+        const fileUrl = url || data?._sharedUrl || data?.sharedUrl || data?.shareLink;
+
+        if (Type === 'zip') {
             setShowMenu(false);
-            // Navigate to zip view - similar to folder view
             const currentPath = window.location.pathname;
             let basePath = '/dashboard';
             if (currentPath.startsWith('/Promoter')) {
@@ -210,10 +208,20 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                 basePath = '/Owner';
             }
             navigate(`${basePath}/zip/${encodeURIComponent(fileName)}/${_id}`);
+            return;
+        }
+
+        if (!fileUrl) {
+            toast.error("File URL not available", ToastOptions("error"));
+            return;
+        }
+
+        if (Type === 'image') {
+            Representation(fileUrl, fileType);
         } else if (Type === 'video') {
-            Representation(url, fileType);
+            Representation(fileUrl, fileType);
         } else if (Type === 'document') {
-            Representation(url, fileType);
+            Representation(fileUrl, fileType);
         }
     };
 
@@ -224,7 +232,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             
             // Call API first
             await fileService.archiveFile(_id, MegaBox.MegaBox);
-            
+
             const fileIdStr = String(_id);
             
             // Remove from ALL filter caches immediately (including "All" with capital A)
@@ -263,7 +271,6 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             queryClient.invalidateQueries({ queryKey: ["GetUserFiles"] });
             queryClient.invalidateQueries({ queryKey: ["GetArchivedFilesCount"] });
             queryClient.invalidateQueries({ queryKey: ["getMyZips"] });
-            // CRITICAL: Invalidate getMyArchives to add file to archived list
             queryClient.invalidateQueries({ queryKey: ["getMyArchives"] });
             
             // Update archived count
@@ -271,16 +278,13 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                 return (oldCount || 0) + 1;
             });
             
-            // Show success message
-            toast.success("File archived successfully", ToastOptions("success"));
-            
-            // Immediately call refetch to remove from UI
+            toast.success(t("file.fileArchivedSuccessfully") || "File archived successfully", ToastOptions("success"));
+
             if (refetch) {
                 await refetch();
             }
-            
         } catch {
-            toast.error("Failed to archive file", ToastOptions("error"));
+            toast.error(t("file.failedToArchiveFile") || "Failed to archive file", ToastOptions("error"));
         }
     };
 
@@ -329,7 +333,6 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             // Invalidate all queries to force refetch - including getMyArchives
             queryClient.invalidateQueries({ queryKey: ["GetUserFiles"] });
             queryClient.invalidateQueries({ queryKey: ["GetArchivedFilesCount"] });
-            // CRITICAL: Invalidate getMyArchives to remove file from archived list
             queryClient.invalidateQueries({ queryKey: ["getMyArchives"] });
             
             // Show success message
@@ -379,9 +382,14 @@ export default function File({ Type, data, Representation, onRename, refetch, on
             queryClient.invalidateQueries('GetSharedFolders');
             // Also invalidate share link analytics to update the shared links table
             queryClient.invalidateQueries(['shareLinkAnalytics']);
-            // Refetch current file list if refetch function is provided
+            // Explicitly refetch both queries to ensure UI updates immediately
+            // Refetch sharedFilesByUser to remove from shared files cards
+            await queryClient.refetchQueries(['sharedFilesByUser']);
+            // Refetch shareLinkAnalytics to remove from shared links table
+            await queryClient.refetchQueries(['shareLinkAnalytics']);
+            // Also refetch current file list if refetch function is provided
             if (refetch) {
-                refetch();
+                await refetch();
             }
         } catch {
             // Error is handled in the service
@@ -408,8 +416,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                 }
 
                 if (DeleteRes) {
-                    toast.success("File deleted successfully", ToastOptions("success"));
-                    // Remove from cache immediately
+                    toast.success(t("file.fileDeletedSuccessfully") || "File deleted successfully", ToastOptions("success"));
                     const fileIdStr = String(_id);
                     queryClient.setQueryData(["GetUserFiles", "All"], (oldData) => {
                         if (!oldData?.files) return oldData;
@@ -418,7 +425,6 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                             files: oldData.files.filter(f => String(f._id || f.id) !== fileIdStr)
                         };
                     });
-                    // Also remove from getMyZips if it's a zip
                     if (isZipFile) {
                         queryClient.setQueryData("getMyZips", (oldData) => {
                             if (!oldData?.zips && !oldData?.files) return oldData;
@@ -430,7 +436,6 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                             };
                         });
                     }
-                    // Invalidate all queries
                     queryClient.invalidateQueries({ queryKey: ["GetUserFiles"] });
                     queryClient.invalidateQueries({ queryKey: ["getMyZips"] });
                 }
@@ -552,12 +557,12 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                             {Type === 'zip' ? (
                                 <>
                                     <HiFolderOpen className='w-4 h-4 text-indigo-600' />
-                                    <span className="font-medium">Open</span>
+                                    <span className="font-medium">{t("file.open") || "Open"}</span>
                                 </>
                             ) : (
                                 <>
                                     <HiEye className='w-4 h-4 text-indigo-600' />
-                                    <span className="font-medium">Open</span>
+                                    <span className="font-medium">{t("file.open") || "Open"}</span>
                                 </>
                             )}
                         </button>
@@ -579,7 +584,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                         <HiPencil className='w-4 h-4 text-green-600' />
                         <span className="font-medium">{t("file.rename") || "Rename"}</span>
                     </button>
-                    {(data?.shareLink || data?.shareUrl || data?.isShared === true || data?.isShared === "true" || data?.shared === true || data?.shared === "true") ? (
+                    {(data?.shareLink || data?.shareUrl || data?.sharedUrl || data?._sharedUrl || data?.isShared === true || data?.isShared === "true" || data?.shared === true || data?.shared === "true") ? (
                         <button
                             onClick={(e) => {
                                 e.preventDefault();
@@ -636,7 +641,6 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                         </button>
                     ) : (
                         <>
-                            {/* Don't show "Create Zip" option for zip files */}
                             {Type !== 'zip' && (
                                 <button
                                     onClick={(e) => {
@@ -691,7 +695,7 @@ export default function File({ Type, data, Representation, onRename, refetch, on
                         style={{ pointerEvents: 'auto', touchAction: 'manipulation', WebkitTapHighlightColor: 'rgba(0,0,0,0.1)' }}
                     >
                         <HiTrash className='w-4 h-4 text-red-600' />
-                        <span className="font-medium">Delete</span>
+                        <span className="font-medium">{t("file.delete") || "Delete"}</span>
                     </button>
                 </div>
             )}
