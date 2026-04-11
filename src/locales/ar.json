@@ -279,7 +279,10 @@
       "totalViews": "إجمالي المشاهدات",
       "fileName": "اسم الملف",
       "noData": "لا توجد روابط مشتركة",
-      "noDataMessage": "لم تشارك أي روابط بعد"
+      "noDataMessage": "لم تشارك أي روابط بعد",
+      "unknown": "غير معروف",
+      "unknownFile": "ملف غير معروف",
+      "unnamedFolder": "مجلد بدون اسم"
     },
     "revenueData": "بيانات الإيرادات",
     "withdraw": "سحب",
@@ -316,13 +319,18 @@
     "delete": "حذف"
   },
   "file": {
+    "file": "ملف",
+    "open": "فتح",
     "rename": "إعادة تسمية",
     "share": "مشاركة",
     "disableShare": "تعطيل المشاركة",
     "archive": "أرشفة",
     "unarchive": "إلغاء الأرشفة",
     "createZip": "إنشاء ملف مضغوط",
-    "delete": "حذف"
+    "delete": "حذف",
+    "fileArchivedSuccessfully": "تم أرشفة الملف بنجاح",
+    "failedToArchiveFile": "فشل أرشفة الملف",
+    "fileDeletedSuccessfully": "تم حذف الملف بنجاح"
   },
   "fileDetails": {
     "backToFiles": "العودة إلى الملفات",
@@ -421,10 +429,6 @@
     "storageDetails": "تفاصيل التخزين",
     "totalFiles": "إجمالي الملفات",
     "files": "ملفات",
-    "file": "ملف",
-    "rename": "إعادة تسمية",
-    "share": "مشاركة",
-    "disableShare": "تعطيل المشاركة",
     "totalUsedMB": "إجمالي المستخدم بالميجابايت",
     "usernameUpdated": "تم تحديث اسم المستخدم بنجاح!",
     "usernameUpdateFailed": "فشل تحديث اسم المستخدم",
@@ -590,6 +594,8 @@
     "files": "ملفات",
     "noFilesFound": "لم يتم العثور على ملفات مشتركة",
     "noFilesMessage": "لم تشارك أي ملفات بعد. شارك الملفات لرؤيتها هنا.",
+    "doubleClickToOpen": "انقر نقراً مزدوجاً لفتح المجلد",
+    "openFolder": "فتح المجلد",
     "goToFiles": "الذهاب إلى الملفات",
     "viewLink": "عرض الرابط"
   },

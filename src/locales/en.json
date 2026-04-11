@@ -279,7 +279,10 @@
       "totalInstall": "Total install",
       "totalViews": "Total views",
       "noData": "No shared links",
-      "noDataMessage": "You haven't shared any links yet"
+      "noDataMessage": "You haven't shared any links yet",
+      "unknown": "Unknown",
+      "unknownFile": "Unknown File",
+      "unnamedFolder": "Unnamed Folder"
     },
     "revenueData": "Revenue Data",
     "withdraw": "Withdraw",
@@ -316,13 +319,18 @@
     "delete": "Delete"
   },
   "file": {
+    "file": "file",
+    "open": "Open",
     "rename": "Rename",
     "share": "Share",
     "disableShare": "Disable Share",
     "archive": "Archive",
     "unarchive": "Unarchive",
     "createZip": "Create Zip",
-    "delete": "Delete"
+    "delete": "Delete",
+    "fileArchivedSuccessfully": "File archived successfully",
+    "failedToArchiveFile": "Failed to archive file",
+    "fileDeletedSuccessfully": "File deleted successfully"
   },
   "fileDetails": {
     "backToFiles": "Back to Files",
@@ -421,10 +429,6 @@
     "storageDetails": "Storage Details",
     "totalFiles": "Total Files",
     "files": "files",
-    "file": "file",
-    "rename": "Rename",
-    "share": "Share",
-    "disableShare": "Disable Share",
     "totalUsedMB": "Total Used (MB)",
     "usernameUpdated": "Username updated successfully!",
     "usernameUpdateFailed": "Failed to update username",
@@ -590,6 +594,8 @@
     "files": "files",
     "noFilesFound": "No shared files found",
     "noFilesMessage": "You haven't shared any files yet. Share files to see them here.",
+    "doubleClickToOpen": "Double click to open folder",
+    "openFolder": "Open Folder",
     "goToFiles": "Go to Files",
     "viewLink": "View Link"
   },
